@@ -1,0 +1,68 @@
+{
+  "entrypoints": {
+    "app": {
+      "css": [
+        "http://localhost:8080/assets/app.css"
+      ],
+      "js": [
+        "http://localhost:8080/assets/app.js"
+      ]
+    },
+    "welcome-css": {
+      "css": [
+        "http://localhost:8080/assets/welcome-css.css"
+      ],
+      "js": [
+        "http://localhost:8080/assets/welcome-css.js"
+      ]
+    },
+    "landing": {
+      "css": [
+        "http://localhost:8080/assets/landing.css"
+      ],
+      "js": [
+        "http://localhost:8080/assets/landing.js"
+      ]
+    },
+    "beranda": {
+      "js": [
+        "http://localhost:8080/assets/beranda.js"
+      ]
+    },
+    "pengaturan": {
+      "js": [
+        "http://localhost:8080/assets/pengaturan.js"
+      ]
+    },
+    "pegawai": {
+      "js": [
+        "http://localhost:8080/assets/pegawai.js"
+      ]
+    },
+    "barang": {
+      "js": [
+        "http://localhost:8080/assets/barang.js"
+      ]
+    },
+    "riwayat": {
+      "js": [
+        "http://localhost:8080/assets/riwayat.js"
+      ]
+    },
+    "jual": {
+      "js": [
+        "http://localhost:8080/assets/jual.js"
+      ]
+    },
+    "beli": {
+      "js": [
+        "http://localhost:8080/assets/beli.js"
+      ]
+    },
+    "gadai": {
+      "js": [
+        "http://localhost:8080/assets/gadai.js"
+      ]
+    }
+  }
+}

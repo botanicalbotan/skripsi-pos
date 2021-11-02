@@ -1,0 +1,90 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+
+@section('content')
+<div class="w-full p-8">
+  <h2 class="text-4xl font-semibold">Menu Pengaturan</h2>
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+    <div x-data="{tabOpsi: 0}" class="flex">
+      <div class="flex flex-none w-56">
+        <ul>
+          <li>
+            <span class="text-sm font-semibold text-neutral opacity-40">Menu</span>
+          </li>
+          <li><a href="#" class="font-medium text-gray-600 hover:text-neutral text-lg"
+              :class="{'text-neutral hover:text-neutral-focus font-bold': tabOpsi == 0}" @click="tabOpsi=0">Informasi
+              Toko</a>
+          </li>
+          <li><a href="#" class="font-medium text-gray-600 hover:text-neutral text-lg"
+              :class="{'text-neutral hover:text-neutral-focus font-bold': tabOpsi == 1}" @click="tabOpsi=1">Kadar Perhiasan</a>
+          </li>
+          <li><a href="#" class="font-medium text-gray-600 hover:text-neutral text-lg"
+              :class="{'text-neutral hover:text-neutral-focus font-bold': tabOpsi == 2}"
+              @click="tabOpsi=2">Perhiasan</a></li>
+          <li><a href="#" class="font-medium text-gray-600 hover:text-neutral text-lg"
+              :class="{'text-neutral hover:text-neutral-focus font-bold': tabOpsi == 3}"
+              @click="tabOpsi=3">Transaksi</a></li>
+          <li><a href="#" class="font-medium text-gray-600 hover:text-neutral text-lg"
+              :class="{'text-neutral hover:text-neutral-focus font-bold': tabOpsi == 4}" @click="tabOpsi=4">Template
+              Nota</a></li>
+          <li><a href="#" class="font-medium text-gray-600 hover:text-neutral text-lg"
+              :class="{'text-neutral hover:text-neutral-focus font-bold': tabOpsi == 5}" @click="tabOpsi=5">Pembukuan
+              Kas</a></li>
+          <li><a href="#" class="font-medium text-gray-600 hover:text-neutral text-lg"
+              :class="{'text-neutral hover:text-neutral-focus font-bold': tabOpsi == 6}" @click="tabOpsi=6">Manajemen
+              Pegawai</a></li>
+        </ul>
+
+      </div>
+
+      {{--  <div class="divider divider-vertical"></div>  --}}
+
+      <div x-cloak class="flex-1">
+        {{-- Isi tab informasi toko  --}}
+        <div x-show="tabOpsi === 0">
+          @include('pengaturan/partials/toko')
+        </div>
+
+        {{--  Isi tab kadar  --}}
+        <div x-cloak x-show="tabOpsi === 1">
+          @include('pengaturan/partials/kadar')
+        </div>
+
+        {{--  Isi tab perhiasan  --}}
+        <div x-cloak x-show="tabOpsi === 2">
+          @include('pengaturan/partials/perhiasan')
+        </div>
+
+        {{--  Isi tab transaksi  --}}
+        <div x-cloak x-show="tabOpsi === 3">
+          @include('pengaturan/partials/transaksi')
+        </div>
+
+        {{--  Isi tab tremplate nota  --}}
+        <div x-cloak x-show="tabOpsi === 4">
+          @include('pengaturan/partials/nota')
+        </div>
+
+        <div x-cloak x-show="tabOpsi === 5">
+          @include('pengaturan/partials/kas')
+        </div>
+
+        <div x-cloak x-show="tabOpsi === 6">
+          @include('pengaturan/partials/pegawai')
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/pengaturan.js')}}"></script>
+@endsection

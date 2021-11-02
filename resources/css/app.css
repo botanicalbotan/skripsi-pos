@@ -1,76 +1,129 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+@import './tailwind.css';
 
-html, body {
-  background-color: #F7F8FA;
-  font-family: 'Poppins', sans-serif;
-  height: 100vh;
-  color: #46444c;
-  position: relative;
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+.hide-scroll-bar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-body:before {
-  content: '';
-  background: #5A45FF;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  position: absolute;
+.hide-scroll-bar::-webkit-scrollbar {
+  display: none;
 }
 
-* {
-  margin: 0;
-  padding: 0;
+.true-hidden {
+  display: none !important;
 }
 
-a {
-  color: #5A45FF;
-  text-decoration: none;
+.true-partial-right-rounded {
+  border-top-right-radius: 0.5rem !important;
+  border-bottom-right-radius: 0.5rem !important;
+  border-top-left-radius: 0rem !important;
+  border-bottom-left-radius: 0rem !important;
 }
 
-main {
-  max-width: 620px;
-  margin: auto;
-  height: 100vh;
-  padding: 0 30px;
-  align-items: center;
-  display: flex;
-  justify-content: center;
+.true-rounded-none {
+  border-top-right-radius: 0rem !important;
+  border-bottom-right-radius: 0rem !important;
+  border-top-left-radius: 0rem !important;
+  border-bottom-left-radius: 0rem !important;
 }
 
-.title {
-  font-size: 50px;
-  line-height: 50px;
+.true-text-error {
+  @apply text-error !important;
+}
+
+.true-bg-base-100{
+  @apply bg-base-100 !important;
+}
+
+/* ini dikasi simplebar yang manual mati btw, tinggal yang kelas no-select */
+div.drawer-side>ul li>a {
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+}
+
+.hidden-but-real {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  height: 0;
+  opacity: 0;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+#cropperjs {
+  display: block;
+  max-width: 100%;
+}
+ 
+#cropperjs-preview {
+  width: 200px;
+  height: 200px;
   margin-bottom: 10px;
-  color: #17161A;
+  border-radius: 100%;
 }
 
-.subtitle {
-  font-size: 26px;
-  margin-bottom: 40px;
+/* Biar input number gaada panahnya */
+/* Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
-p {
-  margin-bottom: 20px;
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
-main ul {
-  list-style: none;
+
+/* Extra class tailwind */
+.min-h-40{
+  min-height: 10rem;
 }
 
-main li {
-  margin-bottom: 5px;
-  position: relative;
-  padding-left: 25px;
+.min-h-60{
+  min-height: 15rem;
 }
 
-main li:before {
-  content: '—';
-  position: absolute;
-  left: 0;
+/* biasanya buat dropdown */
+.min-w-52{
+  min-width: 13rem;
 }
 
-main code {
-  font-size: 16px;
-  background: #e6e2ff;
+.pl-18{
+  padding-left: 4.5rem;
+}
+
+/* ilang kalo ga ada isinya */
+img[src=""] {
+  display: none;
+}
+
+select.pl-18 > option {
+  padding-right: 16px;
+}
+
+div#wadah-item-penjualan > label > input.radio:checked{
+  color: blue;
+  display: block;
+}
+
+
+div#wadah-item-penjualan input.radio:checked ~ label{
+  @apply bg-primary border-0;
+}
+
+
+div#wadah-item-penjualan input.radio:checked ~ label > span{
+  @apply text-white;
 }

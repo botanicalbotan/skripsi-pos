@@ -1,0 +1,136 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+@section('content')
+<div class="w-full p-8">
+  <h2 class="text-4xl font-semibold">Test 1</h2>
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96 space-y-8">
+    {{--  copas mulai dari sini  --}}
+    <div class="space-y-4" x-data="{ radio:0, input:0, bayar:900000, berat:2 }">
+      <h1 class="text-2xl font-semibold">Potongan dua jenis (buat pembelian)</h1>
+      {{--  keknya tetep enakan pake vanillaJS / jquery  --}}
+      <div>
+        <p class="mb-2">testcase: berat 2 gram, total transaksi 900.000</p>
+        <div class="relative flex w-full flex-wrap items-stretch" x-cloak>
+          <input type="radio" name="potongan" id="potongUang" class="hidden" @click="radio=0; input=0; bayar=900000">
+          <input type="radio" name="potongan" id="potongPersen" class="hidden" @click="radio=1; input=0; bayar=900000">
+          <div class=" overflow-hidden rounded-l-md btn-group absolute left-0">
+            <label for="potongUang" :class="(radio==0)? 'text-white':'btn-outline'"
+              class="btn btn-secondary rounded-none z-10 normal-case w-14">
+              Rp.
+            </label>
+            <label for="potongPersen" :class="(radio==1)? 'text-white':'btn-outline'"
+              class="btn btn-secondary rounded-none z-10 font-bold w-14">
+              %
+            </label>
+          </div>
+
+          {{--  bisa juga di sanitize lewat 'keyup' trus dibandingin sama parameternya, kalo ga cocok, slice paling belakang  --}}
+          <input x-model="input" type="number" id="lamakerja-pegawai" name="lamakerja-pegawai"
+            class="px-3 py-3 relative input input-secondary pl-32 " :class="(radio==1)? 'w-60':'w-full max-w-sm'"
+            @focusout="input= ((radio == 0 && (input>bayar || input<0)) || (radio==1 && (input>100 || input<0)))? 0: input; (radio==1)? $refs.hasil.value=bayar-(bayar*input/100) : $refs.hasil.value=bayar-(input*berat)" />
+        </div>
+      </div>
+      <div>
+        <p class="mb-2">Setelah dipotong</p>
+        <input type="text" name="" id="" x-ref="hasil" :value="bayar" x-cloak
+          class="input input-secondary w-full max-w-sm">
+      </div>
+    </div>
+    <div class="divider opacity-20"></div>
+    {{--  sampe sini  --}}
+
+    {{--  copas mulai dari sini  --}}
+    <div class="space-y-4" x-data="{ min:0, max:100 }">
+      <h1 class="text-2xl font-semibold">Prevent input ngelebihin maksimal lewat keyup</h1>
+      <div class=" max-w-sm">
+        <p class="mb-2">testcase: max 100, lebih jadi 100. min 0, kurang jadi 0</p>
+        <input type="number" class="input input-secondary w-full" placeholder="isi angka kurang dari 100"
+          @keyup="$el.value= ($el.value <= min)? 0: $el.value; $el.value= ($el.value > max)? 100: $el.value" />
+      </div>
+    </div>
+    <div class="divider opacity-20"></div>
+    {{--  sampe sini  --}}
+
+    {{--  copas mulai dari sini  --}}
+    <div class="space-y-4" x-data="{ min:0, max:100 }">
+      <h1 class="text-2xl font-semibold">Prevent input ngelebihin maksimal lewat focusout</h1>
+      <div class=" max-w-sm">
+        <p class="mb-2">testcase: max 100, lebih jadi 100. min 0, kurang jadi 0</p>
+        <input type="number" class="input input-secondary w-full" placeholder="isi angka kurang dari 100"
+          @focusout="$el.value= ($el.value <= min)? 0: $el.value; $el.value= ($el.value > max)? 100: $el.value" />
+      </div>
+    </div>
+    <div class="divider opacity-20"></div>
+    {{--  sampe sini  --}}
+
+    {{--  copas mulai dari sini  --}}
+    <div class="space-y-4 w-2/3" x-data="{checked: false}">
+      <h1 class=" text-2xl font-semibold">Collapse Form</h1>
+      <div class="collapse w-full  collapse-arrow"
+      :class="(checked)? '':'border-b-2 border-neutral'">
+        <input type="checkbox" @change="($el.checked)? checked=true: checked=false; console.log(checked)">
+        <div class="collapse-title text-2xl font-semibold true-bg-base-100"
+        :class="(checked)? 'border-b-2 border-neutral mb-6': ''">
+          Kepemilikan
+        </div>
+        <div class="collapse-content true-bg-base-100">
+          {{--  Kelompok kepemilikan  --}}
+          <div class="space-y-4">
+            <div class="form-control">
+              <label for="alamat-pegawai">
+                <span class="">Nama Pembeli</span>
+              </label>
+              <input type="text" id="alamat-pegawai" name="alamat-pegawai" class="input input-secondary"
+                placeholder="Contoh: Jl. Pemuda Kebaktian No.12, RT01/RW02 Semarang" value="Muhammad Arif Fadhilah">
+            </div>
+
+            <div class="form-control" x-data="{ radio: 1 }">
+              <label for="">Gender Pembeli</label>
+              <div class="flex space-x-4 mt-1 w-full sm:w-96">
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radio == 1)? 'bg-white border-primary': 'bg-white border-secondary'">
+                  <input type="radio" name="gender-pegawai" checked="checked" class="radio radio-primary hidden"
+                    value="lakilaki" @click="radio = 1">
+                  <span class="label-text text-base"
+                    :class="(radio == 1)? 'text-primary': 'text-secondary'">Laki-laki</span>
+                </label>
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radio == 2)? 'bg-white border-primary': 'bg-white border-secondary'">
+                  <input type="radio" name="gender-pegawai" class="radio radio-primary hidden" value="perempuan"
+                    @click="radio = 2">
+                  <span class="label-text text-base"
+                    :class="(radio == 2)? 'text-primary': 'text-secondary'">Perempuan</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label for="alamat-pegawai">
+                <span class="">Rentang Usia Pembeli</span>
+              </label>
+              <select class="select select-bordered w-full max-w-xs">
+                <option disabled="disabled" selected="selected">Rentang Usia</option>
+                <option>Remaja</option>
+                <option>Dewasa</option>
+                <option>Lansia</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="divider opacity-20"></div>
+    {{--  sampe sini  --}}
+
+    
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+@endsection

@@ -46,6 +46,17 @@ Encore.setPublicPath('/assets')
 |
 */
 Encore.addEntry('app', './resources/js/app.js')
+Encore.addEntry('welcome-css', '/resources/css/template-welcome.css')
+Encore.addEntry('landing', './resources/js/landing.js')
+Encore.addEntry('beranda', './resources/js/beranda.js')
+Encore.addEntry('pengaturan', './resources/js/pengaturan.js')
+Encore.addEntry('pegawai', './resources/js/pegawai.js')
+Encore.addEntry('barang', './resources/js/barang.js')
+Encore.addEntry('riwayat', './resources/js/riwayat.js')
+// Transaksi
+Encore.addEntry('jual', './resources/js/transaksi/jual.js')
+Encore.addEntry('beli', './resources/js/transaksi/beli.js')
+Encore.addEntry('gadai', './resources/js/transaksi/gadai.js')
 
 /*
 |--------------------------------------------------------------------------
@@ -57,10 +68,10 @@ Encore.addEntry('app', './resources/js/app.js')
 | we must copy them manually.
 |
 */
-// Encore.copyFiles({
-//   from: './resources/images',
-//   to: 'images/[path][name].[hash:8].[ext]',
-// })
+Encore.copyFiles({
+  from: './resources/images',
+  to: 'images/[path][name].[hash:8].[ext]',
+})
 
 /*
 |--------------------------------------------------------------------------
@@ -169,7 +180,7 @@ Encore.configureDevServerOptions((options) => {
 | PostCSS or CSS.
 |
 */
-// Encore.enablePostCssLoader()
+Encore.enablePostCssLoader()
 // Encore.configureCssLoader(() => {})
 
 /*

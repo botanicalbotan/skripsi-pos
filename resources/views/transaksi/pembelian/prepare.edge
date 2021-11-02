@@ -1,0 +1,103 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+@section('content')
+<div class="w-full p-8">
+  <h2 class="text-4xl font-semibold">Persiapan Pembelian</h2>
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+
+    {{--  ntar ganti post ke transaksiv2  --}}
+    <form action="/app/pembelian/transaksi" id="prepareForm">
+      <div class="space-y-10 ">
+
+        <div class="form-control" x-data="{ radio: 0, opsi:prepareAsal()}">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Asal Perhiasan</h1>
+          </div>
+          <div class="flex space-x-4 mt-1 w-full sm:max-w-md">
+            <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+              :class="(radio == 0)? 'bg-white border-primary': 'bg-white border-secondary'">
+              <input type="radio" name="prepareAsal" checked="checked" class="radio radio-primary hidden" value="0"
+                @click="radio = 0">
+              <span class="label-text font-medium text-base" :class="(radio == 0)? 'text-primary': 'text-secondary'">Toko Mas
+                Leo</span>
+            </label>
+            <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+              :class="(radio == 1)? 'bg-white border-error': 'bg-white border-secondary'">
+              <input type="radio" name="prepareAsal" class="radio radio-error hidden" value="1" @click="radio = 1">
+              <span class="label-text font-medium text-base" :class="(radio == 1)? 'text-error': 'text-secondary'">Toko Lain</span>
+            </label>
+          </div>
+          <span x-cloak class="mt-4" x-text="opsi[radio]">
+            Perhiasan yang dijual dibeli dari Toko Mas Leo atau cabang lain dibawah rumpun yang sama.
+          </span>
+        </div>
+
+        <div class="form-control" x-data="{ radio: 0, opsi:prepareNota()}">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Kelengkapan Nota</h1>
+          </div>
+          <div class="flex space-x-4 mt-1 w-full sm:max-w-md">
+            <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+              :class="(radio == 0)? 'bg-white border-primary': 'bg-white border-secondary'">
+              <input type="radio" name="prepareNota" checked="checked" class="radio radio-primary hidden" value="0"
+                @click="radio = 0">
+              <span class="label-text font-medium text-base" :class="(radio == 0)? 'text-primary': 'text-secondary'">Ada</span>
+            </label>
+            <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+              :class="(radio == 1)? 'bg-white border-error': 'bg-white border-secondary'">
+              <input type="radio" name="prepareNota" class="radio radio-error hidden" value="1" @click="radio = 1">
+              <span class="label-text font-medium text-base" :class="(radio == 1)? 'text-error': 'text-secondary'">Tidak Ada</span>
+            </label>
+          </div>
+          <span x-cloak class="mt-4" x-text="opsi[radio]">
+            Perhiasan yang dijual dibeli dari Toko Mas Leo atau cabang lain dibawah rumpun yang sama.
+          </span>
+        </div>
+
+        <div class="form-control" x-data="{ radio: 0, opsi:prepareRusak()}">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Tingkat Kerusakan</h1>
+          </div>
+          <div class="flex space-x-4 mt-1 w-full sm:max-w-md">
+            <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+              :class="(radio == 0)? 'bg-white border-primary': 'bg-white border-secondary'">
+              <input type="radio" name="prepareRusak" checked="checked" class="radio radio-primary hidden" value="0"
+                @click="radio = 0">
+              <span class="label-text font-medium text-base" :class="(radio == 0)? 'text-primary': 'text-secondary'">Tidak
+                Rusak</span>
+            </label>
+            <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+              :class="(radio == 1)? 'bg-white border-warning': 'bg-white border-secondary'">
+              <input type="radio" name="prepareRusak" class="radio radio-warning hidden" value="1" @click="radio = 1">
+              <span class="label-text font-medium text-base" :class="(radio == 1)? 'text-warning': 'text-secondary'">Sedang</span>
+            </label>
+            <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+              :class="(radio == 2)? 'bg-white border-error': 'bg-white border-secondary'">
+              <input type="radio" name="prepareRusak" class="radio radio-error hidden" value="2" @click="radio = 2">
+              <span class="label-text font-medium text-base" :class="(radio == 2)? 'text-error': 'text-secondary'">Parah</span>
+            </label>
+          </div>
+          <span x-cloak class="mt-4" x-text="opsi[radio]">
+            Perhiasan yang dijual tidak terpapar kerusakan apapun.
+          </span>
+        </div>
+
+      </div>
+    </form>
+
+    <div class="mt-14 w-full">
+      <button type="submit" form="prepareForm" class="btn btn-primary btn-block sm:btn-wide text-white">Lanjut</button>
+    </div>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/beli.js')}}"></script>
+@endsection

@@ -1,0 +1,53 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+@section('content')
+<div class="w-full p-8">
+  <h2 class="text-4xl font-semibold">Penjualan Selesai</h2>
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+      <div class="w-full min-h-60 bg-info bg-opacity-10 p-8">
+        data ->
+        - id unik penjualan, sampel #20212012randomnumber/urutangkadisini
+        - berat, kadar, bentuk, model perhiasan, rekap teknis aja, ngga sampe nama pemilik dkk
+        - harga final (abis ditawar kalo ada)
+        <br>
+        opsi / tombol ->
+        - pratinjau & cetak nota (harusnya auto sih notanya, tp gaapa kalau mau dari sini)
+        - balik ke menu transaksi
+        <br>
+        tulisan raw ->
+        - penjualan berhasil tercatat
+
+        <div class="w-full flex items-center mt-10 flex-col">
+          <h1 class="text-3xl">Transaksi Selesai or something</h1>
+          <img src="{{asset('assets/images/response/animated-checkmark.gif')}}" alt="" class=" w-52">
+        </div>
+        <div class="w-full flex justify-center mt-10 space-x-4">
+          <button class="btn btn-secondary text-white btn-wide">
+            Kembali
+          </button>
+          <button class="btn btn-primary text-white btn-wide">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+            </svg>
+            Cetak Nota
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        trus disini ada mini rekap
+      </div>
+      
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/jual.js')}}"></script>
+
+@endsection

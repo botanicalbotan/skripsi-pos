@@ -1,0 +1,256 @@
+@layout('layouts/master')
+@section('content')
+<div class="w-full p-8 base-page">
+  <h2 class="text-4xl font-semibold">Profil Pegawai</h2>
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+    <div class="flex space-x-2">
+      <div class="flex-1">
+        <h4 class="text-2xl sm:flex sm:items-center">
+            <span class="mr-2">Muhammad Arif Fadhilah</span><span class="badge badge-success">Aktif</span>
+        </h4>
+        <p class="opacity-75">Placeholder, ID mungkin, atau jabatan</p>
+      </div>
+      <div class="flex-none">
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" class="btn btn-primary text-white">
+            <span class="hidden sm:inline">Tindakan</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:ml-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd" />
+            </svg>
+          </div>
+          <ul tabindex="0" class="p-2 shadow-lg menu border dropdown-content bg-base-100 rounded-box w-60">
+            <li>
+              <a>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Ubah Detail Pegawai</a>
+            </li>
+            <li>
+                <a>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Ubah Status Pegawai</a>
+              </li>
+            <li>
+              <a class="true-text-error">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Hapus Pegawai</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    {{--  informasi  --}}
+    <div class="my-8 min-h-60 flex lg:space-x-8 space-y-6 lg:space-y-0 flex-col lg:flex-row">
+      <div class="flex-1 space-y-10">
+
+        {{--  Informasi Umum  --}}
+        <div>
+          <div class="flex">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                </svg>
+                Data Umum</h4>
+            </div>
+            <div class="flex-none flex align-bottom mb-2 items-end">
+              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada 22/10/2021</p>
+            </div>
+          </div>
+          <div class="border-t border-b border-secondary">
+            <ul>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Nama Pegawai</h3>
+                  <span class="flex-1 ">Muhammad Arif Fadhilah</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Gender</h3>
+                  <span class="flex-1 ">Laki-laki</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tempat Lahir</h3>
+                  <span class="flex-1 ">Boyolali</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Lahir</h3>
+                  <span class="flex-1 ">10/02/1980</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Alamat</h3>
+                  <span class="flex-1 ">disini alamat</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">No HP</h3>
+                  <span class="flex-1 ">088888888888</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Email?</h3>
+                  <span class="flex-1 ">Kalau ada isi disini, mungkin khusus pemilik doang</span>
+                </div>
+              </li>
+
+            </ul>
+          </div>
+        </div>
+
+        {{--  Informasi Akun  --}}
+        <div>
+          <div class="flex">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                </svg>
+                Data Akun</h4>
+            </div>
+            <div class="flex-none flex align-bottom mb-2 items-end">
+              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada 22/10/2021</p>
+            </div>
+          </div>
+          <div class="border-t border-b border-secondary">
+            <ul>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Nama Pengguna</h3>
+                  <span class="flex-1 ">ininamapengguna</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Password</h3>
+                  <span class="flex-1 ">hmmm gatau mau diisi apaan</span>
+                </div>
+              </li>
+
+            </ul>
+          </div>
+        </div>
+
+        {{--  Status Pekerjaan  --}}
+        <div>
+          <div class="flex">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Status Pekerjaan</h4>
+            </div>
+            <div class="flex-none flex align-bottom mb-2 items-end">
+              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada 22/10/2021</p>
+            </div>
+          </div>
+          <div class="border-t border-b border-secondary">
+            <ul>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Awal Masuk</h3>
+                  <span class="flex-1 ">10/10/2010</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Jabatan</h3>
+                  <span class="flex-1 ">Karyawan</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Lama Bekerja di Toko Leo</h3>
+                  <span class="flex-1 ">2 Tahun</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Gaji</h3>
+                  <span class="flex-1 ">Rp. 1.500.000</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Status Pegawai</h3>
+                  <span class="flex-1 ">Aktif</span>
+                </div>
+              </li>
+
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-none w-full lg:w-auto">
+        <div class="bg-base-200 min-h-60 card">
+          <div class="card-body space-y-4">
+            <div class=" card-title text-center">
+              Pas Foto
+            </div>
+
+
+            <div class="flex justify-center">
+              <div class="flex rounded-box ring-2 ring-base-300 w-52 h-52 p-2 bg-white">
+                <div class="w-full h-full bg-placeholder-user-200 bg-contain">
+                  {{--  gambar cuma buat wadah dan udah ada backgroundnya, jadi kalo gaada biarin kosong aja dan jangan kasi alternative text  --}}
+                  <img src="" id="fotoPegawai">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/pegawai.js')}}"></script>
+@endsection
