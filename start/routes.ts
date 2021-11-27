@@ -23,6 +23,11 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.get('/', async ({ view }) => {
   return view.render('welcome')
 })
+
+Route.get('/login', async ({ }) => {
+  return 'Ini ntar jadi rute buat login'
+})
+
 Route.group(() => {
   Route.get('/', async ({ view }) => {
     return view.render('index')
@@ -88,6 +93,18 @@ Route.group(() => {
       return view.render('transaksi/pembelian/base-khusus')
     })
 
+    Route.get('/transaksiumum', async ({ view }) => {
+      // ntar apus coy
+      return view.render('transaksi/pembelian/base-umum')
+    })
+
+    Route.get('/transaksiumumQR', async ({ view }) => {
+      // ntar apus coy
+      return view.render('transaksi/pembelian/base-umumQRmode')
+    })
+
+
+
     // ini yang propper, sementara ditaro di test dulu
     Route.post('/transaksiv2', 'TestsController.transaksi')
     
@@ -101,30 +118,57 @@ Route.group(() => {
   // Rute buat ngatur barang
   Route.group(() => {
     Route.get('/', async ({ view }) => {
+      return view.render('kas/base')
+    })
+
+    Route.get('/rekap', async ({ view }) => {
+      return view.render('kas/rekap')
+    })
+ 
+  }).prefix('/kas')
+
+  // Rute buat ngatur barang
+  Route.group(() => {
+    Route.get('/', async ({ view }) => {
       return view.render('barang/base')
     })
     // ntar kudu pake id
     Route.get('/detail', async ({ view }) => {
       return view.render('barang/detail')
     })
+
     Route.get('/restok', async ({ view }) => {
       return view.render('barang/restok')
+    })
+
+    // lebih ringkes pake resource
+    Route.resource('models', 'barang/ModelsController')
+    Route.resource('kerusakan', 'barang/KerusakansController')
+
+    Route.get('/bukuRekap', async ({ view }) => {
+      return view.render('barang/bukurekap')
+    })
+
+    Route.get('/listKerusakan', async ({ view }) => {
+      return view.render('barang/list-rusak')
     })
   }).prefix('/barang')
 
   // Rute buat ngatur pegawai
-  Route.group(() => {
-    Route.get('/', async ({ view }) => {
-      return view.render('pegawai/base')
-    })
-    // ntar kudu dikasi id
-    Route.get('/detail', async ({ view }) => {
-      return view.render('pegawai/detail')
-    })
-    Route.get('/baru', async ({ view }) => {
-      return view.render('pegawai/form-pegawai')
-    })
-  }).prefix('/pegawai')
+  // Route.group(() => {
+  //   Route.get('/', async ({ view }) => {
+  //     return view.render('pegawai/base')
+  //   })
+  //   // ntar kudu dikasi id
+  //   Route.get('/detail', async ({ view }) => {
+  //     return view.render('pegawai/detail')
+  //   })
+  //   Route.get('/baru', async ({ view }) => {
+  //     return view.render('pegawai/form-pegawai')
+  //   })
+  // }).prefix('/pegawai')
+
+  Route.resource('/pegawai', 'akun/PegawaisController')
 
 
 
@@ -135,6 +179,36 @@ Route.group(() => {
     Route.get('/2', async ({ view }) => {
       return view.render('test/test2')
     })
+    Route.get('/3', async ({ view }) => {
+      return view.render('test/test3')
+    })
+
+    Route.get('/paginationv1', 'TestsController.paginationv1')
+    Route.get('/paginationv2', 'TestsController.paginationv2')
+    Route.get('/paginationv3', 'TestsController.paginationv3')
+
+    Route.get('/qs', 'TestsController.queryString')
+    
+    Route.get('/data/kerusakan', 'TestsController.dataKerusakan')
+
+    Route.post('/dump', 'TestsController.dump')
+
+    // terpaksa pake GET soalnya CSRF dah nyala
+    Route.get('/hash', 'TestsController.hashArgon')
+
+    Route.get('/alltest', 'TestsController.allTest')
+    Route.get('/paginated', 'TestsController.paginated')
+
+    Route.get('/base64Decode', 'TestsController.base64de')
+    Route.post('/base64Decode', 'TestsController.base64dePOST')
+
+    Route.group(()=>{
+      Route.post('/encrypt', 'TestsController.encrypt')
+      Route.post('/decrypt', 'TestsController.decrypt')
+    }).prefix('/security')
+
+    Route.get('/akunTest', 'akun/PenggunasController.testSeputarAkun')
+
   }).prefix('/test')
 
 }).prefix('/app')

@@ -1,99 +1,54 @@
-global.prepareAsal = function () {
-  return [
-    'Perhiasan yang dijual dibeli dari Toko Mas Leo atau cabang lain dibawah rumpun yang sama.',
-    'Perhiasan yang dijual dibeli dari toko mas lain atau tidak diketahui sumbernya.'
-  ]
-}
-
-global.prepareNota = function () {
-  return [
-    'Perhiasan yang dijual dilengkapi dengan nota bukti pembelian dari Toko Mas Leo atau dari toko emas lainnya.',
-    'Perhiasan yang dijual tidak memiliki identitas apapun.'
-  ]
-}
-
-global.prepareRusak = function () {
-  return [
-    'Perhiasan yang dijual tidak menerima kerusakan dalam bentuk apapun dan dapat langsung dijual kembali setelah dicuci ulang.',
-    'Perhiasan yang dijual mengalami cidera ringan seperti kehilangan batu, penyok, atau patah yang masih dalam jangka wajar dan dapat diperbaiki.',
-    'Perhiasan yang dijual mengalami cidera parah yang tidak dapat diperbaiki, hilang sebagian, hancur atau hilang pasangannya.'
-  ]
-}
-
-let printKameraHTML = function () {
-  return `
-        <div class="space-y-4">
-        <div class="px-2" id="loadingMessage">🎥 Tidak dapat mengakses kamera, pastikan webcam anda menyala dan terhubung dengan baik</div>
-        <canvas id="canvas" class="w-full" hidden></canvas>
-            <div class="flex justify-center">
-                <select class="select select-bordered w-full max-w-xs" id="sumberVideo">
-                </select>
-            </div>
-        </div>
-    `
-}
-
-// bikin domnya dulu, trus di willLoad, load pake promise biar nongol loading
-// kerusakan yang bakal di load cuma yang bentuk barangnya sama ama yang dipilih, jdi kalo reset tipe barng, bakal RESET kerusakan
-let printKerusakanHTML = function () {
-
-  // ntar kerusakan datanya ngambil dari server, panggil pake ajax ma tunggu pake promise
-  const rusakHTML = `
-          <div class="w-full px-6 space-y-6 flex flex-col text-left">
-
-              <div class="form-control">
-                  <label for="swal-rusak">Kerusakan</label>
-                  <select id="swal-rusak" class="select select-bordered w-full max-w-md swal">
-                  <option disabled="" selected="">Pilih kerusakan</option> 
-                  <option value="hilangmata">Hilang batu</option> 
-                  <option value="putus">Putus</option> 
-                  <option value="penyok">Penyok</option>
-                  </select>
-              </div>
-
-              <div class="form-control">
-                <label for="swal-tingkatrusak">
-                  <span class="">Tingkat Kerusakan</span>
-                </label>
-                <input type="text" id="swal-tingkatrusak" name="swal-tingkatrusak" class="input input-bordered"
-                  readonly placeholder="Silahkan pilih kerusakan terlebih dahulu"/>
-              </div>
-
-              <div class="form-control">
-                <label for="swal-ongkosrusak">
-                  <span class="">Ongkos per Kerusakan</span>
-                </label>
-                <input type="text" id="swal-ongkosrusak" name="swal-ongkosrusak" class="input input-bordered"
-                  readonly placeholder="Silahkan pilih kerusakan terlebih dahulu"/>
-              </div>
-
-              <div class="flex pt-4 justify-center" x-data="{ counter: 1 }">
-                  <div class="bg-base-300 rounded-box px-4 flex">
-                  <button class="btn btn-ghost text-error" @click="(counter-1 < $refs.angka.min)? $refs.angka.min : counter--">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
-                      </svg>
-                  </button>
-                  <input type="number" id="swal-banyakrusak" class="input input-ghost rounded-none text-2xl text-center w-16 focus:ring-0" x-model="counter" x-ref="angka" readonly min="1" max="99" value="1">
-                  <button class="btn btn-ghost text-success" @click="(counter+1 > $refs.angka.max)? $refs.angka.min : counter++">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                      </svg>
-                  </button>
-                  </div>
-              </div>
-              
-          </div>
-      `
-  return rusakHTML
-}
-
 // let Instascan = require('instascan');
 
 import jsQR from "jsqr"
 import Swal from "sweetalert2"
 
 $(function () {
+  //============================================ VARIABEL SUPER ====================================================
+  let TOTALRUSAK = 0
+  let TOTALPOTONGAN = 0
+  let MODEPEMBELIAN = 0 // 0 normal, 1 QR
+
+
+  // =========================================== Khusus Prepare ===================================================
+  $('form#formPrepare').on('submit', function (e) {
+    if($(this).prop('action') === window.location.href){
+      e.preventDefault()
+
+      if(document.querySelector('input[name=prepareAsal]:checked').value == 1 || document.querySelector('input[name=prepareNota]:checked').value == 1 || document.querySelector('input[name=prepareRusak]:checked').value == 2){
+        // ntar ganti routingnya biar lebih propper
+        $(this).prop('action', '/app/pembelian/transaksi')
+      }else{
+        // ntar ganti routingnya biar lebih propper
+        $(this).prop('action', '/app/pembelian/transaksiumum')
+      }
+  
+      $(this).trigger('submit')
+    }
+  });
+
+  //============================================= mulai method =====================================================
+  let refreshMode = function(){
+    let nodeNormal = document.getElementsByClassName('khusus-normal')
+    let nodeQR = document.getElementsByClassName('khusus-qr')
+
+    if(MODEPEMBELIAN == 1){
+      nodeNormal.forEach(nodeElement => {
+        nodeElement.classList.add('hidden')
+        nodeElement.disabled = true
+      });
+    } else{
+      nodeQR.forEach(nodeElement => {
+        nodeElement.classList.add('hidden')
+        nodeElement.disabled = true
+      });
+    }
+    // mode normal
+  }
+
+  refreshMode()
+
+
   // code here
   $('button#bukaScanner').on('click', function () {
     bukaScanner()
@@ -161,13 +116,13 @@ $(function () {
             }
           };
           return navigator.mediaDevices.getUserMedia(constraints).
-            then(gotStream).catch(handleError);
+          then(gotStream).catch(handleError);
         }
 
         function gotStream(stream) {
           window.stream = stream; // make stream available to console
           videoSelect.selectedIndex = [...videoSelect.options].
-            findIndex(option => option.text === stream.getVideoTracks()[0].label);
+          findIndex(option => option.text === stream.getVideoTracks()[0].label);
           video.srcObject = stream;
           video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
           video.play();
@@ -221,7 +176,7 @@ $(function () {
         });
       }
       if (capture.isConfirmed) {
-        alert('ewe')
+        alert('bisa nih capture')
         // if (capture.value) {
         //   // hasilKamera(capture.value)
         // }
@@ -250,12 +205,22 @@ $(function () {
   }
 
   $('button#tambah-kerusakan').on('click', function () {
-    // bikin domnya dulu, trus di willLoad, load pake promise biar nongol loading
-    // kerusakan yang bakal di load cuma yang bentuk barangnya sama ama yang dipilih, jdi kalo reset tipe barng, bakal RESET kerusakan
-    if($('select#beli-bentuk').val() && $('select#beli-bentuk').val() != 'kosong'){
+    if ($('select#beli-bentuk :selected').val() && $('select#beli-bentuk :selected').val() != 'kosong') {
       tambahKerusakan()
+    } else {
+      var scrollKe = document.getElementById("beli-bentuk");
+      scrollKe.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "nearest"
+      });
+      $('select#beli-bentuk').addClass('ring ring-error').on('change', function () {
+        if ($('select#beli-bentuk :selected').val() && $('select#beli-bentuk :selected').val() != 'kosong') {
+          $('select#beli-bentuk').removeClass('ring ring-error')
+        }
+      })
     }
-    
+
   });
 
   let tambahKerusakan = function () {
@@ -271,12 +236,68 @@ $(function () {
         // inget loh ya, select kerusakan itu aslinya kosong! baru keisi pas kita buka swal
         // dan pas manggil ke server, kasi parameter bentuk perhiasan ngambil dari form sebelomnya
 
+        let selectKerusakan = document.querySelector('select#swal-rusak')
+        let inputTingkatRusak = document.getElementById('swal-tingkatrusak')
+        let inputOngkosRusak = document.getElementById('swal-ongkosrusak')
+        let wadahKerusakan = []
+
+        getData().then(tataData).catch(handleError)
+
+        function getData() {
+          Swal.showLoading(Swal.getConfirmButton())
+          return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+              reject('waktu abis')
+            }, 3000)
+
+            // ntar dikasi input nyesuaiin sama pilhan bentuk
+            $.get("/app/test/data/kerusakan", {
+                level: 0,
+                bentuk: 'semua'
+              },
+              function (data, textStatus, jqXHR) {
+                resolve(data)
+              },
+              "JSON"
+            ).fail(function (xhr) {
+              if (xhr.status === 404) {
+                console.log('data ngga ketemu')
+              }
+              // console.log(xhr.responseJSON)
+              reject(xhr.responseJSON.error)
+            });
+          })
+        }
+
+        function tataData(data) {
+          wadahKerusakan = data
+          data.forEach(element => {
+            const option = document.createElement('option')
+            option.value = element.id
+            option.text = element.nama
+            selectKerusakan.appendChild(option)
+          });
+          inputTingkatRusak.value = data[0].level
+          inputOngkosRusak.value = data[0].ongkos
+          Swal.hideLoading()
+        }
+
+        function handleError(error) {
+          console.error('Error: ', error);
+          Swal.close()
+        }
+
         $('select#swal-rusak').on('change', function () {
           Swal.resetValidationMessage()
 
-          // disini harusnya minta data object yang diambil dari server pas load pertama, ini misal doang
-          document.getElementById('swal-tingkatrusak').value = 'Ringan'
-          document.getElementById('swal-ongkosrusak').value = 'Rp. 10.000'
+          let terpilih = wadahKerusakan.find(o => o.id == $(this).val());
+          if (!terpilih) {
+            console.error('ada error pas ngambil data')
+            Swal.close()
+          }
+
+          document.getElementById('swal-tingkatrusak').value = terpilih.level
+          document.getElementById('swal-ongkosrusak').value = terpilih.ongkos
 
         });
       },
@@ -324,6 +345,7 @@ $(function () {
         adaDuplikat = true
         let jumlahBaru = numberOnlyParser(document.getElementsByName('jumlahKerusakan[]')[index].value) + numberOnlyParser(rusakBaru.banyakrusak)
         document.getElementsByClassName('teksJumlahKerusakan')[index].innerHTML = jumlahBaru
+        document.getElementsByName('jumlahKerusakan[]')[index].value = jumlahBaru
         break;
       }
     }
@@ -332,17 +354,16 @@ $(function () {
       return
     }
 
-
     const htmlAppend = `
           <tr>
               <td>
-                ` + rusakBaru.teksKerusakan + ` (<span class="teksJumlahKerusakan">` + rusakBaru.banyakrusak + `</span>)
+                <span class="teksKerusakan">` + rusakBaru.teksKerusakan + ` (<span class="teksJumlahKerusakan">` + rusakBaru.banyakrusak + `</span>)</span>
                 <input type="hidden" name="idKerusakan[]" value="` + rusakBaru.idKerusakan + `">
                 <input type="hidden" name="ongkosKerusakan[]" value="` + numberOnlyParser(rusakBaru.teksOngkos) + `">
                 <input type="hidden" name="jumlahKerusakan[]" value="` + rusakBaru.banyakrusak + `">
               </td>
               <td>` + rusakBaru.tingkat + `</td>
-              <td>` + rusakBaru.teksOngkos + `</td>
+              <td>` + rupiahParser(numberOnlyParser(rusakBaru.teksOngkos)) + `</td>
               <td class="w-16">
                 <button class="btn text-error btn-square btn-ghost btn-delete">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -362,6 +383,75 @@ $(function () {
     });
   }
 
+  let tataMenuRusak = function () {
+    TOTALRUSAK = 0
+    let menuRusak = document.getElementById('sidemenu-kerusakan')
+    while (menuRusak.firstChild) {
+      menuRusak.removeChild(menuRusak.firstChild);
+    }
+
+    const listRusak = document.getElementsByName('idKerusakan[]')
+    for (let [index] of listRusak.entries()) {
+      let li = document.createElement('li')
+      li.classList.add('flex')
+      li.classList.add('text-error')
+
+      let span = document.createElement('span')
+      span.classList.add('flex-1')
+      span.innerHTML = document.getElementsByClassName('teksKerusakan')[index].innerText
+      li.appendChild(span)
+
+      let spanValue = document.createElement('span')
+      spanValue.classList.add('flex-none')
+      let hitung = numberOnlyParser(document.getElementsByName('jumlahKerusakan[]')[index].value) * numberOnlyParser(document.getElementsByName('ongkosKerusakan[]')[index].value) * -1
+      spanValue.innerHTML = rupiahParser(hitung)
+      li.appendChild(spanValue)
+
+      menuRusak.appendChild(li)
+      TOTALRUSAK += hitung
+    }
+
+    // ntar ganti ngambil dari input. yang inputnya auto generated dari harga nota dbagi berat
+    let hargaPerGram = 500000
+    // ada toleransi ignore susut kalo kurang dari 200 mili / 0.2 gram
+    let selisih = document.getElementById('beli-beratnota').value - document.getElementById('beli-beratsebenarnya').value
+    if(selisih >= 0.2){
+      let li = document.createElement('li')
+      li.classList.add('flex')
+      li.classList.add('text-error')
+
+      let span = document.createElement('span')
+      span.classList.add('flex-1')
+      span.innerHTML = 'Susut berat (' + selisih +'g):'
+      li.appendChild(span)
+
+      let spanValue = document.createElement('span')
+      spanValue.classList.add('flex-none')
+      let hitung = selisih * hargaPerGram * -1
+      spanValue.innerHTML = rupiahParser(hitung)
+      li.appendChild(spanValue)
+
+      menuRusak.appendChild(li)
+      TOTALRUSAK += hitung
+    }
+
+    // buat itungan, mending disimpen ke variabel ato buat input disabled biar gampang manggilnya?
+    // kalo ke variabel bisa make array, ato malah dijumlahin langsung
+    document.getElementById('sidemenu-totalkerusakan').innerHTML = rupiahParser(TOTALRUSAK)
+  }
+
+  let tataMenuPotongan = function(){
+
+    // ntar ganti jadi ngambil dari input
+    let potonganperg = 10000
+    // ini juga ganti
+    let kadar = 'muda'
+
+    if(kadar === 'tua'){
+      // ganti mode itungan persen * harga nota
+      // ASLINYA UDAH DIITUNG kalo make qr
+    }
+  }
 
   // dibawah ini observer =========================================================================================
   if ($('.base-page').data('pagename') == "pembelian-umum") {
@@ -387,6 +477,7 @@ $(function () {
           } else {
             targetChange.removeClass('block').addClass('hidden')
           }
+          tataMenuRusak()
         }
       }
     };
@@ -399,3 +490,92 @@ $(function () {
   }
 
 })
+
+
+
+global.prepareAsal = function () {
+  return [
+    'Perhiasan yang dijual dibeli dari Toko Mas Leo atau cabang lain dibawah rumpun yang sama.',
+    'Perhiasan yang dijual dibeli dari toko mas lain atau tidak diketahui sumbernya.'
+  ]
+}
+
+global.prepareNota = function () {
+  return [
+    'Perhiasan yang dijual dilengkapi dengan nota bukti pembelian dari Toko Mas Leo atau dari toko emas lainnya.',
+    'Perhiasan yang dijual tidak memiliki identitas apapun.'
+  ]
+}
+
+global.prepareRusak = function () {
+  return [
+    'Perhiasan yang dijual tidak menerima kerusakan dalam bentuk apapun dan dapat langsung dijual kembali setelah dicuci ulang.',
+    'Perhiasan yang dijual mengalami cidera ringan seperti kehilangan batu, penyok, atau patah yang masih dalam jangka wajar dan dapat diperbaiki.',
+    'Perhiasan yang dijual mengalami cidera parah yang tidak dapat diperbaiki, hilang sebagian, hancur atau hilang pasangannya.'
+  ]
+}
+
+let printKameraHTML = function () {
+  return `
+        <div class="space-y-4">
+        <div class="px-2" id="loadingMessage">🎥 Tidak dapat mengakses kamera, pastikan webcam anda menyala dan terhubung dengan baik</div>
+        <canvas id="canvas" class="w-full" hidden></canvas>
+            <div class="flex justify-center">
+                <select class="select select-bordered w-full max-w-xs" id="sumberVideo">
+                </select>
+            </div>
+        </div>
+    `
+}
+
+// bikin domnya dulu, trus di willLoad, load pake promise biar nongol loading
+// kerusakan yang bakal di load cuma yang bentuk barangnya sama ama yang dipilih, jdi kalo reset tipe barng, bakal RESET kerusakan
+let printKerusakanHTML = function () {
+
+  // ntar kerusakan datanya ngambil dari server, panggil pake ajax ma tunggu pake promise
+  const rusakHTML = `
+          <div class="w-full px-6 space-y-6 flex flex-col text-left">
+
+              <div class="form-control">
+                  <label for="swal-rusak">Kerusakan</label>
+                  <select id="swal-rusak" class="select select-bordered w-full max-w-md swal">
+ 
+                  </select>
+              </div>
+
+              <div class="form-control">
+                <label for="swal-tingkatrusak">
+                  <span class="">Tingkat Kerusakan</span>
+                </label>
+                <input type="text" id="swal-tingkatrusak" name="swal-tingkatrusak" class="input input-bordered"
+                  readonly placeholder="Silahkan pilih kerusakan terlebih dahulu"/>
+              </div>
+
+              <div class="form-control">
+                <label for="swal-ongkosrusak">
+                  <span class="">Ongkos per Kerusakan</span>
+                </label>
+                <input type="text" id="swal-ongkosrusak" name="swal-ongkosrusak" class="input input-bordered"
+                  readonly placeholder="Silahkan pilih kerusakan terlebih dahulu"/>
+              </div>
+
+              <div class="flex pt-4 justify-center" x-data="{ counter: 1 }">
+                  <div class="bg-base-300 rounded-box px-4 flex">
+                  <button class="btn btn-ghost text-error" @click="(counter-1 < $refs.angka.min)? $refs.angka.min : counter--">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                      </svg>
+                  </button>
+                  <input type="number" id="swal-banyakrusak" class="input input-ghost rounded-none text-2xl text-center w-16 focus:ring-0" x-model="counter" x-ref="angka" readonly min="1" max="99" value="1">
+                  <button class="btn btn-ghost text-success" @click="(counter+1 > $refs.angka.max)? $refs.angka.min : counter++">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                      </svg>
+                  </button>
+                  </div>
+              </div>
+              
+          </div>
+      `
+  return rusakHTML
+}

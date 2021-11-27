@@ -18,18 +18,13 @@ $(function () {
     const htmlAppend = `
           <tr>
               <td>
-              <div class="flex items-center space-x-3">
-                  <div>
-                  <div class="font-semibold">
-                  ` + stokBaru.perhiasan + `
-                  </div>
-                  <div class="text-sm opacity-50">
-                      #kodemungkin
-                  </div>
-                  <input type="hidden" name="perhiasanStok[]" value="` + stokBaru.perhiasan + `">
-                  </div>
-              </div>
-
+              <div class="font-semibold">
+                ` + stokBaru.perhiasan + `
+                </div>
+                <div class="text-sm opacity-50">
+                    #kodemungkin
+                 </div>
+                <input type="hidden" name="perhiasanStok[]" value="` + stokBaru.perhiasan + `"> 
               </td>
               <td>` + stokBaru.stokAsli + ` buah
               <input type="hidden" name="awalStok[]" value="` + stokBaru.stokAsli + `">
@@ -41,7 +36,7 @@ $(function () {
               <input type="hidden" name="awalStok[]" value="` + stokBaru.asal + `">
               </td>
               <td class="w-16">
-              <button tabindex="0" class="m-1 btn btn-ghost text-error btn-delete">
+              <button tabindex="0" class="btn btn-ghost text-error btn-delete">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
@@ -106,6 +101,7 @@ $(function () {
   });
 
   if ($('.base-page').data('pagename') == "restok") {
+    // ================================================= ini observer ============================================
     // Select the node that will be observed for mutations
     const targetNode = document.getElementById('wadah-data');
     const targetChange = $('#teks-tabel-kosong');
@@ -153,18 +149,18 @@ $(function () {
                 <div class="form-control" x-data="{ radio: 1 }">
                     <label for="">Asal Perhiasan</label>
                     <div class="flex space-x-4 mt-2">
-                    <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                        :class="(radio == 1)? 'bg-white border-primary': 'bg-white border-secondary'">
+                    <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                        :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
                         <input type="radio" x-ref="kulakan" name="swal-asal" checked="checked" class="radio radio-primary hidden"
                         value="cucian" @click="radio = 1">
-                        <span class="label-text font-medium text-base"
+                        <span class="label-text text-base"
                         :class="(radio == 1)? 'text-primary': 'text-secondary'">Cucian</span>
                     </label>
-                    <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                        :class="(radio == 2)? 'bg-white border-primary': 'bg-white border-secondary'">
+                    <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                        :class="(radio == 2)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
                         <input type="radio" x-ref="cucian" name="swal-asal" class="radio radio-primary hidden" value="kulakan"
                         @click="radio = 2">
-                        <span class="label-text font-medium text-base"
+                        <span class="label-text text-base"
                         :class="(radio == 2)? 'text-primary': 'text-secondary'">Kulakan</span>
                     </label>
                     </div>

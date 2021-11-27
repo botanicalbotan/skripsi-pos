@@ -70,11 +70,10 @@
     {{--  copas mulai dari sini  --}}
     <div class="space-y-4 w-2/3" x-data="{checked: false}">
       <h1 class=" text-2xl font-semibold">Collapse Form</h1>
-      <div class="collapse w-full  collapse-arrow"
-      :class="(checked)? '':'border-b-2 border-neutral'">
+      <div class="collapse w-full  collapse-arrow" :class="(checked)? '':'border-b-2 border-neutral'">
         <input type="checkbox" @change="($el.checked)? checked=true: checked=false; console.log(checked)">
         <div class="collapse-title text-2xl font-semibold true-bg-base-100"
-        :class="(checked)? 'border-b-2 border-neutral mb-6': ''">
+          :class="(checked)? 'border-b-2 border-neutral mb-6': ''">
           Kepemilikan
         </div>
         <div class="collapse-content true-bg-base-100">
@@ -126,11 +125,107 @@
     <div class="divider opacity-20"></div>
     {{--  sampe sini  --}}
 
-    
+    {{--  copas mulai dari sini  --}}
+    <div class="space-y-4">
+      <h1 class="text-2xl font-semibold">Ngelempar URL yang ada query nya</h1>
+      <div class=" max-w-md">
+        <form action="/app/test/qs">
+          <div class="space-y-4">
+            <div class="form-control">
+              <label for="nama">
+                <span class="">Nama Pembeli</span>
+              </label>
+              <input type="text" id="nama" name="nama" class="input input-secondary" placeholder="Contoh: Bambang"
+                value="Bambang">
+            </div>
+            <div class="form-control">
+              <label for="alamat">
+                <span class="">Alamat</span>
+              </label>
+              <input type="text" id="alamat" name="alamat" class="input input-secondary" placeholder="Contoh: Solo"
+                value="Solo">
+            </div>
+
+            <div>
+              <p class="mb-2 mt-8">Ni tombol bakal ada query panjang aneh dari form, trus kita coba baca datanya</p>
+              <button type="submit" class="btn">Test Query String</button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+    <div class="divider opacity-20"></div>
+    {{--  sampe sini  --}}
+
+
+    {{--  copas mulai dari sini  --}}
+    <div class="space-y-4" x-data="{ min:0, max:100 }">
+      <h1 class="text-2xl font-semibold">Decode gambar dari base64</h1>
+      <div class=" max-w-sm">
+        <p class="mb-2">datanya udah ada, ini cuma nyoba decode bawaan adonis</p>
+        <form action="/app/test/base64Decode" method="POST">
+          {{ csrfField() }}
+          <textarea name="input" class="textarea textarea-bordered w-full h-48 overflow-y-auto"></textarea>
+          
+          @if(flashMessages.has('errors.input'))
+            <p class="text-error"> {{ flashMessages.get('errors.input') }} </p>
+          @elseif(flashMessages.has('unnaturalErrMsg')) 
+            <p class="text-error"> {{ flashMessages.get('unnaturalErrMsg') }} </p>
+          @endif
+
+          @if(flashMessages.has('successMsg'))
+            <p class="text-success"> {{ flashMessages.get('successMsg') }} </p>
+          @endif
+
+          <button type="submit" class="btn mt-6">Simpan Ke File</button>
+        </form>
+      </div>
+    </div>
+    <div class="divider opacity-20"></div>
+    {{--  sampe sini  --}}
+
+    {{--  copas mulai dari sini  --}}
+    <div class="space-y-4">
+      <h1 class="text-2xl font-semibold">Enkripsi</h1>
+      <div class=" max-w-sm">
+        <p class="mb-2">Coba masukin data, trus ntar ke Enkripsi</p>
+        <form action="/app/test/security/encrypt" method="POST">
+          {{ csrfField() }}
+          <textarea name="input" class="textarea textarea-bordered w-full h-48 overflow-y-auto"></textarea>
+
+          <button type="submit" class="btn mt-6">Enkripsi</button>
+        </form>
+      </div>
+    </div>
+    <div class="divider opacity-20"></div>
+    {{--  sampe sini  --}}
+
+    {{--  copas mulai dari sini  --}}
+    <div class="space-y-4">
+      <h1 class="text-2xl font-semibold">Deskripsi</h1>
+      <div class=" max-w-sm">
+        <p class="mb-2">Coba masukin data enskripsi, ntar ke decrypt</p>
+        <form action="/app/test/security/decrypt" method="POST">
+          {{ csrfField() }}
+          <textarea name="input" class="textarea textarea-bordered w-full h-48 overflow-y-auto"></textarea>
+
+          <button type="submit" class="btn mt-6">Dekripsi</button>
+        </form>
+      </div>
+    </div>
+    <div class="divider opacity-20"></div>
+    {{--  sampe sini  --}}
   </div>
 </div>
 @endsection
 
 @section('script')
 <script src="{{asset('assets/app.js')}}"></script>
+<script>
+  $(function () {
+
+
+  })
+</script>
 @endsection

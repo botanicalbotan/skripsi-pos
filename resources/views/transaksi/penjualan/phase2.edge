@@ -32,14 +32,14 @@
             <label for="jual-bentuk">
               <span class="">Bentuk</span>
             </label>
-            <input type="text" id="jual-bentuk" name="jual-bentuk" class="input input-secondary"
+            <input type="text" id="jual-bentuk" name="jual-bentuk" class="input input-bordered"
               placeholder="Contoh: Cincin" value="auto generated">
           </div>
           <div class="form-control">
             <label for="jual-kadar">
               <span class="">Kadar</span>
             </label>
-            <input type="text" id="jual-kadar" name="jual-kadar" class="input input-secondary"
+            <input type="text" id="jual-kadar" name="jual-kadar" class="input input-bordered"
               placeholder="Contoh: Muda" value="auto generated">
           </div>
 
@@ -47,7 +47,7 @@
             <label for="jual-kode">
               <span class="">Kode Produksi</span>
             </label>
-            <input type="text" id="jual-kode" name="jual-kode" class="input input-secondary"
+            <input type="text" id="jual-kode" name="jual-kode" class="input input-bordered"
               placeholder="Contoh: 375, D40">
           </div>
           <div class="form-control">
@@ -65,26 +65,27 @@
           <div class="form-control" x-data="{ radio: 1 }">
             <label for="">Status Perhiasan</label>
             <div class="flex space-x-4 mt-1 w-full sm:w-96">
-              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                :class="(radio == 1)? 'bg-white border-primary': 'bg-white border-secondary'">
+              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
                 <input type="radio" name="jual-statusperhiasan" checked="checked" class="radio radio-primary hidden"
-                  value="lakilaki" @click="radio = 1">
-                <span class="label-text font-medium text-base" :class="(radio == 1)? 'text-primary': 'text-secondary'">Normal</span>
+                  value="normal" @click="radio = 1">
+                <span class="label-text text-base" :class="(radio == 1)? 'text-primary': 'text-secondary'">Normal</span>
               </label>
-              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                :class="(radio == 2)? 'bg-white border-primary': 'bg-white border-secondary'">
-                <input type="radio" name="jual-statusperhiasan" class="radio radio-primary hidden" value="perempuan"
+              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                :class="(radio == 2)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                <input type="radio" name="jual-statusperhiasan" class="radio radio-primary hidden" value="baru"
                   @click="radio = 2">
-                <span class="label-text font-medium text-base" :class="(radio == 2)? 'text-primary': 'text-secondary'">Baru
+                <span class="label-text text-base" :class="(radio == 2)? 'text-primary': 'text-secondary'">Baru
                   (N)</span>
               </label>
             </div>
           </div>
+
           <div class="form-control">
             <label for="jual-keterangan">
               <span class="">Keterangan (contoh: banyak batu, panjang, dll)</span>
             </label>
-            <textarea type="text" id="jual-keterangan" name="jual-keterangan" class="textarea textarea-secondary h-24"
+            <textarea id="jual-keterangan" name="jual-keterangan" class="textarea textarea-bordered h-24"
               placeholder="Contoh: Batu putih 3, batu hitam 1"></textarea>
           </div>
 
@@ -105,7 +106,7 @@
                 <div class="relative flex w-full flex-wrap items-stretch">
                   {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
                   <input type="number" placeholder="0" id="jual-beratkelompok" min="0" name="jual-beratkelompok"
-                    class="uang px-3 py-3 relative input input-secondary w-full" value="14" />
+                    class="uang px-3 py-3 relative input input-bordered w-full" value="14" />
                   <span
                     class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
                     gram
@@ -125,7 +126,7 @@
                   </span>
                   {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
                   <input type="number" placeholder="0" id="jual-beratsebenarnya" min="0" name="jual-beratsebenarnya"
-                    class="uang px-3 py-3 relative input input-secondary w-full pl-10" />
+                    class="uang px-3 py-3 relative input input-bordered w-full pl-10" />
                   <span
                     class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
                     gram
@@ -138,29 +139,29 @@
             <label for="jual-hargaemas">
               <span class="">Harga Per Gram Emas <span class="text-primary">Tanggung Baru</span></span>
             </label>
-            <input type="text" id="jual-hargaemas" name="jual-hargaemas" class="input input-secondary"
+            <input type="text" id="jual-hargaemas" name="jual-hargaemas" class="input input-bordered"
               placeholder="Contoh: 300.000" value="auto generated">
           </div>
           <div class="form-control">
             <label for="jual-potongan">
               <span class="">Potongan Per Gram Emas <span class="text-primary">Tanggung Baru</span></span>
             </label>
-            <input type="text" id="jual-potongan" name="jual-potongan" class="input input-secondary"
+            <input type="text" id="jual-potongan" name="jual-potongan" class="input input-bordered"
               placeholder="Contoh: 12.000" value="auto generated">
           </div>
         </div>
 
-        {{--  Kelompok kerusakan awal  --}}
+        {{--  Kelompok kondisi  --}}
         <div class="space-y-4">
           <div class="mb-4">
-            <h1 class="text-2xl font-semibold">Kerusakan Awal</h1>
+            <h1 class="text-2xl font-semibold">Kondisi</h1>
           </div>
           <div class="form-control">
-            <label for="jual-kerusakanawal">
-              <span class="">Kerusakan Sebelum Dijual (jika ada)</span>
+            <label for="jual-kondisi">
+              <span class="">Kondisi perhiasan sebelum dijual (jika ada)</span>
             </label>
-            <textarea type="text" id="jual-kerusakanawal" name="jual-kerusakanawal" class="textarea textarea-secondary h-24"
-              placeholder="Contoh: Lecet 3 tempat"></textarea>
+            <textarea type="text" id="jual-kondisi" name="jual-kondisi" class="textarea textarea-bordered h-24"
+              placeholder="Contoh: Lecet 3 tempat, hilang 1 permata"></textarea>
           </div>
         </div>
 
@@ -207,7 +208,7 @@
             <label for="jual-namapembeli">
               <span class="">Nama Pembeli</span>
             </label>
-            <input type="text" id="jual-namapembeli" name="jual-namapembeli" class="input input-secondary"
+            <input type="text" id="jual-namapembeli" name="jual-namapembeli" class="input input-bordered"
               placeholder="Contoh: Muhammad Arif Fadhilah" value="Muhammad Arif Fadhilah">
           </div>
 

@@ -31,22 +31,43 @@
             <div class="form-control" x-data="{ radio: 1 }">
               <label for="">Gender</label>
               <div class="flex space-x-4 mt-1 w-full md:w-96">
-                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                  :class="(radio == 1)? 'bg-white border-primary': 'bg-white border-secondary'">
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
                   <input type="radio" name="pegawai-gender" checked="checked" class="radio radio-primary hidden"
                     value="lakilaki" @click="radio = 1">
-                  <span class="label-text font-medium text-base"
+                  <span class="label-text text-base"
                     :class="(radio == 1)? 'text-primary': 'text-secondary'">Laki-laki</span>
                 </label>
-                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                  :class="(radio == 2)? 'bg-white border-primary': 'bg-white border-secondary'">
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radio == 2)? ' bg-pink-500 bg-opacity-10 border-pink-500': 'bg-white border-secondary'">
                   <input type="radio" name="pegawai-gender" class="radio radio-primary hidden" value="perempuan"
                     @click="radio = 2">
-                  <span class="label-text font-medium text-base"
-                    :class="(radio == 2)? 'text-primary': 'text-secondary'">Perempuan</span>
+                  <span class="label-text text-base"
+                    :class="(radio == 2)? 'text-pink-500': 'text-secondary'">Perempuan</span>
                 </label>
               </div>
             </div>
+
+            <div class="form-control" x-data="{ radio: 0 }">
+              <label for="">Test bisa ga dipilih</label>
+              <div class="flex space-x-4 mt-1 w-full md:w-96">
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                  <input type="radio" name="test-radio" class="radio radio-primary hidden"
+                    value="lakilaki" @click="if(radio==1){ radio = 0; $el.checked = false } else{ radio = 1 }">
+                  <span class="label-text text-base"
+                    :class="(radio == 1)? 'text-primary': 'text-secondary'">Laki-laki</span>
+                </label>
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radio == 2)? ' bg-pink-500 bg-opacity-10 border-pink-500': 'bg-white border-secondary'">
+                  <input type="radio" name="test-radio" class="radio radio-primary hidden" value="perempuan"
+                    @click="if(radio==2){ radio = 0; $el.checked = false } else{ radio = 2 }">
+                  <span class="label-text text-base"
+                    :class="(radio == 2)? 'text-pink-500': 'text-secondary'">Perempuan</span>
+                </label>
+              </div>
+            </div>
+
 
             <div class="space-y-4 md:flex md:space-x-4 md:space-y-0">
               <div class="flex-1">
@@ -82,13 +103,7 @@
               <input type="text" id="pegawai-nohp" name="pegawai-nohp" class="input input-bordered"
                 placeholder="Contoh: 081123456789">
             </div>
-            <div class="form-control">
-              <label for="pegawai-email">
-                <span class="">Email</span>
-              </label>
-              <input type="email" id="pegawai-email" name="pegawai-email" class="input input-bordered"
-                placeholder="Contoh: Budi Balado">
-            </div>
+            
           </div>
 
           {{--  Kelompok data teknis  --}}
@@ -96,6 +111,7 @@
             <div class="mb-4">
               <h1 class="text-2xl font-semibold">Data Akun</h1>
             </div>
+
             <div class="form-control">
               <div class="flex items-center">
                 <label for="pegawai-username" class="flex-1">Username</label>
@@ -111,14 +127,16 @@
                 </div>
               </div>
               <input type="text" id="pegawai-username" name="pegawai-username" class="input input-bordered"
-                placeholder="Contoh: Budi Balado" autocomplete="username">
+                placeholder="Contoh: budibalado" autocomplete="username">
             </div>
+
             <div class="form-control">
               <label for="pegawai-password">
                 <span class="">Password</span>
               </label>
               <input type="password" x-model="pass" id="pegawai-password" name="pegawai-password"
-                class="input input-bordered" placeholder="Contoh: Budi Balado" autocomplete="new-password">
+                x-on:focusout="repassclass= (pass == '' || repass == '')? '': (pass!=repass)? 'input-error': ''"
+                class="input input-bordered" autocomplete="new-password">
             </div>
             <div class="form-control">
               <div class="flex items-center">
@@ -136,8 +154,16 @@
               </div>
               <input type="password" x-model="repass" x-on:focusout="repassclass= (pass!=repass)? 'input-error': ''"
                 :class="repassclass" id="pegawai-repassword" class="input input-bordered"
-                placeholder="Contoh: Budi Balado" autocomplete="new-password">
+                autocomplete="new-password">
               <p x-cloak class="text-error" :class="(repassclass != '')? 'flex':'hidden'">Kedua password tidak sama!</p>
+            </div>
+
+            <div class="form-control">
+              <label for="pegawai-email">
+                <span class="">Email</span>
+              </label>
+              <input type="email" id="pegawai-email" name="pegawai-email" class="input input-bordered"
+                placeholder="Contoh: budi@gmail.com">
             </div>
           </div>
 
@@ -145,6 +171,25 @@
           <div class="space-y-4">
             <div class="mb-4">
               <h1 class="text-2xl font-semibold">Status Pekerjaan</h1>
+            </div>
+
+            <div class="form-control" x-data="{ radio: 1 }">
+              <label for="">Status Pegawai</label>
+              <div class="flex space-x-4 mt-1 w-full md:w-96">
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radio == 1)? 'bg-success bg-opacity-10 border-success': 'bg-white border-secondary'">
+                  <input type="radio" name="pegawai-status" checked="checked" class="radio radio-primary hidden"
+                    value="aktif" @click="radio = 1">
+                  <span class="label-text text-base"
+                    :class="(radio == 1)? 'text-success': 'text-secondary'">Aktif</span>
+                </label>
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radio == 2)? 'bg-error bg-opacity-10 border-error': 'bg-white border-secondary'">
+                  <input type="radio" name="pegawai-status" class="radio radio-primary hidden" value="keluar"
+                    @click="radio = 2">
+                  <span class="label-text text-base" :class="(radio == 2)? 'text-error': 'text-secondary'">Keluar</span>
+                </label>
+              </div>
             </div>
 
             <div x-data="{data: banding(moment())}" class="form-control">
@@ -158,14 +203,14 @@
 
             <div class="form-control">
               <label for="pegawai-lamakerja">
-                <span class="">Lama Bekerja di Toko Leo (bulan)</span>
+                <span class="">Lama Bekerja di Toko Leo (tahun)</span>
               </label>
               <div class="relative flex w-full flex-wrap items-stretch">
                 <input type="number" value="1" min="1" id="pegawai-lamakerja" name="pegawai-lamakerja"
                   class="px-3 py-3 relative input input-bordered w-full pr-16" />
                 <span
                   class="z-10 h-full leading-snug absolute text-center text-secondary right-0 items-center justify-center w-auto pr-4 py-3">
-                  bulan
+                  tahun
                 </span>
               </div>
             </div>
@@ -195,24 +240,6 @@
               </div>
             </div>
 
-            <div class="form-control" x-data="{ radio: 1 }">
-              <label for="">Status Pegawai</label>
-              <div class="flex space-x-4 mt-1 w-full md:w-96">
-                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                  :class="(radio == 1)? 'bg-white border-success': 'bg-white border-secondary'">
-                  <input type="radio" name="pegawai-status" checked="checked" class="radio radio-primary hidden"
-                    value="aktif" @click="radio = 1">
-                  <span class="label-text font-medium text-base"
-                    :class="(radio == 1)? 'text-success': 'text-secondary'">Aktif</span>
-                </label>
-                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                  :class="(radio == 2)? 'bg-white border-error': 'bg-white border-secondary'">
-                  <input type="radio" name="pegawai-status" class="radio radio-primary hidden" value="keluar"
-                    @click="radio = 2">
-                  <span class="label-text font-medium text-base" :class="(radio == 2)? 'text-error': 'text-secondary'">Keluar</span>
-                </label>
-              </div>
-            </div>
           </div>
 
         </div>
@@ -249,13 +276,13 @@
         </div>
       </div>
 
-      Ini belom dikasi role. Belum jelas mau dibikin khusus buat karyawan atau bisa buat bikin pemilik juga
       <div x-data
         class="mt-24 flex flex-col sm:flex-row justify-center items-center space-y-5 sm:space-y-0 sm:space-x-5">
         {{--  Ini ntar kalau dah fix urlnya diganti, dia ngecek ini edit ato bukan, kalo bukan dilempar ke pegawai, kalo iya balikin ke idnya  --}}
+        <button type="submit" class="btn btn-block sm:btn-wide btn-primary text-white">Buat Pegawai</button>
+
         <a href="#" :href="(window.location.href.includes('pegawai/baru'))? '/app/pegawai': '#'"
           class="btn btn-block sm:btn-wide btn-secondary text-white ">Kembali</a>
-        <button type="submit" class="btn btn-block sm:btn-wide btn-primary text-white">Buat Pegawai</button>
       </div>
     </form>
 

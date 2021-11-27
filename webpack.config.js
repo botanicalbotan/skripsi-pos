@@ -49,14 +49,32 @@ Encore.addEntry('app', './resources/js/app.js')
 Encore.addEntry('welcome-css', '/resources/css/template-welcome.css')
 Encore.addEntry('landing', './resources/js/landing.js')
 Encore.addEntry('beranda', './resources/js/beranda.js')
-Encore.addEntry('pengaturan', './resources/js/pengaturan.js')
-Encore.addEntry('pegawai', './resources/js/pegawai.js')
-Encore.addEntry('barang', './resources/js/barang.js')
+
+// Pembukuan Kas
+Encore.addEntry('kas', './resources/js/kas.js')
+Encore.addEntry('kasrekap', './resources/js/kasrekap.js')
+
 Encore.addEntry('riwayat', './resources/js/riwayat.js')
+
+Encore.addEntry('pegawai', './resources/js/pegawai.js')
+
 // Transaksi
 Encore.addEntry('jual', './resources/js/transaksi/jual.js')
 Encore.addEntry('beli', './resources/js/transaksi/beli.js')
+Encore.addEntry('beli-khusus', './resources/js/transaksi/beli-khusus.js')
 Encore.addEntry('gadai', './resources/js/transaksi/gadai.js')
+
+// Kelola Barang
+Encore.addEntry('barang', './resources/js/kelola-barang/barang.js')
+Encore.addEntry('model', './resources/js/kelola-barang/model.js')
+Encore.addEntry('kerusakan', './resources/js/kelola-barang/kerusakan.js')
+
+Encore.addEntry('pengaturan', './resources/js/pengaturan.js')
+
+
+// Testing purpose
+Encore.addEntry('pagination', './resources/js/testing/pagination.js')
+
 
 /*
 |--------------------------------------------------------------------------

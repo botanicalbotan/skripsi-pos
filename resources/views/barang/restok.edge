@@ -7,7 +7,6 @@
       <div class="flex-1">
         <h4 class="text-2xl">Placeholder sub-judul (?)</h4>
         <p>Placeholder sub-text (?)</p>
-        <p></p>
       </div>
       <div class="flex-none">
         <button id="pilih-item" class="btn btn-primary text-white">
@@ -73,13 +72,28 @@
 
           </tbody>
         </table>
-        <div id="teks-tabel-kosong" class="text-center mt-6">Silahkan pilih perhiasan yang ingin anda tambah stoknya</div>
+        <div id="teks-tabel-kosong" class="text-center mt-6">Silahkan pilih perhiasan yang ingin anda tambah stoknya
+        </div>
       </div>
     </div>
 
-    {{--  testing  --}}
-    <div class="justify-center mt-4">
-        <button class="btn btn-primary text-white" id="tambah-stok" disabled>Tambahkan Stok</button>
+    {{--  menu bawah  --}}
+    <div class="mt-4 space-y-4">
+      <div class="form-control max-w-xs" x-data>
+        <label for="restok-tekstanggal">Tanggal</label>
+        {{--  ini cuma buat formalitas, ngambil tanggal tetep dari server  --}}
+        <input type="text" id="restok-tekstanggal" class="input input-bordered" readonly :value ="moment().format('DD/MM/YYYY')">
+      </div>
+      <div class="form-control max-w-md">
+        <label for="restok-catatan">
+          <span class="">Catatan</span>
+        </label>
+        <textarea type="text" id="restok-catatan" name="restok-catatan" class="textarea textarea-secondary h-24"
+          placeholder="Contoh: Kelebihan 1 anting, kekurangan 2 cincin, dll"></textarea>
+      </div>
+    </div>
+    <div class="mt-8">
+      <button class="btn btn-primary btn-block sm:btn-wide text-white" id="tambah-stok" disabled>Tambahkan Stok</button>
     </div>
 
   </div>

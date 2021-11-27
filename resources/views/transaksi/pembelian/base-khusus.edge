@@ -8,36 +8,13 @@
 <div class="w-full p-8 base-page" data-pagename="pembelian-khusus">
   <h2 class="text-4xl font-semibold">Base Khusus</h2>
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
-    <div class="alert">
-      <div class="flex-1 flex flex-col sm:flex-row items-center sm:items-start">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 mr-2 mxl-4 mb-4 sm:mb-0" fill="none" viewBox="0 0 24 24"
-          stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-        </svg>
-        <label>
-          <h4>Dukungan kode QR tersedia!</h4>
-          <p class="text-sm text-base-content text-opacity-60 max-w-4xl">
-            Bila nota yang dimiliki oleh pelanggan adalah nota baru Toko Mas Leo yang telah bertanda QR, anda dapat
-            men-scan kode tersebut dan sistem akan mengisikan datanya secara otomatis bila ditemukan!
-          </p>
-        </label>
-      </div>
-      <div class="flex-none">
-        <div class="flex-none">
-          <button class="btn btn-ghost text-secondary hover:btn-secondary hover:text-white" id="bukaScanner">Scan
-            QR</button>
-        </div>
-      </div>
-    </div>
 
     <div class="mt-6 flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6 " x-data="{ bacaQR: false }">
 
       <div class="w-full sm:w-3/5 space-y-10">
 
         {{--  Kelompok identitas perhiasan  --}}
-        <div class="space-y-4">
-          {{--  kalau ntar mutusin pake jquery, ntar append abis div ini pake after  --}}
+        <div class="space-y-4" x-data="{ adaNota:false, radioAsal:1 }">
           <div class="mb-4" id="bagian-detail">
             <h1 class="text-2xl font-semibold">Identitas Perhiasan</h1>
           </div>
@@ -48,32 +25,38 @@
               <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
                 :class="(radio == 1)? 'bg-white border-primary': 'bg-white border-secondary'">
                 <input type="radio" name="belikhusus-nota" checked="checked" class="radio radio-primary hidden"
-                  value="tidakada" @click="radio = 1">
-                <span class="label-text font-medium text-base" :class="(radio == 1)? 'text-primary': 'text-secondary'">Tidak Ada</span>
+                  value="tidakada"
+                  @click="radio = 1; adaNota=false; $refs.tempatbeli.readOnly = false; $refs.tempatbeli.value = ''; radioAsal=1; $refs.radioAsalLuar.checked = true">
+                <span class="label-text font-medium text-base"
+                  :class="(radio == 1)? 'text-primary': 'text-secondary'">Tidak Ada</span>
               </label>
               <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
                 :class="(radio == 2)? 'bg-white border-primary': 'bg-white border-secondary'">
                 <input type="radio" name="belikhusus-nota" class="radio radio-primary hidden" value="ada"
-                  @click="radio = 2">
-                <span class="label-text font-medium text-base" :class="(radio == 2)? 'text-primary': 'text-secondary'">Ada</span>
+                  @click="radio = 2; adaNota=true;">
+                <span class="label-text font-medium text-base"
+                  :class="(radio == 2)? 'text-primary': 'text-secondary'">Ada</span>
               </label>
             </div>
           </div>
 
-          <div class="form-control" x-data="{ radio: 1 }">
+          <div class="form-control" x-cloak x-show="adaNota">
             <label for="">Asal Perhiasan</label>
             <div class="flex space-x-4 mt-1 w-full md:w-96">
               <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                :class="(radio == 1)? 'bg-white border-primary': 'bg-white border-secondary'">
-                <input type="radio" name="belikhusus-asal" checked="checked" class="radio radio-primary hidden"
-                  value="luar" @click="radio = 1; $refs.tempatbeli.value = ''; $refs.tempatbeli.readOnly = false">
-                <span class="label-text font-medium text-base" :class="(radio == 1)? 'text-primary': 'text-secondary'">Toko Luar</span>
+                :class="(radioAsal == 1)? 'bg-white border-primary': 'bg-white border-secondary'">
+                <input type="radio" x-ref="radioAsalLuar" name="belikhusus-asal" checked="checked"
+                  class="radio radio-primary hidden" value="luar"
+                  @click="radioAsal = 1; $refs.tempatbeli.value = ''; $refs.tempatbeli.readOnly = false">
+                <span class="label-text font-medium text-base"
+                  :class="(radioAsal == 1)? 'text-primary': 'text-secondary'">Toko Luar</span>
               </label>
               <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                :class="(radio == 2)? 'bg-white border-primary': 'bg-white border-secondary'">
+                :class="(radioAsal == 2)? 'bg-white border-primary': 'bg-white border-secondary'">
                 <input type="radio" name="belikhusus-asal" class="radio radio-primary hidden" value="toko"
-                  @click="radio = 2; $refs.tempatbeli.value = 'Toko Mas Leo'; $refs.tempatbeli.readOnly = true">
-                <span class="label-text font-medium text-base" :class="(radio == 2)? 'text-primary': 'text-secondary'">Toko Leo</span>
+                  @click="radioAsal = 2; $refs.tempatbeli.value = 'Toko Mas Leo'; $refs.tempatbeli.readOnly = true">
+                <span class="label-text font-medium text-base"
+                  :class="(radioAsal == 2)? 'text-primary': 'text-secondary'">Toko Leo</span>
               </label>
             </div>
           </div>
@@ -82,18 +65,8 @@
             <label for="belikhusus-tempatbeli">
               <span class="">Tempat Pembelian (kosongkan bila tanpa identitas)</span>
             </label>
-            <input type="text" x-ref="tempatbeli" id="belikhusus-tempatbeli" name="belikhusus-tempatbeli" class="input input-bordered"
-              placeholder="Contoh: Toko Mas Leo">
-          </div>
-
-          
-
-          <div class="form-control">
-            <label for="belikhusus-keterangan">
-              <span class="">Keterangan (contoh: banyak batu, panjang, dll)</span>
-            </label>
-            <textarea type="text" id="belikhusus-keterangan" name="belikhusus-keterangan" class="textarea textarea-bordered h-24"
-              placeholder="Contoh: Batu putih 3, batu hitam 1"></textarea>
+            <input type="text" x-ref="tempatbeli" id="belikhusus-tempatbeli" name="belikhusus-tempatbeli"
+              class="input input-bordered" placeholder="Contoh: Toko Mas Leo">
           </div>
 
         </div>
@@ -105,19 +78,11 @@
             <h1 class="text-2xl font-semibold">Detail Perhiasan</h1>
           </div>
 
-          {{--  <div class="form-control">
-            <label for="belikhusus-kadar">
-              <span class="">Kadar</span>
-            </label>
-            <input type="text" id="belikhusus-kadar" name="belikhusus-kadar" class="input input-bordered"
-              placeholder="Contoh: Muda" value="auto generated">
-          </div>  --}}
-
           <div class="form-control">
             <label for="belikhusus-kadar">
               <span class="">Kadar</span>
             </label>
-            <select id="belikhusus-kadar" class="select select-bordered w-full max-w-xs">
+            <select id="belikhusus-kadar" class="select select-bordered w-full max-w-xs" required>
               <option value="kosong" disabled="disabled" selected="selected">Pilih kadar perhiasan</option>
               <option value="kalung">Muda</option>
               <option value="gelang">Tanggung</option>
@@ -125,19 +90,12 @@
             </select>
           </div>
 
-          {{--  <div class="form-control">
-            <label for="belikhusus-bentuk">
-              <span class="">Bentuk</span>
-            </label>
-            <input type="text" id="belikhusus-bentuk" name="belikhusus-bentuk" class="input input-bordered"
-              placeholder="Contoh: Cincin" value="auto generated">
-          </div>  --}}
 
           <div class="form-control">
             <label for="belikhusus-bentuk">
               <span class="">Bentuk</span>
             </label>
-            <select id="belikhusus-bentuk" class="select select-bordered w-full max-w-xs">
+            <select id="belikhusus-bentuk" class="select select-bordered w-full max-w-xs" required>
               <option value="kosong" disabled="disabled" selected="selected">Pilih bentuk perhiasan</option>
               <option value="kalung">Kalung</option>
               <option value="gelang">Gelang</option>
@@ -153,7 +111,7 @@
             <label for="belikhusus-model">
               <span class="">Model Perhiasan</span>
             </label>
-            <select id="belikhusus-model" class="select select-bordered w-full max-w-xs">
+            <select id="belikhusus-model" class="select select-bordered w-full max-w-xs" required>
               <option disabled="disabled" selected="selected">Model untuk cincin</option>
               <option>AD</option>
               <option>Krincing</option>
@@ -169,29 +127,12 @@
               placeholder="Contoh: 375, D40">
           </div>
 
-          <div class="form-control" x-data="{ radio: 1 }">
-            <label for="">Asal Perhiasan</label>
-            <div class="flex space-x-4 mt-1 w-full md:w-96">
-              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                :class="(radio == 1)? 'bg-white border-primary': 'bg-white border-secondary'">
-                <input type="radio" name="belikhusus-asal" checked="checked" class="radio radio-primary hidden"
-                  value="luar" @click="radio = 1">
-                <span class="label-text font-medium text-base" :class="(radio == 1)? 'text-primary': 'text-secondary'">Toko Luar</span>
-              </label>
-              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                :class="(radio == 2)? 'bg-white border-primary': 'bg-white border-secondary'">
-                <input type="radio" name="belikhusus-asal" class="radio radio-primary hidden" value="toko"
-                  @click="radio = 2">
-                <span class="label-text font-medium text-base" :class="(radio == 2)? 'text-primary': 'text-secondary'">Toko Leo</span>
-              </label>
-            </div>
-          </div>
           <div class="form-control">
             <label for="belikhusus-keterangan">
               <span class="">Keterangan (contoh: banyak batu, panjang, dll)</span>
             </label>
-            <textarea type="text" id="belikhusus-keterangan" name="belikhusus-keterangan" class="textarea textarea-bordered h-24"
-              placeholder="Contoh: Batu putih 3, batu hitam 1"></textarea>
+            <textarea type="text" id="belikhusus-keterangan" name="belikhusus-keterangan"
+              class="textarea textarea-bordered h-24" placeholder="Contoh: Batu putih 3, batu hitam 1"></textarea>
           </div>
 
         </div>
@@ -203,76 +144,19 @@
           </div>
 
           <div class="form-control">
-            <label for="belikhusus-harganota">
-              <span class="">Harga Jual pada Nota</span>
+            <label for="belikhusus-beratsebenarnya">
+              <span class="">Berat Sebenarnya</span>
             </label>
-            <input type="text" id="belikhusus-harganota" name="belikhusus-harganota" class="input input-bordered"
-              placeholder="Contoh: 400.000" value="auto generated">
-          </div>
-
-          <div class="space-y-4 md:flex md:space-x-4 md:space-y-0 max-w-sm">
-            <div class="flex-1">
-              <div class="form-control">
-                <label for="belikhusus-beratnota">
-                  <span class="">Berat Pada Nota</span>
-                </label>
-                <div class="relative flex w-full flex-wrap items-stretch">
-                  {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
-                  <input type="number" placeholder="0" id="belikhusus-beratnota" min="0" name="belikhusus-beratnota"
-                    class="uang px-3 py-3 relative input input-bordered w-full" value="14" />
-                  <span
-                    class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
-                    gram
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="flex-1">
-              <div class="form-control">
-                <label for="belikhusus-beratsebenarnya">
-                  <span class="">Berat Sebenarnya</span>
-                </label>
-                <div class="relative flex w-full flex-wrap items-stretch">
-                  {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
-                  <input type="number" placeholder="0" id="belikhusus-beratsebenarnya" min="0" name="belikhusus-beratsebenarnya"
-                    class="uang px-3 py-3 relative input input-bordered w-full" value="14" />
-                  <span
-                    class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
-                    gram
-                  </span>
-                </div>
-              </div>
+            <div class="relative flex flex-wrap max-w-xs items-stretch">
+              <input type="number" placeholder="0" id="belikhusus-beratsebenarnya" min="0"
+                name="belikhusus-beratsebenarnya" class="uang px-3 py-3 relative input input-bordered w-full" required/>
+              <span
+                class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
+                gram
+              </span>
             </div>
           </div>
 
-          <div class="form-control">
-            <label for="belikhusus-hargaemas">
-              <span class="">Harga Per Gram Emas pada Nota</span>
-            </label>
-            <input type="text" id="belikhusus-hargaemas" name="belikhusus-hargaemas" class="input input-bordered"
-              placeholder="Contoh: 400.000" value="auto generated">
-          </div>
-          <div class="form-control">
-            <label for="belikhusus-potongan">
-              <span class="">Potongan Per Gram Emas pada Nota</span>
-            </label>
-            <input type="text" id="belikhusus-potongan" name="belikhusus-potongan" class="input input-bordered"
-              placeholder="Contoh: 300.000" value="auto generated">
-          </div>
-        </div>
-
-        {{--  Kelompok kerusakan awal  --}}
-        <div class="space-y-4">
-          <div class="mb-4">
-            <h1 class="text-2xl font-semibold">Kerusakan Awal</h1>
-          </div>
-          <div class="form-control">
-            <label for="belikhusus-kerusakanawal">
-              <span class="">Kerusakan Sebelum Dijual (jika ada)</span>
-            </label>
-            <textarea type="text" id="belikhusus-kerusakanawal" name="belikhusus-kerusakanawal"
-              class="textarea textarea-bordered h-24" placeholder="Contoh: Lecet 3 tempat"></textarea>
-          </div>
         </div>
 
         {{--  Kelompok kerusakan sebenarnya  --}}
@@ -283,7 +167,11 @@
           {{--  tabel  --}}
           <div class="flex space-x-4">
             <div class="flex-1">
-              <span class="max-w-xs">Isikan kerusakan jika ada selain yang terdefinisikan pada kerusakan awal.</span>
+              <div>
+                <span class="max-w-xs">Isikan kerusakan yang sesuai dengan kondisi perhiasan sebenarnya.</span>
+                <span class="block text-sm max-w-sm opacity-50">Pastikan anda telah memilih bentuk perhiasan terlebih
+                  dahulu.</span>
+              </div>
             </div>
             <div class="flex-none flex items-end">
               <button class="btn btn-outline btn-sm" id="tambah-kerusakan">
@@ -327,8 +215,16 @@
                 <ul id="check-list">
 
                   <li class="flex">
+                    <span class="flex-1">Asal:</span>
+                    <span class="flex-none">Toko Mas Leo</span>
+                  </li>
+                  <li class="flex">
                     <span class="flex-1">Kadar:</span>
                     <span class="flex-none">Muda</span>
+                  </li>
+                  <li class="flex">
+                    <span class="flex-1">Bentuk:</span>
+                    <span class="flex-none">Cincin</span>
                   </li>
                   <li class="flex">
                     <span class="flex-1">Bentuk:</span>
@@ -347,37 +243,38 @@
                   {{--  kyknya butuh wadah khusus buat mainan append + delete content, dipanggil bareng sama mutation observer  --}}
                   <li class="flex mt-4">
                     <span class="flex-1 font-semibold">Kerusakan</span>
-                    <span class="flex-none text-error">Ringan</span>
                   </li>
                   <li class="flex">
-                    <span class="flex-1">Hilang Separuh</span>
-                  </li>
-                  <li class="flex">
-                    <span class="flex-1">Penyok ringan (2)</span>
+                    <ul id="sidemenu-kerusakan">
+                      <li class="flex">
+                        <span class="flex-1 text-error">Hilang Separuh</span>
+                      </li>
+                      <li class="flex">
+                        <span class="flex-1 text-error">Penyok ringan (2)</span>
+                      </li>
+                    </ul>
                   </li>
 
 
                   <li class="flex font-semibold mt-4">
                     <h2 class="font-semibold">Hitungan</h2>
                   </li>
-                  <li class="flex font-semibold">
-                    <span class="flex-1">Harga di Nota:</span>
-                    <span class="flex-none">Rp. 5.000.000</span>
-                  </li>
-
                   <li class="flex">
-                    <span class="flex-1">Total kerusakan:</span>
-                    <span class="flex-none text-error">-Rp. 103.000</span>
+                    <span class="flex-1">Nilai beli per gram:</span>
+                    <span class="flex-none">Rp. 500.000</span>
                   </li>
 
                 </ul>
               </div>
-              <div class="flex flex-col w-full items-center">
-                <h2 class="font-semibold text-center">Total Nilai Jual</h2>
+              <div class="w-full items-center">
+                <h2 class="font-semibold text-center">Total Nilai Beli</h2>
                 <h1 class="font-bold text-3xl text-center">Rp. 2.000.000</h1>
               </div>
               <div class="space-y-4">
                 <button class="btn btn-block btn-outline">Ajukan Tawaran</button>
+                {{--  simpan transaksi ini gabakal bisa dipencet kalo opsinya toko mas leo, tp ngga milih kerusakan  --}}
+                {{--  bisa mencet tp ngasi error nyuruh input kerusakan  --}}
+                {{--  kalo opsi toko luar, ga rusak tetep bisa  --}}
                 <a href="/app/penjualan/selesai" class="btn btn-block btn-primary text-white">Simpan Transaksi</a>
 
                 {{--  format asli tombol aslinya buttton + submit, tp sementara biar bisa pindah tempat dulu  --}}
@@ -385,6 +282,12 @@
               </div>
 
             </div>
+          </div>
+          {{--  pake ini buat buka tutup tirai pas ngedit  --}}
+          {{--  ilangin hiddennya buat ngeblock total  --}}
+          <div id="loadingSidemenu" class="absolute w-full h-full bg-base-200 z-50 flex flex-col items-center justify-center hidden">
+            <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-20 w-20"></div>
+            <h1 class="mt-4">Menghitung...</h1>
           </div>
         </div>
       </div>
@@ -396,5 +299,5 @@
 
 @section('script')
 <script src="{{asset('assets/app.js')}}"></script>
-<script src="{{asset('assets/beli.js')}}"></script>
+<script src="{{asset('assets/beli-khusus.js')}}"></script>
 @endsection

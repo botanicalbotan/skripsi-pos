@@ -38,6 +38,14 @@
   @apply bg-base-100 !important;
 }
 
+.true-space-x-4{
+  @apply space-x-4 !important;
+}
+
+.true-text-white{
+  @apply text-white !important;
+}
+
 /* ini dikasi simplebar yang manual mati btw, tinggal yang kelas no-select */
 div.drawer-side>ul li>a {
   -webkit-user-select: none;
@@ -126,4 +134,29 @@ div#wadah-item-penjualan input.radio:checked ~ label{
 
 div#wadah-item-penjualan input.radio:checked ~ label > span{
   @apply text-white;
+}
+
+/* Spinner ato loading */
+.loader {
+  border-top-color: #3498db;
+  -webkit-animation: spinner 1.5s linear infinite;
+  animation: spinner 1.5s linear infinite;
+}
+
+@-webkit-keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

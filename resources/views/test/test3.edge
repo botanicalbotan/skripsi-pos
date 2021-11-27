@@ -1,0 +1,28 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+@section('content')
+<div class="w-full p-8">
+  <h2 class="text-4xl font-semibold">Menu Riwayat</h2>
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+
+    {{--  wadah utama, wajib flex  --}}
+    {{--  space-x iki nggo ngek i margin antar anak, auto wis gaperlu ngubah2 maneh  --}}
+    <div class="flex space-x-4 h-36">
+        {{--  anakane dikei flex-1 ben ngebagi loro width container e  --}}
+        {{--  nek misal ndue 3 anak sing mbuk ke i flex-1, width e dibagi 3  --}}
+        <div class="flex-1 bg-blue-300">a</div>
+        <div class="flex-1 bg-pink-300">b</div>
+    </div>
+
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+@endsection

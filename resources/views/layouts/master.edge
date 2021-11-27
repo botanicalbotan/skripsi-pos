@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="csrf-token" content="{{ csrfToken }}">
   <title>Skripsi POS: Aplikasi yang kamu kerjakan untuk skripsi</title>
   <link rel="stylesheet" type="text/css" href="{{ asset('assets/app.css') }}">
   {{--  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>  --}}
@@ -125,7 +126,7 @@
           </ul>
         </li>
         <li>
-          <a>
+          <a href="/app/kas">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

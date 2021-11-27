@@ -1,14 +1,22 @@
 @layout('layouts/master')
 @section('content')
-<div class="w-full p-8 base-page">
+<div class="w-full p-8 base-page" data-pagename="detail">
   <h2 class="text-4xl font-semibold">Profil Pegawai</h2>
+  <h4 class="text-xl text-secondary">Detail data dari pegawai yang anda pilih.</h4>
+
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+
     <div class="flex space-x-2">
       <div class="flex-1">
         <h4 class="text-2xl sm:flex sm:items-center">
-            <span class="mr-2">Muhammad Arif Fadhilah</span><span class="badge badge-success">Aktif</span>
+            <span class="mr-2">{{ pegawai.nama }}</span>
+            @if(pegawai.apakahPegawaiAktif)
+              <span class="badge badge-success">Aktif</span>
+            @else
+              <span class="badge badge-error">Keluar</span>
+            @endif
         </h4>
-        <p class="opacity-75">Placeholder, ID mungkin, atau jabatan</p>
+        <p class="opacity-75">{{ pegawai.jabatan.nama }}</p>
       </div>
       <div class="flex-none">
         <div class="dropdown dropdown-end">
@@ -70,7 +78,8 @@
                 Data Umum</h4>
             </div>
             <div class="flex-none flex align-bottom mb-2 items-end">
-              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada 22/10/2021</p>
+              {{--  mau dibikin localeDateString malah ngebug  --}}
+              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada {{ pegawai.updatedAt.setLocale('id-ID').toLocaleString() }}</p>
             </div>
           </div>
           <div class="border-t border-b border-secondary">
@@ -79,49 +88,50 @@
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Nama Pegawai</h3>
-                  <span class="flex-1 ">Muhammad Arif Fadhilah</span>
+                  <span class="flex-1 ">{{ pegawai.nama }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Gender</h3>
-                  <span class="flex-1 ">Laki-laki</span>
+                  <span class="flex-1 ">{{ (pegawai.gender === 'L')? 'Laki-laki':'Perempuan' }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tempat Lahir</h3>
-                  <span class="flex-1 ">Boyolali</span>
+                  <span class="flex-1 ">{{ pegawai.tempatLahir }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Lahir</h3>
-                  <span class="flex-1 ">10/02/1980</span>
+                  {{--  dikasi tolocaledatestring somehow  --}}
+                  <span class="flex-1">{{ pegawai.tanggalLahir.setLocale('id-ID').toLocaleString() }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Alamat</h3>
-                  <span class="flex-1 ">disini alamat</span>
+                  <span class="flex-1 ">{{ pegawai.alamat }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">No HP</h3>
-                  <span class="flex-1 ">088888888888</span>
+                  <span class="flex-1 ">{{ pegawai.nohpAktif }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Email?</h3>
-                  <span class="flex-1 ">Kalau ada isi disini, mungkin khusus pemilik doang</span>
+                  <span class="flex-1 ">{{ pegawai.user.email }}</span>
                 </div>
               </li>
 
@@ -142,7 +152,7 @@
                 Data Akun</h4>
             </div>
             <div class="flex-none flex align-bottom mb-2 items-end">
-              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada 22/10/2021</p>
+              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada {{ pegawai.updatedAt.setLocale('id-ID').toLocaleString() }}</p>
             </div>
           </div>
           <div class="border-t border-b border-secondary">
@@ -151,14 +161,14 @@
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Nama Pengguna</h3>
-                  <span class="flex-1 ">ininamapengguna</span>
+                  <span class="flex-1 ">{{ pegawai.user.username }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Password</h3>
-                  <span class="flex-1 ">hmmm gatau mau diisi apaan</span>
+                  <span class="flex-1 ">aktif</span>
                 </div>
               </li>
 
@@ -179,7 +189,7 @@
                 Status Pekerjaan</h4>
             </div>
             <div class="flex-none flex align-bottom mb-2 items-end">
-              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada 22/10/2021</p>
+              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada {{ pegawai.updatedAt.setLocale('id-ID').toLocaleString() }}</p>
             </div>
           </div>
           <div class="border-t border-b border-secondary">

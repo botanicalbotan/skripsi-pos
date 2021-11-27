@@ -69,16 +69,50 @@ $(function () {
     }
   });
 
-  // Pake Fuse.js + alpine buat searching
+  // ========================================= list ==========================================================
+  if ($('.base-page').data('pagename') == "list") {
+    const BASEURL = window.location.pathname
+    const qsParam = new URLSearchParams(window.location.search)
+    const pengurutan = document.querySelector('select#pengurutan')
+    const pencarian = document.querySelector('input#pencarian')
+    const hapuscari = document.getElementById('hapusPencarian')
 
-  $('button#aturTabel').on("click", function () {
-    Swal.fire({
-      title:'Kasi Form Disini',
-      text:'ditentuin nantinya',
-      confirmButtonText:'Terapkan',
-      showCancelButton: true,
-      cancelButtonText: 'Batal'
-    })
-  });
+    function persiapanKirim() {
+      if (qsParam.get('cari') === null || pencarian.value === '') {
+        qsParam.delete('cari')
+      }
+      qsParam.delete('page')
+      window.location = BASEURL + '?' + qsParam.toString()
+    }
+
+    pengurutan.addEventListener("change", function () {
+      if (qsParam.has('ob')) {
+        qsParam.set('ob', pengurutan.value)
+      } else {
+        qsParam.append('ob', pengurutan.value)
+      }
+      persiapanKirim()
+    });
+
+    pencarian.addEventListener("keyup", function (event) {
+      if (event.key === "Enter") {
+        if (pencarian.value !== '' && pencarian.value) {
+          if (qsParam.has('cari')) {
+            qsParam.set('cari', pencarian.value)
+          } else {
+            qsParam.append('cari', pencarian.value)
+          }
+          persiapanKirim()
+        }
+      }
+    });
+
+    hapuscari.addEventListener("click", function () {
+      pencarian.value = ''
+      persiapanKirim()
+    });
+
+
+  }
 
 });

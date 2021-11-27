@@ -1,0 +1,273 @@
+@layout('layouts/master')
+
+@section('more-style')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.css"
+  integrity="sha512-+VDbDxc9zesADd49pfvz7CgsOl2xREI/7gnzcdyA9XjuTxLXrdpuz21VVIqc5HPfZji2CypSbxx1lgD7BgBK5g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+@endsection
+
+@section('content')
+<div class="w-full p-8">
+  <h2 class="text-4xl font-semibold">Buat Pegawai Baru</h2>
+  <div class=" bg-white mt-8 p-4 lg:p-8 pb-40 lg:pb-40 shadow min:h-96">
+
+    <form action="">
+      <div class="flex flex-col md:flex-row md:space-x-8">
+        <div class="md:flex-1 space-y-8">
+
+          {{--  Kelompok data umum  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Data Umum</h1>
+            </div>
+            <div class="form-control">
+              <label for="pegawai-nama">
+                <span class="">Nama Pegawai</span>
+              </label>
+              <input type="text" id="pegawai-nama" name="pegawai-nama" class="input input-bordered"
+                placeholder="Contoh: Muhammad Arif Fadhilah">
+            </div>
+
+            <div class="form-control" x-data="{ radio: 1 }">
+              <label for="">Gender</label>
+              <div class="flex space-x-4 mt-1 w-full md:w-96">
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                  <input type="radio" name="pegawai-gender" checked="checked" class="radio radio-primary hidden"
+                    value="lakilaki" @click="radio = 1">
+                  <span class="label-text text-base"
+                    :class="(radio == 1)? 'text-primary': 'text-secondary'">Laki-laki</span>
+                </label>
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radio == 2)? ' bg-pink-500 bg-opacity-10 border-pink-500': 'bg-white border-secondary'">
+                  <input type="radio" name="pegawai-gender" class="radio radio-primary hidden" value="perempuan"
+                    @click="radio = 2">
+                  <span class="label-text text-base"
+                    :class="(radio == 2)? 'text-pink-500': 'text-secondary'">Perempuan</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="space-y-4 md:flex md:space-x-4 md:space-y-0">
+              <div class="flex-1">
+                <div class="form-control">
+                  <label for="pegawai-tempatlahir">
+                    <span class="">Tempat Lahir</span>
+                  </label>
+                  <input type="text" name="pegawai-tempatlahir" id="pegawai-tempatlahir" class="input input-bordered"
+                    placeholder="Contoh: Boyolali">
+                </div>
+              </div>
+              <div class="flex-1">
+                <div class="form-control">
+                  <label for="pegawai-tanggallahir">
+                    <span class="">Tanggal Lahir</span>
+                  </label>
+                  <input type="date" name="pegawai-tanggallahir" id="pegawai-tanggallahir"
+                    class="input input-bordered">
+                </div>
+              </div>
+            </div>
+            <div class="form-control">
+              <label for="pegawai-alamat">
+                <span class="">Alamat Pegawai</span>
+              </label>
+              <input type="text" id="pegawai-alamat" name="pegawai-alamat" class="input input-bordered"
+                placeholder="Contoh: Jl. Pemuda Kebaktian No.12, RT01/RW02 Semarang">
+            </div>
+            <div class="form-control">
+              <label for="pegawai-nohp">
+                <span class="">Nomor Handphone</span>
+              </label>
+              <input type="text" id="pegawai-nohp" name="pegawai-nohp" class="input input-bordered"
+                placeholder="Contoh: 081123456789">
+            </div>
+            <div class="form-control">
+              <label for="pegawai-email">
+                <span class="">Email</span>
+              </label>
+              <input type="email" id="pegawai-email" name="pegawai-email" class="input input-bordered"
+                placeholder="Contoh: Budi Balado">
+            </div>
+          </div>
+
+          {{--  Kelompok data teknis  --}}
+          <div class="space-y-4" x-data="{ pass:'', repass:'', repassclass:''}">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Data Akun</h1>
+            </div>
+            <div class="form-control">
+              <div class="flex items-center">
+                <label for="pegawai-username" class="flex-1">Username</label>
+                <div class="dropdown dropdown-end dropdown-top">
+                  <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                  <div tabindex="0" class="shadow card compact dropdown-content bg-base-100 rounded-box w-52">
+                    <div class="card-body">
+                      <h2 class="card-title">Username</h2>
+                      <p>Username adalah teks yang digunakan untuk dapat mengakses sistem. Username
+                        harus digunakan dengan pasangan passwordnya.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <input type="text" id="pegawai-username" name="pegawai-username" class="input input-bordered"
+                placeholder="Contoh: Budi Balado" autocomplete="username">
+            </div>
+            <div class="form-control">
+              <label for="pegawai-password">
+                <span class="">Password</span>
+              </label>
+              <input type="password" x-model="pass" id="pegawai-password" name="pegawai-password"
+                class="input input-bordered" placeholder="Contoh: Budi Balado" autocomplete="new-password">
+            </div>
+            <div class="form-control">
+              <div class="flex items-center">
+                <label for="pegawai-repassword" class="flex-1">Isikan password kembali</label>
+                <div class="dropdown dropdown-end dropdown-top">
+                  <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                  <div tabindex="0" class="shadow card compact dropdown-content bg-base-100 rounded-box w-52">
+                    <div class="card-body">
+                      <h2 class="card-title">Isi password kembali</h2>
+                      <p>Anda perlu mengisikan kembali password anda sebagai konfirmasi bahwa password yang anda isikan
+                        sesuai dengan yang anda harapkan.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <input type="password" x-model="repass" x-on:focusout="repassclass= (pass!=repass)? 'input-error': ''"
+                :class="repassclass" id="pegawai-repassword" class="input input-bordered"
+                placeholder="Contoh: Budi Balado" autocomplete="new-password">
+              <p x-cloak class="text-error" :class="(repassclass != '')? 'flex':'hidden'">Kedua password tidak sama!</p>
+            </div>
+          </div>
+
+          {{--  Kelompok data teknis  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Status Pekerjaan</h1>
+            </div>
+
+            <div class="form-control" x-data="{ radio: 1 }">
+              <label for="">Status Pegawai</label>
+              <div class="flex space-x-4 mt-1 w-full md:w-96">
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radio == 1)? 'bg-success bg-opacity-10 border-success': 'bg-white border-secondary'">
+                  <input type="radio" name="pegawai-status" checked="checked" class="radio radio-primary hidden"
+                    value="aktif" @click="radio = 1">
+                  <span class="label-text text-base"
+                    :class="(radio == 1)? 'text-success': 'text-secondary'">Aktif</span>
+                </label>
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radio == 2)? 'bg-error bg-opacity-10 border-error': 'bg-white border-secondary'">
+                  <input type="radio" name="pegawai-status" class="radio radio-primary hidden" value="keluar"
+                    @click="radio = 2">
+                  <span class="label-text text-base" :class="(radio == 2)? 'text-error': 'text-secondary'">Keluar</span>
+                </label>
+              </div>
+            </div>
+
+            <div x-data="{data: banding(moment())}" class="form-control">
+              <label for="pegawai-tanggalmasuk" class="flex">
+                <span class="flex-1">Tanggal Awal Masuk</span>
+                <span x-cloak x-text="data" class="flex-none text-primary"></span>
+              </label>
+              <input type="date" x-on:change="data = banding($el.value)" id="pegawai-tanggalmasuk"
+                name="pegawai-tanggalmasuk" class="input input-bordered" placeholder="Contoh: Budi Balado">
+            </div>
+
+            <div class="form-control">
+              <label for="pegawai-lamakerja">
+                <span class="">Lama Bekerja di Toko Leo (tahun)</span>
+              </label>
+              <div class="relative flex w-full flex-wrap items-stretch">
+                <input type="number" value="1" min="1" id="pegawai-lamakerja" name="pegawai-lamakerja"
+                  class="px-3 py-3 relative input input-bordered w-full pr-16" />
+                <span
+                  class="z-10 h-full leading-snug absolute text-center text-secondary right-0 items-center justify-center w-auto pr-4 py-3">
+                  tahun
+                </span>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <div class="flex">
+                <label class="flex-1" for="pegawai-gaji">Gaji Pegawai</label>
+                <div class="dropdown dropdown-end dropdown-top">
+                  <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                  <div tabindex="0" class="shadow card compact dropdown-content bg-base-100 rounded-box w-52">
+                    <div class="card-body">
+                      <h2 class="card-title">Gaji Pegawai</h2>
+                      <p>Gaji pertama adalah nominal gaji paling dasar yang dapat diterima pegawai. Nominal gaji dapat
+                        bertambah seiring berjalannya waktu.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="relative flex w-full flex-wrap items-stretch">
+                <span
+                  class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-8 pl-3 py-3">
+                  Rp.
+                </span>
+                {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
+                <input type="number" placeholder="1.000.000" id="pegawai-gaji" min="0" name="pegawai-gaji"
+                  class="uang px-3 py-3 relative input input-bordered w-full pl-10" />
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="flex-none mt-5" x-data="{ adaGambar: false }">
+          <input type="file" name="fileFotoPegawai" id="fileFotoPegawai" class="hidden-but-real hidden"
+            accept="image/*">
+          <div class="mb-4">
+            <h1 class="text-2xl">Foto Pegawai</h1>
+          </div>
+          <div class="flex justify-center">
+            <div
+              class="flex rounded-box ring-2 ring-base-300 w-52 h-52 justify-center items-center p-2 group hover:ring-neutral relative">
+              <div class="w-full h-full bg-placeholder-user-200 bg-contain">
+                {{--  gambar cuma buat wadah dan udah ada backgroundnya, jadi kalo gaada biarin kosong aja dan jangan kasi alternative text  --}}
+                <img src="" id="fotoPegawai" x-ref="fotoPegawai" @load="adaGambar = true" @error="adaGambar = false">
+              </div>
+
+              <label for="fileFotoPegawai"
+                class="btn btn-ghost text-white absolute invisible group-hover:visible w-full h-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+              </label>
+            </div>
+          </div>
+          <div class="flex flex-col items-center">
+            <button x-show="adaGambar" @click="$refs.fotoPegawai.src = ''" class="btn btn-sm btn-link text-error">Hapus Foto</button>
+            <div class="w-52 mt-3">
+              <p class=" text-justify text-sm ">Pilih file foto pegawai berukuran maskimal 1 MB.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div x-data
+        class="mt-24 flex flex-col sm:flex-row justify-center items-center space-y-5 sm:space-y-0 sm:space-x-5">
+        {{--  Ini ntar kalau dah fix urlnya diganti, dia ngecek ini edit ato bukan, kalo bukan dilempar ke pegawai, kalo iya balikin ke idnya  --}}
+        <button type="submit" class="btn btn-block sm:btn-wide btn-primary text-white">Buat Pegawai</button>
+
+        <a href="#" :href="(window.location.href.includes('pegawai/baru'))? '/app/pegawai': '#'"
+          class="btn btn-block sm:btn-wide btn-secondary text-white ">Kembali</a>
+      </div>
+    </form>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js"
+  integrity="sha512-ZK6m9vADamSl5fxBPtXw6ho6A4TuX89HUbcfvxa2v2NYNT/7l8yFGJ3JlXyMN4hlNbz0il4k6DvqbIW5CCwqkw=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{{asset('assets/pegawai.js')}}"></script>
+@endsection

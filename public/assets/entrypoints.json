@@ -29,24 +29,24 @@
         "http://localhost:8080/assets/beranda.js"
       ]
     },
-    "pengaturan": {
+    "kas": {
       "js": [
-        "http://localhost:8080/assets/pengaturan.js"
+        "http://localhost:8080/assets/kas.js"
       ]
     },
-    "pegawai": {
+    "kasrekap": {
       "js": [
-        "http://localhost:8080/assets/pegawai.js"
-      ]
-    },
-    "barang": {
-      "js": [
-        "http://localhost:8080/assets/barang.js"
+        "http://localhost:8080/assets/kasrekap.js"
       ]
     },
     "riwayat": {
       "js": [
         "http://localhost:8080/assets/riwayat.js"
+      ]
+    },
+    "pegawai": {
+      "js": [
+        "http://localhost:8080/assets/pegawai.js"
       ]
     },
     "jual": {
@@ -59,9 +59,39 @@
         "http://localhost:8080/assets/beli.js"
       ]
     },
+    "beli-khusus": {
+      "js": [
+        "http://localhost:8080/assets/beli-khusus.js"
+      ]
+    },
     "gadai": {
       "js": [
         "http://localhost:8080/assets/gadai.js"
+      ]
+    },
+    "barang": {
+      "js": [
+        "http://localhost:8080/assets/barang.js"
+      ]
+    },
+    "model": {
+      "js": [
+        "http://localhost:8080/assets/model.js"
+      ]
+    },
+    "kerusakan": {
+      "js": [
+        "http://localhost:8080/assets/kerusakan.js"
+      ]
+    },
+    "pengaturan": {
+      "js": [
+        "http://localhost:8080/assets/pengaturan.js"
+      ]
+    },
+    "pagination": {
+      "js": [
+        "http://localhost:8080/assets/pagination.js"
       ]
     }
   }
