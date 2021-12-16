@@ -34,7 +34,7 @@ export default class Penjualan extends BaseModel {
   public kondisi: string
 
   @column()
-  public fotoBarang: string
+  public fotoBarang: string | null
 
   @column()
   public potonganDeskripsi: string
@@ -72,7 +72,7 @@ export default class Penjualan extends BaseModel {
   public model: BelongsTo<typeof Model>
 
   @column()
-  public rentangUsiaId: number
+  public rentangUsiaId: number | null
 
   @belongsTo(() => RentangUsia)
   public rentangUsia: BelongsTo<typeof RentangUsia>

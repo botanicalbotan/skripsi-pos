@@ -54,6 +54,11 @@
         "http://localhost:8080/assets/jual.js"
       ]
     },
+    "base-jual": {
+      "js": [
+        "http://localhost:8080/assets/base-jual.js"
+      ]
+    },
     "beli": {
       "js": [
         "http://localhost:8080/assets/beli.js"
@@ -72,6 +77,21 @@
     "barang": {
       "js": [
         "http://localhost:8080/assets/barang.js"
+      ]
+    },
+    "kelompok": {
+      "js": [
+        "http://localhost:8080/assets/kelompok.js"
+      ]
+    },
+    "kelompok-view": {
+      "js": [
+        "http://localhost:8080/assets/kelompok-view.js"
+      ]
+    },
+    "restok": {
+      "js": [
+        "http://localhost:8080/assets/restok.js"
       ]
     },
     "model": {

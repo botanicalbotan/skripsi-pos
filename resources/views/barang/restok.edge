@@ -1,12 +1,14 @@
 @layout('layouts/master')
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="restok">
-  <h2 class="text-4xl font-semibold">Restok Barang</h2>
+  <h2 class="text-4xl font-semibold">Restok Kelompok Perhiasan</h2>
+  <h4 class="text-lg text-secondary opacity-60">Penambahan stok kelompok perhiasan dari cucian atau kulakan.</h4>
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+    
     <div class="flex space-x-2">
       <div class="flex-1">
-        <h4 class="text-2xl">Placeholder sub-judul (?)</h4>
-        <p>Placeholder sub-text (?)</p>
+        <h4 class="text-2xl">Pilih Kelompok</h4>
+        <p class="opacity-75">Anda dapat menambah stok banyak kelompok secara bersamaan!</p>
       </div>
       <div class="flex-none">
         <button id="pilih-item" class="btn btn-primary text-white">
@@ -21,86 +23,62 @@
       </div>
     </div>
 
-    {{--  tabel  --}}
-    <div class="my-8 border border-secondary min-h-60 rounded">
-      <div class="overflow-x-auto"> {{-- aslinya ada overflow-x-auto disini --}}
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th>Perhiasan</th>
-              <th>Stok Awal</th>
-              <th>Tambahan Stok</th>
-              <th>Asal Stok</th> {{-- kulakan / cuci --}}
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="wadah-data">
+    <form id="formTambahStok" action="/app/barang/restok" method="POST">
+      {{ csrfField() }}
 
-            {{--  copy append mulai dari sini  --}}
-            {{--  <tr>
-              <td>
-                <div class="flex items-center space-x-3">
-                  <div>
-                    <div class="font-semibold">
-                      Anting Muda 9 gram
-                    </div>
-                    <div class="text-sm opacity-50">
-                      081329329081
-                    </div>
-                    <input type="hidden" name="perhiasanStok[]">
-                  </div>
-                </div>
+      {{--  tabel  --}}
+      <div class="my-8 border min-h-60 rounded">
+        <div class="overflow-x-auto"> {{-- aslinya ada overflow-x-auto disini --}}
 
-              </td>
-              <td>20 buah
-                <input type="hidden" name="awalStok[]">
-              </td>
-              <td>10 buah
-                <input type="hidden" name="tambahanStok[]">
-              </td>
-              <td>Kulakan
-                <input type="hidden" name="awalStok[]">
-              </td>
-              <td>
-                <button tabindex="0" class="m-1 btn btn-ghost text-error btn-delete">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </td>
-            </tr>  --}}
+          <table class="table w-full">
+            <thead>
+              <tr>
+                <th>Kelompok Perhiasan</th>
+                <th>Stok Awal</th>
+                <th>Tambahan Stok</th>
+                <th>Asal Stok</th> {{-- kulakan / cuci --}}
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="wadah-data">
 
-          </tbody>
-        </table>
-        <div id="teks-tabel-kosong" class="text-center mt-6">Silahkan pilih perhiasan yang ingin anda tambah stoknya
+              {{--  append row tabelnya kesini dari JS  --}}
+
+            </tbody>
+          </table>
+
+          <div id="teks-tabel-kosong" class="text-center mt-6">Silahkan pilih perhiasan yang ingin anda tambah stoknya
+          </div>
         </div>
       </div>
-    </div>
 
-    {{--  menu bawah  --}}
-    <div class="mt-4 space-y-4">
-      <div class="form-control max-w-xs" x-data>
-        <label for="restok-tekstanggal">Tanggal</label>
-        {{--  ini cuma buat formalitas, ngambil tanggal tetep dari server  --}}
-        <input type="text" id="restok-tekstanggal" class="input input-bordered" readonly :value ="moment().format('DD/MM/YYYY')">
+      {{--  menu bawah  --}}
+      <div class="mt-4 space-y-4">
+        <div class="form-control max-w-xs" x-data>
+          <label for="restok-tekstanggal">Tanggal</label>
+          {{--  ini cuma buat formalitas, ngambil tanggal tetep dari server  --}}
+          <input type="text" id="restok-tekstanggal" class="input input-bordered" readonly
+            :value="moment().format('DD/MM/YYYY')">
+        </div>
+        <div class="form-control max-w-md">
+          <label for="restokCatatan">
+            <span class="">Catatan</span>
+          </label>
+          <textarea type="text" id="restokCatatan" name="restokCatatan" class="textarea textarea-bordered h-24"
+            placeholder="Contoh: Kelebihan 1 anting, kekurangan 2 cincin, dll"></textarea>
+        </div>
       </div>
-      <div class="form-control max-w-md">
-        <label for="restok-catatan">
-          <span class="">Catatan</span>
-        </label>
-        <textarea type="text" id="restok-catatan" name="restok-catatan" class="textarea textarea-secondary h-24"
-          placeholder="Contoh: Kelebihan 1 anting, kekurangan 2 cincin, dll"></textarea>
-      </div>
-    </div>
-    <div class="mt-8">
-      <button class="btn btn-primary btn-block sm:btn-wide text-white" id="tambah-stok" disabled>Tambahkan Stok</button>
-    </div>
 
+      <div class="mt-8">
+        <button type="button" class="btn btn-primary btn-block sm:btn-wide text-white" id="btnTambahStok"
+          disabled>Tambahkan Stok</button>
+      </div>
+    </form>
   </div>
 </div>
 @endsection
 
 @section('script')
 <script src="{{asset('assets/app.js')}}"></script>
-<script src="{{asset('assets/barang.js')}}"></script>
+<script src="{{asset('assets/restok.js')}}"></script>
 @endsection

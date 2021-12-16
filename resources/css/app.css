@@ -56,6 +56,15 @@ div.drawer-side>ul li>a {
   /* Standard syntax */
 }
 
+.cant-block-text{
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+}
+
 .hidden-but-real {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -69,6 +78,11 @@ div.drawer-side>ul li>a {
 }
 
 #cropperjs {
+  display: block;
+  max-width: 100%;
+}
+
+#cropperWadah {
   display: block;
   max-width: 100%;
 }
@@ -99,13 +113,17 @@ input[type=number] {
   min-height: 10rem;
 }
 
+/* biasanya buat dropdown */
+.min-w-52{
+  min-width: 13rem;
+}
+
 .min-h-60{
   min-height: 15rem;
 }
 
-/* biasanya buat dropdown */
-.min-w-52{
-  min-width: 13rem;
+.min-h-64{
+  min-height: 16rem;
 }
 
 .pl-18{
@@ -138,7 +156,8 @@ div#wadah-item-penjualan input.radio:checked ~ label > span{
 
 /* Spinner ato loading */
 .loader {
-  border-top-color: #3498db;
+  /* border-top-color: #3498db; */
+  border-top-color: #4b6bfb;
   -webkit-animation: spinner 1.5s linear infinite;
   animation: spinner 1.5s linear infinite;
 }

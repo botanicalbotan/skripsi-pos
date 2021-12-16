@@ -1,5 +1,6 @@
 // tanggal statik
 // PENTING! Import abis moment.js
+// PENTING! ntar ganti ke luxon aja biar cukup 1 library
 
 // Kalau mau fungsional lainnya, cek project pasaranapp
 

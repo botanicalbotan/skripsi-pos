@@ -1,309 +1,443 @@
 @layout('layouts/master')
 
 @section('more-style')
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.css"
+  integrity="sha512-+VDbDxc9zesADd49pfvz7CgsOl2xREI/7gnzcdyA9XjuTxLXrdpuz21VVIqc5HPfZji2CypSbxx1lgD7BgBK5g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
 @endsection
 
 @section('content')
 <div class="w-full p-8">
-  <h2 class="text-4xl font-semibold">Penjualan</h2>
+  <h2 class="text-4xl font-semibold">Transaksi Penjualan</h2>
+  <h4 class="text-lg text-secondary opacity-60">Buat penjualan baru dan simpan ke dalam sistem.</h4>
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
     <div class="alert alert-info">
       <div class="flex-1 flex flex-col sm:flex-row items-center sm:items-start">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="mb-4 sm:mb-0 w-6 h-6 mx-2 stroke-current">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>                          
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          class="mb-4 sm:mb-0 w-6 h-6 mx-2 stroke-current">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <p>Item terpilih: <span class="font-medium">Gelang muda 10 gram</span> (#sd12345)</p>
+        <p>Item terpilih: <span class="font-medium">{{ kelompok.nama }}</span> (#sd12345)</p>
       </div>
       <div class="flex-none">
-        <a href="/app/penjualan" class="btn btn-ghost text-error hover:btn-error">Batal</a>
+        <a href="/app/transaksi/penjualan/" class="btn btn-ghost text-error hover:btn-error">Batal</a>
       </div>
     </div>
 
-    <div class="mt-6 flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6 ">
+    {{--  flash alert kalo ada error, perlu ada di semua form  --}}
+    @if(flashMessages.has('errorServerThingy'))
+    
+      <div class="alert alert-error">
+        <div class="flex-1">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>                      
+          </svg> 
+          <label>{{ flashMessages.get('errorServerThingy') }}</label>
+        </div>
+      </div>
 
-      <div class="w-full sm:w-3/5 space-y-10">
-        {{--  Kelompok detail perhiasan  --}}
-        <div class="space-y-4">
-          <div class="mb-4">
-            <h1 class="text-2xl font-semibold">Detail Perhiasan</h1>
-          </div>
-          <div class="form-control">
-            <label for="jual-bentuk">
-              <span class="">Bentuk</span>
-            </label>
-            <input type="text" id="jual-bentuk" name="jual-bentuk" class="input input-bordered"
-              placeholder="Contoh: Cincin" value="auto generated">
-          </div>
-          <div class="form-control">
-            <label for="jual-kadar">
-              <span class="">Kadar</span>
-            </label>
-            <input type="text" id="jual-kadar" name="jual-kadar" class="input input-bordered"
-              placeholder="Contoh: Muda" value="auto generated">
-          </div>
+    @endif
 
-          <div class="form-control">
-            <label for="jual-kode">
-              <span class="">Kode Produksi</span>
-            </label>
-            <input type="text" id="jual-kode" name="jual-kode" class="input input-bordered"
-              placeholder="Contoh: 375, D40">
-          </div>
-          <div class="form-control">
-            <label for="jual-model">
-              <span class="">Model Perhiasan</span>
-            </label>
-            <select id="jual-model" class="select select-bordered w-full max-w-xs">
-              <option disabled="disabled" selected="selected">Model untuk cincin</option>
-              <option>AD</option>
-              <option>Krincing</option>
-              <option>Shogun</option>
-            </select>
-          </div>
+    @if(flashMessages.has('errors.id'))
+    
+      <div class="alert alert-error">
+        <div class="flex-1">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>                      
+          </svg> 
+          <label>{{ flashMessages.get('errors.id') }}</label>
+        </div>
+      </div>
+      
+    @endif
 
-          <div class="form-control" x-data="{ radio: 1 }">
-            <label for="">Status Perhiasan</label>
-            <div class="flex space-x-4 mt-1 w-full sm:w-96">
-              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
-                :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
-                <input type="radio" name="jual-statusperhiasan" checked="checked" class="radio radio-primary hidden"
-                  value="normal" @click="radio = 1">
-                <span class="label-text text-base" :class="(radio == 1)? 'text-primary': 'text-secondary'">Normal</span>
+    <form action="/app/transaksi/penjualan/final" method="POST" id="formJual">
+      <div class="mt-6 flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6" x-data="{ status: 0, beratDesimal: 0,  hargaDesimal: 0, harga:{{ "["+kelompok.kadar.hargaPerGramNormal+", "+kelompok.kadar.hargaPerGramBaru+"]" }}, potongan:{{ "["+kelompok.kadar.potonganNormal+", "+kelompok.kadar.potonganBaru+"]" }}, apakahPotonganPersen: {{ kelompok.kadar.apakahPotonganPersen }}, 
+    hargaBulat: 0, totalHargaFinal: 0}">
+
+        <input type="text" name="id" id="id" class="hidden hidden-but-real" hidden value="{{ kelompok.id }}">
+        {{ csrfField() }}
+
+        <div class="w-full sm:w-3/5 space-y-10" x-init="hargaBulat = harga[status] * {{ kelompok.beratKelompok }};">
+          {{--  Kelompok detail perhiasan  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Detail Perhiasan</h1>
+            </div>
+
+            <div class="form-control max-w-md">
+              <label for="bentuk">
+                <span class="">Bentuk</span>
               </label>
-              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
-                :class="(radio == 2)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
-                <input type="radio" name="jual-statusperhiasan" class="radio radio-primary hidden" value="baru"
-                  @click="radio = 2">
-                <span class="label-text text-base" :class="(radio == 2)? 'text-primary': 'text-secondary'">Baru
-                  (N)</span>
+              <input type="text" id="bentuk" name="bentuk" class="input input-bordered" placeholder="Contoh: Cincin"
+                value="{{ kelompok.bentuk.bentuk }}" readonly>
+
+              @if(flashMessages.has('errors.bentuk'))
+                <p class="text-error">{{ flashMessages.get('errors.bentuk') }}</p>
+              @endif
+            </div>
+            <div class="form-control max-w-md">
+              <label for="jualKadar">
+                <span class="">Kadar</span>
               </label>
+              <input type="text" id="jualKadar" name="jualKadar" class="input input-bordered" placeholder="Contoh: Muda"
+                readonly value="{{ kelompok.kadar.nama }}">
+
+              @if(flashMessages.has('errors.jualKadar'))
+                <p class="text-error">{{ flashMessages.get('errors.jualKadar') }}</p>
+              @endif
             </div>
-          </div>
 
-          <div class="form-control">
-            <label for="jual-keterangan">
-              <span class="">Keterangan (contoh: banyak batu, panjang, dll)</span>
-            </label>
-            <textarea id="jual-keterangan" name="jual-keterangan" class="textarea textarea-bordered h-24"
-              placeholder="Contoh: Batu putih 3, batu hitam 1"></textarea>
-          </div>
+            <div class="form-control max-w-md">
+              <label for="jualKode">
+                <span class="">Kode Produksi</span>
+              </label>
+              <input type="text" id="jualKode" name="jualKode" class="input input-bordered"
+                placeholder="Contoh: 375, D40">
 
-        </div>
+              @if(flashMessages.has('errors.jualKode'))
+                <p class="text-error">{{ flashMessages.get('errors.jualKode') }}</p>
+              @endif
+            </div>
+            <div class="form-control">
+              <label for="jualModel">
+                <span class="">Model Perhiasan</span>
+              </label>
+              <select id="jualModel" name="jualModel" class="select select-bordered w-full max-w-xs">
+                <option value="kosong" disabled="disabled" selected="selected">Pilih model</option>
+                @if(kelompok.bentuk.models)
+                @each(model in kelompok.bentuk.models)
+                <option value="{{ model.id }}">{{ model.nama }}</option>
+                @endeach
+                @endif
+              </select>
 
-        {{--  Kelompok detail transaksi  --}}
-        <div class="space-y-4">
-          <div class="mb-4">
-            <h1 class="text-2xl font-semibold">Detail Transaksi</h1>
-          </div>
+              @if(flashMessages.has('errors.jualModel'))
+                <p class="text-error">{{ flashMessages.get('errors.jualModel') }}</p>
+              @endif
+            </div>
 
-          <div class="space-y-4 md:flex md:space-x-4 md:space-y-0 max-w-sm">
-            <div class="flex-1">
-              <div class="form-control">
-                <label for="jual-beratkelompok">
-                  <span class="">Berat Kelompok</span>
+            <div class="form-control">
+              <label for="">Status Perhiasan</label>
+              <div class="flex space-x-4 mt-1 w-full sm:w-96">
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(status == 0)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                  <input type="radio" name="jualStatusPerhiasan" checked="checked" class="radio radio-primary hidden"
+                    value="Normal"
+                    @click="status = 0; hargaBulat = harga[status] * {{ kelompok.beratKelompok }}; hargaDesimal = harga[status] * belakangKoma(beratDesimal)">
+                  <span class="label-text text-base"
+                    :class="(status == 0)? 'text-primary': 'text-secondary'">Normal</span>
                 </label>
-                <div class="relative flex w-full flex-wrap items-stretch">
-                  {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
-                  <input type="number" placeholder="0" id="jual-beratkelompok" min="0" name="jual-beratkelompok"
-                    class="uang px-3 py-3 relative input input-bordered w-full" value="14" />
-                  <span
-                    class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
-                    gram
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="flex-1">
-              <div class="form-control">
-                <label for="jual-beratsebenarnya">
-                  <span class="">Berat Sebenarnya</span>
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(status == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                  <input type="radio" name="jualStatusPerhiasan" class="radio radio-primary hidden" value="Baru"
+                    @click="status = 1; hargaBulat = harga[status] * {{ kelompok.beratKelompok }}; hargaDesimal = harga[status] * belakangKoma(beratDesimal)">
+                  <span class="label-text text-base" :class="(status == 1)? 'text-primary': 'text-secondary'">Baru
+                    (N)</span>
                 </label>
-                <div class="relative flex w-full flex-wrap items-stretch">
-                  <span
-                    class="z-10 h-full leading-snug absolute text-sm text-center flex items-center justify-center w-8 pl-3 py-3">
-                    14.
-                  </span>
-                  {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
-                  <input type="number" placeholder="0" id="jual-beratsebenarnya" min="0" name="jual-beratsebenarnya"
-                    class="uang px-3 py-3 relative input input-bordered w-full pl-10" />
-                  <span
-                    class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
-                    gram
-                  </span>
-                </div>
               </div>
+
+              @if(flashMessages.has('errors.jualStatusPerhiasan'))
+                <p class="text-error">{{ flashMessages.get('errors.jualStatusPerhiasan') }}</p>
+              @endif
             </div>
-          </div>
-          <div class="form-control">
-            <label for="jual-hargaemas">
-              <span class="">Harga Per Gram Emas <span class="text-primary">Tanggung Baru</span></span>
-            </label>
-            <input type="text" id="jual-hargaemas" name="jual-hargaemas" class="input input-bordered"
-              placeholder="Contoh: 300.000" value="auto generated">
-          </div>
-          <div class="form-control">
-            <label for="jual-potongan">
-              <span class="">Potongan Per Gram Emas <span class="text-primary">Tanggung Baru</span></span>
-            </label>
-            <input type="text" id="jual-potongan" name="jual-potongan" class="input input-bordered"
-              placeholder="Contoh: 12.000" value="auto generated">
-          </div>
-        </div>
 
-        {{--  Kelompok kondisi  --}}
-        <div class="space-y-4">
-          <div class="mb-4">
-            <h1 class="text-2xl font-semibold">Kondisi</h1>
-          </div>
-          <div class="form-control">
-            <label for="jual-kondisi">
-              <span class="">Kondisi perhiasan sebelum dijual (jika ada)</span>
-            </label>
-            <textarea type="text" id="jual-kondisi" name="jual-kondisi" class="textarea textarea-bordered h-24"
-              placeholder="Contoh: Lecet 3 tempat, hilang 1 permata"></textarea>
-          </div>
-        </div>
+            <div class="form-control max-w-md">
+              <label for="jualKeterangan">
+                <span class="">Keterangan (contoh: banyak batu, panjang, dll)</span>
+              </label>
+              <textarea id="jualKeterangan" name="jualKeterangan" class="textarea textarea-bordered h-24"
+                placeholder="Contoh: Batu putih 3, batu hitam 1"></textarea>
 
-        {{--  Kelompok foto  --}}
-        <div class="space-y-4">
-          <div class="mb-4">
-            <h1 class="text-2xl font-semibold">Foto Barang</h1>
-          </div>
-          <div class="form-control" x-data="{ adaGambar: false}">
-            <div class="w-full">
+              @if(flashMessages.has('errors.jualKeterangan'))
+                <p class="text-error">{{ flashMessages.get('errors.jualKeterangan') }}</p>
+              @endif
+            </div>
 
-              <div class="flex justify-center">
-                <div
-                  class="flex rounded-box ring-2 ring-base-300 w-full min-h-60 justify-center items-center group hover:ring-neutral relative overflow-hidden">
-                  <div class="w-full h-full bg-contain">
-                    {{--  gambar cuma buat wadah dan udah ada backgroundnya, jadi kalo gaada biarin kosong aja dan jangan kasi alternative text  --}}
-                    <img src="" id="fotoBarang" x-ref="fotoBarang" class="w-full object-contain" @error="adaGambar = false" @load="adaGambar = true">
+          </div>
+
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Berat Rill Perhiasan</h1>
+            </div>
+
+            <div class="space-y-4 md:flex md:space-x-4 md:space-y-0 max-w-sm">
+              <div class="flex-1">
+                <div class="form-control">
+                  <label for="jualBeratKelompok">
+                    <span class="">Berat Kelompok</span>
+                  </label>
+                  <div class="relative flex w-full flex-wrap items-stretch">
+                    {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
+                    <input type="number" placeholder="0" id="jualBeratKelompok" min="0" name="jualBeratKelompok"
+                      class="uang px-3 py-3 relative input input-bordered w-full" readonly
+                      value="{{ kelompok.beratKelompok }}" />
+                    <span
+                      class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
+                      gram
+                    </span>
                   </div>
-
-                  <button id="bukaKamera"
-                    class="btn btn-ghost absolute group-hover:text-white w-full h-full flex-col">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
-                    </svg>
-                    <span x-text="(adaGambar)? 'Foto Ulang': 'Ambil Foto'">Ambil Foto</span>
-                  </button>
                 </div>
               </div>
-              <div class="flex flex-col items-center mt-3">
-                <div class="flex">
-                  <button x-show="adaGambar" @click="$refs.fotoBarang.src = ''" x-ref="button-hapus" class="btn btn-sm btn-link text-error">Hapus Foto</button>
+              <div class="flex-1">
+                <div class="form-control">
+                  <label for="jualBeratDesimal">
+                    <span class="">Berat Desimal</span>
+                  </label>
+                  <div class="relative flex w-full flex-wrap items-stretch">
+                    <span
+                      class="z-10 h-full leading-snug absolute text-sm text-center flex items-center justify-center w-8 pl-3 py-3">
+                      {{ kelompok.beratKelompok +'.' }}
+                    </span>
+                    {{-- input aslinya kehidden, tp kalo ada error dilempar kesini  --}}
+                    <input type="number" x-model="beratDesimal" placeholder="0" id="jualBeratDesimal" min="0"
+                      class="uang px-3 py-3 relative input input-bordered w-full pl-8"
+                      oninput="validity.valid||(value='');" @focus="$el.value=($el.value == 0)? '':$el.value"
+                      @focusout="$el.value = ($el.value =='')? 0:$el.value; hargaDesimal = harga[status] * belakangKoma(beratDesimal)" />
+                    <span
+                      class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
+                      gram
+                    </span>
+                  </div>
+                  {{--  form aslinya ke hidden, tp dilempar kesini  --}}
+                  @if(flashMessages.has('errors.jualBeratDesimal'))
+                    <p class="text-error">{{ flashMessages.get('errors.jualBeratDesimal') }}</p>
+                  @endif
                 </div>
               </div>
             </div>
+
           </div>
+
+          {{--  Kelompok detail transaksi  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Harga dan Potongan</h1>
+            </div>
+
+            
+            <div class="form-control max-w-md">
+              <label for="jualHargaEmas">
+                <span class="">Harga Per Gram Emas <span class="text-primary">{{ kelompok.kadar.nama }} <span
+                      x-text="(status)? 'Baru (N)': 'Normal'"></span></span></span>
+              </label>
+              <input type="text" id="jualHargaEmas" name="jualHargaEmas" class="input input-bordered"
+                placeholder="Contoh: 300000" :value="harga[status]" readonly>
+
+              @if(flashMessages.has('errors.jualHargaEmas'))
+                <p class="text-error">{{ flashMessages.get('errors.jualHargaEmas') }}</p>
+              @endif
+            </div>
+            <div class="form-control max-w-md">
+              <label for="jualPotongan">
+                <span class="">Potongan Perhiasan <span class="text-primary">{{ kelompok.kadar.nama }} <span
+                      x-text="(status)? 'Baru (N)': 'Normal'"></span></span></span>
+              </label>
+              <input type="text" id="jualPotongan" name="jualPotongan" class="input input-bordered"
+                placeholder="Contoh: 12000"
+                :value="(apakahPotonganPersen)? potongan[status]+' % dari harga jual': rupiahParser(potongan[status]) + ' per gram'"
+                readonly>
+              
+              @if(flashMessages.has('errors.jualPotongan'))
+                <p class="text-error">{{ flashMessages.get('errors.jualPotongan') }}</p>
+              @endif
+            </div>
+          </div>
+
+          {{--  Kelompok kondisi  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Kondisi Perhiasan</h1>
+            </div>
+            <div class="form-control max-w-md">
+              <label for="jualKondisi">
+                <span class="">Kondisi perhiasan seperti kerusakan atau lecet (jika ada)</span>
+              </label>
+              <textarea type="text" id="jualKondisi" name="jualKondisi" class="textarea textarea-bordered h-24"
+                placeholder="Contoh: Lecet 3 tempat, hilang 1 permata"></textarea>
+              
+              @if(flashMessages.has('errors.jualKondisi'))
+                <p class="text-error">{{ flashMessages.get('errors.jualKondisi') }}</p>
+              @endif
+            </div>
+          </div>
+
+
+          {{--  Kelompok foto  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Foto Barang</h1>
+            </div>
+            <div class="form-control" x-data="{ adaGambar: false}">
+              <div class="w-full flex space-x-4">
+                <div class="flex-none w-64 h-64 p-2 rounded-box border">
+                  <div class="w-full h-full bg-base-300 rounded-box bg-contain">
+                    <div x-show="adaGambar == false" class="w-full h-full flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-secondary" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <img src="" id="fotoBarang" x-ref="fotoBarang" class="w-full object-contain"
+                      @error="adaGambar = false" @load="adaGambar = true">
+                  </div>
+                </div>
+                <div class="flex-1 space-y-4">
+                  <div>Pastikan perangkat anda dilengkapi dengan kamera untuk dapat mengambil foto. Saat mengambil foto,
+                    pastikan anda fokus pada bagian paling mencolok dari perhiasan, seperti ornamen liontin dan anting,
+                    muka cincin, muka gelang, dan lain sebagainya.</div>
+                  <div x-show="adaGambar == false" x-cloak>
+                    {{--  kalo gaada foto  --}}
+                    <button type="button" class="btn" id="bukaKamera">Ambil foto</button>
+                  </div>
+                  <div class="space-x-2" x-show="adaGambar == true" x-cloak>
+                    {{--  kalo ada foto  --}}
+                    <button type="button" class="btn" id="bukaUlangKamera">Ambil ulang</button>
+                    <button type="button" class="btn btn-error" @click="$refs.fotoBarang.src = ''; $refs.foto64.value = ''">Hapus</button>
+                  </div>
+                  <div>
+                    {{--  wadah error  --}}
+                    <textarea name="jualFotoBarangBase64" x-ref="foto64" id="fotoBarangBase64" class="hidden-but-real hidden"
+                      hidden></textarea>
+                    @if(flashMessages.has('errors.jualFotoBarangBase64'))
+                      <p class="text-error">{{ flashMessages.get('errors.jualFotoBarangBase64') }}</p>
+                    @endif
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+
+          {{--  Kelompok kepemilikan  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Kepemilikan (opsional)</h1>
+            </div>
+            <div class="form-control max-w-md">
+              <label for="jualNamaPembeli">
+                <span class="">Nama Pembeli</span>
+              </label>
+              <input type="text" id="jualNamaPembeli" name="jualNamaPembeli" class="input input-bordered"
+                placeholder="Contoh: Muhammad Arif Fadhilah">
+                
+              @if(flashMessages.has('errors.jualNamaPembeli'))
+                <p class="text-error">{{ flashMessages.get('errors.jualNamaPembeli') }}</p>
+              @endif
+            </div>
+
+            <div class="form-control" x-data="{ radio: 0 }">
+              <label for="">Gender Pembeli</label>
+              <div class="flex space-x-4 mt-1 w-full sm:w-96">
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+                  :class="(radio == 1)? 'bg-white border-primary': 'bg-white border-secondary'">
+                  <input type="radio" name="jualGenderPembeli" class="radio radio-primary hidden" value="L"
+                    @click="radio = 1">
+                  <span class="label-text font-medium text-base"
+                    :class="(radio == 1)? 'text-primary': 'text-secondary'">Laki-laki</span>
+                </label>
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+                  :class="(radio == 2)? 'bg-white border-primary': 'bg-white border-secondary'">
+                  <input type="radio" name="jualGenderPembeli" class="radio radio-primary hidden" value="P"
+                    @click="radio = 2">
+                  <span class="label-text font-medium text-base"
+                    :class="(radio == 2)? 'text-primary': 'text-secondary'">Perempuan</span>
+                </label>
+              </div>
+
+              @if(flashMessages.has('errors.jualGenderPembeli'))
+                <p class="text-error">{{ flashMessages.get('errors.jualGenderPembeli') }}</p>
+              @endif
+            </div>
+
+            <div class="form-control">
+              <label for="jualUsiaPembeli">
+                <span class="">Rentang Usia Pembeli</span>
+              </label>
+              <select id="jualUsiaPembeli" name="jualUsiaPembeli" class="select select-bordered w-full max-w-xs">
+                <option disabled="disabled" selected="selected">Rentang Usia</option>
+                <option value="1">Remaja</option>
+                <option value="2">Dewasa</option>
+                <option value="3">Lansia</option>
+              </select>
+
+              @if(flashMessages.has('errors.jualUsiaPembeli'))
+                <p class="text-error">{{ flashMessages.get('errors.jualUsiaPembeli') }}</p>
+              @endif
+            </div>
+          </div>
+
+          {{--  form tambahan  --}}
+          <div class="hidden" id="formTambahan">
+
+          </div>
+
         </div>
 
-        {{--  Kelompok kepemilikan  --}}
-        <div class="space-y-4">
-          <div class="mb-4">
-            <h1 class="text-2xl font-semibold">Kepemilikan</h1>
-          </div>
-          <div class="form-control">
-            <label for="jual-namapembeli">
-              <span class="">Nama Pembeli</span>
-            </label>
-            <input type="text" id="jual-namapembeli" name="jual-namapembeli" class="input input-bordered"
-              placeholder="Contoh: Muhammad Arif Fadhilah" value="Muhammad Arif Fadhilah">
-          </div>
+        <div class="flex-1">
+          {{--  kalau mau nambah menu samping, taro sini  --}}
+          <div class="w-full bg-base-200 lg:sticky top-10 card">
+            <div class="card-body">
+              <div class="w-full h-full space-y-8">
+                <div>
+                  <h2 class="font-semibold">Rincian Transaksi</h2>
+                  <ul id="check-list">
+                    <li class="flex">
+                      <span class="flex-1">Kadar:</span>
+                      <span class="flex-none" id="finalTeksKadar">{{ kelompok.kadar.nama }}</span>
+                    </li>
+                    <li class="flex">
+                      <span class="flex-1">Bentuk:</span>
+                      <span class="flex-none" id="finalTeksBentuk">{{ kelompok.bentuk.bentuk }}</span>
+                    </li>
+                    <li class="flex">
+                      <span class="flex-1">Berat:</span>
+                      <span class="flex-none"><span
+                          x-text="{{kelompok.beratKelompok}} + belakangKoma(beratDesimal)" id="finalTeksBerat">0</span> gram</span>
+                    </li>
+                    <li class="flex">
+                      <span class="flex-1">Status:</span>
+                      <span class="flex-none" x-text="(status)? 'Baru (N)': 'Normal'"></span>
+                    </li>
+                    <li class="flex">
+                      <span class="flex-1">Harga per gram:</span>
+                      <span class="flex-none" x-text="rupiahParser(harga[status]) +' /g'"></span>
+                    </li>
+                    <li class="flex">
+                      <span class="flex-1">Potongan:</span>
+                      <span class="flex-none"
+                        x-text="(apakahPotonganPersen)? potongan[status]+' % dari harga jual': rupiahParser(potongan[status]) + ' /g'"></span>
+                    </li>
 
-          <div class="form-control" x-data="{ radio: 1 }">
-            <label for="">Gender Pembeli</label>
-            <div class="flex space-x-4 mt-1 w-full sm:w-96">
-              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                :class="(radio == 1)? 'bg-white border-primary': 'bg-white border-secondary'">
-                <input type="radio" name="jual-genderpembeli" checked="checked" class="radio radio-primary hidden"
-                  value="lakilaki" @click="radio = 1">
-                <span class="label-text font-medium text-base"
-                  :class="(radio == 1)? 'text-primary': 'text-secondary'">Laki-laki</span>
-              </label>
-              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
-                :class="(radio == 2)? 'bg-white border-primary': 'bg-white border-secondary'">
-                <input type="radio" name="jual-genderpembeli" class="radio radio-primary hidden" value="perempuan"
-                  @click="radio = 2">
-                <span class="label-text font-medium text-base"
-                  :class="(radio == 2)? 'text-primary': 'text-secondary'">Perempuan</span>
-              </label>
+                  </ul>
+                </div>
+                <div class="flex flex-col w-full items-center">
+                  <h2 class="font-semibold text-center">Total Harga</h2>
+                  <h1 class="font-bold text-3xl text-center" id="finalTeksHarga" x-text="rupiahParser(hargaBulat + hargaDesimal)">Rp 0</h1>
+                </div>
+                <div class="space-y-4">
+                  <button type="button" class="btn btn-block btn-outline">Ajukan Tawaran</button>
+                  {{--  <a href="/app/penjualan/selesai" class="btn btn-block btn-primary text-white">Palsu</a>  --}}
+                  <button type="button" id="btnSubmit" class="btn btn-block btn-primary text-white">Simpan Transaksi</button>
+                </div>
+              </div>
             </div>
-          </div>
-
-          <div class="form-control">
-            <label for="jual-usiapembeli">
-              <span class="">Rentang Usia Pembeli</span>
-            </label>
-            <select id="jual-usiapembeli" class="select select-bordered w-full max-w-xs">
-              <option disabled="disabled" selected="selected">Rentang Usia</option>
-              <option>Remaja</option>
-              <option>Dewasa</option>
-              <option>Lansia</option>
-            </select>
           </div>
         </div>
 
       </div>
-
-      <div class="flex-1">
-        {{--  kalau mau nambah menu samping, taro sini  --}}
-        <div class="w-full bg-base-200 lg:sticky top-10 card">
-          <div class="card-body">
-            <div class="w-full h-full space-y-8">
-              <div>
-                <h2 class="font-semibold">Rincian Transaksi</h2>
-                <ul id="check-list">
-                  <li class="flex">
-                    <span class="flex-1">Kadar:</span>
-                    <span class="flex-none">Muda</span>
-                  </li>
-                  <li class="flex">
-                    <span class="flex-1">Bentuk:</span>
-                    <span class="flex-none">Cincin</span>
-                  </li>
-                  <li class="flex">
-                    <span class="flex-1">Berat:</span>
-                    <span class="flex-none">14.5 gram</span>
-                  </li>
-                  <li class="flex">
-                    <span class="flex-1">Status:</span>
-                    <span class="flex-none">Baru (N)</span>
-                  </li>
-                  <li class="flex">
-                    <span class="flex-1">Harga per gram:</span>
-                    <span class="flex-none">Rp. 400.000/g</span>
-                  </li>
-                  <li class="flex">
-                    <span class="flex-1">Potongan per gram:</span>
-                    <span class="flex-none">Rp. 13.000/g</span>
-                  </li>
-
-                </ul>
-              </div>
-              <div class="flex flex-col w-full items-center">
-                <h2 class="font-semibold text-center">Total Harga</h2>
-                <h1 class="font-bold text-3xl text-center">Rp. 2.000.000</h1>
-              </div>
-              <div class="space-y-4">
-                <button class="btn btn-block btn-outline">Ajukan Tawaran</button>
-                <a href="/app/penjualan/selesai" class="btn btn-block btn-primary text-white">Simpan Transaksi</a>
-
-                {{--  format asli tombol aslinya buttton + submit, tp sementara biar bisa pindah tempat dulu  --}}
-                {{--  <button class="btn btn-block btn-primary text-white">Simpan Transaksi</button>  --}}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
+    </form>
   </div>
 </div>
 @endsection
 
 @section('script')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js"
+  integrity="sha512-ZK6m9vADamSl5fxBPtXw6ho6A4TuX89HUbcfvxa2v2NYNT/7l8yFGJ3JlXyMN4hlNbz0il4k6DvqbIW5CCwqkw=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script src="{{asset('assets/app.js')}}"></script>
 <script src="{{asset('assets/jual.js')}}"></script>
 

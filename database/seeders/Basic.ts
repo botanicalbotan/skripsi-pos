@@ -71,31 +71,45 @@ export default class BasicSeeder extends BaseSeeder {
 
     const bentuk1 = await Bentuk.find(1)
     await bentuk1?.related('models').create({
-      nama: 'Lainnya'
+      nama: 'Model Anting Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
     const bentuk2 = await Bentuk.find(2)
     await bentuk2?.related('models').create({
-      nama: 'Lainnya'
+      nama: 'Model Cincin Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
     const bentuk3 = await Bentuk.find(3)
     await bentuk3?.related('models').create({
-      nama: 'Lainnya'
+      nama: 'Model Gelang Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
     const bentuk4 = await Bentuk.find(4)
     await bentuk4?.related('models').create({
-      nama: 'Lainnya'
+      nama: 'Model Kalung Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
     const bentuk5 = await Bentuk.find(5)
     await bentuk5?.related('models').create({
-      nama: 'Lainnya'
+      nama: 'Model Liontin Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
     const bentuk6 = await Bentuk.find(6)
     await bentuk6?.related('models').create({
-      nama: 'Lainnya'
+      nama: 'Model Tindik Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
     const bentuk7 = await Bentuk.find(7)
     await bentuk7?.related('models').create({
-      nama: 'Lainnya'
+      nama: 'Model Lain dari Bentuk Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
 
     await Kadar.createMany([

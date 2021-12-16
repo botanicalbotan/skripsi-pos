@@ -28,25 +28,25 @@ $(function () {
   });
 
   //============================================= mulai method =====================================================
-  let refreshMode = function(){
-    let nodeNormal = document.getElementsByClassName('khusus-normal')
-    let nodeQR = document.getElementsByClassName('khusus-qr')
+  // let refreshMode = function(){
+  //   let nodeNormal = document.getElementsByClassName('khusus-normal')
+  //   let nodeQR = document.getElementsByClassName('khusus-qr')
 
-    if(MODEPEMBELIAN == 1){
-      nodeNormal.forEach(nodeElement => {
-        nodeElement.classList.add('hidden')
-        nodeElement.disabled = true
-      });
-    } else{
-      nodeQR.forEach(nodeElement => {
-        nodeElement.classList.add('hidden')
-        nodeElement.disabled = true
-      });
-    }
-    // mode normal
-  }
+  //   if(MODEPEMBELIAN == 1){
+  //     nodeNormal.forEach(nodeElement => {
+  //       nodeElement.classList.add('hidden')
+  //       nodeElement.disabled = true
+  //     });
+  //   } else{
+  //     nodeQR.forEach(nodeElement => {
+  //       nodeElement.classList.add('hidden')
+  //       nodeElement.disabled = true
+  //     });
+  //   }
+  //   // mode normal
+  // }
 
-  refreshMode()
+  // refreshMode()
 
 
   // code here

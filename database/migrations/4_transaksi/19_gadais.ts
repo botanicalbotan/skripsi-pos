@@ -16,6 +16,7 @@ export default class Gadais extends BaseSchema {
       table.integer('nominal_gadai').notNullable()
       table.integer('status_gadai_id').unsigned().references('status_gadais.id').notNullable()
       table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable().onDelete('CASCADE')
+      table.dateTime('deleted_at')
 
 
       /**

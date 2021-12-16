@@ -2,7 +2,7 @@
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="list">
   <h2 class="text-4xl font-semibold">Daftar Pegawai</h2>
-  <h4 class="text-xl text-secondary">Kumpulan seluruh data pegawai yang tercatat pada sistem.</h4>
+  <h4 class="text-lg text-secondary opacity-60">Kumpulan data seluruh pegawai yang tercatat pada sistem.</h4>
 
   {{--  card utama  --}}
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
@@ -39,7 +39,7 @@
             class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
             Urutkan:
           </span>
-          <select id="pengurutan" class="select select-bordered sm:w-40 md:w-48 w-full max-w-xs pl-20 relative">
+          <select id="pengurutan" class="select select-bordered sm:w-40 md:w-60 w-full max-w-xs pl-20 relative">
             <option value="0" {{ (tambahan.pengurutan == 0)? 'selected':'' }}>Nama</option>
             <option value="1" {{ (tambahan.pengurutan == 1)? 'selected':'' }}>Gender</option>
             <option value="2" {{ (tambahan.pengurutan == 2)? 'selected':'' }}>Jabatan</option>

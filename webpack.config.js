@@ -58,14 +58,22 @@ Encore.addEntry('riwayat', './resources/js/riwayat.js')
 
 Encore.addEntry('pegawai', './resources/js/pegawai.js')
 
-// Transaksi
+// Transaksi ==============================================
+// Penjualan
 Encore.addEntry('jual', './resources/js/transaksi/jual.js')
+Encore.addEntry('base-jual', './resources/js/transaksi/base-jual.js')
+
+
 Encore.addEntry('beli', './resources/js/transaksi/beli.js')
 Encore.addEntry('beli-khusus', './resources/js/transaksi/beli-khusus.js')
 Encore.addEntry('gadai', './resources/js/transaksi/gadai.js')
 
 // Kelola Barang
+// barang kalo ntar misal ga kepake bisa diapus
 Encore.addEntry('barang', './resources/js/kelola-barang/barang.js')
+Encore.addEntry('kelompok', './resources/js/kelola-barang/kelompok.js')
+Encore.addEntry('kelompok-view', './resources/js/kelola-barang/kelompok-view.js')
+Encore.addEntry('restok', './resources/js/kelola-barang/restok.js')
 Encore.addEntry('model', './resources/js/kelola-barang/model.js')
 Encore.addEntry('kerusakan', './resources/js/kelola-barang/kerusakan.js')
 

@@ -1,0 +1,311 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+@section('content')
+<div class="w-full p-8">
+  <h2 class="text-4xl font-semibold">Penjualan</h2>
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+    <div class="alert alert-info">
+      <div class="flex-1 flex flex-col sm:flex-row items-center sm:items-start">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="mb-4 sm:mb-0 w-6 h-6 mx-2 stroke-current">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>                          
+        </svg>
+        <p>Item terpilih: <span class="font-medium">Gelang muda 10 gram</span> (#sd12345)</p>
+      </div>
+      <div class="flex-none">
+        <a href="/app/transaksi/penjualan/" class="btn btn-ghost text-error hover:btn-error">Batal</a>
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6 ">
+
+      {{ inspect(kelompok.$attributes) }}
+      <div class="w-full sm:w-3/5 space-y-10">
+        {{--  Kelompok detail perhiasan  --}}
+        <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Detail Perhiasan</h1>
+          </div>
+          <div class="form-control">
+            <label for="bentuk">
+              <span class="">Bentuk</span>
+            </label>
+            <input type="text" id="bentuk" name="bentuk" class="input input-bordered"
+              placeholder="Contoh: Cincin" value="{{ kelompok.bentuk.bentuk }}" readonly>
+          </div>
+          <div class="form-control">
+            <label for="jual-kadar">
+              <span class="">Kadar</span>
+            </label>
+            <input type="text" id="jual-kadar" name="jual-kadar" class="input input-bordered"
+              placeholder="Contoh: Muda" value="{{ kelompok.kadar.nama }}">
+          </div>
+
+          <div class="form-control">
+            <label for="jual-kode">
+              <span class="">Kode Produksi</span>
+            </label>
+            <input type="text" id="jual-kode" name="jual-kode" class="input input-bordered"
+              placeholder="Contoh: 375, D40">
+          </div>
+          <div class="form-control">
+            <label for="jual-model">
+              <span class="">Model Perhiasan</span>
+            </label>
+            <select id="jual-model" class="select select-bordered w-full max-w-xs">
+              <option disabled="disabled" selected="selected">Model untuk cincin</option>
+              <option>AD</option>
+              <option>Krincing</option>
+              <option>Shogun</option>
+            </select>
+          </div>
+
+          <div class="form-control" x-data="{ radio: 1 }">
+            <label for="">Status Perhiasan</label>
+            <div class="flex space-x-4 mt-1 w-full sm:w-96">
+              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                <input type="radio" name="jual-statusperhiasan" checked="checked" class="radio radio-primary hidden"
+                  value="normal" @click="radio = 1">
+                <span class="label-text text-base" :class="(radio == 1)? 'text-primary': 'text-secondary'">Normal</span>
+              </label>
+              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                :class="(radio == 2)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                <input type="radio" name="jual-statusperhiasan" class="radio radio-primary hidden" value="baru"
+                  @click="radio = 2">
+                <span class="label-text text-base" :class="(radio == 2)? 'text-primary': 'text-secondary'">Baru
+                  (N)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-control">
+            <label for="jual-keterangan">
+              <span class="">Keterangan (contoh: banyak batu, panjang, dll)</span>
+            </label>
+            <textarea id="jual-keterangan" name="jual-keterangan" class="textarea textarea-bordered h-24"
+              placeholder="Contoh: Batu putih 3, batu hitam 1"></textarea>
+          </div>
+
+        </div>
+
+        {{--  Kelompok detail transaksi  --}}
+        <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Detail Transaksi</h1>
+          </div>
+
+          <div class="space-y-4 md:flex md:space-x-4 md:space-y-0 max-w-sm">
+            <div class="flex-1">
+              <div class="form-control">
+                <label for="jual-beratkelompok">
+                  <span class="">Berat Kelompok</span>
+                </label>
+                <div class="relative flex w-full flex-wrap items-stretch">
+                  {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
+                  <input type="number" placeholder="0" id="jual-beratkelompok" min="0" name="jual-beratkelompok"
+                    class="uang px-3 py-3 relative input input-bordered w-full" value="14" />
+                  <span
+                    class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
+                    gram
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="form-control">
+                <label for="jual-beratsebenarnya">
+                  <span class="">Berat Sebenarnya</span>
+                </label>
+                <div class="relative flex w-full flex-wrap items-stretch">
+                  <span
+                    class="z-10 h-full leading-snug absolute text-sm text-center flex items-center justify-center w-8 pl-3 py-3">
+                    14.
+                  </span>
+                  {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
+                  <input type="number" placeholder="0" id="jual-beratsebenarnya" min="0" name="jual-beratsebenarnya"
+                    class="uang px-3 py-3 relative input input-bordered w-full pl-10" />
+                  <span
+                    class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
+                    gram
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-control">
+            <label for="jual-hargaemas">
+              <span class="">Harga Per Gram Emas <span class="text-primary">Tanggung Baru</span></span>
+            </label>
+            <input type="text" id="jual-hargaemas" name="jual-hargaemas" class="input input-bordered"
+              placeholder="Contoh: 300.000" value="auto generated">
+          </div>
+          <div class="form-control">
+            <label for="jual-potongan">
+              <span class="">Potongan Per Gram Emas <span class="text-primary">Tanggung Baru</span></span>
+            </label>
+            <input type="text" id="jual-potongan" name="jual-potongan" class="input input-bordered"
+              placeholder="Contoh: 12.000" value="auto generated">
+          </div>
+        </div>
+
+        {{--  Kelompok kondisi  --}}
+        <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Kondisi</h1>
+          </div>
+          <div class="form-control">
+            <label for="jual-kondisi">
+              <span class="">Kondisi perhiasan sebelum dijual (jika ada)</span>
+            </label>
+            <textarea type="text" id="jual-kondisi" name="jual-kondisi" class="textarea textarea-bordered h-24"
+              placeholder="Contoh: Lecet 3 tempat, hilang 1 permata"></textarea>
+          </div>
+        </div>
+
+        {{--  Kelompok foto  --}}
+        <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Foto Barang</h1>
+          </div>
+          <div class="form-control" x-data="{ adaGambar: false}">
+            <div class="w-full">
+
+              <div class="flex justify-center">
+                <div
+                  class="flex rounded-box ring-2 ring-base-300 w-full min-h-60 justify-center items-center group hover:ring-neutral relative overflow-hidden">
+                  <div class="w-full h-full bg-contain">
+                    {{--  gambar cuma buat wadah dan udah ada backgroundnya, jadi kalo gaada biarin kosong aja dan jangan kasi alternative text  --}}
+                    <img src="" id="fotoBarang" x-ref="fotoBarang" class="w-full object-contain" @error="adaGambar = false" @load="adaGambar = true">
+                  </div>
+
+                  <button id="bukaKamera"
+                    class="btn btn-ghost absolute group-hover:text-white w-full h-full flex-col">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                    </svg>
+                    <span x-text="(adaGambar)? 'Foto Ulang': 'Ambil Foto'">Ambil Foto</span>
+                  </button>
+                </div>
+              </div>
+              <div class="flex flex-col items-center mt-3">
+                <div class="flex">
+                  <button x-show="adaGambar" @click="$refs.fotoBarang.src = ''" x-ref="button-hapus" class="btn btn-sm btn-link text-error">Hapus Foto</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {{--  Kelompok kepemilikan  --}}
+        <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Kepemilikan</h1>
+          </div>
+          <div class="form-control">
+            <label for="jual-namapembeli">
+              <span class="">Nama Pembeli</span>
+            </label>
+            <input type="text" id="jual-namapembeli" name="jual-namapembeli" class="input input-bordered"
+              placeholder="Contoh: Muhammad Arif Fadhilah" value="Muhammad Arif Fadhilah">
+          </div>
+
+          <div class="form-control" x-data="{ radio: 1 }">
+            <label for="">Gender Pembeli</label>
+            <div class="flex space-x-4 mt-1 w-full sm:w-96">
+              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+                :class="(radio == 1)? 'bg-white border-primary': 'bg-white border-secondary'">
+                <input type="radio" name="jual-genderpembeli" checked="checked" class="radio radio-primary hidden"
+                  value="lakilaki" @click="radio = 1">
+                <span class="label-text font-medium text-base"
+                  :class="(radio == 1)? 'text-primary': 'text-secondary'">Laki-laki</span>
+              </label>
+              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+                :class="(radio == 2)? 'bg-white border-primary': 'bg-white border-secondary'">
+                <input type="radio" name="jual-genderpembeli" class="radio radio-primary hidden" value="perempuan"
+                  @click="radio = 2">
+                <span class="label-text font-medium text-base"
+                  :class="(radio == 2)? 'text-primary': 'text-secondary'">Perempuan</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-control">
+            <label for="jual-usiapembeli">
+              <span class="">Rentang Usia Pembeli</span>
+            </label>
+            <select id="jual-usiapembeli" class="select select-bordered w-full max-w-xs">
+              <option disabled="disabled" selected="selected">Rentang Usia</option>
+              <option>Remaja</option>
+              <option>Dewasa</option>
+              <option>Lansia</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="flex-1">
+        {{--  kalau mau nambah menu samping, taro sini  --}}
+        <div class="w-full bg-base-200 lg:sticky top-10 card">
+          <div class="card-body">
+            <div class="w-full h-full space-y-8">
+              <div>
+                <h2 class="font-semibold">Rincian Transaksi</h2>
+                <ul id="check-list">
+                  <li class="flex">
+                    <span class="flex-1">Kadar:</span>
+                    <span class="flex-none">Muda</span>
+                  </li>
+                  <li class="flex">
+                    <span class="flex-1">Bentuk:</span>
+                    <span class="flex-none">Cincin</span>
+                  </li>
+                  <li class="flex">
+                    <span class="flex-1">Berat:</span>
+                    <span class="flex-none">14.5 gram</span>
+                  </li>
+                  <li class="flex">
+                    <span class="flex-1">Status:</span>
+                    <span class="flex-none">Baru (N)</span>
+                  </li>
+                  <li class="flex">
+                    <span class="flex-1">Harga per gram:</span>
+                    <span class="flex-none">Rp. 400.000/g</span>
+                  </li>
+                  <li class="flex">
+                    <span class="flex-1">Potongan per gram:</span>
+                    <span class="flex-none">Rp. 13.000/g</span>
+                  </li>
+
+                </ul>
+              </div>
+              <div class="flex flex-col w-full items-center">
+                <h2 class="font-semibold text-center">Total Harga</h2>
+                <h1 class="font-bold text-3xl text-center">Rp. 2.000.000</h1>
+              </div>
+              <div class="space-y-4">
+                <button class="btn btn-block btn-outline">Ajukan Tawaran</button>
+                <a href="/app/penjualan/selesai" class="btn btn-block btn-primary text-white">Simpan Transaksi</a>
+
+                {{--  format asli tombol aslinya buttton + submit, tp sementara biar bisa pindah tempat dulu  --}}
+                {{--  <button class="btn btn-block btn-primary text-white">Simpan Transaksi</button>  --}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/jual.js')}}"></script>
+
+@endsection

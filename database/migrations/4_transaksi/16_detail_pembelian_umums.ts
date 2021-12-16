@@ -19,6 +19,7 @@ export default class DetailPembelianUmums extends BaseSchema {
         'P'
       ]).nullable()
       table.integer('rentang_usia_id').unsigned().references('rentang_usias.id')
+      table.dateTime('deleted_at')
 
 
       /**

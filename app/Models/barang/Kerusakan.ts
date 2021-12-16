@@ -5,10 +5,15 @@ import {
   BelongsTo,
   belongsTo,
   manyToMany,
-  ManyToMany
+  ManyToMany,
+  beforeFetch,
+  beforeFind,
+  ModelQueryBuilderContract
 } from '@ioc:Adonis/Lucid/Orm'
 import Bentuk from 'App/Models/barang/Bentuk'
 import Pembelian from '../transaksi/Pembelian'
+
+type KerusakanQuery = ModelQueryBuilderContract<typeof Kerusakan>
 
 export default class Kerusakan extends BaseModel {
   @column({ isPrimary: true })
@@ -25,6 +30,9 @@ export default class Kerusakan extends BaseModel {
 
   @column()
   public ongkosNominal: number
+
+  @column.dateTime({ serializeAs: null })
+  public deletedAt: DateTime
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
@@ -54,4 +62,10 @@ export default class Kerusakan extends BaseModel {
     ]
   })
   public pembelians: ManyToMany<typeof Pembelian>
+
+  @beforeFetch()
+  @beforeFind()
+  public static withoutSoftDeletes(query: KerusakanQuery) {
+    query.whereNull('deleted_at')
+  }
 }

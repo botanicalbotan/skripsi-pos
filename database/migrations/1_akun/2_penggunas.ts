@@ -25,6 +25,7 @@ export default class Penggunas extends BaseSchema {
       table.string('foto')
       table.date('tanggal_gajian').notNullable()
       table.integer('gaji_bulanan').notNullable()
+      table.dateTime('deleted_at')
 
 
       /**

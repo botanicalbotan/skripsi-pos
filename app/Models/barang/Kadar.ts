@@ -36,7 +36,7 @@ export default class Kadar extends BaseModel {
   public apakahPotonganPersen: boolean
 
 
-  @column.dateTime({ autoCreate: true })
+  @column.dateTime({ autoCreate: true, serializeAs: null })
   public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })

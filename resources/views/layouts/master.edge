@@ -10,8 +10,10 @@
   <link rel="stylesheet" type="text/css" href="{{ asset('assets/app.css') }}">
   {{--  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>  --}}
   <script defer src="https://unpkg.com/alpinejs@3.4.2/dist/cdn.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css" />
-  <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+  {{--  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@5.3.6/dist/simplebar.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/simplebar@5.3.6/dist/simplebar.min.js"></script>  --}}
+  
+  
   @!section('more-style')
 </head>
 
@@ -71,7 +73,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
             </svg>
-            Transaksi V1
+            Transaksi
             <svg xmlns="http://www.w3.org/2000/svg" class="doorknob h-5 w-5 absolute right-4" fill="none"
               viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
@@ -84,7 +86,7 @@
           x-transition:leave-end="opacity-0 scale-95" class="hidden-till-open bg-gray-100">
           <ul>
             <li>
-              <a href="/app/penjualan">
+              <a href="/app/transaksi/penjualan">
                 Penjualan</a>
             </li>
             <li>
@@ -107,7 +109,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z" />
             </svg>
-            Transaksi V2
+            Riwayat Transaksi
             <svg xmlns="http://www.w3.org/2000/svg" class="doorknob h-5 w-5 absolute right-4" fill="none"
               viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
@@ -117,12 +119,16 @@
         <li x-cloak x-show="open2" x-transition:enter="transition ease-out duration-100 transform"
           x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
           x-transition:leave="transition ease-in duration-75 transform" x-transition:leave-start="opacity-100 scale-100"
-          x-transition:leave-end="opacity-0 scale-95" class="hidden-till-open">
-          <ul class="ml-2">
-            <li><a href="#" class="true-partial-right-rounded border-l-2 border-gray-300">Jual</a></li>
-            <li><a href="#" class="true-partial-right-rounded border-l-2 border-gray-300">Beli</a></li>
-            {{--  <li><a href="#" class="true-partial-right-rounded border-l-2 border-gray-300">Cuci</a></li>  --}}
-            <li><a href="#" class="true-partial-right-rounded border-l-2 border-gray-300">Gadai</a></li>
+          x-transition:leave-end="opacity-0 scale-95" class="hidden-till-open bg-gray-100">
+          <ul>
+            <li>
+              <a href="/app/transaksi/penjualan">
+                Penjualan</a>
+            </li>
+            <li>
+              <a href="/app/pembelian">
+                Pembelian</a>
+            </li>
           </ul>
         </li>
         <li>
@@ -133,15 +139,6 @@
                 d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
             </svg>
             Pembukuan Kas</a>
-        </li>
-        <li>
-          <a href="/app/riwayat">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z" />
-            </svg>
-            Riwayat Transaksi</a>
         </li>
         <li>
           <a href="/app/barang/">

@@ -15,7 +15,7 @@ export default class Penjualans extends BaseSchema {
       table.float('berat_sebenarnya').notNullable()
       table.string('kondisi', 100)
       table.string('foto_barang')
-      table.string('potongan_deksripsi', 20).notNullable()
+      table.string('potongan_deskripsi', 30).notNullable()
       table.integer('potongan_nominal').notNullable()
       table.integer('harga_jual_akhir').notNullable()
       table.string('nama_pemilik', 50)
@@ -25,6 +25,7 @@ export default class Penjualans extends BaseSchema {
       ]).nullable()
       table.integer('rentang_usia_id').unsigned().references('rentang_usias.id')
       table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable().onDelete('CASCADE')
+      table.dateTime('deleted_at')
 
 
       /**

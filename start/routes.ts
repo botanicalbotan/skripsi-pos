@@ -32,45 +32,13 @@ Route.group(() => {
   Route.get('/', async ({ view }) => {
     return view.render('index')
   })
-  Route.get('/riwayat', async ({ view }) => {
-    return view.render('riwayat/base')
-  })
+
   Route.get('/pengaturan', async ({ view }) => {
     return view.render('pengaturan/base')
   })
 
   Route.group(() => {
     // sementara buat transaksi
-    Route.get('/', async ({ view }) => {
-      return view.render('transaksi/penjualan/base', {
-        test: [
-          'a',
-          'b',
-          'c',
-          'd',
-          'e',
-          'f',
-          'g',
-          'h',
-          'i',
-          'j',
-          'k',
-          'l',
-          'm',
-          'n',
-          'o',
-          'p',
-          'i',
-          'j',
-          'k',
-          'l',
-          'm',
-          'n',
-          'o',
-          'p',
-        ],
-      })
-    })
 
     Route.get('/transaksi', async ({ view }) => {
       return view.render('transaksi/penjualan/phase2')
@@ -110,12 +78,38 @@ Route.group(() => {
     
   }).prefix('pembelian')
 
+  Route.group(() => {
+    // ntar pindah ke constructor
+    Route.get('/penjualan', async ({ view }) => {
+      return view.render('riwayat/penjualan/list-riwayat-penjualan')
+    })
+  }).prefix('riwayat')
+
+
+  Route.group(() => {
+    // sementara gini dulu, ttar dipisah lagi soalnya masih butuh
+    /**
+     * - phase 1, 2, 3
+     * - screen selesai
+     * - kemungkinan ga perlu edit
+     */
+    Route.get('/penjualan/next', 'transaksi/PenjualansController.phase2')
+    Route.post('/penjualan/final', 'transaksi/PenjualansController.phase3')
+
+    // Route.get('/penjualan/next', async ({ response }) => {
+    //   return response.redirect().toPath('/app/transaksi/penjualan')
+    // })
+    Route.get('/penjualan/final', async ({ response }) => {
+      return response.redirect().toPath('/app/transaksi/penjualan')
+    })
+
+    Route.resource('penjualan', 'transaksi/PenjualansController').only(['index', 'destroy'])
+  }).prefix('transaksi')
   
   Route.get('/gadai', async ({ view }) => {
     return view.render('transaksi/gadai')
   })
 
-  // Rute buat ngatur barang
   Route.group(() => {
     Route.get('/', async ({ view }) => {
       return view.render('kas/base')
@@ -129,29 +123,47 @@ Route.group(() => {
 
   // Rute buat ngatur barang
   Route.group(() => {
-    Route.get('/', async ({ view }) => {
-      return view.render('barang/base')
-    })
+    Route.get('/', 'barang/KelompoksController.index')
+
+    // kelompok indexnya jadi di base barang
+    Route.resource('kelompok', 'barang/KelompoksController').except(['index'])
+    Route.resource('model', 'barang/ModelsController')
+    Route.resource('kerusakan', 'barang/KerusakansController')
+
+
     // ntar kudu pake id
-    Route.get('/detail', async ({ view }) => {
-      return view.render('barang/detail')
-    })
+    // Route.get('/detail', async ({ view }) => {
+    //   return view.render('barang/detail')
+    // })
 
     Route.get('/restok', async ({ view }) => {
       return view.render('barang/restok')
     })
+    Route.post('/restok', 'barang/KelompoksController.restokPerhiasan')
 
-    // lebih ringkes pake resource
-    Route.resource('models', 'barang/ModelsController')
-    Route.resource('kerusakan', 'barang/KerusakansController')
+    // Route.get('/bukuRekap', async ({ view }) => {
+    //   return view.render('barang/bukurekap')
+    // })
 
-    Route.get('/bukuRekap', async ({ view }) => {
-      return view.render('barang/bukurekap')
-    })
+    // Route.get('/listKerusakan', async ({ view }) => {
+    //   return view.render('barang/list-rusak')
+    // })
 
-    Route.get('/listKerusakan', async ({ view }) => {
-      return view.render('barang/list-rusak')
-    })
+    Route.group(()=>{
+      // general
+      Route.get('/kadarBentuk', 'barang/KelompoksController.getKadarBentuk')
+
+      // view kelompok
+      Route.get('/peringkatKelompok', 'barang/KelompoksController.peringkatKelompokAll')
+      Route.get('/peringkatKelompok/:id', 'barang/KelompoksController.peringkatKelompok')
+      Route.get('/sebaranData/:id', 'barang/KelompoksController.sebaranData')
+
+
+      // restok
+      Route.get('/modelDenganInput', 'barang/KelompoksController.getModelDenganInput')
+
+    }).prefix('/cumaData')
+
   }).prefix('/barang')
 
   // Rute buat ngatur pegawai
@@ -168,6 +180,9 @@ Route.group(() => {
   //   })
   // }).prefix('/pegawai')
 
+  // resource gabisa pake prefix!
+  // kalau mau pisah yang resource sama specific (kek dibawah ini)
+  Route.put('/pegawai/:id/status', 'akun/PegawaisController.ubahStatus')
   Route.resource('/pegawai', 'akun/PegawaisController')
 
 
@@ -223,33 +238,6 @@ Route.get('/landing', async ({ view }) => {
 
 Route.post('/dump', async ({ request }) => {
   return request.body()
-})
-
-// Test aja
-Route.post('/getKoleksiData', async () => {
-  // di method aslinya, pake post karna ada paramter buat emas yang dipilih
-  return [
-    {
-      gram: 1,
-      stok: 2,
-    },
-    {
-      gram: 2,
-      stok: 2,
-    },
-    {
-      gram: 3,
-      stok: 6,
-    },
-    {
-      gram: 4,
-      stok: 1,
-    },
-    {
-      gram: 5,
-      stok: 2,
-    },
-  ]
 })
 
 

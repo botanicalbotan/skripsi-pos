@@ -15,6 +15,7 @@ export default class Pembelians extends BaseSchema {
       table.string('keterangan', 100)
       table.integer('harga_beli_akhir').notNullable()
       table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable().onDelete('CASCADE')
+      table.dateTime('deleted_at')
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

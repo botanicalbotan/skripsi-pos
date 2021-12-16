@@ -7,12 +7,18 @@ import {
   HasMany,
   hasMany,
   manyToMany,
-  ManyToMany
+  ManyToMany,
+  ModelQueryBuilderContract,
+  beforeFetch,
+  beforeFind,
+  scope
 } from '@ioc:Adonis/Lucid/Orm'
 import Kadar from 'App/Models/barang/Kadar'
 import Bentuk from 'App/Models/barang/Bentuk'
 import Penjualan from 'App/Models/transaksi/Penjualan'
 import RekapRestok from 'App/Models/barang/RekapRestok'
+
+type KelompokQuery = ModelQueryBuilderContract<typeof Kelompok>
 
 export default class Kelompok extends BaseModel {
   @column({ isPrimary: true })
@@ -32,6 +38,9 @@ export default class Kelompok extends BaseModel {
 
   @column()
   public stok: number
+
+  @column.dateTime()
+  public deletedAt: DateTime
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
@@ -65,4 +74,17 @@ export default class Kelompok extends BaseModel {
     pivotColumns: ['perubahan_stok']
   })
   public rekapRestoks: ManyToMany<typeof RekapRestok>
+
+
+  @beforeFetch()
+  @beforeFind()
+  public static withoutSoftDeletes(query: KelompokQuery) {
+    query.whereNull('deleted_at')
+  }
+
+
+  // ========================================== Ini scope ====================================================
+  public static adaStokTidakDihapus = scope((query)=>{
+    query.where('stok', '>', 0).andWhereNull('deleted_at')
+  })
 }

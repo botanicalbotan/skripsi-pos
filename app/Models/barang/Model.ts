@@ -5,11 +5,16 @@ import {
   BelongsTo,
   belongsTo,
   hasMany,
-  HasMany
+  HasMany,
+  beforeFetch,
+  beforeFind,
+  ModelQueryBuilderContract
 } from '@ioc:Adonis/Lucid/Orm'
 import Bentuk from 'App/Models/barang/Bentuk'
 import Penjualan from 'App/Models/transaksi/Penjualan'
 import Pembelian from 'App/Models/transaksi/Pembelian'
+
+type ModelQuery = ModelQueryBuilderContract<typeof Model>
 
 export default class Model extends BaseModel {
   @column({ isPrimary: true })
@@ -20,6 +25,12 @@ export default class Model extends BaseModel {
 
   @column()
   public deskripsi: string
+
+  @column({ serializeAs: null })
+  public apakahPlaceholder: boolean
+
+  @column.dateTime({ serializeAs: null })
+  public deletedAt: DateTime
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
@@ -39,4 +50,10 @@ export default class Model extends BaseModel {
 
   @hasMany(() => Pembelian)
   public pembelians: HasMany<typeof Pembelian>
+
+  @beforeFetch()
+  @beforeFind()
+  public static withoutSoftDeletes(query: ModelQuery) {
+    query.whereNull('deleted_at')
+  }
 }

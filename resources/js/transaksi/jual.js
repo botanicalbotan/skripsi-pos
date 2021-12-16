@@ -1,29 +1,16 @@
-const {
-  default: Swal
-} = require("sweetalert2");
-
-let printHTML = function () {
-  return `
-        <div class="space-y-4">
-            <video autoplay muted playsinline class="border w-full"></video>
-            <div class="flex justify-center">
-                <select class="select select-bordered w-full max-w-xs" id="sumberVideo">
-                </select>
-            </div>
-        </div>
-    `
-}
+const { default: Swal } = require("sweetalert2");
 
 $(function () {
 
-  // atau on change, liat kebutuhan
-  $("input[type='radio'][name='gender-pegawai']").on('click', function () {
-    console.log($("input[type='radio'][name='gender-pegawai']:checked").val())
-  });
-
-  $('button#bukaKamera').on('click', function () {
+  let btnBukaKamera = document.getElementById('bukaKamera')
+  btnBukaKamera.addEventListener('click', (e) => {
     bukaKamera()
-  });
+  })
+
+  let btnBukaUlangKamera = document.getElementById('bukaUlangKamera')
+  btnBukaUlangKamera.addEventListener('click', (e) => {
+    bukaKamera()
+  })
 
   let bukaKamera = function () {
     Swal.fire({
@@ -76,13 +63,13 @@ $(function () {
             }
           };
           return navigator.mediaDevices.getUserMedia(constraints).
-          then(gotStream).catch(handleError);
+            then(gotStream).catch(handleError);
         }
 
         function gotStream(stream) {
           window.stream = stream; // make stream available to console
           videoSelect.selectedIndex = [...videoSelect.options].
-          findIndex(option => option.text === stream.getVideoTracks()[0].label);
+            findIndex(option => option.text === stream.getVideoTracks()[0].label);
           videoElement.srcObject = stream;
         }
 
@@ -119,7 +106,7 @@ $(function () {
   }
 
 
-  let hasilKamera = function (url) {
+  let hasilKamera = function (gambar) {
     Swal.fire({
       showConfirmButton: true,
       showDenyButton: true,
@@ -129,19 +116,182 @@ $(function () {
       confirmButtonText: 'Gunakan',
       confirmButtonColor: '#4b6bfb',
       title: 'Gunakan Foto Ini?',
-      imageUrl: (url) ? url : 'https://unsplash.it/400/200',
+      imageUrl: gambar,
       imageWidth: 400,
       imageAlt: 'Custom image',
     }).then((hasil) => {
       if (hasil.isConfirmed) {
-          let fotoBarang = document.getElementById('fotoBarang')
-          fotoBarang.src = url
+        cropGambar(gambar)
       }
-
       if (hasil.isDenied) {
         bukaKamera()
       }
     })
   }
 
+  // 
+  let cropGambar = function (imgData) {
+
+    Swal.fire({
+      title: 'Pratinjau Pemotongan Gambar',
+      html: `
+            <div>
+              <img id="cropperWadah" src="` + imgData + `">
+            </div>
+          `,
+      showCancelButton: true,
+      willOpen: () => {
+        const image = Swal.getPopup().querySelector('#cropperWadah')
+        const cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+          autoCropArea: 0,
+          scalable: false,
+          zoomable: false,
+          movable: false,
+          minCropBoxWidth: 200,
+          minCropBoxHeight: 200,
+        })
+
+        const confirmButton = Swal.getPopup().querySelector('button.swal2-confirm')
+        confirmButton.addEventListener('click', () => {
+          Swal.showLoading()
+
+        // ngeinput gambar ke image tag, masih belum nemu cara yang bagus
+          let fotoBarang = document.getElementById('fotoBarang')
+          fotoBarang.src = cropper.getCroppedCanvas().toDataURL()
+          document.getElementById('fotoBarangBase64').value = cropper.getCroppedCanvas().toDataURL()
+
+          if (document.getElementsByClassName('pesanerror').length > 0) global.removeElementsByClass('pesanerror')
+        })
+
+      },
+    }).then((result) => {
+      // $('div#wadahInputFoto').load(' div#wadahInputFoto > * ')
+      if (result.isConfirmed) {
+        console.log('berhasil')
+      }
+    })
+
+  }
+
+  // basic
+  let formJual = document.getElementById('formJual')
+  let btnSubmit = document.getElementById('btnSubmit')
+  let formTambahan = document.getElementById('formTambahan')
+
+  // input penting
+  let idKelompok = document.getElementById('id')
+  let model = document.getElementById('jualModel')
+  let fotoBarang = document.getElementById('fotoBarang')
+  let fotoBarangBase64 = document.getElementById('fotoBarangBase64')
+
+  // side menu
+  let finalTeksKadar = document.getElementById('finalTeksKadar')
+  let finalTeksBentuk = document.getElementById('finalTeksBentuk')
+  let finalTeksBerat = document.getElementById('finalTeksBerat')
+  let finalTeksHarga = document.getElementById('finalTeksHarga')
+
+  btnSubmit.addEventListener('click', (e) => {
+    if (!idKelompok.value || idKelompok.value == '') {
+      Swal.fire({
+        title: 'Error!',
+        html: 'Kelompok yang anda pilih tidak valid, kembali ke menu pemilihan kelompok',
+        icon: 'error',
+        timer: 2000,
+        confirmButtonText: 'Tutup'
+      }).then(() => {
+        window.location = "/app/transaksi/penjualan"
+      })
+    }
+
+
+    let errorMsg = document.createElement('p')
+    errorMsg.classList.add('text-error', 'pesanerror')
+
+    if (model.value === 'kosong') {
+      e.preventDefault()
+      model.classList.add('ring', 'ring-error')
+      errorMsg.innerText = 'Pilih salah satu model perhiasan!'
+      if (document.getElementsByClassName('pesanerror').length == 0) model.after(errorMsg)
+      model.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "nearest"
+      });
+
+      model.addEventListener('change', function () {
+        if (model.value && model.value !== 'kosong') {
+          model.classList.remove('ring', 'ring-error')
+          global.removeElementsByClass('pesanerror')
+        }
+      })
+    }
+    else if (!fotoBarangBase64.value || fotoBarangBase64.value == '' || fotoBarang.src == '' || fotoBarang.src == window.location.href) {
+      errorMsg.innerText = 'Anda harus mengambil gambar!'
+      if (document.getElementsByClassName('pesanerror').length == 0) fotoBarangBase64.after(errorMsg)
+      fotoBarang.parentElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "nearest"
+      });
+    }
+    else {
+      Swal.fire({
+        title: 'Simpan Transaksi?',
+        html: 'Anda akan menyimpan transaksi penjualan <b>'+ finalTeksBentuk.innerText +' '+ finalTeksKadar.innerText +' '+ model.options[model.selectedIndex].text +'</b> seberat <b>'+ finalTeksBerat.innerText +'</b> gram dengan harga <b>' + finalTeksHarga.innerText +'</b>',
+        icon: 'question',
+        // iconColor: '#Dc3741',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, simpan!',
+        cancelButtonText: 'Batal',
+        didOpen: () => {
+          Swal.getCancelButton().focus()
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          btnSubmit.disabled = true
+
+          let beratDesimalAsli = document.createElement('input')
+          beratDesimalAsli.type = 'number'
+          beratDesimalAsli.name = 'jualBeratDesimal'
+          beratDesimalAsli.hidden = true
+          beratDesimalAsli.classList.add('hidden', 'hidden-but-real')
+          beratDesimalAsli.value = belakangKoma(document.getElementById('jualBeratDesimal').value)
+
+          formTambahan.append(beratDesimalAsli)
+          formJual.submit()
+          
+        }
+      })
+    }
+
+  })
+
 })
+
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+
+
+let printHTML = function () {
+  return `
+        <div class="space-y-4">
+            <video autoplay muted playsinline class="border w-full"></video>
+            <div class="flex justify-center">
+                <select class="select select-bordered w-full max-w-xs" id="sumberVideo">
+                </select>
+            </div>
+        </div>
+    `
+}

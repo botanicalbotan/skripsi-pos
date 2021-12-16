@@ -216,7 +216,7 @@ export default class TestsController {
     const page = request.input('page', 1)
     const order = request.input('ob', 0)
     const cari = request.input('cari', '')
-    const sanitizedOrder = order >= opsiOrder.length || order < 0 ? 0 : order
+    const sanitizedOrder = order < opsiOrder.length && order >= 0 && order? order : 0
     const limit = 10
 
     const datatest = await Database.from('tests')
@@ -224,14 +224,26 @@ export default class TestsController {
         query.where('nama', 'like', `%${cari}%`)
       })
       .orderBy(opsiOrder[sanitizedOrder], 'asc')
+      .orderBy('nama')
       .paginate(page, limit)
 
     datatest.baseUrl('/app/test/paginationv1')
 
-    datatest.queryString({ ob: sanitizedOrder })
-    if (cari !== '') {
-      datatest.queryString({ ob: sanitizedOrder, cari: cari })
+    let qs = {
+      ob: sanitizedOrder
     }
+
+    if(cari !== ''){
+      qs['cari'] = cari
+    }
+
+    datatest.queryString(qs)
+
+
+    // datatest.queryString({ ob: sanitizedOrder })
+    // if (cari !== '') {
+    //   datatest.queryString({ ob: sanitizedOrder, cari: cari })
+    // }
 
     // kalau mau mulai dari sini bisa dibikin fungsi sendiri
     // input bisa pagination object + panjang page yang mau di display

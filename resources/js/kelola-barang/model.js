@@ -1,69 +1,114 @@
 import Swal from "sweetalert2";
 
 $(function () {
-  // code here
+  if ($('.base-page').data('pagename') == "list") {
+    const BASEURL = window.location.pathname
+    const qsParam = new URLSearchParams(window.location.search)
+    const pengurutan = document.querySelector('select#pengurutan')
+    const pencarian = document.querySelector('input#pencarian')
+    const hapuscari = document.getElementById('hapusPencarian')
 
-  $('button#aturTabel').on('click', function () {
-    //   Kemungkinan ini bakal jadi standar
-    Swal.fire({
-      title: 'Atur Tabel Pembukuan',
-      confirmButtonText: 'Terapkan',
-      showCancelButton: true,
-      cancelButtonText: 'Batal',
-      confirmButtonColor: '#4b6bfb',
-      html: printAturTabelHTML(),
-      willOpen: () => {
-        // Ambil data sort yang ada di query string URL. kalo gaada berarti default 
-      },
-      preConfirm: () => {
-        // sanitize input dulu sebelum kirim data ke server via GET
-        // make GET biar ada query stringnya
+    function persiapanKirim() {
+      if (qsParam.get('cari') === null || pencarian.value === '') {
+        qsParam.delete('cari')
       }
+      qsParam.delete('page')
+      window.location = BASEURL + '?' + qsParam.toString()
+    }
+
+    pengurutan.addEventListener("change", function () {
+      if (qsParam.has('ob')) {
+        qsParam.set('ob', pengurutan.value)
+      } else {
+        qsParam.append('ob', pengurutan.value)
+      }
+      persiapanKirim()
+    });
+
+    pencarian.addEventListener("keyup", function (event) {
+      if (event.key === "Enter") {
+        if (pencarian.value !== '' && pencarian.value) {
+          if (qsParam.has('cari')) {
+            qsParam.set('cari', pencarian.value)
+          } else {
+            qsParam.append('cari', pencarian.value)
+          }
+          persiapanKirim()
+        }
+      }
+    });
+
+    hapuscari.addEventListener("click", function () {
+      pencarian.value = ''
+      persiapanKirim()
+    });
+  }
+
+  // ========================================== detail ===========================================
+  if ($('.base-page').data('pagename') == "detail") {
+    const BASEURL = window.location.pathname
+    const formModel = document.getElementById('formModel')
+    const hapusModel = document.getElementById('hapusModel')
+    const namaModel = document.getElementById('namaModel')
+
+    var missing = {
+      addEventListener: function() {}
+    };  // a "null" element
+
+    // kalo elemen gaada, dia ngebind ke elemen kosongan
+    (hapusModel || missing).addEventListener('click', (e) => {
+      formModel.action = BASEURL + '?_method=DELETE'
+      
+      Swal.fire({
+        title: 'Yakin untuk menghapus?',
+        text: 'Anda akan menghapus model "'+namaModel.innerText+'", dan model yang dihapus tidak dapat dikembalikan.',
+        icon: 'question',
+        // iconColor: '#Dc3741',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#Dc3741',
+        didOpen: ()=>{
+          Swal.getCancelButton().focus()
+        }
+      }).then((result)=>{
+        if(result.isConfirmed) formModel.submit()
+      })
+      
     })
-  });
+
+  }
+
+  // ========================================== edit ===========================================
+  if ($('.base-page').data('pagename') == "edit") {
+    const formModel = document.getElementById('formModel')
+    const editModel = document.getElementById('editModel')
+
+    editModel.addEventListener('click', (e) => {
+      formModel.action = formModel.action + '?_method=PUT'
+      // formModel.action = '/app/test/dump'
+      
+      Swal.fire({
+        title: 'Yakin untuk mengubah?',
+        text: 'Pastikan data yang anda isikan sudah benar!',
+        icon: 'question',
+        // iconColor: '#Dc3741',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, ubah!',
+        cancelButtonText: 'Batal',
+        didOpen: ()=>{
+          Swal.getCancelButton().focus()
+        }
+      }).then((result)=>{
+        if(result.isConfirmed) formModel.submit()
+        // console.log(formModel.action)
+      })
+      
+    })
+
+    formModel.addEventListener('submit', (e) => {
+      if(!formModel.reportValidity()) e.preventDefault()
+    })
+
+  }
 })
-
-let printAturTabelHTML = function () {
-
-  const htmlAddStock = `
-                <div class="w-full px-6 space-y-6 flex flex-col text-left" >
-                  
-                  <div class="form-control">
-                      <label for="swal-sort">Urutkan Tabel Berdasarkan</label>
-                      <select id="swal-sort" class="select select-bordered w-full max-w-md swal mt-2">
-                          <option value="nama">Nama Model</option> 
-                          <option value="bentuk">Bentuk</option> 
-                          <option value="deskripsi">Deskripsi (alfabet)</option>
-                      </select>
-                      <div class="flex space-x-4 mt-2" x-data="{ radio: 1 }">
-                          <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
-                              :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
-                              <input type="radio" name="swal-arahsort" checked="checked" class="radio radio-primary hidden"
-                              value="asc" @click="radio = 1">
-                              <span class="label-text text-base flex items-center"
-                              :class="(radio == 1)? 'text-primary': 'text-secondary'">
-                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                      <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" />
-                                  </svg>
-                                  A - Z
-                              </span>
-                          </label>
-                          <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
-                              :class="(radio == 2)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
-                              <input type="radio" name="swal-arahsort" class="radio radio-primary hidden" value="desc"
-                              @click="radio = 2">
-                              <span class="label-text text-base flex items-center"
-                              :class="(radio == 2)? 'text-primary': 'text-secondary'">
-                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                      <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
-                                  </svg>
-                                  Z - A
-                              </span>
-                          </label>
-                      </div>
-                  </div>
-                    
-              </div>
-            `
-  return htmlAddStock
-}

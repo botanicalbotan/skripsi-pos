@@ -5,8 +5,30 @@ import '../css/app.css'
 global.moment = require('moment')
 import 'moment/locale/id'
 moment.locale('id')
+// PENTING: Moment bisa diganti luxon / vanilla date, fungsionalitasnya sama!
 
 const pasaran = require('./pasaran')
+// const { default: Swal } = require("sweetalert2")
+
+// // ntar kalo bisa ini dikasi global, biar bisa dipanggil semua
+// const Toast = Swal.mixin({
+//   toast: true,
+//   position: 'top-end',
+//   showConfirmButton: false,
+//   timer: 3000,
+//   timerProgressBar: true,
+//   didOpen: (toast) => {
+//     toast.addEventListener('mouseenter', Swal.stopTimer)
+//     toast.addEventListener('mouseleave', Swal.resumeTimer)
+//   }
+// })
+
+/** Gini cara makenya */
+// Toast.fire({
+//   icon: 'error',
+//   title: 'Anda harus memilih salah satu kelompok!'
+// })
+
 global.pasaranBerformat = function(){
     return capsFirstWord(pasaran.pasaranHariIni())
 }
@@ -39,4 +61,19 @@ global.rupiahParser = function(number){
 global.numberOnlyParser = function(stringnumber){
     let final = stringnumber.replace(/\D/gi, '')
     return parseInt(final)
+}
+
+global.removeElementsByClass = function (className){
+    const elements = document.getElementsByClassName(className);
+    while(elements.length > 0){
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+}
+
+global.belakangKoma = function(number){
+    return number / Math.pow(10, number.toString().replace(/\D/gi, '').length)
+}
+
+global.isEmptyObject = function (obj) {
+    return (obj && Object.keys(obj).length === 0 && Object.getPrototypeOf(obj) === Object.prototype)
 }
