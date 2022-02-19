@@ -104,6 +104,27 @@ Route.group(() => {
     })
 
     Route.resource('penjualan', 'transaksi/PenjualansController').only(['index', 'destroy'])
+
+
+    // ini buat sementara, tp yang paling gampang buat sekarang
+    Route.post('/pembelian/QR', 'transaksi/PembeliansController.indexQR')
+    Route.get('/pembelian/QR', async ({ response }) => {
+      return response.redirect().toPath('/app/pembelian/transaksiumum')
+    })
+    // ini buat nata dulu
+    // Route.get('/pembelian/QR', async ({ view })=>{
+    //   return view.render('transaksi/pembelian/base-umum-QR')
+    // })
+
+    // ini buat sementara, tp yang paling gampang buat sekarang
+    // Route.get('/pembelianQR', 'transaksi/PembeliansController.indexQR')
+    // Route.post('/pembelianQR', 'transaksi/PembeliansController.pembelianQR')
+
+
+    Route.post('/cariPembelianByQR', 'transaksi/PembeliansController.cariQR')
+
+
+    Route.post('/pembelian/hitungHargaNormal', 'transaksi/PembeliansController.hitungHargaNormal')
   }).prefix('transaksi')
   
   Route.get('/gadai', async ({ view }) => {
@@ -129,25 +150,22 @@ Route.group(() => {
     Route.resource('kelompok', 'barang/KelompoksController').except(['index'])
     Route.resource('model', 'barang/ModelsController')
     Route.resource('kerusakan', 'barang/KerusakansController')
+    Route.resource('kodepro', 'barang/KodeProduksisController')
 
+    // Route.get('/restok', async ({ view }) => {
+    //   return view.render('barang/restok')
+    // })
+    // Route.post('/restok', 'barang/KelompoksController.restokPerhiasan')
 
-    // ntar kudu pake id
-    // Route.get('/detail', async ({ view }) => {
-    //   return view.render('barang/detail')
+    // Route.get('/rekapRestok', async ({ view }) => {
+    //   return view.render('barang/rekaprestok')
     // })
 
-    Route.get('/restok', async ({ view }) => {
-      return view.render('barang/restok')
-    })
-    Route.post('/restok', 'barang/KelompoksController.restokPerhiasan')
+    Route.resource('penambahan', 'barang/PenambahanStoksController').except(['edit', 'update', 'destroy'])
+    Route.group(()=>{
+      
+    }).prefix('penambahan')
 
-    // Route.get('/bukuRekap', async ({ view }) => {
-    //   return view.render('barang/bukurekap')
-    // })
-
-    // Route.get('/listKerusakan', async ({ view }) => {
-    //   return view.render('barang/list-rusak')
-    // })
 
     Route.group(()=>{
       // general
@@ -160,7 +178,11 @@ Route.group(() => {
 
 
       // restok
-      Route.get('/modelDenganInput', 'barang/KelompoksController.getModelDenganInput')
+      Route.get('/kelompokDenganInput', 'barang/KelompoksController.getKelompokDenganInput')
+
+      // transaksi
+      Route.get('/modelByBentuk', 'barang/ModelsController.getModelByBentuk')
+      Route.get('/kerusakanByBentuk', 'barang/KerusakansController.getKerusakanByBentuk')
 
     }).prefix('/cumaData')
 

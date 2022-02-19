@@ -116,29 +116,29 @@ export default class BasicSeeder extends BaseSeeder {
       {
         nama: 'Tanggung',
         deskripsi: 'Perhiasan dengan kadar kandungan emas mulai dari 35% hingga 45%',
-        hargaPerGramNormal: 0,
-        hargaPerGramBaru: 0,
-        potonganNormal: 0,
-        potonganBaru: 0,
+        hargaPerGramNormal: 400000,
+        hargaPerGramBaru: 450000,
+        potonganNormal: 12000,
+        potonganBaru: 15000,
         apakahPotonganPersen: false
       },
       {
         nama: 'Muda',
         deskripsi: 'Perhiasan dengan kadar kandungan emas kurang dari 30%',
-        hargaPerGramNormal: 0,
-        hargaPerGramBaru: 0,
-        potonganNormal: 0,
-        potonganBaru: 0,
+        hargaPerGramNormal: 200000,
+        hargaPerGramBaru: 250000,
+        potonganNormal: 10000,
+        potonganBaru: 12000,
         apakahPotonganPersen: false
       },
       {
         nama: 'Tua',
         deskripsi: 'Perhiasan dengan kadar kandungan emas lebih dari 70%',
-        hargaPerGramNormal: 0,
-        hargaPerGramBaru: 0,
-        potonganNormal: 0,
-        potonganBaru: 0,
-        apakahPotonganPersen: false
+        hargaPerGramNormal: 700000,
+        hargaPerGramBaru: 750000,
+        potonganNormal: 8,
+        potonganBaru: 10,
+        apakahPotonganPersen: true
       },
     ])
 

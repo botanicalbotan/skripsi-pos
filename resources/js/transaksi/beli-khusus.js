@@ -24,6 +24,9 @@ $(function () {
 
   });
 
+  let hiddenForm = document.getElementById('jalanTol')
+  let hiddenInput = document.getElementById('hKt')
+
   let tambahKerusakan = function () {
     Swal.fire({
       title: 'Tambah Kerusakan',

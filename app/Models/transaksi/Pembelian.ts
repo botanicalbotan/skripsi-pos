@@ -31,7 +31,7 @@ export default class Pembelian extends BaseModel {
   public apakahPembelianNormal: boolean
 
   @column()
-  public kodePerhiasan: string
+  public kodeProduksi: string
 
   @column()
   public keterangan: string

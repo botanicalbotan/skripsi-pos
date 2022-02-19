@@ -116,7 +116,7 @@ export default class KerusakansController {
 
     try {
       const bentuk = await Bentuk.findByOrFail('bentuk', validrequest.bentuk)
-      const rusakbaru = await bentuk.related('kerusakans').create({
+      await bentuk.related('kerusakans').create({
         nama: validrequest.nama,
         apakahBisaDiperbaiki: validrequest.perbaikan === 'bisa',
         ongkosNominal: validrequest.perbaikan === 'bisa' ? validrequest.ongkos : 0,
@@ -205,5 +205,25 @@ export default class KerusakansController {
     } catch (error) {
       return response.redirect().back()
     }
+  }
+
+
+
+  // ================================== Non CRUD =============================================================
+  public async getKerusakanByBentuk({ request }: HttpContextContract) {
+    let bentukId = request.input('bentuk', '')
+    let tingkat = request.input('tingkat', '0')
+    let sanitizedTingkat = (['0', '1'].includes(tingkat))? tingkat : '0'
+
+    let kerusakan = await Database
+      .from('kerusakans')
+      .if(sanitizedTingkat == 0, (query) =>{
+        query.where('apakah_bisa_diperbaiki', true)
+      })
+      .where('bentuk_id', bentukId)
+      .whereNull('deleted_at')
+      .orderBy('nama', 'asc')
+    
+    return kerusakan
   }
 }

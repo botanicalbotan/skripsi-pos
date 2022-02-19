@@ -8,12 +8,12 @@
 <div class="w-full p-8 base-page" data-pagename = "list">
   {{--  aslinya menu kelompok  --}}
   <h2 class="text-4xl font-semibold">Kelola Barang</h2>
-  <h4 class="text-lg text-secondary opacity-60">Kumpulan data seluruh kelompok perhiasan yang tercatat pada sistem. Anda juga dapat mengatur model dan kerusakan perhiasan pada menu ini.</h4>
+  <h4 class="text-lg text-secondary opacity-60">Kelola hal-hal seputar catatan barang seperti kelompok, model, kerusakan dan kode produksi.</h4>
 
 
   {{--  Buat statistik  --}}
-  <div class="w-full shadow flex space-x-4 mt-8">
-    <div class="stat cursor-pointer" id="filterTersedia">
+  <div class="w-full flex space-x-4 mt-8">
+    <div class="stat shadow cursor-pointer {{ (tambahan.filter == 1)? 'bg-info bg-opacity-10': '' }}" id="filterTersedia">
       <div class="stat-figure text-info">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -23,7 +23,7 @@
       <div class="stat-value text-info font-semibold text-3xl">{{ (statistik.stokCukup)? statistik.stokCukup:0 }} Kelompok</div>
       <div class="stat-title">Stok perhiasan tersedia</div>
     </div>
-    <div class="stat cursor-pointer" id="filterHampir">
+    <div class="stat shadow cursor-pointer {{ (tambahan.filter == 2)? 'bg-warning bg-opacity-10':'' }}" id="filterHampir">
       <div class="stat-figure text-warning">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -33,7 +33,7 @@
       <div class="stat-value text-warning font-semibold text-3xl">{{ (statistik.stokKurang)? statistik.stokKurang: 0 }} Kelompok</div>
       <div class="stat-title">Stok perhiasan hampir habis</div>
     </div>
-    <div class="stat cursor-pointer" id="filterHabis">
+    <div class="stat shadow cursor-pointer {{ (tambahan.filter == 3)? 'bg-error bg-opacity-10':'' }}" id="filterHabis">
       <div class="stat-figure text-error">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -47,7 +47,6 @@
 
   {{--  Card Utama  --}}
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
-
     <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
       <div class="flex-1">
         <div
@@ -60,7 +59,7 @@
             </svg>
           </span>
           {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
-          <input type="text" placeholder="Cari Disini" id="pencarian" min="0" name="pencarian"
+          <input type="text" placeholder="Cari Disini" id="pencariana" min="0" name="pencarian"
             class="uang px-3 py-3 relative input input-ghost w-full pl-10 focus:text-primary-focus"
             value="{{ tambahan.pencarian }}" />
 
@@ -75,19 +74,19 @@
         </div>
       </div>
       <div class="flex-none flex space-x-2">
-        <div class="relative flex w-full flex-wrap items-stretch">
-          <span
-            class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
-            Urutkan:
-          </span>
-          <select id="pengurutan" class="select select-bordered sm:w-40 md:w-60 w-full max-w-xs pl-20 relative">
-            <option value="0" {{ (tambahan.pengurutan == 0)? 'selected':'' }}>Kelompok Perhiasan</option>
-            <option value="1" {{ (tambahan.pengurutan == 1)? 'selected':'' }}>Berat Kelompok</option>
-            <option value="2" {{ (tambahan.pengurutan == 2)? 'selected':'' }}>Kadar Perhiasan</option>
-            <option value="3" {{ (tambahan.pengurutan == 3)? 'selected':'' }}>Bentuk Perhiasan</option>
-            <option value="4" {{ (tambahan.pengurutan == 4)? 'selected':'' }}>Stok</option>
-          </select>
+
+        <div class="flex-1 sm:flex-none">
+
+          <button class="btn" id="btAturTabel">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+            </svg>
+            <span class="hidden md:inline">Atur Tabel</span>
+          </button>
+
         </div>
+
         <div class="flex-1 sm:flex-none">
           <div class="dropdown dropdown-end">
             <div tabindex="0" class="btn btn-primary text-white">
@@ -100,19 +99,10 @@
             </div>
             <ul tabindex="0" class="p-2 shadow-lg border menu dropdown-content bg-base-100 rounded-box w-60">
               <li>
-                <a href="/app/barang/kelompok/create">Kelompok Perhiasan Baru</a>
+                <a href="/app/barang/kelompok/create">Kelompok Baru</a>
               </li>
               <li>
-                <a href="/app/barang/restok">Tambah Stok</a>
-              </li>
-              <li>
-                <a href="/app/barang/bukuRekap">Buku Rekap</a>
-              </li>
-              <li>
-                <a href="/app/barang/model">Daftar Model Perhiasan</a>
-              </li>
-              <li>
-                <a href="/app/barang/kerusakan">Daftar Kerusakan</a>
+                <a href="/app/barang/penambahan/create">Tambah Stok</a>
               </li>
             </ul>
           </div>
@@ -122,24 +112,49 @@
     </div>
 
     {{--  tabel  --}}
-    <div class="my-8 min-h-60 rounded border-b-2">
-      <div class="overflow-x-auto"> {{-- aslinya ada overflow-x-auto disini --}}
+    <div class="my-8 min-h-60 rounded">
+      @if(kelompoks.total > 0)
+      <h5 class=" text-secondary mb-4">Menampilkan data ke {{ tambahan.firstDataInPage }}-{{ tambahan.lastDataInPage }}
+        ({{ kelompoks.total }} data) untuk 
+        <span class="text-neutral font-semibold">"{{ (tambahan.pencarian)? tambahan.pencarian:'Kelola Barang' }}"</span>
+      </h5>
+      @else
+      <h5 class=" text-secondary mb-4">Menampilkan 0 data untuk 
+        <span class="text-neutral font-semibold">"{{ (tambahan.pencarian)? tambahan.pencarian:'Kelola Barang' }}"</span>
+      </h5>
+      @endif
+
+      <div class="overflow-x-auto md:overflow-y-visible"> {{-- aslinya ada overflow-x-auto disini --}}
         <table class="table w-full">
           <thead>
             <tr>
               <th>Kelompok Perhiasan</th>
               <th>Berat Kelompok</th>
-              <th>Kadar Perhiasan</th>
-              <th>Bentuk Perhiasan</th>
+              <th>Kadar</th>
+              <th>Bentuk</th>
               <th>Stok</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
+
             @each(kelompok in kelompoks)
             <tr class="hover">
               <td>
-                <a href="{{ '/app/barang/kelompok/' + kelompok.id }}" class="font-medium">{{ kelompok.nama }}</a>
+                <a href="{{ '/app/barang/kelompok/' + kelompok.id }}" class="font-medium">{{ kelompok.nama }}
+                  @if(kelompok.totalKaliPenambahanHariIni > 0)
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-flex text-warning" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                  @endif
+
+                  @if(kelompok.totalPenjualanHariIni > 0)
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-flex text-primary" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                  </svg>
+                  @endif
+                
+                </a>
               </td>
               <td>{{ kelompok.beratKelompok + ' gram' }}</td>
               <td>
@@ -174,9 +189,12 @@
               </td>
             </tr>
             @endeach
+            
           </tbody>
         </table>
       </div>
+
+      
     </div>
 
     {{--  pagination bawah tabel  --}}
@@ -227,12 +245,41 @@
     </div>
 
     @endif
+  </div>
 
+  <div class="mt-8 w-full">
+    <ul class="w-full menu p-3 border bg-primary bg-opacity-10 menu-vertical lg:menu-horizontal rounded-box">
+      <li class=" menu-title">
+        <span>
+          Menu Bawah
+        </span>
+      </li> 
+      <li>
+        <a href="/app/barang/penambahan">
+          Tambah Stok
+        </a>
+      </li>
+      <li>
+        <a href="/app/barang/kodepro">
+          Atur Kode Produksi
+        </a>
+      </li>
+      <li>
+        <a href="/app/barang/model">
+          Atur Model Perhiasan
+        </a>
+      </li>
+      <li>
+        <a href="/app/barang/kerusakan">
+          Atur Kerusakan Perhiasan
+        </a>
+      </li>
+    </ul>
   </div>
 </div>
 @endsection
 
 @section('script')
 <script src="{{asset('assets/app.js')}}"></script>
-<script src="{{asset('assets/kelompok.js')}}"></script>
+<script src="{{asset('assets/all-kelompok.js')}}"></script>
 @endsection

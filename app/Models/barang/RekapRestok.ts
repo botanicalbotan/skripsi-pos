@@ -38,7 +38,7 @@ export default class RekapRestok extends BaseModel {
     pivotForeignKey: 'rekap_restok_id',
     relatedKey: 'id',
     pivotRelatedForeignKey: 'kelompok_id',
-    pivotColumns: ['perubahan_stok']
+    pivotColumns: ['perubahan_stok', 'stok_akhir']
   })
   public kelompoks: ManyToMany<typeof Kelompok>
 }

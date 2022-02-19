@@ -10,7 +10,7 @@ export default class Models extends BaseSchema {
       table.string('nama', 50).notNullable()
       table.string('deskripsi', 100)
       table.boolean('apakah_placeholder').notNullable().defaultTo(false)
-      table.dateTime('deleted_at')
+      table.dateTime('deleted_at').nullable()
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

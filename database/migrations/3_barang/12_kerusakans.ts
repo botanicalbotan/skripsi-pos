@@ -12,7 +12,7 @@ export default class Kerusakans extends BaseSchema {
       table.boolean('apakah_bisa_diperbaiki').notNullable()
       table.string('ongkos_deskripsi', 50).notNullable()
       table.integer('ongkos_nominal').notNullable()
-      table.dateTime('deleted_at')
+      table.dateTime('deleted_at').nullable()
 
 
       /**

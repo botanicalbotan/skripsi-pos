@@ -208,4 +208,21 @@ export default class ModelsController {
       return response.redirect().back()
     }
   }
+
+  // ======================================= selain CRUD =================================================
+  public async getModelByBentuk({ request }: HttpContextContract) {
+    // ini buat isian doang, gaperlu ambil semua data
+
+    let bentukId = request.input('bentukId', '')
+    let model = await Database
+      .from('models')
+      .select('id', 'nama')
+      .where('bentuk_id', bentukId)
+      .andWhereNull('deleted_at')
+      .orderBy('nama', 'asc')
+
+    return {
+      model
+    }
+  }
 }

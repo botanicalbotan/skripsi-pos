@@ -28,7 +28,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                Ubah Detail</a>
+                Ubah Data</a>
             </li>
             <li>
               <a class="true-text-error">
@@ -70,6 +70,13 @@
 
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kode Kelompok</h3>
+                  <span class="flex-1 ">{{ kelompok.kodeKelompok }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kadar Perhiasan</h3>
                   <span class="flex-1 ">Emas {{ kelompok.kadar.nama }}</span>
                 </div>
@@ -107,6 +114,42 @@
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Peringatan Stok Menipis</h3>
                   <span class="flex-1 ">{{ (kelompok.ingatkanStokMenipis)? 'Aktif' : 'Nonaktif' }}</span>
+                </div>
+              </li>
+
+            </ul>
+          </div>
+        </div>
+
+        {{--  tanggal waktu tercatat  --}}
+        <div>
+          <div class="flex">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Tanggal dan Waktu Pencatatan</h4>
+            </div>
+            <div class="flex-none flex align-bottom mb-2 items-end">
+              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada
+                {{ kelompok.updatedAt.setLocale('id-ID').toLocaleString() }}</p>
+            </div>
+          </div>
+          <div class="border-t border-b border-secondary">
+            <ul>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Tercatat</h3>
+                  <span class="flex-1" id="namaRusak">{{ kelompok.createdAt.setLocale('id-ID').toLocaleString() }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Waktu Tercatat</h3>
+                  <span class="flex-1 ">{{ kelompok.createdAt.setLocale('id-ID').toFormat('TT') }}</span>
                 </div>
               </li>
 
@@ -305,5 +348,5 @@
 
 @section('script')
 <script src="{{asset('assets/app.js')}}"></script>
-<script src="{{asset('assets/kelompok-view.js')}}"></script>
+<script src="{{asset('assets/view-kelompok.js')}}"></script>
 @endsection

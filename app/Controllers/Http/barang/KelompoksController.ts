@@ -5,11 +5,15 @@ import Kelompok from 'App/Models/barang/Kelompok'
 import Database from '@ioc:Adonis/Lucid/Database'
 import Bentuk from 'App/Models/barang/Bentuk'
 import Kadar from 'App/Models/barang/Kadar'
-import Penjualan from 'App/Models/transaksi/Penjualan'
 import { DateTime, Settings } from 'luxon'
+import RekapRestok from 'App/Models/barang/RekapRestok'
 
 export default class KelompoksController {
   // Fungsi Tambahan
+
+  getRandomInt(max: number) {
+    return Math.floor(Math.random() * max);
+  }
 
   kapitalHurufPertama(text: string) {
     return text.charAt(0).toUpperCase() + text.slice(1)
@@ -37,6 +41,32 @@ export default class KelompoksController {
     }
   }
 
+  generateKodeKelompok(kadar: string, bentuk: string){
+    let kodebentuk = {
+      Cincin: 'CC',
+      Kalung: 'KL',
+      Anting: 'AT',
+      Liontin: 'LT',
+      Tindik: 'TD',
+      Gelang: 'GL'
+    }
+
+    // varian ini bisa dipake buat yang butuh random2
+    // let kodekadar = {
+    //   Muda: {nomer: 1, huruf: ['M', 'MU', 'YO', 'NO']},
+    //   Tanggung: {nomer: 2, huruf: ['TA', 'TG', 'MI', 'CE']},
+    //   Tua: {nomer:3, huruf: ['TU', 'NE', 'GR', 'OL']}
+    // }
+
+    let kodekadar = {
+      Muda: {nomer: 1, huruf: 'MD'},
+      Tanggung: {nomer: 2, huruf: 'TG'},
+      Tua: {nomer:3, huruf: 'TU'}
+    }
+
+    return kodebentuk[bentuk] + kodekadar[kadar].nomer + kodekadar[kadar].huruf + DateTime.local().toMillis()    
+  }
+
   // Fungsi Routing
 
   public async index({ view, request }: HttpContextContract) {
@@ -49,7 +79,9 @@ export default class KelompoksController {
     ]
     const page = request.input('page', 1)
     const order = request.input('ob', 0)
+    const arahOrder = request.input('aob', 0)
     const sanitizedOrder = order < opsiOrder.length && order >= 0 && order ? order : 0
+    const sanitizedArahOrder = arahOrder == 1? 1:0
     const cari = request.input('cari', '')
     const filter = request.input('filter', 0)
     const sanitizedFilter = filter < 4 && filter >= 0 && filter ? filter : 0
@@ -68,6 +100,20 @@ export default class KelompoksController {
         'kelompoks.stok as stok',
         'kelompoks.stok_minimal as stokMinimal'
       )
+      .select(
+        Database.from('penjualans')
+          .count('*')
+          .whereColumn('penjualans.kelompok_id', 'kelompoks.id')
+          .whereRaw('DATE(penjualans.created_at) = DATE(NOW())')
+          .as('totalPenjualanHariIni')
+      )
+      .select(
+        Database.from('kelompok_penambahans')
+          .count('*')
+          .whereColumn('kelompok_penambahans.kelompok_id', 'kelompoks.id')
+          .whereRaw('DATE(kelompok_penambahans.created_at) = DATE(NOW())')
+          .as('totalKaliPenambahanHariIni')
+      )
       .if(cari !== '', (query) => {
         query.where('kelompoks.nama', 'like', `%${cari}%`)
       })
@@ -82,7 +128,7 @@ export default class KelompoksController {
       .if(sanitizedFilter == 3, (query) => {
         query.where('kelompoks.stok', '=', 0)
       })
-      .orderBy(opsiOrder[sanitizedOrder], 'asc')
+      .orderBy(opsiOrder[sanitizedOrder], ((sanitizedArahOrder == 1)? 'desc': 'asc'))
       .orderBy('kelompoks.nama')
       .paginate(page, limit)
 
@@ -90,12 +136,14 @@ export default class KelompoksController {
 
     let qsParam = {
       ob: sanitizedOrder,
+      aob: sanitizedArahOrder
     }
 
     if (cari !== '') qsParam['cari'] = cari
     if (sanitizedFilter !== 0) qsParam['filter'] = sanitizedFilter
 
     kelompoks.queryString(qsParam)
+
 
     const stokCukup = await Database.from('kelompoks')
       .whereColumn('stok', '>', 'stok_minimal')
@@ -134,6 +182,7 @@ export default class KelompoksController {
     const tambahan = {
       pengurutan: sanitizedOrder,
       pencarian: cari,
+      filter: sanitizedFilter,
       firstPage: firstPage,
       lastPage: lastPage,
       firstDataInPage: 1 + (kelompoks.currentPage - 1) * limit,
@@ -185,6 +234,7 @@ export default class KelompoksController {
 
       await kadar.related('kelompoks').create({
         nama: await this.kapitalKalimat(validrequest.nama),
+        kodeKelompok: await this.generateKodeKelompok(kadar.nama, bentuk.bentuk),
         bentukId: bentuk.id,
         beratKelompok: validrequest.beratKelompok,
         stok: validrequest.stok,
@@ -344,7 +394,7 @@ export default class KelompoksController {
   }
 
   // ================================================ Restok ====================================================
-  public async getModelDenganInput({ request }: HttpContextContract) {
+  public async getKelompokDenganInput({ request }: HttpContextContract) {
     let bentuk = request.input('bentuk')
     let kadar = request.input('kadar')
 
@@ -358,7 +408,7 @@ export default class KelompoksController {
     return kelompokCari
   }
 
-  public async restokPerhiasan({ request }: HttpContextContract) {
+  public async restokPerhiasan({ request, session, response }: HttpContextContract) {
     const restokSchema = schema.create({
       restokCatatan: schema.string({ trim: true }, [rules.maxLength(255)]),
       stokIdPerhiasan: schema
@@ -368,13 +418,68 @@ export default class KelompoksController {
             rules.exists({ table: 'kelompoks', column: 'id', where: { deleted_at: null } }),
           ])
         ),
-      stokTambahan: schema.array().members(schema.number([ rules.unsigned() ]))
+      stokTambahan: schema.array([rules.minLength(1)]).members(schema.number([rules.unsigned()])),
+      stokAsal: schema.array([rules.minLength(1)]).members(schema.enum(['Cucian', 'Kulakan'])),
     })
 
     const validrequest = await request.validate({ schema: restokSchema })
 
-    // disini tinggal nambahin + manggil id satu2
-    return validrequest
+    // custom error message
+    let errCount = 0
+    let itemCount = 0
+
+    async function addStok() {
+      let rekapBaru = new RekapRestok()
+      rekapBaru.penggunaId = 1
+      rekapBaru.catatan = validrequest.restokCatatan
+      await rekapBaru.save()
+
+      let i = 0
+      for (const element of validrequest.stokIdPerhiasan) {
+        console.log('no ' + i + ', value; ' + element + ', stok: ' + validrequest.stokTambahan[i])
+
+        try {
+          let kelompok = await Kelompok.findOrFail(element)
+          kelompok.stok += validrequest.stokTambahan[i]
+          console.log(
+            'harusnya ketambahan ' + validrequest.stokTambahan[i] + ' jadi ' + kelompok.stok
+          )
+
+          rekapBaru.related('kelompoks').attach({
+            [kelompok.id]: {
+              apakah_kulakan: validrequest.stokAsal[i] === 'Kulakan',
+              perubahan_stok: validrequest.stokTambahan[i],
+              stok_akhir: kelompok.stok,
+            },
+          })
+
+          await kelompok.save()
+        } catch (error) {
+          errCount++
+          console.error(error)
+        }
+
+        i++
+        itemCount++
+      }
+    }
+
+    await addStok()
+
+    if (errCount > 0)
+      session.flash(
+        'errorRestok',
+        'Stok ' +
+          (itemCount - errCount) +
+          ' kelompok berhasil diperbarui, ' +
+          errCount +
+          ' kelompok dilewati karena terdapat masalah'
+      )
+
+    if (itemCount > 0 && errCount == 0)
+      session.flash('konfirmasiRestok', 'Stok ' + itemCount + ' kelompok berhasil diperbarui!')
+
+    return response.redirect().back()
   }
 
   // =============================================== General ===============================================
@@ -390,4 +495,6 @@ export default class KelompoksController {
       bentuk,
     }
   }
+
+  
 }

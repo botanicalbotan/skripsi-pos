@@ -9,6 +9,7 @@ import {
 } from '@ioc:Adonis/Lucid/Orm'
 import Kelompok from 'App/Models/barang/Kelompok'
 import Penjualan from 'App/Models/transaksi/Penjualan'
+import KodeProduksi from 'App/Models/barang/KodeProduksi'
 
 export default class Kadar extends BaseModel {
   @column({ isPrimary: true })
@@ -46,6 +47,9 @@ export default class Kadar extends BaseModel {
   // FK dan relasi
   @hasMany(() => Kelompok)
   public kelompoks: HasMany<typeof Kelompok>
+
+  @hasMany(() => KodeProduksi)
+  public kodeProduksi: HasMany<typeof KodeProduksi>
 
   @hasManyThrough([
     () => Penjualan,

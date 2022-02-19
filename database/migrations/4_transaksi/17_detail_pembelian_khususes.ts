@@ -10,7 +10,7 @@ export default class DetailPembelianKhususes extends BaseSchema {
       table.float('berat_sebenarnya').notNullable()
       table.integer('persentase_harga_mal').notNullable()
       table.integer('harga_beli_pergram').notNullable()
-      table.dateTime('deleted_at')
+      table.dateTime('deleted_at').nullable()
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

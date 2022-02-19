@@ -15,16 +15,20 @@ export default class PegawaisController {
   public async index ({ view, request }: HttpContextContract) {
     const opsiOrder = [
       'penggunas.nama',
-      'penggunas.gender',
       'jabatans.nama',
-      'penggunas.apakah_pegawai_aktif',
+      'penggunas.gender',
       'penggunas.tanggal_gajian',
       'penggunas.gaji_bulanan',
+      'penggunas.apakah_pegawai_aktif',
     ]
     const page = request.input('page', 1)
     const order = request.input('ob', 0)
     const cari = request.input('cari', '')
     const sanitizedOrder = order < opsiOrder.length && order >= 0 && order? order : 0
+    const arahOrder = request.input('aob', 0)
+    const sanitizedArahOrder = arahOrder == 1? 1:0
+    const filterShow = request.input('fs', 0)
+    const sanitizedFilterShow = filterShow == 1? 1:0
     const limit = 10
 
     const pegawais = await Database.from('penggunas')
@@ -34,20 +38,28 @@ export default class PegawaisController {
       .if(cari !== '', (query) => {
         query.where('penggunas.nama', 'like', `%${cari}%`)
       })
-      .orderBy('penggunas.apakah_pegawai_aktif', 'desc')
-      .orderBy(opsiOrder[sanitizedOrder], 'asc')
+      .if(sanitizedOrder != 5, (query) => {
+        query.orderBy('penggunas.apakah_pegawai_aktif', 'desc')
+      })
+      .if(sanitizedFilterShow == 0, (query) => {
+        query.where('penggunas.apakah_pegawai_aktif', true)
+      })
+      .orderBy(opsiOrder[sanitizedOrder], ((sanitizedArahOrder == 1)? 'desc': 'asc'))
       .orderBy('penggunas.nama')
       .paginate(page, limit)
 
     pegawais.baseUrl('/app/pegawai')
 
-    pegawais.queryString({ ob: sanitizedOrder })
-    if (cari !== '') {
-      pegawais.queryString({ ob: sanitizedOrder, cari: cari })
+    let qsParam = {
+      ob: sanitizedOrder,
+      aob: sanitizedArahOrder
     }
 
-    // kalau mau mulai dari sini bisa dibikin fungsi sendiri
-    // input bisa pagination object + panjang page yang mau di display
+    if (cari !== '') qsParam['cari'] = cari
+    if (sanitizedFilterShow !== 0) qsParam['fs'] = sanitizedFilterShow
+
+    pegawais.queryString(qsParam)
+
     let firstPage =
       pegawais.currentPage - 2 > 0
         ? pegawais.currentPage - 2
@@ -76,10 +88,12 @@ export default class PegawaisController {
     const tambahan = {
       pengurutan: sanitizedOrder,
       pencarian: cari,
+      filterShow: sanitizedFilterShow,
       firstPage: firstPage,
       lastPage: lastPage,
       firstDataInPage: 1 + ((pegawais.currentPage - 1) * limit),
-      lastDataInPage: (tempLastData >= pegawais.total)? pegawais.total: tempLastData
+      lastDataInPage: (tempLastData >= pegawais.total)? pegawais.total: tempLastData,
+      lifehackUrlSementara: '/uploads/profilePict/'
     }
 
     return view.render('pegawai/base', { pegawais, tambahan })

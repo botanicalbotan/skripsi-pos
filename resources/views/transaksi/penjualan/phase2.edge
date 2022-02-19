@@ -18,7 +18,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <p>Item terpilih: <span class="font-medium">{{ kelompok.nama }}</span> (#sd12345)</p>
+        <p>Item terpilih: <span class="font-medium">{{ kelompok.nama }}</span> ({{ kelompok.kodeKelompok }})</p>
       </div>
       <div class="flex-none">
         <a href="/app/transaksi/penjualan/" class="btn btn-ghost text-error hover:btn-error">Batal</a>
@@ -419,7 +419,7 @@
                 </div>
                 <div class="space-y-4">
                   <button type="button" class="btn btn-block btn-outline">Ajukan Tawaran</button>
-                  {{--  <a href="/app/penjualan/selesai" class="btn btn-block btn-primary text-white">Palsu</a>  --}}
+                  <a href="/app/penjualan/selesai" class="btn btn-block btn-primary text-white">Palsu</a>
                   <button type="button" id="btnSubmit" class="btn btn-block btn-primary text-white">Simpan Transaksi</button>
                 </div>
               </div>

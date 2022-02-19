@@ -29,9 +29,9 @@
         "http://localhost:8080/assets/beranda.js"
       ]
     },
-    "kas": {
+    "all-kas": {
       "js": [
-        "http://localhost:8080/assets/kas.js"
+        "http://localhost:8080/assets/all-kas.js"
       ]
     },
     "kasrekap": {
@@ -44,9 +44,19 @@
         "http://localhost:8080/assets/riwayat.js"
       ]
     },
-    "pegawai": {
+    "all-pegawai": {
       "js": [
-        "http://localhost:8080/assets/pegawai.js"
+        "http://localhost:8080/assets/all-pegawai.js"
+      ]
+    },
+    "form-pegawai": {
+      "js": [
+        "http://localhost:8080/assets/form-pegawai.js"
+      ]
+    },
+    "base-jual": {
+      "js": [
+        "http://localhost:8080/assets/base-jual.js"
       ]
     },
     "jual": {
@@ -54,9 +64,14 @@
         "http://localhost:8080/assets/jual.js"
       ]
     },
-    "base-jual": {
+    "jual-selesai": {
       "js": [
-        "http://localhost:8080/assets/base-jual.js"
+        "http://localhost:8080/assets/jual-selesai.js"
+      ]
+    },
+    "base-beli": {
+      "js": [
+        "http://localhost:8080/assets/base-beli.js"
       ]
     },
     "beli": {
@@ -69,39 +84,49 @@
         "http://localhost:8080/assets/beli-khusus.js"
       ]
     },
+    "beli-QR": {
+      "js": [
+        "http://localhost:8080/assets/beli-QR.js"
+      ]
+    },
     "gadai": {
       "js": [
         "http://localhost:8080/assets/gadai.js"
       ]
     },
-    "barang": {
+    "all-kelompok": {
       "js": [
-        "http://localhost:8080/assets/barang.js"
+        "http://localhost:8080/assets/all-kelompok.js"
       ]
     },
-    "kelompok": {
+    "view-kelompok": {
       "js": [
-        "http://localhost:8080/assets/kelompok.js"
+        "http://localhost:8080/assets/view-kelompok.js"
       ]
     },
-    "kelompok-view": {
+    "all-kodepro": {
       "js": [
-        "http://localhost:8080/assets/kelompok-view.js"
+        "http://localhost:8080/assets/all-kodepro.js"
       ]
     },
-    "restok": {
+    "all-model": {
       "js": [
-        "http://localhost:8080/assets/restok.js"
+        "http://localhost:8080/assets/all-model.js"
       ]
     },
-    "model": {
+    "all-kerusakan": {
       "js": [
-        "http://localhost:8080/assets/model.js"
+        "http://localhost:8080/assets/all-kerusakan.js"
       ]
     },
-    "kerusakan": {
+    "form-penambahan": {
       "js": [
-        "http://localhost:8080/assets/kerusakan.js"
+        "http://localhost:8080/assets/form-penambahan.js"
+      ]
+    },
+    "all-penambahan": {
+      "js": [
+        "http://localhost:8080/assets/all-penambahan.js"
       ]
     },
     "pengaturan": {

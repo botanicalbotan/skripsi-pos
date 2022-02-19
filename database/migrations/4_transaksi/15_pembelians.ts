@@ -11,11 +11,11 @@ export default class Pembelians extends BaseSchema {
       table.string('kode_transaksi', 30).notNullable()
       table.string('asal_toko', 50)
       table.boolean('apakah_pembelian_normal').notNullable()
-      table.string('kode_perhiasan', 10)
+      table.string('kode_produksi', 10) // sementara dibiarin gini, karna diluar kode umum keknya gabakal dijual lagi
       table.string('keterangan', 100)
       table.integer('harga_beli_akhir').notNullable()
       table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable().onDelete('CASCADE')
-      table.dateTime('deleted_at')
+      table.dateTime('deleted_at').nullable()
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

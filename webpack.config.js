@@ -51,31 +51,35 @@ Encore.addEntry('landing', './resources/js/landing.js')
 Encore.addEntry('beranda', './resources/js/beranda.js')
 
 // Pembukuan Kas
-Encore.addEntry('kas', './resources/js/kas.js')
-Encore.addEntry('kasrekap', './resources/js/kasrekap.js')
+Encore.addEntry('all-kas', './resources/js/pembukuan-kas/all-kas.js')
+Encore.addEntry('kasrekap', './resources/js/pembukuan-kas/kasrekap.js')
 
 Encore.addEntry('riwayat', './resources/js/riwayat.js')
 
-Encore.addEntry('pegawai', './resources/js/pegawai.js')
+Encore.addEntry('all-pegawai', './resources/js/pegawai/all-pegawai.js')
+Encore.addEntry('form-pegawai', './resources/js/pegawai/form-pegawai.js')
 
 // Transaksi ==============================================
 // Penjualan
-Encore.addEntry('jual', './resources/js/transaksi/jual.js')
 Encore.addEntry('base-jual', './resources/js/transaksi/base-jual.js')
+Encore.addEntry('jual', './resources/js/transaksi/jual.js')
+Encore.addEntry('jual-selesai', './resources/js/transaksi/jual-selesai.js')
 
 
+Encore.addEntry('base-beli', './resources/js/transaksi/base-beli.js')
 Encore.addEntry('beli', './resources/js/transaksi/beli.js')
 Encore.addEntry('beli-khusus', './resources/js/transaksi/beli-khusus.js')
+Encore.addEntry('beli-QR', './resources/js/transaksi/beli-QR.js')
 Encore.addEntry('gadai', './resources/js/transaksi/gadai.js')
 
 // Kelola Barang
-// barang kalo ntar misal ga kepake bisa diapus
-Encore.addEntry('barang', './resources/js/kelola-barang/barang.js')
-Encore.addEntry('kelompok', './resources/js/kelola-barang/kelompok.js')
-Encore.addEntry('kelompok-view', './resources/js/kelola-barang/kelompok-view.js')
-Encore.addEntry('restok', './resources/js/kelola-barang/restok.js')
-Encore.addEntry('model', './resources/js/kelola-barang/model.js')
-Encore.addEntry('kerusakan', './resources/js/kelola-barang/kerusakan.js')
+Encore.addEntry('all-kelompok', './resources/js/kelola-barang/kelompok/all-kelompok.js')
+Encore.addEntry('view-kelompok', './resources/js/kelola-barang/kelompok/view-kelompok.js')
+Encore.addEntry('all-kodepro', './resources/js/kelola-barang/kodepro/all-kodepro.js')
+Encore.addEntry('all-model', './resources/js/kelola-barang/model/all-model.js')
+Encore.addEntry('all-kerusakan', './resources/js/kelola-barang/kerusakan/all-kerusakan.js')
+Encore.addEntry('form-penambahan', './resources/js/kelola-barang/penambahan-stok/form-penambahan.js')
+Encore.addEntry('all-penambahan', './resources/js/kelola-barang/penambahan-stok/all-penambahan.js')
 
 Encore.addEntry('pengaturan', './resources/js/pengaturan.js')
 

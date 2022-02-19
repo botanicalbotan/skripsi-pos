@@ -1,0 +1,150 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="edit">
+  <h2 class="text-4xl font-semibold">Ubah Data Model Perhiasan</h2>
+  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mengubah data model perhiasan yang tersimpan dalam sistem.</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+    @if(flashMessages.has('errorServerThingy'))
+    
+      <div class="alert alert-error mb-8">
+        <div class="flex-1">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">    
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>                      
+          </svg> 
+          <label>{{ flashMessages.get('errorServerThingy') }}</label>
+        </div>
+      </div>
+    @endif
+
+    <div class="w-full sm:max-w-md">
+      <form id="formKodepro" action="/app/barang/kodepro/{{ kodepro.id }}" method="POST">
+        {{csrfField()}}
+        <div class="space-y-4">
+
+          <div class="form-control">
+            <div class="flex items-center">
+              <label for="kode" class="flex-1">Kode Produksi<span class="text-error"> *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0" class="shadow border border-opacity-50 card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Kode Produksi</h2>
+                    <p>Kode produksi adalah kode yang menunjukkan kadar dan tempat dibuatnya perhiasan tersebut. Biasanya terukir pada bagian dalam atau kokot perhiasan.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <input type="text" id="kode" name="kode" class="input input-bordered" maxlength="10" placeholder="Contoh: 375, D40"
+              required value="{{ kodepro.kode }}">
+
+            @if(flashMessages.has('errors.kode'))
+            <p class="text-error">{{ flashMessages.get('errors.kode') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control">
+            <label for="kadar">
+              <span class="">Kadar Perhiasan<span class="text-error"> *</span></span>
+            </label>
+            <select id="kadar" name="kadar" class="select select-bordered w-full max-w-xs" required>
+              <option disabled="disabled" selected="selected" value="kosong">Pilih</option>
+              <option {{ (kodepro.kadar.nama === 'Tanggung')? 'selected':'' }} value="Tanggung">Tanggung</option>
+              <option {{ (kodepro.kadar.nama === 'Muda')? 'selected':'' }} value="Muda">Muda</option>
+              <option {{ (kodepro.kadar.nama === 'Tua')? 'selected':'' }} value="Tua">Tua</option>
+            </select>
+
+            @if(flashMessages.has('errors.kadar'))
+            <p class="text-error">{{ flashMessages.get('errors.kadar') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control">
+            <div class="flex items-center">
+              <label for="asal" class="flex-1">Asal Produksi<span class="text-error"> *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0" class="shadow border border-opacity-50 card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Asal Produksi</h2>
+                    <p>Asal produksi adalah tempat produksi perhiasan dengan kadar terkait. Bisa berupa universal pabrik, nama toko perhiasan lain, atau nama loper kulakan</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <input type="text" id="asal" name="asal" class="input input-bordered" maxlength="50" placeholder="Contoh: Universal pabrik, nama distributor atau nama loper"
+              required value="{{ kodepro.asalProduksi }}">
+
+            @if(flashMessages.has('errors.asal'))
+            <p class="text-error">{{ flashMessages.get('errors.asal') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control" x-data="{ radio: {{ (kodepro.apakahBuatanTangan)? 2:1 }} }">
+            <label for="">Metode Produksi<span class="text-error"> *</span></label>
+            <div class="flex space-x-4 mt-1 w-full sm:w-96">
+              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+                :class="(radio == 1)? 'bg-white border-primary': 'bg-white border-secondary'">
+                <input type="radio" name="metode" {{ (kodepro.apakahBuatanTangan == false)? 'checked': '' }} class="radio radio-primary hidden" value="pabrikan"
+                  @click="radio = 1">
+                <span class="label-text font-medium text-base"
+                  :class="(radio == 1)? 'text-primary': 'text-secondary'">Pabrikan</span>
+              </label>
+              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border-2"
+                :class="(radio == 2)? 'bg-white border-primary': 'bg-white border-secondary'">
+                <input type="radio" name="metode" {{ (kodepro.apakahBuatanTangan == true)? 'checked': '' }} class="radio radio-primary hidden" value="buatantangan"
+                  @click="radio = 2">
+                <span class="label-text font-medium text-base"
+                  :class="(radio == 2)? 'text-primary': 'text-secondary'">Buatan Tangan</span>
+              </label>
+            </div>
+
+            @if(flashMessages.has('errors.metode'))
+              <p class="text-error">{{ flashMessages.get('errors.metode') }}</p>
+            @endif
+          </div>
+
+
+          <div class="form-control">
+            <label for="deskripsi">Deskripsi<span class="text-error"> *</span></label>
+            <textarea id="deskripsi" name="deskripsi" class="textarea textarea-bordered h-24" maxlength="100"
+              placeholder="Contoh: Langganan dari pengarjin di Sumatra, dlsb." required>{{ kodepro.deskripsi }}</textarea>
+
+            @if(flashMessages.has('errors.deskripsi'))
+            <p class="text-error">{{ flashMessages.get('errors.deskripsi') }}</p>
+            @endif
+          </div>
+
+          <div class="text-secondary italic ">
+            Pastikan anda mengisi seluruh masukan bertanda bintang (*)
+          </div>
+
+        </div>
+        <div class="mt-8 flex space-x-4 max-w-xs">
+          <div class="flex-1">
+            <a id="editKodepro" class="btn btn-primary btn-block text-white">Simpan</a>
+          </div>
+          <div class="flex-1">
+            <a href="/app/barang/kodepro/{{ kodepro.id }}" class="btn btn-secondary btn-block text-white">Batal</a>
+          </div>
+        </div>
+      </form>
+
+    </div>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/all-kodepro.js')}}"></script>
+
+@endsection

@@ -1,7 +1,3 @@
-// colors ini bisa dipake buat ngambil warna default tailwind
-const warna = require('tailwindcss/colors')
-// contoh
-let test = warna.warmGray
 
 module.exports = {
   mode: 'jit',

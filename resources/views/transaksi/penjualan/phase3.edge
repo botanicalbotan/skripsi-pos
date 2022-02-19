@@ -6,48 +6,155 @@
 
 @section('content')
 <div class="w-full p-8">
-  <h2 class="text-4xl font-semibold">Penjualan Selesai</h2>
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
-      <div class="w-full min-h-60 bg-info bg-opacity-10 p-8">
-        data ->
-        - id unik penjualan, sampel #20212012randomnumber/urutangkadisini
-        - berat, kadar, bentuk, model perhiasan, rekap teknis aja, ngga sampe nama pemilik dkk
-        - harga final (abis ditawar kalo ada)
-        <br>
-        opsi / tombol ->
-        - pratinjau & cetak nota (harusnya auto sih notanya, tp gaapa kalau mau dari sini)
-        - balik ke menu transaksi
-        <br>
-        tulisan raw ->
-        - penjualan berhasil tercatat
+  {{--  <h2 class="text-4xl font-semibold">Transaksi Penjualan</h2>
+  <h4 class="text-lg text-secondary opacity-60">Buat penjualan baru dan simpan ke dalam sistem.</h4>  --}}
 
-        <div class="w-full flex items-center mt-10 flex-col">
-          <h1 class="text-3xl">Transaksi Selesai or something</h1>
-          <img src="{{asset('assets/images/response/animated-checkmark.gif')}}" alt="" class=" w-52">
-        </div>
-        <div class="w-full flex justify-center mt-10 space-x-4">
-          <button class="btn btn-secondary text-white btn-wide">
-            Kembali
-          </button>
-          <button class="btn btn-primary text-white btn-wide">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
-            </svg>
-            Cetak Nota
-          </button>
-        </div>
+  {{--  biasanya ada mt-8, ku hapus khusus ni page, juga kutambahin space-y  --}}
+  <div class=" bg-white p-4 lg:p-8 lg:pb-40 shadow min:h-96 space-y-20">
+
+    <div class="w-full min-h-60 p-8 space-y-10">
+
+      <div class="w-full flex items-center flex-col space-y-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-24  text-info animate-bounce" viewBox="0 0 20 20"
+          fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd" />
+        </svg>
+        <h1 class="text-3xl font-semibold">Penjualan Berhasil Disimpan!</h1>
+        {{--  <img src="{{asset('assets/images/response/animated-checkmark.gif')}}" alt="" class=" w-52"> --}}
+        <h4 class="text-lg">Pastikan anda menerima pembayaran sebesar</h4>
+        <h1 class="text-4xl font-bold text-info">Rp. 500.000</h1>
+      </div>
+      <div class="w-full flex justify-center space-x-4">
+        <button class="btn btn-secondary text-white btn-wide">
+          Kembali
+        </button>
+        <button class="btn btn-primary text-white btn-wide">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z"
+              clip-rule="evenodd" />
+          </svg>
+          Cetak Nota
+        </button>
       </div>
 
-      <div class="mt-8">
-        trus disini ada mini rekap
+    </div>
+
+    {{--  ku ngga ngerti diapain in  --}}
+    <div class="cursor-pointer" id="scrollKeDetail">
+      <div class="items-center flex flex-col">
+        <span class="text-lg">Detail Transaksi</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
       </div>
-      
+    </div>
+
+    <div class="flex space-x-8">
+      <div class="flex-1">
+
+        <div class="bg-base-200 min-h-60 card" id="scrollKesini">
+          <div class="card-body">
+            <div class=" card-title flex items-center border-b-2 pb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+              Informasi Perhiasan
+            </div>
+   
+            <ul>
+          
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Model Perhiasan</h3>
+                  <span class="flex-1" id="namaRusak">Kalung AD</span>
+                </div>
+              </li>
+  
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Bentuk Perhiasan</h3>
+                  <span class="flex-1 ">Kalung</span>
+                </div>
+              </li>
+  
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kadar Perhiasan</h3>
+                  <span class="flex-1 ">Muda</span>
+                </div>
+              </li>
+  
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Berat</h3>
+                  <span class="flex-1 ">5.6 gram</span>
+                </div>
+              </li>
+  
+              <li class="border-b last:border-b-0">
+                  <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Keterangan</h3>
+                    Apa diganti kode ya
+                  </div>
+                </li>
+  
+            </ul>
+
+          </div>
+        </div>
+
+      </div>
+      <div class="flex-1">
+        <div class="bg-base-200 min-h-60 card">
+          <div class="card-body space-y-4">
+            <div class=" card-title flex items-center border-b-2 pb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+              Harga & Potongan
+            </div>
+            <div>
+              <h5 class="text-sm font-semibold opacity-50">Harga Perhiasan</h5>
+              <p>a /gram</p>
+            </div>
+            <div>
+              <h5 class="text-sm font-semibold opacity-50">Harga Perhiasan Baru</h5>
+              <p>a/gram</p>
+            </div>
+            <div>
+              <h5 class="text-sm font-semibold opacity-50">Potongan</h5>
+              {{--  disini ntar di cek, misal persenan, isi p nya diganti yang baru  --}}
+              <p>
+                a
+              </p>
+            </div>
+            <div>
+              <h5 class="text-sm font-semibold opacity-50">Potongan Perhiasan Baru</h5>
+              {{--  disini ntar di cek, misal persenan, isi p nya diganti yang baru  --}}
+              <p>
+                a
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
 @endsection
 
 @section('script')
 <script src="{{asset('assets/app.js')}}"></script>
-<script src="{{asset('assets/jual.js')}}"></script>
+<script src="{{asset('assets/jual-selesai.js')}}"></script>
 
 @endsection

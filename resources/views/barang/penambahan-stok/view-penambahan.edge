@@ -1,0 +1,168 @@
+@layout('layouts/master')
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="detail">
+  <h2 class="text-4xl font-semibold">Detail Rekap Penambahan Stok</h2>
+  <h4 class="text-lg text-secondary opacity-60">Detail data dari model perhiasan yang anda pilih.</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+    {{--  {{ inspect(model) }} --}}
+
+    <div class="flex space-x-2">
+      <div class="flex-1">
+        <h4 class="text-2xl" id="namaModel">Penambahan Stok {{ penambahan.createdAt.setLocale('id-ID').toLocaleString({ day: 'numeric', month: 'long', year: 'numeric' }) }}</h4>
+        <p class="opacity-75">Pukul {{ penambahan.createdAt.setLocale('id-ID').toLocaleString({hour: 'numeric', minute: 'numeric'}) }}</p>
+      </div>
+      <div class="flex-none">
+
+        {{--  @if(!model.apakahPlaceholder)
+
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" class="btn btn-primary text-white">
+            <span class="hidden sm:inline">Tindakan</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:ml-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd" />
+            </svg>
+          </div>
+          <ul tabindex="0"
+            class="p-2 shadow border border-opacity-50 menu dropdown-content bg-base-100 rounded-box w-52">
+            <li>
+              <a href="/app/barang/model/{{ model.id }}/edit">Ubah Detail</a>
+            </li>
+            <li>
+              <a id="hapusModel" class="true-text-error">Hapus model</a>
+              <form id="formModel" action="/app/barang/model/{{ model.id }}" method="POST">
+                {{ csrfField() }}
+              </form>
+            </li>
+          </ul>
+        </div>
+
+        @endif  --}}
+
+      </div>
+    </div>
+
+    {{--  informasi  --}}
+    <div class="my-8 min-h-60 flex lg:space-x-8 space-y-6 lg:space-y-0 flex-col lg:flex-row">
+      <div class="flex-1 space-y-10">
+
+        <div>
+          <div class="flex">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                </svg>
+                Informasi Penambahan Stok</h4>
+            </div>
+            <div class="flex-none flex align-bottom mb-2 items-end">
+              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada
+                {{ penambahan.updatedAt.setLocale('id-ID').toLocaleString() }}</p>
+            </div>
+          </div>
+          <div class="border-t border-b border-secondary">
+            <ul>
+  
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tipe Penambahan</h3>
+                  <span class="flex-1" id="namaRusak">{{ (penambahan.apakahKulakan)? 'Kulakan': 'Cucian' }}</span>
+                </div>
+              </li>
+  
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Asal Stok</h3>
+                  <span class="flex-1 ">{{ penambahan.asalStok }}</span>
+                </div>
+              </li>
+  
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Catatan</h3>
+                  <span class="flex-1 ">{{ penambahan.catatan }}</span>
+                </div>
+              </li>
+  
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Jumlah Kelompok Termutasi</h3>
+                  <span class="flex-1 ">{{ tambahan.jumlahKelompok }} Kelompok</span>
+                </div>
+              </li>
+  
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Pencatat</h3>
+                  <a class="flex-1" href="/app/pengguna/{{ penambahan.pengguna.id }}">{{ penambahan.pengguna.nama }}</a>
+                </div>
+              </li>
+  
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+                Daftar Kelompok Yang Mengalami Perubahan</h4>
+            </div>
+          </div>
+          <div class="border-t border-b border-secondary">
+            <div class="overflow-x-auto md:overflow-y-visible"> {{-- aslinya ada overflow-x-auto disini --}}
+              <table class="table w-full">
+                <thead>
+                  <tr>
+                    <th class="w-1/2">Kelompok</th>
+                    <th>Perubahan Stok</th>
+                    <th>Stok Akhir</th>
+                  </tr>
+                </thead>
+                <tbody>
+      
+                  @each(kelompok in penambahan.kelompoks)
+                  <tr class="hover">
+                    <td>
+                      <a href="/app/barang/kelompok/{{ kelompok.id }}">
+                        <div class="font-semibold">
+                          {{ kelompok.nama }}
+                        </div>
+                        <div class="text-sm">
+                          {{ kelompok.bentuk.bentuk + ' ' + kelompok.kadar.nama + ' ' + kelompok.beratKelompok }} gram
+                        </div>
+                      </a>
+                    </td>
+                    <td class="text-success">+{{ kelompok.$extras.pivot_perubahan_stok }} perhiasan</td>
+                    <td>{{ kelompok.$extras.pivot_stok_akhir }} perhiasan</td>
+                    
+                  </tr>
+                  @endeach
+      
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="flex-none w-full lg:w-1/4 space-y-6">
+
+      </div>
+    </div>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/all-penambahan.js')}}"></script>
+@endsection

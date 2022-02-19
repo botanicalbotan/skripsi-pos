@@ -9,6 +9,7 @@ import RentangUsia from 'App/Models/transaksi/RentangUsia'
 import Kelompok from 'App/Models/barang/Kelompok'
 import Model from 'App/Models/barang/Model'
 import Pengguna from 'App/Models/akun/Pengguna'
+import KodeProduksi from 'App/Models/barang/KodeProduksi'
 
 export default class Penjualan extends BaseModel {
   @column({ isPrimary: true })
@@ -18,8 +19,8 @@ export default class Penjualan extends BaseModel {
   @column()
   public kodeTransaksi: string
 
-  @column()
-  public kodePerhiasan: string
+  // @column()
+  // public kodePerhiasan: string
 
   @column()
   public apakahPerhiasanBaru: boolean
@@ -36,11 +37,17 @@ export default class Penjualan extends BaseModel {
   @column()
   public fotoBarang: string | null
 
-  @column()
-  public potonganDeskripsi: string
+  // @column()
+  // public potonganDeskripsi: string
+
+  // @column()
+  // public potonganNominal: number
 
   @column()
-  public potonganNominal: number
+  public potongan: number
+
+  @column()
+  public apakahPotonganPersen: boolean
 
   @column()
   public hargaJualAkhir: number
@@ -64,6 +71,12 @@ export default class Penjualan extends BaseModel {
 
   @belongsTo(() => Kelompok)
   public kelompok: BelongsTo<typeof Kelompok>
+
+  @column()
+  public kodeProduksiId: number
+
+  @belongsTo(() => KodeProduksi)
+  public kodeProduksi: BelongsTo<typeof KodeProduksi>
 
   @column()
   public modelId: number

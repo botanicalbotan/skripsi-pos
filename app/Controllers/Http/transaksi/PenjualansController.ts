@@ -10,7 +10,11 @@ import { DateTime } from 'luxon'
 var isBase64 = require('is-base64')
 
 export default class PenjualansController {
-  // Fungsi Tambahan
+  // ============================ Fungsi Tambahan=====================================
+
+  getRandomInt(max: number) {
+    return Math.floor(Math.random() * max);
+  }
 
   kapitalHurufPertama(text: string) {
     return text.charAt(0).toUpperCase() + text.slice(1)
@@ -42,7 +46,35 @@ export default class PenjualansController {
     }
   }
 
-  // Fungsi Routing
+  generateKodePenjualan(kadar: string, bentuk: string){
+    let kodebentuk = {
+      Cincin: 'CC',
+      Kalung: 'KL',
+      Anting: 'AT',
+      Liontin: 'LT',
+      Tindik: 'TD',
+      Gelang: 'GL'
+    }
+
+    let kodekadar = {
+      Muda: 1,
+      Tanggung: 2,
+      Tua: 3
+    }
+
+    // varian ini bisa dipake buat yang butuh random2
+    // let kodekadar = {
+    //   Muda: {nomer: 1, huruf: ['M', 'MU', 'YO', 'NO']},
+    //   Tanggung: {nomer: 2, huruf: ['TA', 'TG', 'MI', 'CE']},
+    //   Tua: {nomer:3, huruf: ['TU', 'NE', 'GR', 'OL']}
+    // }
+
+    let tipetempat = 'PJT1' // aslinya T1 ini kata pertama ruko, tp gaapa ntar diganti
+
+    return tipetempat + '-' + DateTime.local().toMillis() + '-' + kodekadar[kadar] + kodebentuk[bentuk] + '-' + (100 + this.getRandomInt(800))
+  }
+
+  // ========================================== Fungsi Routing ==================================================
 
   public async index({ view, request }: HttpContextContract) {
     const kadar = request.input('kadar', 0)
@@ -115,7 +147,7 @@ export default class PenjualansController {
           },
         }),
       ]),
-      jualKode: schema.string({ trim: true }, [rules.maxLength(30)]),
+      // jualKode: schema.string({ trim: true }, [rules.maxLength(30)]), // ntar diganti jadi ngecek tabel kode
       jualModel: schema.number([
         rules.unsigned(),
         rules.exists({
@@ -164,38 +196,43 @@ export default class PenjualansController {
 
     try {
       const kelompok = await Kelompok.findOrFail(validrequest.id)
-      const kadar = await Kadar.findOrFail(kelompok.kadarId)
+      await kelompok.load('bentuk')
+      await kelompok.load('kadar')
+      
 
-      // udah difilter di validasi, jd gaperlu lagi kayaknya, tinggal pake
-      // const model = await Model.findOrFail(validrequest.jualModel)
-
+      // ===================================== Mulai dari sinii =======================================
       let perhisanBaru = validrequest.jualStatusPerhiasan === 'Baru'
       let berat = kelompok.beratKelompok + validrequest.jualBeratDesimal
       // diatas 0.5, potongan dihitung penuh
       let beratKhususPotongan = (validrequest.jualBeratDesimal >= 0.5)? kelompok.beratKelompok + 1 : berat
       let harga = perhisanBaru
-        ? berat * kadar.hargaPerGramBaru
-        : berat * kadar.hargaPerGramNormal
+        ? berat * kelompok.kadar.hargaPerGramBaru
+        : berat * kelompok.kadar.hargaPerGramNormal
 
-      let preNominalPotongan = perhisanBaru ? kadar.potonganBaru : kadar.potonganNormal
-      let deskrpsiPotongan = kadar.apakahPotonganPersen
+      let preNominalPotongan = perhisanBaru ? kelompok.kadar.potonganBaru : kelompok.kadar.potonganNormal
+      let deskrpsiPotongan = kelompok.kadar.apakahPotonganPersen
         ? preNominalPotongan + '% dari harga jual'
         : this.rupiahParser(preNominalPotongan) + ' per gram'
-      let hitungPotongan = kadar.apakahPotonganPersen
+      let hitungPotongan = kelompok.kadar.apakahPotonganPersen
         ? (harga * preNominalPotongan) / 100
         : beratKhususPotongan * preNominalPotongan
+      
+      // ================================== Sampe Sini =================================================
+      // Ntar pindah ke penjualan sama yang butuh lain, hitungnya kita pindah ke akhir biar bisa manipulasi kalau ada apa2
 
       const penjualanBaru = await kelompok.related('penjualans').create({
-        kodeTransaksi: 'PJ-' + DateTime.now().toMillis() + '-TEST', // ntar ganti, jelek bat wakkaka
-        kodePerhiasan: validrequest.jualKode,
+        kodeTransaksi: this.generateKodePenjualan(kelompok.kadar.nama, kelompok.bentuk.bentuk),
+        kodeProduksiId: 1, // ntar diganti jadi ngecek id kode terpilih
         modelId: validrequest.jualModel,
         apakahPerhiasanBaru: perhisanBaru,
         keterangan: validrequest.jualKeterangan,
         beratSebenarnya: berat,
         kondisi: validrequest.jualKondisi,
         fotoBarang: namaFileFoto == '' ? null : namaFileFoto,
-        potonganDeskripsi: deskrpsiPotongan,
-        potonganNominal: hitungPotongan, // bentar
+        // potonganDeskripsi: deskrpsiPotongan, // ntar pindah ke pembelian
+        // potonganNominal: hitungPotongan, // ntar pindah ke pembelian
+        potongan: perhisanBaru ? kelompok.kadar.potonganBaru : kelompok.kadar.potonganNormal,
+        apakahPotonganPersen: kelompok.kadar.apakahPotonganPersen,
         hargaJualAkhir: harga,
         namaPemilik: validrequest.jualNamaPembeli || null,
         genderPemilik: validrequest.jualGenderPembeli || null,
@@ -203,8 +240,13 @@ export default class PenjualansController {
         penggunaId: 1, // ini harusnya diganti yang lagi aktif sekarang
       })
 
-      // return response.redirect().toPath('/app/penjualan/selesai')
+      kelompok.stok -= 1
+      await kelompok.save()
       return 'berhasil'
+
+      // atau mending bikinin rute GET sendiri buat nampilin selesai, kasi QS / param id nya
+      // return response.redirect().toPath('/app/penjualan/selesai')
+
     } catch (error) {
       console.error(error)
       await Drive.delete(namaFileFoto)

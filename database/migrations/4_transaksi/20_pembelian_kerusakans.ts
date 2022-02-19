@@ -12,7 +12,7 @@ export default class PembelianKerusakans extends BaseSchema {
       table.boolean('apakah_diabaikan').notNullable().defaultTo(false)
       table.integer('banyak_kerusakan').notNullable()
       table.integer('total_ongkos').notNullable()
-      table.dateTime('deleted_at')
+      table.dateTime('deleted_at').nullable()
       // default kalo diabaikan, total ongkos = 0
 
       /**

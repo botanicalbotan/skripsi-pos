@@ -17,6 +17,7 @@ import Kadar from 'App/Models/barang/Kadar'
 import Bentuk from 'App/Models/barang/Bentuk'
 import Penjualan from 'App/Models/transaksi/Penjualan'
 import RekapRestok from 'App/Models/barang/RekapRestok'
+import PenambahanStok from 'App/Models/barang/PenambahanStok'
 
 type KelompokQuery = ModelQueryBuilderContract<typeof Kelompok>
 
@@ -26,6 +27,9 @@ export default class Kelompok extends BaseModel {
 
   @column()
   public nama: string
+
+  @column()
+  public kodeKelompok: string
 
   @column()
   public beratKelompok: number
@@ -71,9 +75,19 @@ export default class Kelompok extends BaseModel {
     pivotForeignKey: 'kelompok_id',
     relatedKey: 'id',
     pivotRelatedForeignKey: 'rekap_restok_id',
-    pivotColumns: ['perubahan_stok']
+    pivotColumns: ['perubahan_stok', 'stok_akhir']
   })
   public rekapRestoks: ManyToMany<typeof RekapRestok>
+
+  @manyToMany(() => PenambahanStok, {
+    pivotTable: 'kelompok_penambahans',
+    localKey: 'id',
+    pivotForeignKey: 'kelompok_id',
+    relatedKey: 'id',
+    pivotRelatedForeignKey: 'penambahan_stok_id',
+    pivotColumns: ['perubahan_stok', 'stok_akhir']
+  })
+  public penambahanStoks: ManyToMany<typeof PenambahanStok>
 
 
   @beforeFetch()

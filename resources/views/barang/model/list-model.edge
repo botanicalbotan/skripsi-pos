@@ -65,7 +65,8 @@
 
     {{--  tabel  --}}
     <div class="my-8 min-h-60 rounded pb-4">
-      <h5 class=" text-secondary mb-4">Menampilkan data ke 1-10 (100 data) untuk <span class=" text-neutral font-semibold">"Model"</span></h5>
+      <h5 class=" text-secondary mb-4">Menampilkan data ke 1-10 (100 data) untuk <span
+          class=" text-neutral font-semibold">"Model"</span></h5>
       <div class="overflow-x-auto md:overflow-y-visible"> {{-- aslinya ada overflow-x-auto disini --}}
         <table class="table w-full">
           <thead>
@@ -84,7 +85,7 @@
               </td>
               <td>{{ model.bentukPerhiasan }}</td>
               <td class="max-w-md">
-                {{ model.deskripsi }}
+                {{ (model.deskripsi.length <= 50)? model.deskripsi: model.deskripsi.slice(0, 50) + '...' }}
               </td>
             </tr>
             @endeach
@@ -149,5 +150,5 @@
 
 @section('script')
 <script src="{{asset('assets/app.js')}}"></script>
-<script src="{{asset('assets/kerusakan.js')}}"></script>
+<script src="{{asset('assets/all-model.js')}}"></script>
 @endsection
