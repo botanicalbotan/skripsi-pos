@@ -26,7 +26,7 @@ export default class BasicSeeder extends BaseSeeder {
      * - status gadai
      * - model perhiasan (lainnya buat semua bentuk) -> ditaro di faker aja kali ya
      * - kerusakan mau ditambahin sekalian? gausah pake faker tp seedernya dipisah
-     * 
+     *
      * Seeder ini juga dipake buat ngebikin 1 super user / pemilik, yang gabisa dibikin pake cara lain
      */
 
@@ -69,44 +69,44 @@ export default class BasicSeeder extends BaseSeeder {
       },
     ])
 
-    const bentuk1 = await Bentuk.find(1)
-    await bentuk1?.related('models').create({
+    const bentuk1 = await Bentuk.findOrFail(1)
+    await bentuk1.related('models').create({
       nama: 'Model Anting Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
-    const bentuk2 = await Bentuk.find(2)
-    await bentuk2?.related('models').create({
+    const bentuk2 = await Bentuk.findOrFail(2)
+    await bentuk2.related('models').create({
       nama: 'Model Cincin Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
-    const bentuk3 = await Bentuk.find(3)
-    await bentuk3?.related('models').create({
+    const bentuk3 = await Bentuk.findOrFail(3)
+    await bentuk3.related('models').create({
       nama: 'Model Gelang Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
-    const bentuk4 = await Bentuk.find(4)
-    await bentuk4?.related('models').create({
+    const bentuk4 = await Bentuk.findOrFail(4)
+    await bentuk4.related('models').create({
       nama: 'Model Kalung Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
-    const bentuk5 = await Bentuk.find(5)
-    await bentuk5?.related('models').create({
+    const bentuk5 = await Bentuk.findOrFail(5)
+    await bentuk5.related('models').create({
       nama: 'Model Liontin Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
-    const bentuk6 = await Bentuk.find(6)
-    await bentuk6?.related('models').create({
+    const bentuk6 = await Bentuk.findOrFail(6)
+    await bentuk6.related('models').create({
       nama: 'Model Tindik Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
     })
-    const bentuk7 = await Bentuk.find(7)
-    await bentuk7?.related('models').create({
+    const bentuk7 = await Bentuk.findOrFail(7)
+    await bentuk7.related('models').create({
       nama: 'Model Lain dari Bentuk Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
@@ -156,7 +156,7 @@ export default class BasicSeeder extends BaseSeeder {
     ])
 
     Settings.defaultZone = 'Asia/Jakarta'
-    
+
     const jabatanPemilik = await Jabatan.findByOrFail('nama', 'Pemilik')
     const userBaru = await User.create({
       username: 'admin',
@@ -180,7 +180,7 @@ export default class BasicSeeder extends BaseSeeder {
     pengguna.lamaKerja = 0
     await pengguna.save()
 
-    
+
     await Pasaran.createMany([
       {
         hari: 'Pon',

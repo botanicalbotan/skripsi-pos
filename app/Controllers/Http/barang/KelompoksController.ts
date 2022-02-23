@@ -6,7 +6,6 @@ import Database from '@ioc:Adonis/Lucid/Database'
 import Bentuk from 'App/Models/barang/Bentuk'
 import Kadar from 'App/Models/barang/Kadar'
 import { DateTime, Settings } from 'luxon'
-import RekapRestok from 'App/Models/barang/RekapRestok'
 
 export default class KelompoksController {
   // Fungsi Tambahan
@@ -64,7 +63,7 @@ export default class KelompoksController {
       Tua: {nomer:3, huruf: 'TU'}
     }
 
-    return kodebentuk[bentuk] + kodekadar[kadar].nomer + kodekadar[kadar].huruf + DateTime.local().toMillis()    
+    return kodebentuk[bentuk] + kodekadar[kadar].nomer + kodekadar[kadar].huruf + DateTime.local().toMillis()
   }
 
   // Fungsi Routing
@@ -393,95 +392,6 @@ export default class KelompoksController {
     }
   }
 
-  // ================================================ Restok ====================================================
-  public async getKelompokDenganInput({ request }: HttpContextContract) {
-    let bentuk = request.input('bentuk')
-    let kadar = request.input('kadar')
-
-    let kelompokCari = await Database.from('kelompoks')
-      .select('id', 'berat_kelompok as beratKelompok', 'stok', 'nama')
-      .where('bentuk_id', bentuk)
-      .andWhere('kadar_id', kadar)
-      .andWhereNull('deleted_at')
-      .orderBy('nama', 'asc')
-
-    return kelompokCari
-  }
-
-  public async restokPerhiasan({ request, session, response }: HttpContextContract) {
-    const restokSchema = schema.create({
-      restokCatatan: schema.string({ trim: true }, [rules.maxLength(255)]),
-      stokIdPerhiasan: schema
-        .array([rules.minLength(1)])
-        .members(
-          schema.number([
-            rules.exists({ table: 'kelompoks', column: 'id', where: { deleted_at: null } }),
-          ])
-        ),
-      stokTambahan: schema.array([rules.minLength(1)]).members(schema.number([rules.unsigned()])),
-      stokAsal: schema.array([rules.minLength(1)]).members(schema.enum(['Cucian', 'Kulakan'])),
-    })
-
-    const validrequest = await request.validate({ schema: restokSchema })
-
-    // custom error message
-    let errCount = 0
-    let itemCount = 0
-
-    async function addStok() {
-      let rekapBaru = new RekapRestok()
-      rekapBaru.penggunaId = 1
-      rekapBaru.catatan = validrequest.restokCatatan
-      await rekapBaru.save()
-
-      let i = 0
-      for (const element of validrequest.stokIdPerhiasan) {
-        console.log('no ' + i + ', value; ' + element + ', stok: ' + validrequest.stokTambahan[i])
-
-        try {
-          let kelompok = await Kelompok.findOrFail(element)
-          kelompok.stok += validrequest.stokTambahan[i]
-          console.log(
-            'harusnya ketambahan ' + validrequest.stokTambahan[i] + ' jadi ' + kelompok.stok
-          )
-
-          rekapBaru.related('kelompoks').attach({
-            [kelompok.id]: {
-              apakah_kulakan: validrequest.stokAsal[i] === 'Kulakan',
-              perubahan_stok: validrequest.stokTambahan[i],
-              stok_akhir: kelompok.stok,
-            },
-          })
-
-          await kelompok.save()
-        } catch (error) {
-          errCount++
-          console.error(error)
-        }
-
-        i++
-        itemCount++
-      }
-    }
-
-    await addStok()
-
-    if (errCount > 0)
-      session.flash(
-        'errorRestok',
-        'Stok ' +
-          (itemCount - errCount) +
-          ' kelompok berhasil diperbarui, ' +
-          errCount +
-          ' kelompok dilewati karena terdapat masalah'
-      )
-
-    if (itemCount > 0 && errCount == 0)
-      session.flash('konfirmasiRestok', 'Stok ' + itemCount + ' kelompok berhasil diperbarui!')
-
-    return response.redirect().back()
-  }
-
   // =============================================== General ===============================================
 
   public async getKadarBentuk({}: HttpContextContract) {
@@ -496,5 +406,5 @@ export default class KelompoksController {
     }
   }
 
-  
+
 }

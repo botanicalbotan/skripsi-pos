@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
-import { 
-  BaseModel, 
+import {
+  BaseModel,
   column,
   BelongsTo,
   belongsTo,
@@ -16,7 +16,6 @@ import {
 import Kadar from 'App/Models/barang/Kadar'
 import Bentuk from 'App/Models/barang/Bentuk'
 import Penjualan from 'App/Models/transaksi/Penjualan'
-import RekapRestok from 'App/Models/barang/RekapRestok'
 import PenambahanStok from 'App/Models/barang/PenambahanStok'
 
 type KelompokQuery = ModelQueryBuilderContract<typeof Kelompok>
@@ -68,16 +67,6 @@ export default class Kelompok extends BaseModel {
 
   @hasMany(() => Penjualan)
   public penjualans: HasMany<typeof Penjualan>
-
-  @manyToMany(() => RekapRestok, {
-    pivotTable: 'kelompok_rekaps',
-    localKey: 'id',
-    pivotForeignKey: 'kelompok_id',
-    relatedKey: 'id',
-    pivotRelatedForeignKey: 'rekap_restok_id',
-    pivotColumns: ['perubahan_stok', 'stok_akhir']
-  })
-  public rekapRestoks: ManyToMany<typeof RekapRestok>
 
   @manyToMany(() => PenambahanStok, {
     pivotTable: 'kelompok_penambahans',

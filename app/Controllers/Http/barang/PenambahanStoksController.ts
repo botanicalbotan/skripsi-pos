@@ -201,7 +201,7 @@ export default class PenambahanStoksController {
         jumlahKelompok: hitungKelompok[0].jumlahKelompok
       }
 
-      
+
       return view.render('barang/penambahan-stok/view-penambahan', { penambahan, tambahan })
     } catch (error) {
       return response.redirect().toPath('/app/barang/kodepro/')
@@ -215,5 +215,19 @@ export default class PenambahanStoksController {
   }
 
   public async destroy ({}: HttpContextContract) {
+  }
+
+  public async getKelompokDenganInput({ request }: HttpContextContract) {
+    let bentuk = request.input('bentuk')
+    let kadar = request.input('kadar')
+
+    let kelompokCari = await Database.from('kelompoks')
+      .select('id', 'berat_kelompok as beratKelompok', 'stok', 'nama')
+      .where('bentuk_id', bentuk)
+      .andWhere('kadar_id', kadar)
+      .andWhereNull('deleted_at')
+      .orderBy('nama', 'asc')
+
+    return kelompokCari
   }
 }

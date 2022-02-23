@@ -14,7 +14,7 @@ import {
 import Ka from 'App/Models/kas/Ka'
 import KoreksiSaldo from 'App/Models/kas/KoreksiSaldo'
 import User from 'App/Models/User'
-import RekapRestok from 'App/Models/barang/RekapRestok'
+import PenambahanStok from 'App/Models/barang/PenambahanStok'
 import Gadai from 'App/Models/transaksi/Gadai'
 import Pembelian from 'App/Models/transaksi/Pembelian'
 import Penjualan from 'App/Models/transaksi/Penjualan'
@@ -92,8 +92,8 @@ export default class Pengguna extends BaseModel {
   @hasMany(() => KoreksiSaldo)
   public koreksiSaldos: HasMany<typeof KoreksiSaldo>
 
-  @hasMany(() => RekapRestok)
-  public rekapRestoks: HasMany<typeof RekapRestok>
+  @hasMany(() => PenambahanStok)
+  public penambahanStoks: HasMany<typeof PenambahanStok>
 
   @hasMany(() => Gadai)
   public gadais: HasMany<typeof Gadai>
@@ -110,5 +110,5 @@ export default class Pengguna extends BaseModel {
     query.whereNull('deleted_at')
   }
 
-  
+
 }

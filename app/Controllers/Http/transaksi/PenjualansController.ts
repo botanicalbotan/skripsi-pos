@@ -198,25 +198,27 @@ export default class PenjualansController {
       const kelompok = await Kelompok.findOrFail(validrequest.id)
       await kelompok.load('bentuk')
       await kelompok.load('kadar')
-      
+
 
       // ===================================== Mulai dari sinii =======================================
-      let perhisanBaru = validrequest.jualStatusPerhiasan === 'Baru'
+      let perhiasanBaru = validrequest.jualStatusPerhiasan === 'Baru'
       let berat = kelompok.beratKelompok + validrequest.jualBeratDesimal
+
       // diatas 0.5, potongan dihitung penuh
       let beratKhususPotongan = (validrequest.jualBeratDesimal >= 0.5)? kelompok.beratKelompok + 1 : berat
-      let harga = perhisanBaru
+      let harga = perhiasanBaru
         ? berat * kelompok.kadar.hargaPerGramBaru
         : berat * kelompok.kadar.hargaPerGramNormal
 
-      let preNominalPotongan = perhisanBaru ? kelompok.kadar.potonganBaru : kelompok.kadar.potonganNormal
-      let deskrpsiPotongan = kelompok.kadar.apakahPotonganPersen
+      // ini ntar dipindah ke pembelian, penjualan cuma nyatet rawnya aja
+      let preNominalPotongan = perhiasanBaru ? kelompok.kadar.potonganBaru : kelompok.kadar.potonganNormal
+      let deskripsiPotongan = kelompok.kadar.apakahPotonganPersen
         ? preNominalPotongan + '% dari harga jual'
         : this.rupiahParser(preNominalPotongan) + ' per gram'
       let hitungPotongan = kelompok.kadar.apakahPotonganPersen
         ? (harga * preNominalPotongan) / 100
         : beratKhususPotongan * preNominalPotongan
-      
+
       // ================================== Sampe Sini =================================================
       // Ntar pindah ke penjualan sama yang butuh lain, hitungnya kita pindah ke akhir biar bisa manipulasi kalau ada apa2
 
@@ -224,14 +226,14 @@ export default class PenjualansController {
         kodeTransaksi: this.generateKodePenjualan(kelompok.kadar.nama, kelompok.bentuk.bentuk),
         kodeProduksiId: 1, // ntar diganti jadi ngecek id kode terpilih
         modelId: validrequest.jualModel,
-        apakahPerhiasanBaru: perhisanBaru,
+        apakahPerhiasanBaru: perhiasanBaru,
         keterangan: validrequest.jualKeterangan,
         beratSebenarnya: berat,
         kondisi: validrequest.jualKondisi,
         fotoBarang: namaFileFoto == '' ? null : namaFileFoto,
         // potonganDeskripsi: deskrpsiPotongan, // ntar pindah ke pembelian
         // potonganNominal: hitungPotongan, // ntar pindah ke pembelian
-        potongan: perhisanBaru ? kelompok.kadar.potonganBaru : kelompok.kadar.potonganNormal,
+        potongan: perhiasanBaru ? kelompok.kadar.potonganBaru : kelompok.kadar.potonganNormal,
         apakahPotonganPersen: kelompok.kadar.apakahPotonganPersen,
         hargaJualAkhir: harga,
         namaPemilik: validrequest.jualNamaPembeli || null,
@@ -242,10 +244,24 @@ export default class PenjualansController {
 
       kelompok.stok -= 1
       await kelompok.save()
+
+      /**
+       * Ada beberapa opsi buat phase3, tampilan abis nyimpen:
+       * - Tampilin jadi page sendiri, tetep lanjutan dari POST (langsung render view abis nyimpen), ngehapus
+       *  cache form biar ga kekirim ulang (theorically)
+       * - Tampilin jadi page sendiri, abis transaksi kelar ngeredirect ke alamat
+       * - Nunggu kelar save dulu di client, trus baru pindah ke page khusus nampilin transaksi berhasil
+       *  pake ID respon penyimpenan
+       * - Pake modal / sweetalert buat nampilin transaksi berhasil, trus pindah ke view nya
+       *  review transaksi pake ID yang didapet
+       */
+
       return 'berhasil'
 
       // atau mending bikinin rute GET sendiri buat nampilin selesai, kasi QS / param id nya
       // return response.redirect().toPath('/app/penjualan/selesai')
+
+
 
     } catch (error) {
       console.error(error)

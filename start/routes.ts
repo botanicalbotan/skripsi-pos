@@ -75,7 +75,7 @@ Route.group(() => {
 
     // ini yang propper, sementara ditaro di test dulu
     Route.post('/transaksiv2', 'TestsController.transaksi')
-    
+
   }).prefix('pembelian')
 
   Route.group(() => {
@@ -126,7 +126,7 @@ Route.group(() => {
 
     Route.post('/pembelian/hitungHargaNormal', 'transaksi/PembeliansController.hitungHargaNormal')
   }).prefix('transaksi')
-  
+
   Route.get('/gadai', async ({ view }) => {
     return view.render('transaksi/gadai')
   })
@@ -139,7 +139,7 @@ Route.group(() => {
     Route.get('/rekap', async ({ view }) => {
       return view.render('kas/rekap')
     })
- 
+
   }).prefix('/kas')
 
   // Rute buat ngatur barang
@@ -157,13 +157,9 @@ Route.group(() => {
     // })
     // Route.post('/restok', 'barang/KelompoksController.restokPerhiasan')
 
-    // Route.get('/rekapRestok', async ({ view }) => {
-    //   return view.render('barang/rekaprestok')
-    // })
-
     Route.resource('penambahan', 'barang/PenambahanStoksController').except(['edit', 'update', 'destroy'])
     Route.group(()=>{
-      
+
     }).prefix('penambahan')
 
 
@@ -178,7 +174,7 @@ Route.group(() => {
 
 
       // restok
-      Route.get('/kelompokDenganInput', 'barang/KelompoksController.getKelompokDenganInput')
+      Route.get('/kelompokDenganInput', 'barang/PenambahanStoksController.getKelompokDenganInput')
 
       // transaksi
       Route.get('/modelByBentuk', 'barang/ModelsController.getModelByBentuk')
@@ -225,7 +221,7 @@ Route.group(() => {
     Route.get('/paginationv3', 'TestsController.paginationv3')
 
     Route.get('/qs', 'TestsController.queryString')
-    
+
     Route.get('/data/kerusakan', 'TestsController.dataKerusakan')
 
     Route.post('/dump', 'TestsController.dump')
