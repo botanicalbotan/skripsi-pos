@@ -16,6 +16,10 @@ module.exports = {
       'ring',
       'ring-error',
       'pl-12',
+      'input-success',
+      'text-success',
+      'input-error',
+      'text-error'
     ]
   },
   // purge: {
@@ -60,7 +64,7 @@ module.exports = {
     extend: {},
   },
 
-  plugins: [ 
+  plugins: [
     require('daisyui'),
   ],
 

@@ -1,12 +1,21 @@
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import {
+  HttpContextContract
+} from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import {
+  schema,
+  rules
+} from '@ioc:Adonis/Core/Validator'
 import Kadar from 'App/Models/barang/Kadar'
 import KodeProduksi from 'App/Models/barang/KodeProduksi'
+import Pengaturan from 'App/Models/sistem/Pengaturan'
 
 
 export default class KodeProduksisController {
-  public async index ({ view, request }: HttpContextContract) {
+  public async index({
+    view,
+    request
+  }: HttpContextContract) {
 
     const opsiOrder = [
       'kode_produksis.kode',
@@ -17,7 +26,7 @@ export default class KodeProduksisController {
     const page = request.input('page', 1)
     const order = request.input('ob', 0)
     const cari = request.input('cari', '')
-    const sanitizedOrder = order < opsiOrder.length && order >= 0 && order? order : 0
+    const sanitizedOrder = order < opsiOrder.length && order >= 0 && order ? order : 0
     const limit = 10
 
     const kodepros = await Database.from('kode_produksis')
@@ -39,25 +48,30 @@ export default class KodeProduksisController {
 
     kodepros.baseUrl('/app/barang/kodepro')
 
-    kodepros.queryString({ ob: sanitizedOrder })
+    kodepros.queryString({
+      ob: sanitizedOrder
+    })
     if (cari !== '') {
-      kodepros.queryString({ ob: sanitizedOrder, cari: cari })
+      kodepros.queryString({
+        ob: sanitizedOrder,
+        cari: cari
+      })
     }
 
     // kalau mau mulai dari sini bisa dibikin fungsi sendiri
     // input bisa pagination object + panjang page yang mau di display
     let firstPage =
-      kodepros.currentPage - 2 > 0
-        ? kodepros.currentPage - 2
-        : kodepros.currentPage - 1 > 0
-        ? kodepros.currentPage - 1
-        : kodepros.currentPage
+      kodepros.currentPage - 2 > 0 ?
+      kodepros.currentPage - 2 :
+      kodepros.currentPage - 1 > 0 ?
+      kodepros.currentPage - 1 :
+      kodepros.currentPage
     let lastPage =
-      kodepros.currentPage + 2 <= kodepros.lastPage
-        ? kodepros.currentPage + 2
-        : kodepros.currentPage + 1 <= kodepros.lastPage
-        ? kodepros.currentPage + 1
-        : kodepros.currentPage
+      kodepros.currentPage + 2 <= kodepros.lastPage ?
+      kodepros.currentPage + 2 :
+      kodepros.currentPage + 1 <= kodepros.lastPage ?
+      kodepros.currentPage + 1 :
+      kodepros.currentPage
 
     if (lastPage - firstPage < 4 && kodepros.lastPage > 4) {
       if (kodepros.currentPage < kodepros.firstPage + 2) {
@@ -80,48 +94,83 @@ export default class KodeProduksisController {
       lastDataInPage: tempLastData >= kodepros.total ? kodepros.total : tempLastData,
     }
 
-    return view.render('barang/kodepro/list-kodepro', { kodepros, tambahan })
+    return view.render('barang/kodepro/list-kodepro', {
+      kodepros,
+      tambahan
+    })
   }
 
-  public async create ({ view }: HttpContextContract) {
-    return view.render('barang/kodepro/form-kodepro')
+  public async create({
+    view
+  }: HttpContextContract) {
+    let kadars = await Database
+      .from('kadars')
+      .select('id',
+        'apakah_potongan_persen as apakahPotonganPersen',
+        'nama')
+
+    let pengaturan = await Pengaturan.findOrFail(1)
+
+    return view.render('barang/kodepro/form-kodepro', {
+      kadars,
+      hargaMal: pengaturan.hargaMal
+    })
   }
 
-  public async store ({ request, response, session }: HttpContextContract) {
+  public async store({
+    request,
+    response,
+    session
+  }: HttpContextContract) {
     const createKodeProduksiSchema = schema.create({
-      kode: schema.string({ trim:true }, [
+      kode: schema.string({
+        trim: true
+      }, [
         rules.maxLength(10),
         rules.unique({
           table: 'kode_produksis',
           column: 'kode'
         })
       ]),
-      kadar: schema.enum([
-        'Muda',
-        'Tanggung',
-        'Tua',
-      ] as const),
-      asal: schema.string({ trim:true }, [
+      kadar: schema.number([
+        rules.unsigned(),
+        rules.exists({
+          table: 'kadars',
+          column: 'id'
+        })
+      ]),
+      asal: schema.string({
+        trim: true
+      }, [
         rules.maxLength(50)
       ]),
       metode: schema.enum([
-        'pabrikan',
-        'buatantangan'
-      ] as const),
-      deskripsi: schema.string({ trim:true }, [
+          'pabrikan',
+          'buatanTangan'
+        ] as
+        const),
+      deskripsi: schema.string({
+        trim: true
+      }, [
         rules.maxLength(100)
       ]),
     })
 
-    const validrequest = await request.validate({ schema: createKodeProduksiSchema })
+    const validrequest = await request.validate({
+      schema: createKodeProduksiSchema
+    })
 
     try {
-      let kadar = await Kadar.findByOrFail('nama', validrequest.kadar)
+      let kadar = await Kadar.findOrFail(validrequest.kadar)
       await kadar.related('kodeProduksi').create({
         kode: validrequest.kode,
         deskripsi: validrequest.deskripsi,
-        apakahBuatanTangan: validrequest.metode === 'buatantangan',
-        asalProduksi: validrequest.asal
+        apakahBuatanTangan: validrequest.metode === 'buatanTangan',
+        asalProduksi: validrequest.asal,
+        hargaPerGramBaru: 0,
+        hargaPerGramNormal: 1,
+        potonganBaru: 0,
+        potonganNormal: 1 // ini ntar diganti input yagn bener
       })
 
       return response.redirect().toPath('/app/barang/kodepro/')
@@ -132,23 +181,36 @@ export default class KodeProduksisController {
     }
   }
 
-  public async show ({ view, params, response }: HttpContextContract) {
+  public async show({
+    view,
+    params,
+    response
+  }: HttpContextContract) {
     try {
       let kodepro = await KodeProduksi.findOrFail(params.id)
       await kodepro.load('kadar')
 
-      return view.render('barang/kodepro/view-kodepro', { kodepro })
+      return view.render('barang/kodepro/view-kodepro', {
+        kodepro
+      })
     } catch (error) {
       return response.redirect().toPath('/app/barang/kodepro/')
     }
   }
 
-  public async edit ({ view, params, response, session }: HttpContextContract) {
+  public async edit({
+    view,
+    params,
+    response,
+    session
+  }: HttpContextContract) {
     try {
       let kodepro = await KodeProduksi.findOrFail(params.id)
       await kodepro.load('kadar')
 
-      return view.render('barang/kodepro/form-edit-kodepro', { kodepro })
+      return view.render('barang/kodepro/form-edit-kodepro', {
+        kodepro
+      })
     } catch (error) {
       session.flash('errorServerThingy', 'Ada masalah di server!')
       console.error(error)
@@ -156,9 +218,16 @@ export default class KodeProduksisController {
     }
   }
 
-  public async update ({ response, request, session, params }: HttpContextContract) {
+  public async update({
+    response,
+    request,
+    session,
+    params
+  }: HttpContextContract) {
     const editKodeProduksiSchema = schema.create({
-      kode: schema.string({ trim:true }, [
+      kode: schema.string({
+        trim: true
+      }, [
         rules.maxLength(10),
         rules.unique({
           table: 'kode_produksis',
@@ -169,23 +238,31 @@ export default class KodeProduksisController {
         }),
       ]),
       kadar: schema.enum([
-        'Muda',
-        'Tanggung',
-        'Tua',
-      ] as const),
-      asal: schema.string({ trim:true }, [
+          'Muda',
+          'Tanggung',
+          'Tua',
+        ] as
+        const),
+      asal: schema.string({
+        trim: true
+      }, [
         rules.maxLength(50)
       ]),
       metode: schema.enum([
-        'pabrikan',
-        'buatantangan'
-      ] as const),
-      deskripsi: schema.string({ trim:true }, [
+          'pabrikan',
+          'buatantangan'
+        ] as
+        const),
+      deskripsi: schema.string({
+        trim: true
+      }, [
         rules.maxLength(100)
       ]),
     })
 
-    const validrequest = await request.validate({ schema: editKodeProduksiSchema })
+    const validrequest = await request.validate({
+      schema: editKodeProduksiSchema
+    })
 
     try {
       let kadar = await Kadar.findByOrFail('nama', validrequest.kadar)
@@ -195,7 +272,12 @@ export default class KodeProduksisController {
       kodepro.kadarId = kadar.id
       kodepro.asalProduksi = validrequest.asal
       kodepro.apakahBuatanTangan = validrequest.metode === 'buatantangan',
-      kodepro.deskripsi = validrequest.deskripsi
+        kodepro.deskripsi = validrequest.deskripsi
+      // ini ntar diganti input yang bener
+      kodepro.hargaPerGramBaru = 0
+      kodepro.hargaPerGramNormal = 0
+      kodepro.potonganBaru = 0
+      kodepro.potonganNormal = 0
       await kodepro.save()
 
       return response.redirect().toPath('/app/barang/kodepro/' + kodepro.id)
@@ -206,6 +288,32 @@ export default class KodeProduksisController {
     }
   }
 
-  public async destroy ({}: HttpContextContract) {
+  public async destroy({}: HttpContextContract) {}
+
+
+  // ============================== Tambahan buat API =================================
+  public async cekKode({
+    request,
+    response
+  }: HttpContextContract) {
+    let kode = request.input('kode')
+
+    if (kode === null || typeof kode === 'undefined') {
+      return response.badRequest('Kode tidak boleh kosong')
+    }
+
+    let cekKode = await Database
+      .from('kode_produksis')
+      .select('kode')
+      .where('kode', kode)
+
+    if (cekKode.length > 0) {
+      return response.notFound('Kode sudah terpakai, tolong tuliskan kode lain')
+    } else {
+      // return response.ok('Kode bisa digunakan')
+      // return 'Kode bisa digunakan'
+      return { status: 'berhasil' }
+    }
+
   }
 }

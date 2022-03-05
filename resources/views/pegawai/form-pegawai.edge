@@ -14,7 +14,7 @@
     <form id="pegawaiBaru" action="/app/pegawai" method="POST">
       {{ csrfField() }}
       <div class="flex flex-col md:flex-row md:space-x-8">
-        <div class="w-full md:w-3/5 space-y-8">
+        <div class="w-full md:w-3/5 md:max-w-md space-y-8">
 
           {{--  ada template buat gambar sama jabatan, cek di test-1  --}}
 
@@ -29,7 +29,7 @@
               </label>
               <input type="text" id="nama" name="nama" class="input input-bordered"
                 placeholder="Contoh: Muhammad Arif Fadhilah" required maxlength="50">
-              
+
               @if(flashMessages.has('errors.nama'))
                 <p class="text-error">{{ flashMessages.get('errors.nama') }}</p>
               @endif
@@ -39,11 +39,11 @@
               <label for="">Gender<span class="text-error"> *</span></label>
               <div class="flex space-x-4 mt-1 w-full md:w-96">
                 <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
-                  :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                  :class="(radio == 1)? ' bg-info bg-opacity-10 border-info': 'bg-white border-secondary'">
                   <input type="radio" name="gender" checked="checked" class="radio radio-primary hidden"
                     value="L" @click="radio = 1">
                   <span class="label-text text-base"
-                    :class="(radio == 1)? 'text-primary': 'text-secondary'">Laki-laki</span>
+                    :class="(radio == 1)? 'text-info': 'text-secondary'">Laki-laki</span>
                 </label>
                 <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                   :class="(radio == 2)? ' bg-pink-500 bg-opacity-10 border-pink-500': 'bg-white border-secondary'">
@@ -67,7 +67,7 @@
                   </label>
                   <input type="text" name="tempatLahir" id="tempatLahir" class="input input-bordered"
                     placeholder="Contoh: Boyolali" required maxlength="100">
-                  
+
                   @if(flashMessages.has('errors.tempatlahir'))
                     <p class="text-error">{{ flashMessages.get('errors.tempatlahir') }}</p>
                   @endif
@@ -80,7 +80,7 @@
                   </label>
                   <input type="date" name="tanggalLahir" id="tanggalLahir"
                     class="input input-bordered" required>
-                  
+
                   @if(flashMessages.has('errors.tanggallahir'))
                     <p class="text-error">{{ flashMessages.get('errors.tanggallahir') }}</p>
                   @endif
@@ -93,7 +93,7 @@
               </label>
               <input type="text" id="alamat" name="alamat" class="input input-bordered"
                 placeholder="Contoh: Jl. Pemuda Kebaktian No.12, RT01/RW02 Semarang" required maxlength="100">
-              
+
               @if(flashMessages.has('errors.alamat'))
                 <p class="text-error">{{ flashMessages.get('errors.alamat') }}</p>
               @endif
@@ -104,7 +104,7 @@
               </label>
               <input type="text" id="nohpAktif" name="nohpAktif" class="input input-bordered"
                 placeholder="Contoh: 081123456789" required maxlength="15">
-              
+
               @if(flashMessages.has('errors.nohpAktif'))
                 <p class="text-error">{{ flashMessages.get('errors.nohpAktif') }}</p>
               @endif
@@ -134,7 +134,7 @@
               </div>
               <input type="text" id="username" name="username" class="input input-bordered"
                 placeholder="Contoh: budibalado" autocomplete="username" required maxlength="30">
-              
+
               @if(flashMessages.has('errors.username'))
                 <p class="text-error">{{ flashMessages.get('errors.username') }}</p>
               @endif
@@ -144,10 +144,10 @@
               <label for="password">
                 <span class="">Password<span class="text-error"> *</span></span>
               </label>
-              <input type="password" x-model="pass" id="password" name="password"
+              <input type="password" x-model="pass" id="password" name="password" placeholder="Password anda"
                 x-on:focusout="repassclass= (pass == '' || repass == '')? '': (pass!=repass)? 'input-error': ''"
                 class="input input-bordered" autocomplete="new-password" required>
-                
+
               @if(flashMessages.has('errors.password'))
                 <p class="text-error">{{ flashMessages.get('errors.password') }}</p>
               @endif
@@ -167,7 +167,7 @@
                 </div>
               </div>
               <input type="password" x-model="repass" x-on:focusout="repassclass= (pass!=repass)? 'input-error': ''"
-                :class="repassclass" id="repassword" class="input input-bordered"
+                :class="repassclass" id="repassword" class="input input-bordered" placeholder="Password anda kembali"
                 autocomplete="new-password" required>
               <p x-cloak class="text-error" :class="(repassclass != '')? 'flex':'hidden'">Kedua password tidak sama!</p>
             </div>
@@ -178,7 +178,7 @@
               </label>
               <input type="email" id="email" name="email" class="input input-bordered"
                 placeholder="Contoh: budi@gmail.com" maxlength="100">
-                
+
               @if(flashMessages.has('errors.email'))
                 <p class="text-error">{{ flashMessages.get('errors.email') }}</p>
               @endif
@@ -221,7 +221,7 @@
               </label>
               <input type="date" x-on:change="data = banding($el.value)" id="tanggalAwalMasuk"
                 name="tanggalAwalMasuk" class="input input-bordered" :value="moment().format('yyyy-MM-DD')">
-              
+
               @if(flashMessages.has('errors.tanggalAwalMasuk'))
                 <p class="text-error">{{ flashMessages.get('errors.tanggalAwalMasuk') }}</p>
               @endif

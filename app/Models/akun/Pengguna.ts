@@ -18,6 +18,7 @@ import PenambahanStok from 'App/Models/barang/PenambahanStok'
 import Gadai from 'App/Models/transaksi/Gadai'
 import Pembelian from 'App/Models/transaksi/Pembelian'
 import Penjualan from 'App/Models/transaksi/Penjualan'
+import PenggajianPegawai from './PenggajianPegawai'
 
 type PenggunaQuery = ModelQueryBuilderContract<typeof Pengguna>
 
@@ -37,10 +38,7 @@ export default class Pengguna extends BaseModel {
   @column.date()
   public tanggalLahir: DateTime
 
-  @column.date()
-  public tanggalAwalMasuk: DateTime
-
-  // lama kerja ini tahun
+  // lama kerja ini bulan
   @column()
   public lamaKerja: number
 
@@ -56,17 +54,27 @@ export default class Pengguna extends BaseModel {
   @column({ serializeAs: null })
   public foto?: string | null
 
-  @column.date()
-  public tanggalGajian: DateTime
-
   @column()
   public gajiBulanan: number
+
+  @column.dateTime()
+  public deletedAt: DateTime | null
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  // ini tambahan baru
+  @column.date()
+  public tanggalMulaiAktif: DateTime | null
+
+  @column.date()
+  public tanggalGajianSelanjutnya: DateTime | null
+
+  @column.date()
+  public tanggalGajianTerakhir: DateTime | null
 
 
   // FK dan relasi
@@ -88,6 +96,16 @@ export default class Pengguna extends BaseModel {
 
   @hasMany(() => Ka)
   public kas: HasMany<typeof Ka>
+
+  @hasMany(() => PenggajianPegawai, {
+    foreignKey: 'penggunaId'
+  })
+  public penggajianPegawais: HasMany<typeof PenggajianPegawai>
+
+  @hasMany(() => PenggajianPegawai, {
+    foreignKey: 'penerimaGajiId'
+  })
+  public penerimaGajis: HasMany<typeof PenggajianPegawai>
 
   @hasMany(() => KoreksiSaldo)
   public koreksiSaldos: HasMany<typeof KoreksiSaldo>

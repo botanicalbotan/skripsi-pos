@@ -150,7 +150,10 @@ Route.group(() => {
     Route.resource('kelompok', 'barang/KelompoksController').except(['index'])
     Route.resource('model', 'barang/ModelsController')
     Route.resource('kerusakan', 'barang/KerusakansController')
+
+    Route.get('/kodepro/cekKode', 'barang/KodeProduksisController.cekKode')
     Route.resource('kodepro', 'barang/KodeProduksisController')
+
 
     // Route.get('/restok', async ({ view }) => {
     //   return view.render('barang/restok')
@@ -166,6 +169,7 @@ Route.group(() => {
     Route.group(()=>{
       // general
       Route.get('/kadarBentuk', 'barang/KelompoksController.getKadarBentuk')
+      Route.get('/getKadarById', 'barang/KadarsController.getKadarById')
 
       // view kelompok
       Route.get('/peringkatKelompok', 'barang/KelompoksController.peringkatKelompokAll')

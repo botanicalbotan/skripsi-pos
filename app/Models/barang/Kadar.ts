@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
-import { 
-  BaseModel, 
+import {
+  BaseModel,
   column,
   hasMany,
   HasMany,
@@ -22,6 +22,23 @@ export default class Kadar extends BaseModel {
   public deskripsi: string
 
   @column()
+  public apakahPotonganPersen: boolean
+
+  @column()
+  public toleransiPotonganTukarTambah: number
+
+  @column()
+  public persentaseMalUripan: number
+
+  @column()
+  public ongkosMalRosokPerGram: number
+
+  @column()
+  public hargaNota: number
+
+  // mulai dari sini
+
+  @column()
   public hargaPerGramNormal: number
 
   @column()
@@ -33,8 +50,7 @@ export default class Kadar extends BaseModel {
   @column()
   public potonganBaru: number
 
-  @column()
-  public apakahPotonganPersen: boolean
+  // sampe sini ntar dihapus kalo dah stabil
 
 
   @column.dateTime({ autoCreate: true, serializeAs: null })

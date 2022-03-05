@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon'
 import {
-  BaseModel, 
+  BaseModel,
   column,
-  belongsTo, 
+  belongsTo,
   BelongsTo,
   hasMany,
   HasMany
@@ -25,6 +25,22 @@ export default class KodeProduksi extends BaseModel {
 
   @column()
   public deskripsi: string
+
+  // mulai dari sini
+
+  @column()
+  public hargaPerGramNormal: number
+
+  @column()
+  public hargaPerGramBaru: number
+
+  @column()
+  public potonganNormal: number
+
+  @column()
+  public potonganBaru: number
+
+  // sampe sini, kolom baru
 
   @column.dateTime()
   public deletedAt: DateTime | null

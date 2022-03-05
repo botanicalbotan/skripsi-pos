@@ -47,8 +47,119 @@ $(function () {
   }
   // ========================================== form ===========================================
   if ($('.base-page').data('pagename') == "form") {
+    let kodeValid = false
+    const kode = document.getElementById('kode')
+    const teksPengecekanKode = document.getElementById('teksPengecekanKode')
+
+    // deklarasi submit
     const formKode = document.getElementById('formKode')
     const kadar = document.getElementById('kadar')
+
+    // deklarasi cek kadar
+    const hargaUmum = document.getElementById('hargaUmum')
+    const hargaBaru = document.getElementById('hargaBaru')
+    const tipePotongan = document.getElementById('tipePotongan')
+    const potonganUmum = document.getElementById('potonganUmum')
+    const potonganBaru = document.getElementById('potonganBaru')
+    const persentaseMalUripan = document.getElementById('persentaseMalUripan')
+    const ongkosMalRosokPerGram = document.getElementById('ongkosMalRosokPerGram')
+
+    let resetKadar = function () {
+      hargaUmum.value = ''
+      hargaBaru.value = ''
+      potonganUmum.value = ''
+      potonganBaru.value = ''
+      persentaseMalUripan.value = ''
+      ongkosMalRosokPerGram.value = ''
+    }
+
+    let fullResetKadar = function () {
+      resetKadar()
+      kadar.value = 'kosong'
+      tipePotongan.value = 'Pilih kadar terlebih dahulu!'
+      tipePotongan.disabled = true
+      potonganUmum.disabled = true
+      potonganBaru.disabled = true
+    }
+
+    kode.addEventListener('change', function (e) {
+      teksPengecekanKode.innerText = "Mengecek ketersediaan..."
+
+      if (kode.value) {
+        teksPengecekanKode.classList.remove('hidden')
+
+        $.get("/app/barang/kodepro/cekKode", {
+            kode: kode.value
+          },
+          function (data, textStatus, jqXHR) {
+            kodeValid = true
+            kode.classList.remove('input-error')
+            kode.classList.add('input-success')
+            teksPengecekanKode.classList.remove('text-secondary', 'text-error')
+            teksPengecekanKode.classList.add('text-success')
+            teksPengecekanKode.innerText = 'Kode siap digunakan'
+          },
+          "json"
+        ).fail((xhr) => {
+          kodeValid = false
+          kode.classList.add('input-error')
+          kode.classList.remove('input-success')
+          teksPengecekanKode.classList.add('text-error')
+          teksPengecekanKode.classList.remove('text-secondary', 'text-success')
+          teksPengecekanKode.innerText = xhr.responseText
+        })
+
+      } else {
+        kodeValid = false
+        kode.classList.remove('input-error', 'input-success')
+        teksPengecekanKode.classList.add('hidden')
+        teksPengecekanKode.classList.remove('text-error', 'text-success')
+      }
+    })
+
+    // ini ngambil data kadar ==========
+    const labelPotonganUmum = document.getElementById('labelPotonganUmum')
+    const tandaPotonganUmum = document.getElementById('tandaPotonganUmum')
+    const labelPotonganBaru = document.getElementById('labelPotonganBaru')
+    const tandaPotonganBaru = document.getElementById('tandaPotonganBaru')
+
+    kadar.addEventListener('change', (e) => {
+      if (kadar.value !== 'kosong') {
+        $.get("/app/barang/cumaData/getKadarById", {
+            id: kadar.value
+          },
+          function (data, textStatus, jqXHR) {
+            console.log(data)
+            tipePotongan.disabled = false
+            potonganUmum.disabled = false
+            potonganBaru.disabled = false
+            resetKadar()
+
+            if(data.apakah_potongan_persen){
+              tandaPotonganUmum.innerText = '%'
+              tandaPotonganBaru.innerText = '%'
+              labelPotonganUmum.innerText = 'Persentase'
+              labelPotonganBaru.innerText = 'Persentase'
+              tipePotongan.value = 'Persentase dari harga jual'
+            } else{
+              tandaPotonganUmum.innerText = 'Rp.'
+              tandaPotonganBaru.innerText = 'Rp.'
+              labelPotonganUmum.innerText = 'Nominal'
+              labelPotonganBaru.innerText = 'Nominal'
+              tipePotongan.value = 'Nominal rupiah per gram'
+            }
+          },
+          "json"
+        ).fail((xhr) => {
+          console.log(xhr)
+          fullResetKadar()
+        })
+      }
+    })
+
+
+
+    // ini buat submit ==========
     let eventKadar = false
 
     formKode.addEventListener('submit', (e) => {
@@ -114,7 +225,7 @@ $(function () {
     const editKodepro = document.getElementById('editKodepro')
 
     editKodepro.addEventListener('click', (e) => {
-      if(!formKodepro.reportValidity()) return
+      if (!formKodepro.reportValidity()) return
 
       formKodepro.action = formKodepro.action + '?_method=PUT'
 

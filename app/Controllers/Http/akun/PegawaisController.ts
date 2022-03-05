@@ -11,7 +11,7 @@ var isBase64 = require('is-base64')
 
 
 export default class PegawaisController {
-  
+
   public async index ({ view, request }: HttpContextContract) {
     const opsiOrder = [
       'penggunas.nama',
@@ -34,7 +34,7 @@ export default class PegawaisController {
     const pegawais = await Database.from('penggunas')
       .join('jabatans','penggunas.jabatan_id', '=', 'jabatans.id')
       .whereNull('penggunas.deleted_at')
-      .select('penggunas.id as id', 'penggunas.nama as nama', 'penggunas.gender as gender', 'jabatans.nama as jabatan', 'penggunas.apakah_pegawai_aktif as apakahAktif', 'penggunas.tanggal_gajian as tanggalGajian', 'penggunas.gaji_bulanan as gajiBulanan', 'penggunas.foto as foto')
+      .select('penggunas.id as id', 'penggunas.nama as nama', 'penggunas.gender as gender', 'jabatans.nama as jabatan', 'penggunas.apakah_pegawai_aktif as apakahAktif', 'penggunas.gaji_bulanan as gajiBulanan', 'penggunas.foto as foto')
       .if(cari !== '', (query) => {
         query.where('penggunas.nama', 'like', `%${cari}%`)
       })
@@ -136,7 +136,7 @@ export default class PegawaisController {
         'aktif',
         'keluar'
       ] as const),
-      tanggalAwalMasuk: schema.date(),
+      // tanggalAwalMasuk: schema.date(),
       lamaKerja: schema.number([
         rules.unsigned()
       ]),
@@ -147,7 +147,7 @@ export default class PegawaisController {
     })
 
     const validrequest = await request.validate({ schema: newPegawaiSchema })
-    
+
     // ntar rillnya di cek pake tekstual, find by nama ato bebas lah
     const jabatan = await Jabatan.findOrFail(1)
 
@@ -184,13 +184,11 @@ export default class PegawaisController {
       gender: validrequest.gender,
       tempatLahir: validrequest.tempatLahir,
       tanggalLahir: validrequest.tanggalLahir,
-      tanggalAwalMasuk: validrequest.tanggalAwalMasuk,
       lamaKerja: validrequest.lamaKerja,
       alamat: validrequest.alamat,
       nohpAktif: validrequest.nohpAktif,
       apakahPegawaiAktif: validrequest.status === 'aktif',
       foto: (namaFileFoto)? namaFileFoto : null,
-      tanggalGajian: validrequest.tanggalAwalMasuk,
       gajiBulanan: validrequest.gajiBulanan,
       jabatanId: jabatan.id
     })
@@ -218,7 +216,7 @@ export default class PegawaisController {
       // sebener e kalo bisa raise error flag dulu
       response.redirect().toPath('/app/pegawai')
     }
-    
+
   }
 
   public async edit ({}: HttpContextContract) {
@@ -231,7 +229,7 @@ export default class PegawaisController {
   }
 
   public async ubahStatus ({ request, response, params }: HttpContextContract) {
-    
+
     try {
       const pegawai = await Pengguna.findOrFail(params.id)
       const statusBaru = request.input('target')
@@ -247,6 +245,6 @@ export default class PegawaisController {
     } catch (error) {
       return response.badRequest({error: error})
     }
-    
+
   }
 }

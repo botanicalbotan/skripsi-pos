@@ -13,6 +13,12 @@ export default class KodeProduksis extends BaseSchema {
       table.dateTime('deleted_at').nullable()
       table.integer('kadar_id').unsigned().references('kadars.id').notNullable().onDelete('CASCADE')
 
+      // ini baru
+      table.integer('harga_per_gram_normal').notNullable()
+      table.integer('harga_per_gram_baru').notNullable()
+      table.integer('potongan_normal').notNullable()
+      table.integer('potongan_baru').notNullable()
+
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

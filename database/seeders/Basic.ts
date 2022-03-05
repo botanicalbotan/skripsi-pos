@@ -37,7 +37,7 @@ export default class BasicSeeder extends BaseSeeder {
       toleransiSusutBerat: 0,
       toleransiPersentaseTawaran: 0,
       saldoToko: 0,
-      hargaMal: 0,
+      hargaMal: 800000,
       defaultStokMinimalPerhiasan: 0,
       // ntar ganti jadi false kalo dah jalan
       defaultBolehPrintNota: true,
@@ -120,7 +120,10 @@ export default class BasicSeeder extends BaseSeeder {
         hargaPerGramBaru: 450000,
         potonganNormal: 12000,
         potonganBaru: 15000,
-        apakahPotonganPersen: false
+        apakahPotonganPersen: false,
+        persentaseMalUripan: 20,
+        ongkosMalRosokPerGram: 18,
+        hargaNota: 2000
       },
       {
         nama: 'Muda',
@@ -129,7 +132,10 @@ export default class BasicSeeder extends BaseSeeder {
         hargaPerGramBaru: 250000,
         potonganNormal: 10000,
         potonganBaru: 12000,
-        apakahPotonganPersen: false
+        apakahPotonganPersen: false,
+        persentaseMalUripan: 20,
+        ongkosMalRosokPerGram: 10,
+        hargaNota: 2000
       },
       {
         nama: 'Tua',
@@ -138,7 +144,10 @@ export default class BasicSeeder extends BaseSeeder {
         hargaPerGramBaru: 750000,
         potonganNormal: 8,
         potonganBaru: 10,
-        apakahPotonganPersen: true
+        apakahPotonganPersen: true,
+        persentaseMalUripan:32,
+        ongkosMalRosokPerGram: 12,
+        hargaNota: 10000
       },
     ])
 
@@ -170,13 +179,11 @@ export default class BasicSeeder extends BaseSeeder {
     pengguna.alamat = 'Klego'
     pengguna.nohpAktif = '0888888888'
     pengguna.apakahPegawaiAktif = true
-    pengguna.tanggalGajian = DateTime.now()
     pengguna.gajiBulanan = 1000000
     pengguna.userId = userBaru.id
     pengguna.jabatanId = jabatanPemilik.id
     pengguna.tempatLahir = 'Semarang'
     pengguna.tanggalLahir = DateTime.now()
-    pengguna.tanggalAwalMasuk = DateTime.now()
     pengguna.lamaKerja = 0
     await pengguna.save()
 
