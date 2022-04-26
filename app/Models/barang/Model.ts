@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
-import { 
-  BaseModel, 
+import {
+  BaseModel,
   column,
   BelongsTo,
   belongsTo,
@@ -13,6 +13,7 @@ import {
 import Bentuk from 'App/Models/barang/Bentuk'
 import Penjualan from 'App/Models/transaksi/Penjualan'
 import Pembelian from 'App/Models/transaksi/Pembelian'
+import Pengguna from 'App/Models/akun/Pengguna'
 
 type ModelQuery = ModelQueryBuilderContract<typeof Model>
 
@@ -29,8 +30,8 @@ export default class Model extends BaseModel {
   @column({ serializeAs: null })
   public apakahPlaceholder: boolean
 
-  @column.dateTime({ serializeAs: null })
-  public deletedAt: DateTime
+  @column.dateTime()
+  public deletedAt: DateTime | null
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
@@ -50,6 +51,12 @@ export default class Model extends BaseModel {
 
   @hasMany(() => Pembelian)
   public pembelians: HasMany<typeof Pembelian>
+
+  @column()
+  public penggunaId: number
+
+  @belongsTo(() => Pengguna)
+  public pengguna: BelongsTo<typeof Pengguna>
 
   @beforeFetch()
   @beforeFind()

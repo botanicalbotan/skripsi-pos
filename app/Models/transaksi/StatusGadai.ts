@@ -1,6 +1,6 @@
-import { DateTime } from 'luxon'
-import { 
-  BaseModel, 
+// import { DateTime } from 'luxon'
+import {
+  BaseModel,
   column,
   hasMany,
   HasMany
@@ -17,11 +17,11 @@ export default class StatusGadai extends BaseModel {
   @column()
   public status: string
 
-  @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+  // @column.dateTime({ autoCreate: true })
+  // public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  // @column.dateTime({ autoCreate: true, autoUpdate: true })
+  // public updatedAt: DateTime
 
 
   // FK dan relasi

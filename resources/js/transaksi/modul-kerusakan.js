@@ -17,7 +17,7 @@ export function tambahKerusakan(bentuk) {
 
         Swal.showLoading(Swal.getConfirmButton())
 
-        $.get("/app/barang/cumaData/kerusakanByBentuk", { bentuk:bentuk },
+        $.get("/app/cumaData/kerusakanByBentuk", { bentuk:bentuk },
           function (data, textStatus, jqXHR) {
 
             if (data.length > 0) {
@@ -166,14 +166,14 @@ let printKerusakanHTML = function () {
 
     const rusakHTML = `
             <div class="w-full px-6 space-y-6 flex flex-col text-left">
-  
+
                 <div class="form-control">
                     <label for="swal-rusak">Kerusakan</label>
                     <select id="swal-rusak" class="select select-bordered w-full max-w-md swal" disabled>
                     <input type="hidden" id="swal-hiddenId" hidden>
                     </select>
                 </div>
-  
+
                 <div class="form-control">
                   <label for="swal-tingkatrusak">
                     <span class="">Tingkat Kerusakan</span>
@@ -181,7 +181,7 @@ let printKerusakanHTML = function () {
                   <input type="text" id="swal-tingkatrusak" name="swal-tingkatrusak" class="input input-bordered"
                     readonly disabled value="Tidak ada kerusakan terpilih"/>
                 </div>
-  
+
                 <div class="form-control">
                   <label for="swal-ongkosrusak">
                     <span class="">Ongkos Perbaikan</span>
@@ -189,7 +189,7 @@ let printKerusakanHTML = function () {
                   <input type="text" id="swal-ongkosrusak" name="swal-ongkosrusak" class="input input-bordered"
                     readonly disabled value="Tidak ada kerusakan terpilih"/>
                 </div>
-  
+
                 <div class="flex pt-4 justify-center" x-data="{ counter: 1 }">
                     <div class="bg-base-300 rounded-box px-4 flex">
                     <button class="btn btn-ghost text-error" @click="(counter-1 < $refs.angka.min)? $refs.angka.min : counter--">
@@ -205,7 +205,7 @@ let printKerusakanHTML = function () {
                     </button>
                     </div>
                 </div>
-                
+
             </div>
         `
     return rusakHTML

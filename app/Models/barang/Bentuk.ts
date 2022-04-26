@@ -1,6 +1,6 @@
-import { DateTime } from 'luxon'
-import { 
-  BaseModel, 
+// import { DateTime } from 'luxon'
+import {
+  BaseModel,
   column,
   hasMany,
   HasMany,
@@ -19,13 +19,16 @@ export default class Bentuk extends BaseModel {
   public id: number
 
   @column()
+  public kode: string
+
+  @column()
   public bentuk: string
 
-  @column.dateTime({ autoCreate: true, serializeAs: null })
-  public createdAt: DateTime
+  // @column.dateTime({ autoCreate: true, serializeAs: null })
+  // public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
-  public updatedAt: DateTime
+  // @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
+  // public updatedAt: DateTime
 
 
   // FK dan relasi
@@ -49,7 +52,7 @@ export default class Bentuk extends BaseModel {
     () => Model
   ])
   public pembelians: HasManyThrough<typeof Pembelian>
-  
+
   // kalau bisa manggil gadai juga, tp gabisa
   // ntar panggil ae dari id yang didapet dari hasmanythrough
 }

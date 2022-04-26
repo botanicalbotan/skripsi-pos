@@ -6,6 +6,7 @@ import Database from '@ioc:Adonis/Lucid/Database'
 import Bentuk from 'App/Models/barang/Bentuk'
 import Kadar from 'App/Models/barang/Kadar'
 import { DateTime, Settings } from 'luxon'
+import Drive from '@ioc:Adonis/Core/Drive'
 
 export default class KelompoksController {
   // Fungsi Tambahan
@@ -231,6 +232,8 @@ export default class KelompoksController {
       const kadar = await Kadar.findByOrFail('nama', validrequest.kadar)
       const bentuk = await Bentuk.findByOrFail('bentuk', validrequest.bentuk)
 
+      let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
+
       await kadar.related('kelompoks').create({
         nama: await this.kapitalKalimat(validrequest.nama),
         kodeKelompok: await this.generateKodeKelompok(kadar.nama, bentuk.bentuk),
@@ -239,6 +242,7 @@ export default class KelompoksController {
         stok: validrequest.stok,
         stokMinimal: validrequest.stokMinimal,
         ingatkanStokMenipis: validrequest.ingatkanStokMenipis,
+        penggunaId: placeholderPengguna
       })
 
       return response.redirect().toPath('/app/barang/')
@@ -252,12 +256,21 @@ export default class KelompoksController {
       const kelompok = await Kelompok.findOrFail(params.id)
       await kelompok.load('bentuk')
       await kelompok.load('kadar')
+      await kelompok.load('pengguna', (query) =>{
+        query.preload('jabatan')
+      })
 
       const fungsi = {
         rupiahParser: this.rupiahParser,
       }
 
-      return view.render('barang/kelompok/view-kelompok', { kelompok, fungsi })
+      const urlPencatat = (kelompok.pengguna.foto)? await Drive.getUrl('profilePict/' + kelompok.pengguna.foto) : ''
+
+      const tambahan = {
+        urlFotoPencatat: urlPencatat
+      }
+
+      return view.render('barang/kelompok/view-kelompok', { kelompok, fungsi, tambahan })
     } catch (error) {
       return response.redirect().toPath('/app/barang/')
     }

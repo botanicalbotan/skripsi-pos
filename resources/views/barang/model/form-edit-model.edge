@@ -7,14 +7,21 @@
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="edit">
   <h2 class="text-4xl font-semibold">Ubah Data Model Perhiasan</h2>
-  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mengubah data model perhiasan yang tersimpan dalam sistem.</h4>
+  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mengubah data model perhiasan yang tersimpan dalam
+    sistem.</h4>
 
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+    @include('partials/wadah-alert')
 
-    <div class="w-full sm:max-w-md">
-      <form id="formModel" action="/app/barang/model/{{ model.id }}" method="POST">
-        {{csrfField()}}
+    <form id="formModel" action="/app/barang/model/{{ model.id }}" method="POST">
+      {{csrfField()}}
+
+      <div class="w-full sm:max-w-md">
+
         <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Data Model</h1>
+          </div>
 
           <div class="form-control">
             <label for="nama">
@@ -32,7 +39,7 @@
             <label for="bentuk">
               <span class="">Bentuk Perhiasan<span class="text-error"> *</span></span>
             </label>
-            <select name="bentuk" class="select select-bordered w-full max-w-xs">
+            <select id="bentuk" name="bentuk" class="select select-bordered w-full max-w-xs">
               <option value="Kalung" {{ (model.bentuk.bentuk === 'Kalung')? 'selected':'' }}>Kalung</option>
               <option value="Gelang" {{ (model.bentuk.bentuk === 'Gelang')? 'selected':'' }}>Gelang</option>
               <option value="Cincin" {{ (model.bentuk.bentuk === 'Cincin')? 'selected':'' }}>Cincin</option>
@@ -50,8 +57,7 @@
           <div class="form-control">
             <label for="deskripsi">Deskripsi</label>
             <textarea id="deskripsi" name="deskripsi" class="textarea textarea-bordered h-24"
-              placeholder="Contoh: Memiliki ciri khas menggunakan batu permata, dlsb."
-            >{{ model.deskripsi }}</textarea>
+              placeholder="Contoh: Memiliki ciri khas menggunakan batu permata, dlsb.">{{ model.deskripsi }}</textarea>
 
             @if(flashMessages.has('errors.deskripsi'))
             <p class="text-error">{{ flashMessages.get('errors.deskripsi') }}</p>
@@ -71,9 +77,10 @@
             <a href="/app/barang/model" class="btn btn-secondary btn-block text-white">Batal</a>
           </div>
         </div>
-      </form>
 
-    </div>
+
+      </div>
+    </form>
 
   </div>
 </div>

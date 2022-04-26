@@ -7,10 +7,11 @@ export default class Kas extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
       table.boolean('apakah_kas_keluar').notNullable()
+      table.boolean('apakah_dari_sistem').notNullable().defaultTo(0)
       table.integer('nominal').notNullable()
-      table.string('perihal', 50).notNullable()
-      table.integer('rekap_harian_id').unsigned().references('rekap_harians.id').notNullable().onDelete('CASCADE')
-      table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable().onDelete('CASCADE')
+      table.string('perihal', 100).notNullable()
+      table.integer('rekap_harian_id').unsigned().references('rekap_harians.id').notNullable()
+      table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
       table.dateTime('deleted_at').nullable()
 
       /**

@@ -11,13 +11,21 @@ export default class KodeProduksis extends BaseSchema {
       table.boolean('apakah_buatan_tangan').notNullable().defaultTo(false)
       table.string('asal_produksi', 50).notNullable()
       table.dateTime('deleted_at').nullable()
-      table.integer('kadar_id').unsigned().references('kadars.id').notNullable().onDelete('CASCADE')
+      table.integer('kadar_id').unsigned().references('kadars.id').notNullable()
+
+      /**
+       * Ini ntar di uncomment kalo dah siap modelnya
+       * table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
+       */
 
       // ini baru
-      table.integer('harga_per_gram_normal').notNullable()
+      table.integer('harga_per_gram_lama').notNullable()
       table.integer('harga_per_gram_baru').notNullable()
-      table.integer('potongan_normal').notNullable()
+      table.integer('potongan_lama').notNullable()
       table.integer('potongan_baru').notNullable()
+      table.integer('persentase_mal_uripan').notNullable().unsigned()
+      table.integer('ongkos_mal_rosok_per_gram').notNullable().unsigned()
+      table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

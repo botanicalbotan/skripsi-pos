@@ -10,6 +10,9 @@ export default class PenggajianPegawai extends BaseModel {
   public status: string
 
   @column.dateTime()
+  public tanggalSeharusnyaDibayar: DateTime
+
+  @column.dateTime()
   public dibayarAt: DateTime | null
 
   @column()
@@ -27,16 +30,16 @@ export default class PenggajianPegawai extends BaseModel {
   public penerimaGajiId: number
 
   @belongsTo(() => Pengguna, {
-    localKey: 'penerimaGajiId'
+    foreignKey: 'penerimaGajiId'
   })
   public penerimaGaji: BelongsTo<typeof Pengguna>
 
   @column()
-  public penggunaId: number
+  public pencatatGajianId: number | null
 
   @belongsTo(() => Pengguna, {
-    localKey: 'penggunaId'
+    foreignKey: 'pencatatGajianId'
   })
-  public pengguna: BelongsTo<typeof Pengguna>
+  public pencatatGajian: BelongsTo<typeof Pengguna>
 
 }

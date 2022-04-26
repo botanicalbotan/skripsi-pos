@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
-import { 
-  BaseModel, 
+import {
+  BaseModel,
   column,
   hasMany,
   HasMany
@@ -12,32 +12,37 @@ export default class RekapHarian extends BaseModel {
   public id: number
 
   @column()
-  public pasaran: string
-
-  @column()
   public apakahHariPasaran: boolean
 
   @column.date()
   public tanggalRekap: DateTime
 
-  @column()
-  public totalNominalKasMasuk: number
+  /** Calon Dipindah ke tabel baru */
 
   @column()
-  public totalNominalKasKeluar: number
+  public pasaran: string
 
   @column()
   public apakahSudahBandingSaldo: boolean
 
-  // somehow bisa milih bigInt, ku kasi gini buat jaga2
   @column()
-  public saldoFinal: number
+  public apakahAdaError: boolean // ntar ganti error jadi anomali
 
-  @column()
-  public selisihSaldoKemarin: number
+  /** Mulai dari sini */
 
-  @column()
-  public apakahAdaError: boolean
+  // @column()
+  // public totalNominalKasMasuk: number
+
+  // @column()
+  // public totalNominalKasKeluar: number
+
+  // @column()
+  // public saldoFinal: number
+
+  // @column()
+  // public selisihSaldoKemarin: number
+
+  /** Sampe kesini, calon dihapus */
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

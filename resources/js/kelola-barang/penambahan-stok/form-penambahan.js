@@ -3,45 +3,45 @@
 import Swal from "sweetalert2"
 
 $(function () {
+  let tanggalRestok = document.getElementById('restok-tekstanggal')
+  tanggalRestok.value = new Date().toLocaleDateString('id')
 
-  if ($('.base-page').data('pagename') == "restok") {
+  // ======================================= Fungsi Append ==============================================
 
-    // ======================================= Fungsi Append ==============================================
+  let tambahItem = function (stok) {
+    if (!stok) {
+      return
+    }
+    let stokBaru = JSON.parse(stok)
+    let kelompokRaw = JSON.parse(stokBaru.kelompokTerpilih)
 
-    let tambahItem = function (stok) {
-      if (!stok) {
-        return
+    let adaDuplikat = false
+    const listItem = document.getElementsByName('stokIdPerhiasan[]')
+
+    for (let [index, input] of listItem.entries()) {
+      if (input.value == kelompokRaw.id) {
+        adaDuplikat = true
+        let jumlahBaru = numberOnlyParser(document.getElementsByName('stokTambahan[]')[index].value) + numberOnlyParser(stokBaru.stokTambahan)
+        document.getElementsByClassName('teksStokTambahan')[index].innerHTML = jumlahBaru
+        document.getElementsByName('stokTambahan[]')[index].value = jumlahBaru
+        break;
       }
-      let stokBaru = JSON.parse(stok)
-      let kelompokRaw = JSON.parse(stokBaru.kelompokTerpilih)
+    }
 
-      let adaDuplikat = false
-      const listItem = document.getElementsByName('stokIdPerhiasan[]')
+    if (adaDuplikat) {
+      return
+    }
 
-      for (let [index, input] of listItem.entries()) {
-        if (input.value == kelompokRaw.id) {
-          adaDuplikat = true
-          let jumlahBaru = numberOnlyParser(document.getElementsByName('stokTambahan[]')[index].value) + numberOnlyParser(stokBaru.stokTambahan)
-          document.getElementsByClassName('teksStokTambahan')[index].innerHTML = jumlahBaru
-          document.getElementsByName('stokTambahan[]')[index].value = jumlahBaru
-          break;
-        }
-      }
-
-      if (adaDuplikat) {
-        return
-      }
-
-      const htmlAppend = `
+    const htmlAppend = `
           <tr>
               <td>
               <div class="font-semibold">
                 ` + kelompokRaw.nama + `
                 </div>
                 <div class="text-sm opacity-50">
-                    `+ kelompokRaw.beratKelompok + ` / ganti kode
+                    ` + kelompokRaw.beratKelompok + ` gram (`+ kelompokRaw.kodeKelompok +`)
                  </div>
-                <input type="hidden" name="stokIdPerhiasan[]" value="` + kelompokRaw.id + `"> 
+                <input type="hidden" name="stokIdPerhiasan[]" value="` + kelompokRaw.id + `">
               </td>
               <td>` + kelompokRaw.stok + ` buah
               </td>
@@ -57,242 +57,242 @@ $(function () {
               </td>
           </tr>
           `
-      $('#wadah-data').append(htmlAppend);
+    $('#wadah-data').append(htmlAppend);
 
-      $('#wadah-data button.btn-delete').on('click', function (e) {
-        e.preventDefault()
-        $(this).parentsUntil('tbody#wadah-data').remove()
-      });
-    }
+    $('#wadah-data button.btn-delete').on('click', function (e) {
+      e.preventDefault()
+      $(this).parentsUntil('tbody#wadah-data').remove()
+    });
+  }
 
-    // ================================================ Swal Tambah Item ======================================
+  // ================================================ Swal Tambah Item ======================================
 
-    $('button#pilih-item').on('click', function () {
-      Swal.fire({
-        title: 'Tambah Item Restok',
-        confirmButtonText: 'Tambahkan',
-        showCancelButton: true,
-        cancelButtonText: 'Batal',
-        confirmButtonColor: '#4b6bfb',
-        html: printAddStockHTML(),
-        willOpen: () => {
-          let kadar = document.getElementById('swal-kadar')
-          let bentuk = document.getElementById('swal-bentuk')
-          let kelompok = document.getElementById('swal-kelompok')
-          Swal.showLoading(Swal.getConfirmButton())
+  $('button#pilih-item').on('click', function () {
+    Swal.fire({
+      title: 'Tambah Item Restok',
+      confirmButtonText: 'Tambahkan',
+      showCancelButton: true,
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#4b6bfb',
+      html: printAddStockHTML(),
+      willOpen: () => {
+        let kadar = document.getElementById('swal-kadar')
+        let bentuk = document.getElementById('swal-bentuk')
+        let kelompok = document.getElementById('swal-kelompok')
+        Swal.showLoading(Swal.getConfirmButton())
 
-          $.get("/app/barang/cumaData/kadarBentuk", {},
-            function (data, textStatus, jqXHR) {
-              data.kadar.forEach(element => {
-                let opt = document.createElement('option')
-                opt.value = element.id
-                opt.innerText = element.nama
+        $.get("/app/cumaData/kadarBentuk", {},
+          function (data, textStatus, jqXHR) {
+            data.kadar.forEach(element => {
+              let opt = document.createElement('option')
+              opt.value = element.id
+              opt.innerText = element.nama
 
-                kadar.append(opt)
-              });
+              kadar.append(opt)
+            });
 
-              data.bentuk.forEach(element => {
-                let opt = document.createElement('option')
-                opt.value = element.id
-                opt.innerText = element.bentuk
+            data.bentuk.forEach(element => {
+              let opt = document.createElement('option')
+              opt.value = element.id
+              opt.innerText = element.bentuk
 
-                bentuk.append(opt)
-              });
+              bentuk.append(opt)
+            });
 
-              Swal.hideLoading()
-              kadar.disabled = false
-              bentuk.disabled = false
-              kelompok.disabled = false
-            },
-            "json"
-          ).catch((error) => {
-            Swal.showValidationMessage('Error dari server: ' + error)
-          })
+            Swal.hideLoading()
+            kadar.disabled = false
+            bentuk.disabled = false
+            kelompok.disabled = false
+          },
+          "json"
+        ).catch((error) => {
+          Swal.showValidationMessage('Error dari server: ' + error)
+        })
 
-          $('select.swal').on('change', function () {
-            Swal.resetValidationMessage()
-          });
+        $('select.swal').on('change', function () {
+          Swal.resetValidationMessage()
+        });
 
-          kadar.addEventListener('change', getData)
-          bentuk.addEventListener('change', getData)
+        kadar.addEventListener('change', getData)
+        bentuk.addEventListener('change', getData)
 
-          function getData(event) {
-            if (event.type == 'change') {
-              if (bentuk.value && bentuk.value != 'kosong' && kadar.value && kadar.value != 'kosong') {
+        function getData(event) {
+          if (event.type == 'change') {
+            if (bentuk.value && bentuk.value != 'kosong' && kadar.value && kadar.value != 'kosong') {
 
-                $.get("/app/barang/cumaData/kelompokDenganInput", { bentuk: bentuk.value, kadar: kadar.value },
-                  function (data, textStatus, jqXHR) {
-                    global.removeElementsByClass('opt-kelompok')
+              $.get("/app/cumaData/kelompokDenganInput", {
+                  bentuk: bentuk.value,
+                  kadar: kadar.value
+                },
+                function (data, textStatus, jqXHR) {
+                  global.removeElementsByClass('opt-kelompok')
 
-                    if (data.length > 0) {
-                      data.forEach(element => {
-                        let opt = document.createElement('option')
-                        opt.classList.add('opt-kelompok')
-                        opt.value = JSON.stringify(element)
-                        opt.innerText = element.nama
-
-                        kelompok.append(opt)
-                      });
-                    } else {
+                  if (data.length > 0) {
+                    data.forEach(element => {
                       let opt = document.createElement('option')
                       opt.classList.add('opt-kelompok')
-                      opt.value = 'kosong'
-                      opt.innerText = 'Kelompok tidak ditemukan'
-                      opt.disabled = true
-                      opt.selected = true
+                      opt.value = JSON.stringify(element)
+                      opt.innerText = element.nama
 
                       kelompok.append(opt)
-                    }
-                  },
-                  "json"
-                ).fail((xhr) => {
-                  console.error(xhr.responseJSON)
-                  Swal.showValidationMessage('Error dari server: ' + xhr.responseJSON)
-                })
+                    });
+                  } else {
+                    let opt = document.createElement('option')
+                    opt.classList.add('opt-kelompok')
+                    opt.value = 'kosong'
+                    opt.innerText = 'Kelompok tidak ditemukan'
+                    opt.disabled = true
+                    opt.selected = true
 
-              }
+                    kelompok.append(opt)
+                  }
+                },
+                "json"
+              ).fail((xhr) => {
+                console.error(xhr.responseJSON)
+                Swal.showValidationMessage('Error dari server: ' + xhr.responseJSON)
+              })
+
             }
           }
-        },
-        preConfirm: () => {
-          let kadar = document.getElementById('swal-kadar')
-          let bentuk = document.getElementById('swal-bentuk')
-          let kelompok = document.getElementById('swal-kelompok')
-          let stok = document.getElementById('swal-stok')
-
-          if (kadar.value && kadar.value != 'kosong' && bentuk.value && bentuk.value != 'kosong' && kelompok.value && kelompok.value != 'kosong' && stok.value > 0 && stok.value < 100) {
-            return {
-              kadar: kadar.value,
-              bentuk: bentuk.value,
-              stokTambahan: stok.value,
-              kelompokTerpilih: kelompok.value
-            }
-          } else {
-            Swal.showValidationMessage(
-              'Pilihan anda tidak valid!'
-            )
-          }
-
         }
-      }).then((hasil) => {
-        if (hasil.isConfirmed && hasil.value) {
-          tambahItem(JSON.stringify(hasil.value))
+      },
+      preConfirm: () => {
+        let kadar = document.getElementById('swal-kadar')
+        let bentuk = document.getElementById('swal-bentuk')
+        let kelompok = document.getElementById('swal-kelompok')
+        let stok = document.getElementById('swal-stok')
+
+        if (kadar.value && kadar.value != 'kosong' && bentuk.value && bentuk.value != 'kosong' && kelompok.value && kelompok.value != 'kosong' && stok.value > 0 && stok.value < 100) {
+          return {
+            kadar: kadar.value,
+            bentuk: bentuk.value,
+            stokTambahan: stok.value,
+            kelompokTerpilih: kelompok.value
+          }
+        } else {
+          Swal.showValidationMessage(
+            'Pilihan anda tidak valid!'
+          )
+        }
+
+      }
+    }).then((hasil) => {
+      if (hasil.isConfirmed && hasil.value) {
+        tambahItem(JSON.stringify(hasil.value))
+      }
+    })
+  });
+
+
+  // ================================================= ini observer ============================================
+  // Select the node that will be observed for mutations
+  const targetNode = document.getElementById('wadah-data');
+  const targetChange = document.getElementById('teks-tabel-kosong');
+  const btnTambahStok = document.getElementById('btnTambahStok');
+
+  let formTambahStok = document.getElementById('formTambahStok')
+  let bisaTambah = false
+
+  // Options for the observer (which mutations to observe)
+  const config = {
+    attributes: true,
+    childList: true,
+    subtree: true
+  };
+
+  // Callback function to execute when mutations are observed
+  const callback = function (mutationsList, observer) {
+    // Use traditional 'for loops' for IE 11
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        if (targetNode.childElementCount > 0) {
+          targetChange.classList.remove('block')
+          targetChange.classList.add('hidden')
+          btnTambahStok.disabled = false
+          bisaTambah = true
+        } else {
+          targetChange.classList.remove('hidden')
+          targetChange.classList.add('block')
+          btnTambahStok.disabled = true
+          bisaTambah = false
+        }
+      }
+    }
+  };
+
+  // Create an observer instance linked to the callback function
+  const observer = new MutationObserver(callback);
+
+  // Start observing the target node for configured mutations
+  observer.observe(targetNode, config);
+
+
+  // ============================================ Ini submit form ===========================================
+  let stokAsal = document.getElementById('stokAsal')
+  let eventAsal = false
+  let stokCatatan = document.getElementById('stokCatatan')
+  let eventCatatan = false
+
+  btnTambahStok.addEventListener('click', (e) => {
+
+    // ini yang propper kalo submit form bukan dari button langsung, cek validitynya dulu
+    if (formTambahStok.checkValidity()) {
+
+      Swal.fire({
+        title: 'Yakin untuk menambah stok?',
+        text: 'Anda akan menambah stok untuk ' + document.getElementsByName('stokIdPerhiasan[]').length + ' kelompok perhiasan.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, tambahkan!',
+        cancelButtonText: 'Batal',
+        focusCancel: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if (bisaTambah) formTambahStok.submit()
         }
       })
-    });
 
+    } else {
+      if (document.querySelector('input[name=stokTipe]:checked').value === 'Kulakan' && stokAsal.value == '') {
+        let errorMsg = document.createElement('p')
+        errorMsg.classList.add('text-error', 'pesanerror')
+        stokAsal.classList.add('ring', 'ring-error')
+        errorMsg.innerText = 'Kolom ini harus terisi!'
+        if (document.getElementsByClassName('pesanerror').length == 0) stokAsal.after(errorMsg)
 
-    // ================================================= ini observer ============================================
-    // Select the node that will be observed for mutations
-    const targetNode = document.getElementById('wadah-data');
-    const targetChange = document.getElementById('teks-tabel-kosong');
-    const btnTambahStok = document.getElementById('btnTambahStok');
-
-    let formTambahStok = document.getElementById('formTambahStok')
-    let bisaTambah = false
-
-    // Options for the observer (which mutations to observe)
-    const config = {
-      attributes: true,
-      childList: true,
-      subtree: true
-    };
-
-    // Callback function to execute when mutations are observed
-    const callback = function (mutationsList, observer) {
-      // Use traditional 'for loops' for IE 11
-      for (const mutation of mutationsList) {
-        if (mutation.type === 'childList') {
-          if (targetNode.childElementCount > 0) {
-            targetChange.classList.remove('block')
-            targetChange.classList.add('hidden')
-            btnTambahStok.disabled = false
-            bisaTambah = true
-          } else {
-            targetChange.classList.remove('hidden')
-            targetChange.classList.add('block')
-            btnTambahStok.disabled = true
-            bisaTambah = false
-          }
+        if (!eventAsal) {
+          stokAsal.addEventListener('change', function () {
+            if (stokAsal.value && stokAsal.value !== '') {
+              stokAsal.classList.remove('ring', 'ring-error')
+              global.removeElementsByClass('pesanerror')
+            }
+          })
+          eventAsal = true
         }
+
+      } else if (stokCatatan.value == '') {
+        let errorMsg = document.createElement('p')
+        errorMsg.classList.add('text-error', 'pesanerror')
+        stokCatatan.classList.add('ring', 'ring-error')
+        errorMsg.innerText = 'Kolom ini harus terisi!'
+        if (document.getElementsByClassName('pesanerror').length == 0) stokCatatan.after(errorMsg)
+
+        if (!eventCatatan) {
+          stokCatatan.addEventListener('change', function () {
+            if (stokCatatan.value && stokCatatan.value !== '') {
+              stokCatatan.classList.remove('ring', 'ring-error')
+              global.removeElementsByClass('pesanerror')
+            }
+          })
+          eventCatatan = true
+        }
+
       }
-    };
-
-    // Create an observer instance linked to the callback function
-    const observer = new MutationObserver(callback);
-
-    // Start observing the target node for configured mutations
-    observer.observe(targetNode, config);
+    }
 
 
-    // ============================================ Ini submit form ===========================================
-    let stokAsal = document.getElementById('stokAsal')
-    let eventAsal = false
-    let stokCatatan = document.getElementById('stokCatatan')
-    let eventCatatan = false
-
-    btnTambahStok.addEventListener('click', (e) => {
-
-      // ini yang propper kalo submit form bukan dari button langsung, cek validitynya dulu
-      if (formTambahStok.checkValidity()) {
-
-        Swal.fire({
-          title: 'Yakin untuk menambah stok?',
-          text: 'Anda akan menambah stok untuk ' + document.getElementsByName('stokIdPerhiasan[]').length + ' kelompok perhiasan.',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Ya, tambahkan!',
-          cancelButtonText: 'Batal',
-          focusCancel: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            if (bisaTambah) formTambahStok.submit()
-          }
-        })
-        
-      } else {
-        if (document.querySelector('input[name=stokTipe]:checked').value === 'Kulakan' && stokAsal.value == '') {
-          let errorMsg = document.createElement('p')
-          errorMsg.classList.add('text-error', 'pesanerror')
-          stokAsal.classList.add('ring', 'ring-error')
-          errorMsg.innerText = 'Kolom ini harus terisi!'
-          if (document.getElementsByClassName('pesanerror').length == 0) stokAsal.after(errorMsg)
-
-          if(!eventAsal){
-            stokAsal.addEventListener('change', function () {
-              if (stokAsal.value && stokAsal.value !== '') {
-                stokAsal.classList.remove('ring', 'ring-error')
-                global.removeElementsByClass('pesanerror')
-              }
-            })
-            eventAsal = true
-          }
-          
-        }
-        else if (stokCatatan.value == '') {
-          let errorMsg = document.createElement('p')
-          errorMsg.classList.add('text-error', 'pesanerror')
-          stokCatatan.classList.add('ring', 'ring-error')
-          errorMsg.innerText = 'Kolom ini harus terisi!'
-          if (document.getElementsByClassName('pesanerror').length == 0) stokCatatan.after(errorMsg)
-
-          if(!eventCatatan){
-            stokCatatan.addEventListener('change', function () {
-              if (stokCatatan.value && stokCatatan.value !== '') {
-                stokCatatan.classList.remove('ring', 'ring-error')
-                global.removeElementsByClass('pesanerror')
-              }
-            })
-            eventCatatan = true
-          }
-          
-        }
-      }
-
-
-    })
-
-  }
+  })
 
 
   let printAddStockHTML = function () {
@@ -302,14 +302,14 @@ $(function () {
                 <div class="form-control">
                     <label for="swal-kadar">Kadar Perhiasan</label>
                     <select id="swal-kadar" class="select select-bordered w-full max-w-md swal" disabled>
-                    <option disabled selected value= "kosong">Pilih kadar perhiasan</option> 
+                    <option disabled selected value= "kosong">Pilih kadar perhiasan</option>
                     </select>
                 </div>
 
                 <div class="form-control">
                     <label for="swal-bentuk">Bentuk Perhiasan</label>
                     <select id="swal-bentuk" class="select select-bordered w-full max-w-md swal" disabled>
-                    <option disabled selected value= "kosong">Pilih bentuk perhiasan</option> 
+                    <option disabled selected value= "kosong">Pilih bentuk perhiasan</option>
                     </select>
                 </div>
 
@@ -334,7 +334,7 @@ $(function () {
                     </button>
                     </div>
                 </div>
-                
+
             </div>
         `
     return htmlAddStock

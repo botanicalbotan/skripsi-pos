@@ -6,8 +6,8 @@ export default class KelompokPenambahans extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.integer('penambahan_stok_id').unsigned().references('penambahan_stoks.id').notNullable().onDelete('CASCADE')
-      table.integer('kelompok_id').unsigned().references('kelompoks.id').notNullable().onDelete('CASCADE')
+      table.integer('penambahan_stok_id').unsigned().references('penambahan_stoks.id').notNullable()
+      table.integer('kelompok_id').unsigned().references('kelompoks.id').notNullable()
       table.unique(['penambahan_stok_id', 'kelompok_id'])
       // table.unique(['penambahan_stok_id', 'kelompok_id', 'apakah_kulakan'], 'field_harus_unik')
       // table.unique(['penambahan_stok_id', 'kelompok_id', 'apakah_kulakan'], {indexName: 'field_harus_unik'})

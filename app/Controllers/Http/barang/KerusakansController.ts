@@ -4,6 +4,8 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Bentuk from 'App/Models/barang/Bentuk'
 import Kerusakan from 'App/Models/barang/Kerusakan'
 import { DateTime } from 'luxon'
+import Drive from '@ioc:Adonis/Core/Drive'
+
 
 export default class KerusakansController {
   public async index({ view, request }: HttpContextContract) {
@@ -15,8 +17,10 @@ export default class KerusakansController {
     ]
     const page = request.input('page', 1)
     const order = request.input('ob', 0)
-    const cari = request.input('cari', '')
+    const arahOrder = request.input('aob', 0)
     const sanitizedOrder = order < opsiOrder.length && order >= 0 && order? order : 0
+    const sanitizedArahOrder = arahOrder == 1? 1:0
+    const cari = request.input('cari', '')
     const limit = 10
 
     const kerusakans = await Database.from('kerusakans')
@@ -33,19 +37,21 @@ export default class KerusakansController {
       .if(cari !== '', (query) => {
         query.where('kerusakans.nama', 'like', `%${cari}%`)
       })
-      .orderBy(opsiOrder[sanitizedOrder], 'asc')
+      .orderBy(opsiOrder[sanitizedOrder], ((sanitizedArahOrder == 1)? 'desc': 'asc'))
       .orderBy('kerusakans.nama')
       .paginate(page, limit)
 
     kerusakans.baseUrl('/app/barang/kerusakan')
 
-    kerusakans.queryString({ ob: sanitizedOrder })
-    if (cari !== '') {
-      kerusakans.queryString({ ob: sanitizedOrder, cari: cari })
+    let qsParam = {
+      ob: sanitizedOrder,
+      aob: sanitizedArahOrder
     }
 
-    // kalau mau mulai dari sini bisa dibikin fungsi sendiri
-    // input bisa pagination object + panjang page yang mau di display
+    if (cari !== '') qsParam['cari'] = cari
+    kerusakans.queryString(qsParam)
+
+
     let firstPage =
       kerusakans.currentPage - 2 > 0
         ? kerusakans.currentPage - 2
@@ -88,7 +94,7 @@ export default class KerusakansController {
     return view.render('barang/kerusakan/form-kerusakan')
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, session }: HttpContextContract) {
     const newKerusakanSchema = schema.create({
       nama: schema.string({ trim: true }, [rules.maxLength(50)]),
       bentuk: schema.enum([
@@ -116,15 +122,21 @@ export default class KerusakansController {
 
     try {
       const bentuk = await Bentuk.findByOrFail('bentuk', validrequest.bentuk)
+
+      let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
+
       await bentuk.related('kerusakans').create({
         nama: validrequest.nama,
         apakahBisaDiperbaiki: validrequest.perbaikan === 'bisa',
         ongkosNominal: validrequest.perbaikan === 'bisa' ? validrequest.ongkos : 0,
         ongkosDeskripsi: validrequest.perbaikan === 'bisa' ? ongkosteks : 'Dihitung harga rosok',
+        penggunaId: placeholderPengguna
       })
 
+      session.flash('alertSukses', 'Kerusakan baru berhasil disimpan!')
       return response.redirect().toPath('/app/barang/kerusakan/')
     } catch (error) {
+      session.flash('alertError', 'Ada masalah saat membuat kerusakan baru. Silahkan coba lagi setelah beberapa saat.')
       return response.redirect().back()
     }
   }
@@ -133,8 +145,17 @@ export default class KerusakansController {
     try {
       const kerusakan = await Kerusakan.findOrFail(params.id)
       await kerusakan.load('bentuk')
+      await kerusakan.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
 
-      return view.render('barang/kerusakan/view-kerusakan', { kerusakan })
+      const urlPencatat = (kerusakan.pengguna.foto)? await Drive.getUrl('profilePict/' + kerusakan.pengguna.foto) : ''
+
+      const tambahan = {
+        urlFotoPencatat: urlPencatat
+      }
+
+      return view.render('barang/kerusakan/view-kerusakan', { kerusakan, tambahan })
     } catch (error) {
       return response.redirect().toPath('/app/barang/kerusakan/')
     }
@@ -151,7 +172,7 @@ export default class KerusakansController {
     }
   }
 
-  public async update({ params, request, response }: HttpContextContract) {
+  public async update({ params, request, response, session }: HttpContextContract) {
     const updateKerusakanSchema = schema.create({
       nama: schema.string({ trim: true }, [rules.maxLength(50)]),
       bentuk: schema.enum([
@@ -189,20 +210,25 @@ export default class KerusakansController {
       kerusakan.bentukId = bentuk.id
       await kerusakan.save()
 
+      session.flash('alertSukses', 'Data kerusakan berhasil diubah!')
       return response.redirect().toPath('/app/barang/kerusakan/' + kerusakan.id)
+
     } catch (error) {
+      session.flash('alertError', 'Ada masalah saat mengubah data kerusakan. Silahkan coba lagi setelah beberapa saat.')
       return response.redirect().back()
     }
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, session }: HttpContextContract) {
     try {
       const kerusakan = await Kerusakan.findOrFail(params.id)
       kerusakan.deletedAt = DateTime.now()
-      kerusakan.save()
+      await kerusakan.save()
 
+      session.flash('alertSukses', 'Kerusakan "'+ kerusakan.nama +'" berhasil dihapus!')
       return response.redirect().toPath('/app/barang/kerusakan/')
     } catch (error) {
+      session.flash('alertError', 'Ada masalah saat menghapus data kerusakan. Silahkan coba lagi setelah beberapa saat.')
       return response.redirect().back()
     }
   }
@@ -223,7 +249,7 @@ export default class KerusakansController {
       .where('bentuk_id', bentukId)
       .whereNull('deleted_at')
       .orderBy('nama', 'asc')
-    
+
     return kerusakan
   }
 }

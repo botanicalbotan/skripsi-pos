@@ -43,5 +43,6 @@ export const KerusakanFactory = Factory.define(Kerusakan, ({ faker }) => {
           .toString() + ' per kerusakan'
       : 'Dihitung harga rosok',
     bentukId: fate + 1,
+    penggunaId: 1
   }
 }).build()

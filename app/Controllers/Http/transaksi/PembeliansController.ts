@@ -63,7 +63,7 @@ export default class PembeliansController {
             .whereNull('deleted_at')
         })
         .firstOrFail()
-      
+
       let tanggal = penjualan.createdAt.setLocale('id-ID').toLocaleString({ ...DateTime.DATETIME_MED, weekday:'long' })
       // let file = await Drive.get('transaksi/penjualan/' + penjualan.fotoBarang)
 
@@ -73,7 +73,7 @@ export default class PembeliansController {
           foto: await Drive.getUrl('transaksi/penjualan/' + penjualan.fotoBarang),
           // foto2: 'data:image/jpeg;base64,' + file.toString('base64')
       }
-      
+
     } catch (error) {
       return response.notFound({errorMsg: 'Kode penjualan tidak valid!'})
     }
@@ -113,7 +113,7 @@ export default class PembeliansController {
           rupiahParser: this.rupiahParser
         }
       })
-      
+
     } catch (error) {
 
       session.flash('errors', {invalid: 'Kode penjualan tidak valid!'})
@@ -179,7 +179,7 @@ export default class PembeliansController {
       let hargaPerGram = Math.round(penjualan.hargaJualAkhir / penjualan.beratSebenarnya)
       let listKerusakan: {detail: string, ongkos: number}[] = []
       let kerusakan = 0
-      
+
       let i = 0
       if(validrequest.idKerusakan && validrequest.jumlahKerusakan){
         for (const element of validrequest.idKerusakan) {
@@ -190,17 +190,17 @@ export default class PembeliansController {
               .andWhere('bentuk_id', penjualan.kelompok.bentuk.id)
               .andWhereNull('deleted_at')
               .firstOrFail()
-  
+
             kerusakan += rusak.ongkosNominal * validrequest.jumlahKerusakan[i]
             listKerusakan.push({
               detail: rusak.nama + ' (' + validrequest.jumlahKerusakan[i] + ')',
               ongkos: rusak.ongkosNominal * validrequest.jumlahKerusakan[i]
             })
-  
+
           } catch (error) {
             console.error(error)
           }
-  
+
           i++
         }
       }
@@ -229,5 +229,15 @@ export default class PembeliansController {
     } catch (error) {
       return {e: 'ngaco lu'}
     }
+  }
+
+
+  //================================================== RIWAYAT ====================================================
+  public async listRiwayat({ view }: HttpContextContract) {
+
+  }
+
+  public async viewRiwayat({ view }: HttpContextContract) {
+
   }
 }

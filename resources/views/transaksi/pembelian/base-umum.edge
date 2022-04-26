@@ -119,7 +119,7 @@
           <div>
             <h1 class="text-2xl font-semibold">Berat Rill Perhiasan</h1>
           </div>
-          
+
           <div class="space-y-4 md:flex md:space-x-4 md:space-y-0 max-w-sm">
             <div class="flex-1">
               <div class="form-control">
@@ -181,14 +181,14 @@
           <div class="form-control">
             <label for="beliPotongan">
               <span class="">Potongan Sesuai Nota<span class="text-error"> *</span></span>
-            </label> 
+            </label>
             <label class="input-group input-group">
               <input type="number" id="beliPotongan" name="beliPotongan" value="0" min="0" class="input input-bordered"
               oninput="validity.valid||(value='');" @focus="$el.value=($el.value == 0)? '':$el.value"
-                      @focusout="$el.value = ($el.value =='')? 0:$el.value" required> 
+                      @focusout="$el.value = ($el.value =='')? 0:$el.value" required>
               <span id="penjelasPotongan">per gram</span>
             </label>
-          </div> 
+          </div>
 
 
           <div class="form-control max-w-md">
@@ -255,7 +255,6 @@
                 <thead>
                   <tr>
                     <th>Kerusakan</th>
-                    <th>Tingkat</th>
                     <th>Ongkos per Rusak</th>
                     <th></th>
                   </tr>

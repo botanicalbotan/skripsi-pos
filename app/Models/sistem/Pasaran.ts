@@ -17,11 +17,11 @@ export default class Pasaran extends BaseModel {
   @column.date()
   public referensiTanggal: DateTime
 
-  @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+  // @column.dateTime({ autoCreate: true })
+  // public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  // @column.dateTime({ autoCreate: true, autoUpdate: true })
+  // public updatedAt: DateTime
 
 
 

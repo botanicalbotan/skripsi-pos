@@ -29,7 +29,7 @@ function generateKodeKelompok(kadar: string, bentuk: string){
       Tua: {nomer:3, huruf: 'TU'}
     }
 
-    return kodebentuk[bentuk] + kodekadar[kadar].nomer + kodekadar[kadar].huruf + DateTime.local().toMillis()    
+    return kodebentuk[bentuk] + kodekadar[kadar].nomer + kodekadar[kadar].huruf + DateTime.local().toMillis()
   }
 
 let bentuk = ['Anting', 'Cincin', 'Gelang', 'Kalung', 'Liontin', 'Tindik', 'Lainnya']
@@ -53,6 +53,7 @@ export const KelompokFactory = Factory.define(Kelompok, ({ faker }) => {
     bentukId: gacha + 1,
     stokMinimal: getRandomInt(11),
     ingatkanStokMenipis: true,
-    stok: getRandomInt(20),  
+    stok: getRandomInt(20),
+    penggunaId: 1
   }
 }).build()

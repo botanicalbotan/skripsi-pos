@@ -50,20 +50,35 @@ Encore.addEntry('welcome-css', '/resources/css/template-welcome.css')
 Encore.addEntry('landing', './resources/js/landing.js')
 Encore.addEntry('beranda', './resources/js/beranda.js')
 
+// library
+Encore.addEntry('alpine', './resources/js/lib/alpine.js')
+
+// Notifikasi
+Encore.addEntry('all-notifikasi', './resources/js/notifikasi/all-notifikasi.js')
+
 // Pembukuan Kas
 Encore.addEntry('all-kas', './resources/js/pembukuan-kas/all-kas.js')
-Encore.addEntry('kasrekap', './resources/js/pembukuan-kas/kasrekap.js')
+Encore.addEntry('all-rekap', './resources/js/pembukuan-kas/all-rekap.js')
 
 Encore.addEntry('riwayat', './resources/js/riwayat.js')
 
 Encore.addEntry('all-pegawai', './resources/js/pegawai/all-pegawai.js')
 Encore.addEntry('form-pegawai', './resources/js/pegawai/form-pegawai.js')
 
+Encore.addEntry('all-penggajian', './resources/js/pegawai/penggajian/all-penggajian.js')
+
 // Transaksi ==============================================
 // Penjualan
+Encore.addEntry('prepare-jual', './resources/js/transaksi/penjualan/prepare-jual.js')
+Encore.addEntry('form-jual', './resources/js/transaksi/penjualan/form-jual.js')
+Encore.addEntry('pasca-jual', './resources/js/transaksi/penjualan/pasca-jual.js')
+
+
+// MULAI DARI SINI
 Encore.addEntry('base-jual', './resources/js/transaksi/base-jual.js')
 Encore.addEntry('jual', './resources/js/transaksi/jual.js')
 Encore.addEntry('jual-selesai', './resources/js/transaksi/jual-selesai.js')
+// AMPE SINI NTAR DIHAPUS
 
 
 Encore.addEntry('base-beli', './resources/js/transaksi/base-beli.js')

@@ -2,11 +2,15 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import Test from 'App/Models/Test'
 import Hash from '@ioc:Adonis/Core/Hash'
+import CPasaran from 'App/CustomClasses/CPasaran'
 
 // cuma buat nyoba doang
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Encryption from '@ioc:Adonis/Core/Encryption'
 import Drive from '@ioc:Adonis/Core/Drive'
+import { DateTime } from 'luxon'
+import Pengguna from 'App/Models/akun/Pengguna'
+import Pengaturan from 'App/Models/sistem/Pengaturan'
 var isBase64 = require('is-base64');
 
 export default class TestsController {
@@ -475,4 +479,56 @@ export default class TestsController {
       enkripsi: de,
     }
   }
+
+  public async testQuery({ }: HttpContextContract) {
+    let penggunaGajian = await Database
+      .from('penggunas')
+      .select('id')
+      .whereNull('deleted_at')
+      .whereNotNull('tanggal_gajian_selanjutnya')
+      .andWhere('tanggal_gajian_selanjutnya', '<=', DateTime.now().toISO())
+      .orderBy('tanggal_gajian_selanjutnya', 'asc')
+
+    let data: string[]= []
+
+    async function puter() {
+      for(const element of penggunaGajian){
+        try {
+          let pengguna = await Pengguna.findOrFail(element.id)
+          data.push(pengguna.nama)
+
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    }
+
+    await puter()
+
+    return data
+  }
+
+
+  public async testPasaran({ request }: HttpContextContract) {
+    let pasaran = request.input('pasaran')
+    let CP = new CPasaran()
+
+    let pengaturan = await Pengaturan.findOrFail(1) // ntar diganti jadi ngecek toko aktif di session
+    await pengaturan.load('pasarans')
+
+    let apakahPasaran = false
+    for (const element of pengaturan.pasarans) {
+      if(element.hari === CP.pasaranHarIni()){
+        apakahPasaran = true
+        break
+      }
+    }
+
+    return {
+      apakahPasaran: apakahPasaran,
+      pasaranToko: pengaturan.pasarans
+    }
+  }
+
+
 }

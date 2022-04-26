@@ -10,7 +10,9 @@
 <div class="w-full p-8">
   <h2 class="text-4xl font-semibold">Transaksi Penjualan</h2>
   <h4 class="text-lg text-secondary opacity-60">Buat penjualan baru dan simpan ke dalam sistem.</h4>
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+
     <div class="alert alert-info">
       <div class="flex-1 flex flex-col sm:flex-row items-center sm:items-start">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -25,32 +27,7 @@
       </div>
     </div>
 
-    {{--  flash alert kalo ada error, perlu ada di semua form  --}}
-    @if(flashMessages.has('errorServerThingy'))
-
-      <div class="alert alert-error">
-        <div class="flex-1">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
-          </svg>
-          <label>{{ flashMessages.get('errorServerThingy') }}</label>
-        </div>
-      </div>
-
-    @endif
-
-    @if(flashMessages.has('errors.id'))
-
-      <div class="alert alert-error">
-        <div class="flex-1">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
-          </svg>
-          <label>{{ flashMessages.get('errors.id') }}</label>
-        </div>
-      </div>
-
-    @endif
+    @include('partials/wadah-alert')
 
     <form action="/app/transaksi/penjualan/final" method="POST" id="formJual">
       <input type="text" name="id" id="id" class="hidden hidden-but-real" hidden value="{{ kelompok.id }}">
@@ -449,10 +426,12 @@
               </div>
             </div>
           </div>
+
         </div>
 
       </div>
     </form>
+
   </div>
 </div>
 @endsection

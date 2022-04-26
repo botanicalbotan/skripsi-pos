@@ -9,9 +9,20 @@ import {
 import Kadar from 'App/Models/barang/Kadar'
 import KodeProduksi from 'App/Models/barang/KodeProduksi'
 import Pengaturan from 'App/Models/sistem/Pengaturan'
-
+import Drive from '@ioc:Adonis/Core/Drive'
+import { DateTime } from 'luxon'
 
 export default class KodeProduksisController {
+  rupiahParser(angka: number) {
+    if (typeof angka == 'number') {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+      }).format(angka)
+    }
+  }
+
   public async index({
     view,
     request
@@ -25,8 +36,10 @@ export default class KodeProduksisController {
     ]
     const page = request.input('page', 1)
     const order = request.input('ob', 0)
-    const cari = request.input('cari', '')
     const sanitizedOrder = order < opsiOrder.length && order >= 0 && order ? order : 0
+    const arahOrder = request.input('aob', 0)
+    const sanitizedArahOrder = arahOrder == 1? 1:0
+    const cari = request.input('cari', '')
     const limit = 10
 
     const kodepros = await Database.from('kode_produksis')
@@ -42,7 +55,7 @@ export default class KodeProduksisController {
       .if(cari !== '', (query) => {
         query.where('kode_produksis.kode', 'like', `%${cari}%`)
       })
-      .orderBy(opsiOrder[sanitizedOrder], 'asc')
+      .orderBy(opsiOrder[sanitizedOrder], ((sanitizedArahOrder == 1)? 'desc': 'asc'))
       .orderBy('kode_produksis.kode')
       .paginate(page, limit)
 
@@ -58,8 +71,6 @@ export default class KodeProduksisController {
       })
     }
 
-    // kalau mau mulai dari sini bisa dibikin fungsi sendiri
-    // input bisa pagination object + panjang page yang mau di display
     let firstPage =
       kodepros.currentPage - 2 > 0 ?
       kodepros.currentPage - 2 :
@@ -82,7 +93,7 @@ export default class KodeProduksisController {
         firstPage -= 4 - (lastPage - firstPage)
       }
     }
-    // sampe sini
+
     const tempLastData = 10 + (kodepros.currentPage - 1) * limit
 
     const tambahan = {
@@ -154,6 +165,25 @@ export default class KodeProduksisController {
       }, [
         rules.maxLength(100)
       ]),
+      hargaLama: schema.number([
+        rules.unsigned()
+      ]),
+      hargaBaru: schema.number([
+        rules.unsigned()
+      ]),
+      potonganLama: schema.number([
+        rules.unsigned()
+      ]),
+      potonganBaru: schema.number([
+        rules.unsigned()
+      ]),
+      persentaseMalUripan: schema.number([
+        rules.unsigned(),
+        rules.range(0, 99)
+      ]),
+      ongkosMalRosokPerGram: schema.number([
+        rules.unsigned()
+      ])
     })
 
     const validrequest = await request.validate({
@@ -161,22 +191,45 @@ export default class KodeProduksisController {
     })
 
     try {
+      console.log(validrequest.kadar)
       let kadar = await Kadar.findOrFail(validrequest.kadar)
-      await kadar.related('kodeProduksi').create({
+      let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
+
+      if(kadar.apakahPotonganPersen){
+        if(validrequest.potonganLama > 100){
+          session.flash('errors', {
+            potonganLama: 'Nominal potongan tidak valid'
+          })
+          return response.redirect().back()
+        }
+
+        if(validrequest.potonganBaru > 100){
+          session.flash('errors', {
+            potonganBaru: 'Nominal potongan tidak valid'
+          })
+          return response.redirect().back()
+        }
+      }
+
+      await kadar.related('kodeProduksis').create({
         kode: validrequest.kode,
         deskripsi: validrequest.deskripsi,
         apakahBuatanTangan: validrequest.metode === 'buatanTangan',
         asalProduksi: validrequest.asal,
-        hargaPerGramBaru: 0,
-        hargaPerGramNormal: 1,
-        potonganBaru: 0,
-        potonganNormal: 1 // ini ntar diganti input yagn bener
+        hargaPerGramBaru: validrequest.hargaBaru,
+        hargaPerGramLama: validrequest.hargaLama,
+        potonganBaru: validrequest.potonganBaru,
+        potonganLama: validrequest.potonganLama,
+        persentaseMalUripan: validrequest.persentaseMalUripan,
+        ongkosMalRosokPerGram: validrequest.ongkosMalRosokPerGram,
+        penggunaId: placeholderPengguna
       })
 
+      session.flash('alertSukses', 'Kode produksi baru berhasil disimpan!')
       return response.redirect().toPath('/app/barang/kodepro/')
     } catch (error) {
       console.error(error)
-      session.flash('errorServerThingy', 'Ada masalah di server!')
+      session.flash('alertError', 'Ada masalah saat membuat kode produks baru. Silahkan coba lagi setelah beberapa saat.')
       return response.redirect().back()
     }
   }
@@ -189,9 +242,27 @@ export default class KodeProduksisController {
     try {
       let kodepro = await KodeProduksi.findOrFail(params.id)
       await kodepro.load('kadar')
+      await kodepro.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+
+      const urlPencatat = (kodepro.pengguna.foto)? await Drive.getUrl('profilePict/' + kodepro.pengguna.foto) : ''
+
+      let pengaturan = await Pengaturan.findOrFail(1)
+
+      const tambahan = {
+        urlFotoPencatat: urlPencatat
+      }
+
+      let fungsi = {
+        rupiahParser: this.rupiahParser
+      }
 
       return view.render('barang/kodepro/view-kodepro', {
-        kodepro
+        kodepro,
+        tambahan,
+        fungsi,
+        hargaMal: pengaturan.hargaMal
       })
     } catch (error) {
       return response.redirect().toPath('/app/barang/kodepro/')
@@ -208,8 +279,18 @@ export default class KodeProduksisController {
       let kodepro = await KodeProduksi.findOrFail(params.id)
       await kodepro.load('kadar')
 
+      let kadars = await Database
+      .from('kadars')
+      .select('id',
+        'apakah_potongan_persen as apakahPotonganPersen',
+        'nama')
+
+      let pengaturan = await Pengaturan.findOrFail(1)
+
       return view.render('barang/kodepro/form-edit-kodepro', {
-        kodepro
+        kodepro,
+        kadars,
+        hargaMal: pengaturan.hargaMal
       })
     } catch (error) {
       session.flash('errorServerThingy', 'Ada masalah di server!')
@@ -237,12 +318,13 @@ export default class KodeProduksisController {
           }
         }),
       ]),
-      kadar: schema.enum([
-          'Muda',
-          'Tanggung',
-          'Tua',
-        ] as
-        const),
+      kadar: schema.number([
+        rules.unsigned(),
+        rules.exists({
+          table: 'kadars',
+          column: 'id',
+        })
+      ]),
       asal: schema.string({
         trim: true
       }, [
@@ -250,7 +332,7 @@ export default class KodeProduksisController {
       ]),
       metode: schema.enum([
           'pabrikan',
-          'buatantangan'
+          'buatanTangan'
         ] as
         const),
       deskripsi: schema.string({
@@ -258,6 +340,25 @@ export default class KodeProduksisController {
       }, [
         rules.maxLength(100)
       ]),
+      hargaLama: schema.number([
+        rules.unsigned()
+      ]),
+      hargaBaru: schema.number([
+        rules.unsigned()
+      ]),
+      potonganLama: schema.number([
+        rules.unsigned()
+      ]),
+      potonganBaru: schema.number([
+        rules.unsigned()
+      ]),
+      persentaseMalUripan: schema.number([
+        rules.unsigned(),
+        rules.range(0, 99)
+      ]),
+      ongkosMalRosokPerGram: schema.number([
+        rules.unsigned()
+      ])
     })
 
     const validrequest = await request.validate({
@@ -265,30 +366,62 @@ export default class KodeProduksisController {
     })
 
     try {
-      let kadar = await Kadar.findByOrFail('nama', validrequest.kadar)
+      let kadar = await Kadar.findOrFail(validrequest.kadar)
+      let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
+
+      if(kadar.apakahPotonganPersen){
+        if(validrequest.potonganLama > 100){
+          session.flash('errors', {
+            potonganLama: 'Nominal potongan tidak valid'
+          })
+          return response.redirect().back()
+        }
+
+        if(validrequest.potonganBaru > 100){
+          session.flash('errors', {
+            potonganBaru: 'Nominal potongan tidak valid'
+          })
+          return response.redirect().back()
+        }
+      }
 
       let kodepro = await KodeProduksi.findOrFail(params.id)
       kodepro.kode = validrequest.kode
       kodepro.kadarId = kadar.id
       kodepro.asalProduksi = validrequest.asal
-      kodepro.apakahBuatanTangan = validrequest.metode === 'buatantangan',
-        kodepro.deskripsi = validrequest.deskripsi
-      // ini ntar diganti input yang bener
-      kodepro.hargaPerGramBaru = 0
-      kodepro.hargaPerGramNormal = 0
-      kodepro.potonganBaru = 0
-      kodepro.potonganNormal = 0
+      kodepro.apakahBuatanTangan = validrequest.metode === 'buatanTangan',
+      kodepro.deskripsi = validrequest.deskripsi
+      kodepro.hargaPerGramBaru = validrequest.hargaBaru
+      kodepro.hargaPerGramLama = validrequest.hargaLama
+      kodepro.potonganBaru = validrequest.potonganBaru
+      kodepro.potonganLama = validrequest.potonganLama
+      kodepro.persentaseMalUripan = validrequest.persentaseMalUripan
+      kodepro.ongkosMalRosokPerGram = validrequest.ongkosMalRosokPerGram
+      kodepro.penggunaId = placeholderPengguna
       await kodepro.save()
 
+      session.flash('alertSukses', 'Data kode produksi berhasil diubah!')
       return response.redirect().toPath('/app/barang/kodepro/' + kodepro.id)
     } catch (error) {
-      session.flash('errorServerThingy', 'Ada masalah di server!')
+      session.flash('alertError', 'Ada masalah saat mengubah data kode produksi. Silahkan coba lagi setelah beberapa saat.')
       console.error(error)
       return response.redirect().back()
     }
   }
 
-  public async destroy({}: HttpContextContract) {}
+  public async destroy({ response, params, session }: HttpContextContract) {
+    try {
+      const kodepro = await KodeProduksi.findOrFail(params.id)
+      kodepro.deletedAt = DateTime.now()
+      await kodepro.save()
+
+      session.flash('alertSukses', 'Kode produksi "'+ kodepro.kode +'" berhasil dihapus!')
+      return response.redirect().toPath('/app/barang/kodepro/')
+    } catch (error) {
+      session.flash('alertError', 'Ada masalah saat menghapus data kode produksi. Silahkan coba lagi setelah beberapa saat.')
+      return response.redirect().back()
+    }
+  }
 
 
   // ============================== Tambahan buat API =================================
@@ -308,12 +441,66 @@ export default class KodeProduksisController {
       .where('kode', kode)
 
     if (cekKode.length > 0) {
-      return response.notFound('Kode sudah terpakai, tolong tuliskan kode lain')
+      return response.notFound('Kode sudah terpakai, tolong gunakan kode lain')
     } else {
       // return response.ok('Kode bisa digunakan')
       // return 'Kode bisa digunakan'
       return { status: 'berhasil' }
     }
+
+  }
+
+
+  public async cekKodeEdit({
+    request,
+    response
+  }: HttpContextContract) {
+    let kode = request.input('kode')
+    let currentId = request.input('currentId')
+
+    if (kode === null || typeof kode === 'undefined') {
+      return response.badRequest('Kode tidak boleh kosong')
+    }
+
+    let cekKode = await Database
+      .from('kode_produksis')
+      .select('kode')
+      .where('kode', kode)
+      .whereNot('id', currentId)
+
+    if (cekKode.length > 0) {
+      return response.notFound('Kode sudah terpakai, tolong gunakan kode lain')
+    } else {
+      // return response.ok('Kode bisa digunakan')
+      // return 'Kode bisa digunakan'
+      return { status: 'berhasil' }
+    }
+
+  }
+
+
+  public async getKodeproById({
+    request,
+    response
+  }: HttpContextContract) {
+    let kodeId = request.input('id')
+
+    if (kodeId === null || typeof kodeId === 'undefined') {
+      return response.badRequest('ID kode produksi tidak boleh kosong')
+    }
+
+    try {
+      const kodepro = await KodeProduksi.findOrFail(kodeId)
+      await kodepro.load('kadar', (query) =>{
+        query.select('nama', 'apakah_potongan_persen')
+      })
+
+      return kodepro
+
+    } catch (error) {
+      return response.notFound('Kode produksi tidak ditemukan')
+    }
+
 
   }
 }

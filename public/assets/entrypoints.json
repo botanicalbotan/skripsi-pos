@@ -29,14 +29,24 @@
         "http://localhost:8080/assets/beranda.js"
       ]
     },
+    "alpine": {
+      "js": [
+        "http://localhost:8080/assets/alpine.js"
+      ]
+    },
+    "all-notifikasi": {
+      "js": [
+        "http://localhost:8080/assets/all-notifikasi.js"
+      ]
+    },
     "all-kas": {
       "js": [
         "http://localhost:8080/assets/all-kas.js"
       ]
     },
-    "kasrekap": {
+    "all-rekap": {
       "js": [
-        "http://localhost:8080/assets/kasrekap.js"
+        "http://localhost:8080/assets/all-rekap.js"
       ]
     },
     "riwayat": {
@@ -52,6 +62,26 @@
     "form-pegawai": {
       "js": [
         "http://localhost:8080/assets/form-pegawai.js"
+      ]
+    },
+    "all-penggajian": {
+      "js": [
+        "http://localhost:8080/assets/all-penggajian.js"
+      ]
+    },
+    "prepare-jual": {
+      "js": [
+        "http://localhost:8080/assets/prepare-jual.js"
+      ]
+    },
+    "form-jual": {
+      "js": [
+        "http://localhost:8080/assets/form-jual.js"
+      ]
+    },
+    "pasca-jual": {
+      "js": [
+        "http://localhost:8080/assets/pasca-jual.js"
       ]
     },
     "base-jual": {

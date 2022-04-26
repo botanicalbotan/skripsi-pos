@@ -1,0 +1,362 @@
+@layout('layouts/master')
+
+@section('more-style')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.css"
+  integrity="sha512-+VDbDxc9zesADd49pfvz7CgsOl2xREI/7gnzcdyA9XjuTxLXrdpuz21VVIqc5HPfZji2CypSbxx1lgD7BgBK5g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+@endsection
+
+@section('content')
+<div class="w-full p-8">
+  <h2 class="text-4xl font-semibold">Transaksi Penjualan</h2>
+  <h4 class="text-lg text-secondary opacity-60">Buat penjualan baru dan simpan ke dalam sistem.</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+
+    <div class="alert alert-info">
+      <div class="flex-1 flex flex-col sm:flex-row items-center sm:items-start">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          class="mb-4 sm:mb-0 w-6 h-6 mx-2 stroke-current">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <p>Item terpilih: <span class="font-medium">{{ kelompok.nama }}</span> ({{ kelompok.kodeKelompok }})</p>
+      </div>
+      <div class="flex-none">
+        <a href="/app/transaksi/penjualan/" class="btn btn-ghost text-error hover:btn-error">Batal</a>
+      </div>
+    </div>
+
+    @include('partials/wadah-alert')
+
+    <form action="/app/transaksi/penjualan/hitung" method="POST" id="formJual">
+      <input type="number" name="id" id="id" class="hidden hidden-but-real" hidden value="{{ kelompok.id }}">
+      <input type="number" id="berat" class="hidden hidden-but-real" hidden value="{{ kelompok.beratKelompok }}">
+        {{ csrfField() }}
+      <div class="mt-6 flex flex-col sm:flex-row space-y-6 md:space-y-0 md:space-x-6 lg:space-x-8" x-data="{ radioStok: 0, beratDesimal: 0 }">
+
+        <div class="w-full sm:w-3/5 space-y-10">
+          {{--  Kelompok Kode Produksi  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Kode Perhiasan</h1>
+            </div>
+            <div class="form-control">
+              <label for="kodepro">
+                <span class="">Kode Yang Tertera Pada Perhiasan<span class="text-error"> *</span></span>
+              </label>
+              <select id="kodepro" name="kodepro" required class="select select-primary bg-primary bg-opacity-10 w-full max-w-xs">
+                <option value="kosong" disabled="disabled" selected="selected">Pilih kode</option>
+                @if(kelompok.kadar.kodeProduksis)
+                @each(kodepro in kelompok.kadar.kodeProduksis)
+                <option value="{{ kodepro.id }}">{{ kodepro.kode }}</option>
+                @endeach
+                @endif
+              </select>
+
+              @if(flashMessages.has('errors.kodepro'))
+                <p class="text-error">{{ flashMessages.get('errors.kodepro') }}</p>
+              @endif
+            </div>
+          </div>
+
+          {{--  Kelompok Model  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Model Perhiasan</h1>
+            </div>
+            <div class="form-control">
+              <label for="model">
+                <span class="">Model Perhiasan<span class="text-error"> *</span></span>
+              </label>
+              <select id="model" name="model" required class="select select-primary bg-primary bg-opacity-10 w-full max-w-xs">
+                <option value="kosong" disabled="disabled" selected="selected">Pilih model</option>
+                @if(kelompok.bentuk.models)
+                @each(model in kelompok.bentuk.models)
+                <option value="{{ model.id }}">{{ model.nama }}</option>
+                @endeach
+                @endif
+              </select>
+
+              @if(flashMessages.has('errors.model'))
+                <p class="text-error">{{ flashMessages.get('errors.model') }}</p>
+              @endif
+            </div>
+
+            {{--  sementara  --}}
+            <div class="form-control">
+              <label for="">Jenis Stok<span class="text-error"> *</span></label>
+              <div class="flex space-x-4 mt-1 w-full sm:w-96">
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radioStok == 0)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                  <input type="radio" name="jenisStok" checked="checked" class="radio radio-primary hidden"
+                    value="lama"
+                    @click="radioStok = 0; setPointer(0)">
+                  <span class="label-text text-base"
+                    :class="(radioStok == 0)? 'text-primary': 'text-secondary'">Stok Lama</span>
+                </label>
+                <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                  :class="(radioStok == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                  <input type="radio" name="jenisStok" class="radio radio-primary hidden" value="baru"
+                    @click="radioStok = 1; setPointer(1)">
+                  <span class="label-text text-base" :class="(radioStok == 1)? 'text-primary': 'text-secondary'">Stok Baru</span>
+                </label>
+              </div>
+
+              @if(flashMessages.has('errors.jenisStok'))
+                <p class="text-error">{{ flashMessages.get('errors.jenisStok') }}</p>
+              @endif
+            </div>
+
+          </div>
+
+          {{--  Kelompok Berat  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Berat Perhiasan</h1>
+            </div>
+
+            <div class="space-y-4 md:flex md:space-x-4 md:space-y-0 max-w-sm">
+              <div class="flex-1">
+                <div class="form-control">
+                  <label for="beratKelompok">
+                    <span class="">Berat Kelompok</span>
+                  </label>
+                  <div class="relative flex w-full flex-wrap items-stretch">
+                    {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
+                    <input type="number" placeholder="0" id="beratKelompok" min="0" name="beratKelompok"
+                      class="uang px-3 py-3 relative input input-bordered w-full" readonly
+                      value="{{ kelompok.beratKelompok }}" />
+                    <span
+                      class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
+                      gram
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex-1">
+                <div class="form-control">
+                  <label for="beratDesimal">
+                    <span class="">Berat Sebenarnya<span class="text-error"> *</span></span>
+                  </label>
+                  <div class="relative flex w-full flex-wrap items-stretch">
+                    <span
+                      class="z-10 h-full leading-snug absolute text-sm text-center flex items-center justify-center w-8 pl-3 py-3">
+                      {{ kelompok.beratKelompok +'.' }}
+                    </span>
+                    {{-- input aslinya kehidden, tp kalo ada error dilempar kesini  --}}
+                    <input type="number" x-model="beratDesimal" placeholder="0" id="beratDesimal" name="beratDesimal" min="0"
+                      class="uang px-3 py-3 relative input input-primary bg-primary bg-opacity-10 w-full pl-8"
+                      oninput="validity.valid||(value='');" @focus="$el.value=($el.value == 0)? '':$el.value"
+                      @focusout="$el.value = ($el.value =='')? 0:$el.value" />
+                    <span
+                      class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
+                      gram
+                    </span>
+                  </div>
+                  {{--  form aslinya ke hidden, tp dilempar kesini  --}}
+                  @if(flashMessages.has('errors.beratDesimal'))
+                    <p class="text-error">{{ flashMessages.get('errors.beratDesimal') }}</p>
+                  @endif
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {{--  Kelompok kondisi  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Kondisi Perhiasan</h1>
+            </div>
+            <div class="form-control max-w-md">
+              <label for="kondisi">
+                <span class="">Kondisi perhiasan seperti kerusakan atau lecet (jika ada)</span>
+              </label>
+              <textarea type="text" id="kondisi" name="kondisi" class="textarea textarea-bordered h-24"
+                placeholder="Contoh: Lecet 3 tempat, hilang 1 permata"></textarea>
+
+              @if(flashMessages.has('errors.kondisi'))
+                <p class="text-error">{{ flashMessages.get('errors.kondisi') }}</p>
+              @endif
+            </div>
+          </div>
+
+          {{--  Kelompok batu & mainan  --}}
+        <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Batu & Mainan</h1>
+          </div>
+          {{--  tabel  --}}
+          <div class="flex space-x-4 items-end">
+            <div class="flex-1">
+              <div>
+                <span class="max-w-xs">Isi sesuai dengan kondisi perhiasan sebenarnya.</span>
+              </div>
+            </div>
+            <div class="flex-none flex items-end">
+              <button type="button" class="btn btn-outline btn-sm" id="tambahItem">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                    clip-rule="evenodd" />
+                </svg>
+                Item</button>
+            </div>
+          </div>
+          <div class="my-8 border min-h-60 rounded-box">
+            <div class="overflow-x-auto rounded-box"> {{-- aslinya ada overflow-x-auto disini --}}
+              <table class="table w-full">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Jumlah</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="wadah-item">
+                  {{--  tabelnya ntar di append ke sini  --}}
+
+                </tbody>
+              </table>
+              <div id="teks-tabel-item-kosong" class="text-center mt-6">Tidak ada mata dan mainan.</div>
+            </div>
+          </div>
+          @if(flashMessages.has('errors.jenisItem'))
+            <p class="text-error">{{ flashMessages.get('errors.jenisItem') }}</p>
+          @endif
+
+          @if(flashMessages.has('errors.keteranganItem'))
+            <p class="text-error">{{ flashMessages.get('errors.keteranganItem') }}</p>
+          @endif
+
+          @if(flashMessages.has('errors.jumlahItem'))
+            <p class="text-error">{{ flashMessages.get('errors.jumlahItem') }}</p>
+          @endif
+        </div>
+
+          {{--  Kelompok foto  --}}
+          <div class="space-y-4">
+            <div class="mb-6">
+              <h1 class="text-2xl font-semibold">Foto Barang</h1>
+            </div>
+            <div class="form-control" x-data="{ adaGambar: false}">
+              <div class="w-full flex flex-col space-y-4 items-center">
+                <div class="w-64 h-52 p-2 rounded-box border">
+                  <div id="wadahFoto" class="w-full h-full bg-base-300 rounded-box bg-contain">
+                    <div x-show="adaGambar == false" class="w-full h-full flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" id="svgPHFoto" class="h-20 w-20 text-secondary" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <img src="" id="fotoBarang" x-ref="fotoBarang" class="w-full object-contain"
+                      @error="adaGambar = false" @load="adaGambar = true">
+                  </div>
+                </div>
+                <div class="space-y-4 flex flex-col items-center">
+                  <div x-show="adaGambar == false" x-cloak>
+                    {{--  kalo gaada foto  --}}
+                    <button type="button" class="btn btn-outline" id="bukaKamera">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                      </svg>
+                      Ambil foto</button>
+                  </div>
+                  <div class="space-x-2 flex items-start" x-show="adaGambar == true" x-cloak>
+                    {{--  kalo ada foto  --}}
+                    <button type="button" class="btn btn-outline" id="bukaUlangKamera">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                      </svg>Ambil ulang</button>
+                    <button type="button" class="btn btn-outline btn-error" @click="$refs.fotoBarang.src = ''; $refs.foto64.value = ''">Hapus</button>
+                  </div>
+                  <div>
+                    {{--  wadah error  --}}
+                    <textarea name="fotoBarangBase64" x-ref="foto64" id="fotoBarangBase64" class="hidden-but-real hidden"
+                      hidden></textarea>
+                    @if(flashMessages.has('errors.fotoBarangBase64'))
+                      <p class="text-error">{{ flashMessages.get('errors.fotoBarangBase64') }}</p>
+                    @endif
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {{--  form tambahan  --}}
+          <div class="hidden" id="formTambahan">
+
+          </div>
+
+        </div>
+
+        <div class="flex-1 space-y-8">
+          {{--  kalau mau nambah menu samping, taro sini  --}}
+          <div class="w-full bg-base-200 card">
+            <div class="card-body">
+              <div class="w-full h-full space-y-8">
+                <div>
+                  <h2 class="font-semibold">Rincian Transaksi</h2>
+                  <ul id="check-list">
+                    <li class="flex">
+                      <span class="flex-1">Kadar:</span>
+                      <span class="flex-none" id="teksKadar">{{ kelompok.kadar.nama }}</span>
+                    </li>
+                    <li class="flex">
+                      <span class="flex-1">Bentuk:</span>
+                      <span class="flex-none" id="teksBentuk">{{ kelompok.bentuk.bentuk }}</span>
+                    </li>
+                    <li class="flex">
+                      <span class="flex-1">Berat:</span>
+                      <span class="flex-none"><span
+                          x-text="{{kelompok.beratKelompok}} + belakangKoma(beratDesimal)" id="teksBerat">0</span> gram</span>
+                    </li>
+                    <li class="flex">
+                      <span class="flex-1">Jenis Stok:</span>
+                      <span class="flex-none" x-text="(radioStok)? 'Stok Baru': 'Stok Lama'"></span>
+                    </li>
+                    <li class="flex">
+                      <span class="flex-1">Harga Emas:</span>
+                      <span class="flex-none" id="teksHE"><span class="text-secondary">pilih kode...</span></span>
+                    </li>
+                    <li class="flex">
+                      <span class="flex-1">Potongan:</span>
+                      <span class="flex-none" id="teksPot"><span class="text-secondary">pilih kode...</span></span>
+                    </li>
+
+                  </ul>
+                </div>
+                <div class="flex flex-col w-full items-center">
+                  <h2 class="font-semibold text-center">Total Harga</h2>
+                  <h1 class="font-bold text-3xl text-center" id="teksHarga">Rp 0</h1>
+                </div>
+                <div class="space-y-4">
+                  <button type="button" id="btSubmit" class="btn btn-block btn-primary text-white">Simpan Transaksi</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js"
+  integrity="sha512-ZK6m9vADamSl5fxBPtXw6ho6A4TuX89HUbcfvxa2v2NYNT/7l8yFGJ3JlXyMN4hlNbz0il4k6DvqbIW5CCwqkw=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/form-jual.js')}}"></script>
+
+@endsection

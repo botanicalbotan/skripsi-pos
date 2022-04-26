@@ -9,7 +9,7 @@ export default class KoreksiSaldos extends BaseSchema {
       table.integer('saldo_awal').notNullable()
       table.integer('saldo_akhir').notNullable()
       table.integer('selisih_saldo').notNullable()
-      table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable().onDelete('CASCADE')
+      table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

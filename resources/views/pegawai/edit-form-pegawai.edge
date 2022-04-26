@@ -10,6 +10,7 @@
 <div class="w-full p-8 base-page" data-pagename= "formpegawai">
   <h2 class="text-4xl font-semibold">Buat Pegawai Baru</h2>
   <div class=" bg-white mt-8 p-4 lg:p-8 pb-40 lg:pb-40 shadow min:h-96">
+    @include('partials/wadah-alert')
 
     <form id="pegawaiBaru" action="/app/pegawai" method="POST">
       {{ csrfField() }}
@@ -29,7 +30,7 @@
               </label>
               <input type="text" id="nama" name="nama" class="input input-bordered"
                 placeholder="Contoh: Muhammad Arif Fadhilah" required maxlength="50">
-              
+
               @if(flashMessages.has('errors.nama'))
                 <p class="text-error">{{ flashMessages.get('errors.nama') }}</p>
               @endif
@@ -67,7 +68,7 @@
                   </label>
                   <input type="text" name="tempatLahir" id="tempatLahir" class="input input-bordered"
                     placeholder="Contoh: Boyolali" required maxlength="100">
-                  
+
                   @if(flashMessages.has('errors.tempatlahir'))
                     <p class="text-error">{{ flashMessages.get('errors.tempatlahir') }}</p>
                   @endif
@@ -80,7 +81,7 @@
                   </label>
                   <input type="date" name="tanggalLahir" id="tanggalLahir"
                     class="input input-bordered" required>
-                  
+
                   @if(flashMessages.has('errors.tanggallahir'))
                     <p class="text-error">{{ flashMessages.get('errors.tanggallahir') }}</p>
                   @endif
@@ -93,7 +94,7 @@
               </label>
               <input type="text" id="alamat" name="alamat" class="input input-bordered"
                 placeholder="Contoh: Jl. Pemuda Kebaktian No.12, RT01/RW02 Semarang" required maxlength="100">
-              
+
               @if(flashMessages.has('errors.alamat'))
                 <p class="text-error">{{ flashMessages.get('errors.alamat') }}</p>
               @endif
@@ -104,7 +105,7 @@
               </label>
               <input type="text" id="nohpAktif" name="nohpAktif" class="input input-bordered"
                 placeholder="Contoh: 081123456789" required maxlength="15">
-              
+
               @if(flashMessages.has('errors.nohpAktif'))
                 <p class="text-error">{{ flashMessages.get('errors.nohpAktif') }}</p>
               @endif
@@ -134,7 +135,7 @@
               </div>
               <input type="text" id="username" name="username" class="input input-bordered"
                 placeholder="Contoh: budibalado" autocomplete="username" required maxlength="30">
-              
+
               @if(flashMessages.has('errors.username'))
                 <p class="text-error">{{ flashMessages.get('errors.username') }}</p>
               @endif
@@ -147,7 +148,7 @@
               <input type="password" x-model="pass" id="password" name="password"
                 x-on:focusout="repassclass= (pass == '' || repass == '')? '': (pass!=repass)? 'input-error': ''"
                 class="input input-bordered" autocomplete="new-password" required>
-                
+
               @if(flashMessages.has('errors.password'))
                 <p class="text-error">{{ flashMessages.get('errors.password') }}</p>
               @endif
@@ -178,7 +179,7 @@
               </label>
               <input type="email" id="email" name="email" class="input input-bordered"
                 placeholder="Contoh: budi@gmail.com" maxlength="100">
-                
+
               @if(flashMessages.has('errors.email'))
                 <p class="text-error">{{ flashMessages.get('errors.email') }}</p>
               @endif
@@ -214,14 +215,14 @@
               @endif
             </div>
 
-            <div x-data="{data: banding(moment())}" class="form-control">
+            <div x-data class="form-control">
               <label for="tanggalAwalMasuk" class="flex">
                 <span class="flex-1">Tanggal Awal Masuk<span class="text-error"> *</span></span>
-                <span x-cloak x-text="data" class="flex-none text-primary"></span>
+                <span x-cloak class="flex-none text-primary"></span>
               </label>
-              <input type="date" x-on:change="data = banding($el.value)" id="tanggalAwalMasuk"
-                name="tanggalAwalMasuk" class="input input-bordered" :value="moment().format('yyyy-MM-DD')">
-              
+              <input type="date" id="tanggalAwalMasuk"
+                name="tanggalAwalMasuk" class="input input-bordered" :value="Date.now()">
+
               @if(flashMessages.has('errors.tanggalAwalMasuk'))
                 <p class="text-error">{{ flashMessages.get('errors.tanggalAwalMasuk') }}</p>
               @endif

@@ -5,10 +5,16 @@ import {
   belongsTo,
   BelongsTo,
   hasMany,
-  HasMany
+  HasMany,
+  ModelQueryBuilderContract,
+  beforeFind,
+  beforeFetch
 } from '@ioc:Adonis/Lucid/Orm'
 import Kadar from 'App/Models/Barang/Kadar'
 import Penjualan from 'App/Models/transaksi/Penjualan'
+import Pengguna from 'App/Models/akun/Pengguna'
+
+type KodeProduksiQuery = ModelQueryBuilderContract<typeof KodeProduksi>
 
 export default class KodeProduksi extends BaseModel {
   @column({ isPrimary: true })
@@ -29,16 +35,22 @@ export default class KodeProduksi extends BaseModel {
   // mulai dari sini
 
   @column()
-  public hargaPerGramNormal: number
+  public hargaPerGramLama: number
 
   @column()
   public hargaPerGramBaru: number
 
   @column()
-  public potonganNormal: number
+  public potonganLama: number
 
   @column()
   public potonganBaru: number
+
+  @column()
+  public persentaseMalUripan: number
+
+  @column()
+  public ongkosMalRosokPerGram: number
 
   // sampe sini, kolom baru
 
@@ -62,4 +74,19 @@ export default class KodeProduksi extends BaseModel {
 
   @hasMany(() => Penjualan)
   public penjualans: HasMany<typeof Penjualan>
+
+  @column()
+  public penggunaId: number
+
+  @belongsTo(() => Pengguna)
+  public pengguna: BelongsTo<typeof Pengguna>
+
+
+
+  // disini decorators
+  @beforeFetch()
+  @beforeFind()
+  public static withoutSoftDeletes(query: KodeProduksiQuery){
+    query.whereNull('deleted_at')
+  }
 }

@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
-import { 
-  BaseModel, 
+import {
+  BaseModel,
   column,
   BelongsTo,
   belongsTo,
@@ -11,7 +11,8 @@ import {
   ModelQueryBuilderContract
 } from '@ioc:Adonis/Lucid/Orm'
 import Bentuk from 'App/Models/barang/Bentuk'
-import Pembelian from '../transaksi/Pembelian'
+import Pembelian from 'App/Models/transaksi/Pembelian'
+import Pengguna from 'App/Models/akun/Pengguna'
 
 type KerusakanQuery = ModelQueryBuilderContract<typeof Kerusakan>
 
@@ -62,6 +63,12 @@ export default class Kerusakan extends BaseModel {
     ]
   })
   public pembelians: ManyToMany<typeof Pembelian>
+
+  @column()
+  public penggunaId: number
+
+  @belongsTo(() => Pengguna)
+  public pengguna: BelongsTo<typeof Pengguna>
 
   @beforeFetch()
   @beforeFind()

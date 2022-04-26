@@ -1,7 +1,123 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Database from '@ioc:Adonis/Lucid/Database'
+import RekapHarian from 'App/Models/kas/RekapHarian'
 
 export default class RekapHariansController {
-  public async index ({}: HttpContextContract) {
+  kapitalHurufPertama(text: string) {
+    return text.charAt(0).toUpperCase() + text.slice(1)
+  }
+
+  rupiahParser(angka: number) {
+    if (typeof angka == 'number') {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+      }).format(angka)
+    }
+  }
+
+  public async index ({ view, request }: HttpContextContract) {
+    const opsiOrder = [
+      'tanggal_rekap',
+      'pasaran',
+      'totalPemasukan',
+      'totalPengeluaran',
+      'apakah_ada_error', // ntar ganti error jadi anomali
+      'apakah_sudah_banding_saldo'
+    ]
+    const page = request.input('page', 1)
+    const order = request.input('ob', 0)
+    const arahOrder = request.input('aob', 0)
+    const sanitizedOrder = order < opsiOrder.length && order >= 0 && order? order : 0
+    const sanitizedArahOrder = arahOrder == 1? 1:0
+    const limit = 10
+
+    const rekaps = await Database.from('rekap_harians')
+      .select(
+        'id',
+        'pasaran',
+        'tanggal_rekap as tanggalRekap',
+        'apakah_hari_pasaran as apakahHariPasaran',
+        'apakah_ada_error as apakahAdaError', // ntar ganti error jadi anomali
+        'apakah_sudah_banding_saldo as apakahSudahBandingSaldo',
+      )
+      // .select(
+      //   Database
+      //     .from('kas')
+      //     .whereColumn('kas.rekap_harian_id', 'rekap_harians.id')
+      //     .andWhere('apakah_kas_keluar', 0)
+      //     .sum('nominal')
+      //     .as('totalPemasukan')
+      // )
+      // .select(
+      //   Database
+      //     .from('kas')
+      //     .whereColumn('kas.rekap_harian_id', 'rekap_harians.id')
+      //     .andWhere('apakah_kas_keluar', 1)
+      //     .sum('nominal')
+      //     .as('totalPengeluaran')
+      // )
+      .select(
+        Database.raw(
+          "(SELECT IFNULL(SUM(kas.nominal), 0) FROM kas WHERE kas.rekap_harian_id = rekap_harians.id AND kas.apakah_kas_keluar = FALSE AND kas.deleted_at IS NULL) as 'totalPemasukan'"
+        )
+      )
+      .select(
+        Database.raw(
+          "(SELECT IFNULL(SUM(kas.nominal), 0) FROM kas WHERE kas.rekap_harian_id = rekap_harians.id AND kas.apakah_kas_keluar = TRUE AND kas.deleted_at IS NULL) as 'totalPengeluaran'"
+        )
+      )
+      .if(sanitizedOrder !== 0, (query) => {
+        query.orderBy(opsiOrder[sanitizedOrder], ((sanitizedArahOrder == 1)? 'desc': 'asc'))
+      })
+      .orderBy('tanggal_rekap', 'desc')
+      .paginate(page, limit)
+
+    console.log('order: ' + sanitizedOrder +', arah: ' + sanitizedArahOrder)
+    rekaps.baseUrl('/app/kas/rekapHarian')
+
+    rekaps.queryString({ ob: sanitizedOrder })
+
+    let firstPage =
+      rekaps.currentPage - 2 > 0
+        ? rekaps.currentPage - 2
+        : rekaps.currentPage - 1 > 0
+        ? rekaps.currentPage - 1
+        : rekaps.currentPage
+    let lastPage =
+      rekaps.currentPage + 2 <= rekaps.lastPage
+        ? rekaps.currentPage + 2
+        : rekaps.currentPage + 1 <= rekaps.lastPage
+        ? rekaps.currentPage + 1
+        : rekaps.currentPage
+
+    if (lastPage - firstPage < 4 && rekaps.lastPage > 4) {
+      if (rekaps.currentPage < rekaps.firstPage + 2) {
+        lastPage += 4 - (lastPage - firstPage)
+      }
+
+      if (lastPage == rekaps.lastPage) {
+        firstPage -= 4 - (lastPage - firstPage)
+      }
+    }
+    // sampe sini
+    const tempLastData = 10 + (rekaps.currentPage - 1) * limit
+
+    const tambahan = {
+      pengurutan: sanitizedOrder,
+      firstPage: firstPage,
+      lastPage: lastPage,
+      firstDataInPage: 1 + (rekaps.currentPage - 1) * limit,
+      lastDataInPage: tempLastData >= rekaps.total ? rekaps.total : tempLastData,
+    }
+
+    const fungsi = {
+      rupiahParser: this.rupiahParser,
+      kapitalHurufPertama: this.kapitalHurufPertama
+    }
+
+    return view.render('kas/rekap-harian/list-rekap-harian', { rekaps, tambahan, fungsi })
   }
 
   public async create ({}: HttpContextContract) {
@@ -10,7 +126,73 @@ export default class RekapHariansController {
   public async store ({}: HttpContextContract) {
   }
 
-  public async show ({}: HttpContextContract) {
+  public async show ({ params, view, session, response }: HttpContextContract) {
+    try {
+      const rekap = await RekapHarian.findOrFail(params.id)
+      await rekap.load('kas')
+
+      const totalKasMasuk = await Database
+      .from('kas')
+      .sum('nominal', 'nominal')
+      .count('*', 'count')
+      .whereNull('deleted_at')
+      .andWhere('apakah_kas_keluar', 0)
+      .andWhereRaw('DATE(created_at) = DATE(?)', [ rekap.tanggalRekap.toISO() ])
+
+      const totalKasKeluar = await Database
+        .from('kas')
+        .sum('nominal', 'nominal')
+        .count('*', 'count')
+        .whereNull('deleted_at')
+        .andWhere('apakah_kas_keluar', 1)
+        .andWhereRaw('DATE(created_at) = DATE(?)', [ rekap.tanggalRekap.toISO() ])
+
+      const totalJual = await Database
+      .from('penjualans')
+      .sum('harga_jual_akhir', 'nominal')
+      .whereNull('deleted_at')
+      .whereRaw('DATE(created_at) = DATE(?)', [ rekap.tanggalRekap.toISO() ])
+
+      const totalBeli = await Database
+        .from('pembelians')
+        .sum('harga_beli_akhir', 'nominal')
+        .whereNull('deleted_at')
+        .whereRaw('DATE(created_at) = DATE(?)', [ rekap.tanggalRekap.toISO() ])
+
+      const rekapPenjualan = {
+        apakahKasKeluar: 0,
+        nominal: totalJual[0].nominal | 0,
+        perihal: 'Penjualan Barang',
+        namaPencatat: 'Sistem',
+        createdAt: rekap.tanggalRekap
+      }
+
+      const rekapPembelian = {
+        apakahKasKeluar: 1,
+        nominal: -totalBeli[0].nominal | 0,
+        perihal: 'Pembelian Barang',
+        namaPencatat: 'Sistem',
+        createdAt: rekap.tanggalRekap
+      }
+
+      const fungsi= {
+        rupiahParser: this.rupiahParser,
+        kapitalHurufPertama: this.kapitalHurufPertama
+      }
+
+      const tambahan = {
+        totalKasMasuk: totalKasMasuk[0].nominal + rekapPenjualan.nominal,
+        totalKasKeluar: totalKasKeluar[0].nominal + rekapPembelian.nominal,
+        hitungKasMasuk: totalKasMasuk[0].count + 1,
+        hitungKasKeluar: totalKasKeluar[0].count + 1
+      }
+
+      return view.render('kas/rekap-harian/view-rekap-harian', { rekap, rekapPenjualan, rekapPembelian, fungsi, tambahan })
+
+    } catch (error) {
+      session.flash('alertError', 'Rekap harian yang anda pilih tidak valid!')
+      return response.redirect('/app/kas/rekapHarian')
+    }
   }
 
   public async edit ({}: HttpContextContract) {

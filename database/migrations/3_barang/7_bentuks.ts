@@ -6,12 +6,8 @@ export default class Bentuks extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
+      table.string('kode', 5).notNullable()
       table.string('bentuk', 10).notNullable()
-
-      /**
-       * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
-       */
-       table.timestamps(true, true)
     })
   }
 

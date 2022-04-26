@@ -17,7 +17,7 @@ export default class PegawaisController {
       'penggunas.nama',
       'jabatans.nama',
       'penggunas.gender',
-      'penggunas.tanggal_gajian',
+      'penggunas.tanggal_gajian_selanjutnya',
       'penggunas.gaji_bulanan',
       'penggunas.apakah_pegawai_aktif',
     ]
@@ -34,7 +34,8 @@ export default class PegawaisController {
     const pegawais = await Database.from('penggunas')
       .join('jabatans','penggunas.jabatan_id', '=', 'jabatans.id')
       .whereNull('penggunas.deleted_at')
-      .select('penggunas.id as id', 'penggunas.nama as nama', 'penggunas.gender as gender', 'jabatans.nama as jabatan', 'penggunas.apakah_pegawai_aktif as apakahAktif', 'penggunas.gaji_bulanan as gajiBulanan', 'penggunas.foto as foto')
+      .whereNot('jabatans.nama', 'Pemilik')
+      .select('penggunas.id as id', 'penggunas.nama as nama', 'penggunas.gender as gender', 'jabatans.nama as jabatan', 'penggunas.apakah_pegawai_aktif as apakahAktif', 'penggunas.gaji_bulanan as gajiBulanan', 'penggunas.foto as foto', 'penggunas.tanggal_gajian_selanjutnya as gajiSelanjutnya')
       .if(cari !== '', (query) => {
         query.where('penggunas.nama', 'like', `%${cari}%`)
       })
@@ -42,7 +43,9 @@ export default class PegawaisController {
         query.orderBy('penggunas.apakah_pegawai_aktif', 'desc')
       })
       .if(sanitizedFilterShow == 0, (query) => {
-        query.where('penggunas.apakah_pegawai_aktif', true)
+        query
+          .where('penggunas.apakah_pegawai_aktif', true)
+          .andWhereNotNull('penggunas.tanggal_gajian_selanjutnya')
       })
       .orderBy(opsiOrder[sanitizedOrder], ((sanitizedArahOrder == 1)? 'desc': 'asc'))
       .orderBy('penggunas.nama')
@@ -175,7 +178,7 @@ export default class PegawaisController {
       await Drive.put('profilePict/' + namaFileFoto, buffer)
 
     } catch (error) {
-      console.log(error)
+      console.error(error)
       namaFileFoto = ''
     }
 
@@ -190,6 +193,8 @@ export default class PegawaisController {
       apakahPegawaiAktif: validrequest.status === 'aktif',
       foto: (namaFileFoto)? namaFileFoto : null,
       gajiBulanan: validrequest.gajiBulanan,
+      tanggalMulaiAktif: DateTime.now(),
+      tanggalGajianSelanjutnya: DateTime.now().plus({ months: 1 }),
       jabatanId: jabatan.id
     })
 

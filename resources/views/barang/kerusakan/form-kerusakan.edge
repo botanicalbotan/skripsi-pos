@@ -5,19 +5,22 @@
 @endsection
 
 @section('content')
-<div class="w-full p-8">
+<div class="w-full p-8 base-page" data-pagename="form">
   <h2 class="text-4xl font-semibold">Kerusakan Perhiasan Baru</h2>
   <h4 class="text-lg text-secondary opacity-60">Formulir untuk mencatat kerusakan perhiasan baru ke sistem.</h4>
 
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
-    <div class="text-secondary italic mb-8">
-      Pastikan anda mengisi seluruh masukan yang bertanda bintang (*)
-    </div>
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 lg:w-min">
+    @include('partials/wadah-alert')
 
-    <div class="w-full sm:max-w-md">
-      <form action="/app/barang/kerusakan/" method="POST">
-        {{csrfField()}}
+    <form id="formKerusakan" action="/app/barang/kerusakan/" method="POST">
+      {{csrfField()}}
+
+      <div class="w-full sm:max-w-md space-y-10">
+
         <div class="space-y-4" x-data="{ radio: 1 }">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Data Kerusakan</h1>
+          </div>
 
           <div class="form-control">
             <label for="nama">
@@ -26,9 +29,9 @@
             </label>
             <input type="text" id="nama" name="nama" class="input input-bordered"
               placeholder="Contoh: Hilang batu permata" required>
-              
+
             @if(flashMessages.has('errors.nama'))
-              <p class="text-error">{{ flashMessages.get('errors.nama') }}</p>
+            <p class="text-error">{{ flashMessages.get('errors.nama') }}</p>
             @endif
           </div>
 
@@ -37,7 +40,7 @@
               Bentuk Perhiasan
               <span class="text-error"> *</span>
             </label>
-            <select name="bentuk" class="select select-bordered w-full max-w-xs">
+            <select id="bentuk" name="bentuk" class="select select-primary bg-primary bg-opacity-10 w-full max-w-xs">
               <option disabled="disabled" selected="selected" value="kosong">Pilih</option>
               <option value="Kalung">Kalung</option>
               <option value="Gelang">Gelang</option>
@@ -47,9 +50,9 @@
               <option value="Tindik">Tindik</option>
               <option value="Lainnya">Lainnya</option>
             </select>
-            
+
             @if(flashMessages.has('errors.bentuk'))
-                <p class="text-error">{{ flashMessages.get('errors.bentuk') }}</p>
+            <p class="text-error">{{ flashMessages.get('errors.bentuk') }}</p>
             @endif
           </div>
 
@@ -58,8 +61,8 @@
             <div class="flex space-x-4 mt-1 w-full sm:w-96">
               <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                 :class="(radio == 1)? 'bg-warning bg-opacity-10 border-warning': 'bg-white border-secondary'">
-                <input type="radio" name="perbaikan" checked="checked" class="radio radio-warning hidden"
-                  value="bisa" @click="radio = 1; $refs.ongkos.value = 0">
+                <input type="radio" name="perbaikan" checked="checked" class="radio radio-warning hidden" value="bisa"
+                  @click="radio = 1; $refs.ongkos.value = ''">
                 <span class="label-text text-base" :class="(radio == 1)? 'text-warning': 'text-secondary'">Bisa</span>
               </label>
               <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
@@ -71,7 +74,7 @@
             </div>
 
             @if(flashMessages.has('errors.perbaikan'))
-                <p class="text-error">{{ flashMessages.get('errors.perbaikan') }}</p>
+            <p class="text-error">{{ flashMessages.get('errors.perbaikan') }}</p>
             @endif
           </div>
 
@@ -82,31 +85,33 @@
                 class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
                 Rp.
               </span>
-              <input type="number" x-ref="ongkos" 
-                @focus="$el.value=($el.value == 0)? '':$el.value"
-                @focusout="$el.value = ($el.value =='')? 0:$el.value"
+              <input type="number" x-ref="ongkos" placeholder="0"
                 oninput="validity.valid||(value='');"
-                value="0" min="0" name="ongkos"
-                id="ongkos" class="px-3 py-3 relative input input-bordered w-full pl-12" required> 
+                min="0" name="ongkos" id="ongkos" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
             </div>
 
             @if(flashMessages.has('errors.ongkos'))
-              <p class="text-error">{{ flashMessages.get('errors.ongkos') }}</p>
+            <p class="text-error">{{ flashMessages.get('errors.ongkos') }}</p>
             @endif
           </div>
 
+
+          <div class="text-secondary italic ">
+            Pastikan anda mengisi seluruh masukan bertanda bintang (*)
+          </div>
         </div>
+
         <div class="mt-8 flex space-x-4 max-w-xs">
           <div class="flex-1">
-            <button type="submit" class="btn btn-primary btn-block text-white">Simpan</button>
+            <button type="button" id="submitKerusakan" class="btn btn-primary btn-block text-white">Simpan</button>
           </div>
           <div class="flex-1">
             <a href="/app/barang/model" class="btn btn-secondary btn-block text-white">Batal</a>
           </div>
         </div>
-      </form>
 
-    </div>
+      </div>
+    </form>
 
   </div>
 </div>

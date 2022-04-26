@@ -9,7 +9,8 @@
 @section('content')
 <div class="w-full p-8 base-page" data-pagename= "formpegawai">
   <h2 class="text-4xl font-semibold">Buat Pegawai Baru</h2>
-  <div class=" bg-white mt-8 p-4 lg:p-8 pb-40 lg:pb-40 shadow min:h-96">
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 lg:w-min">
+    @include('partials/wadah-alert')
 
     <form id="pegawaiBaru" action="/app/pegawai" method="POST">
       {{ csrfField() }}
@@ -214,13 +215,13 @@
               @endif
             </div>
 
-            <div x-data="{data: banding(moment())}" class="form-control">
+            <div x-data class="form-control">
               <label for="tanggalAwalMasuk" class="flex">
                 <span class="flex-1">Tanggal Awal Masuk<span class="text-error"> *</span></span>
-                <span x-cloak x-text="data" class="flex-none text-primary"></span>
+                <span x-cloak class="flex-none text-primary"></span>
               </label>
-              <input type="date" x-on:change="data = banding($el.value)" id="tanggalAwalMasuk"
-                name="tanggalAwalMasuk" class="input input-bordered" :value="moment().format('yyyy-MM-DD')">
+              <input type="date" id="tanggalAwalMasuk"
+                name="tanggalAwalMasuk" class="input input-bordered">
 
               @if(flashMessages.has('errors.tanggalAwalMasuk'))
                 <p class="text-error">{{ flashMessages.get('errors.tanggalAwalMasuk') }}</p>

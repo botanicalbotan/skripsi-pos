@@ -4,6 +4,7 @@ import Database from '@ioc:Adonis/Lucid/Database'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Model from 'App/Models/barang/Model'
 import { DateTime } from 'luxon'
+import Drive from '@ioc:Adonis/Core/Drive'
 
 export default class ModelsController {
 
@@ -31,11 +32,14 @@ export default class ModelsController {
     const opsiOrder = [
       'models.nama',
       'bentuks.bentuk',
+      'models.deskripsi'
     ]
     const page = request.input('page', 1)
     const order = request.input('ob', 0)
-    const cari = request.input('cari', '')
+    const arahOrder = request.input('aob', 0)
     const sanitizedOrder = order < opsiOrder.length && order >= 0 && order? order : 0
+    const sanitizedArahOrder = arahOrder == 1? 1:0
+    const cari = request.input('cari', '')
     const limit = 10
 
     const models = await Database.from('models')
@@ -50,19 +54,20 @@ export default class ModelsController {
       .if(cari !== '', (query) => {
         query.where('models.nama', 'like', `%${cari}%`)
       })
-      .orderBy(opsiOrder[sanitizedOrder], 'asc')
+      .orderBy(opsiOrder[sanitizedOrder], ((sanitizedArahOrder == 1)? 'desc': 'asc'))
       .orderBy('models.nama')
       .paginate(page, limit)
 
     models.baseUrl('/app/barang/model')
 
-    models.queryString({ ob: sanitizedOrder })
-    if (cari !== '') {
-      models.queryString({ ob: sanitizedOrder, cari: cari })
+    let qsParam = {
+      ob: sanitizedOrder,
+      aob: sanitizedArahOrder
     }
 
-    // kalau mau mulai dari sini bisa dibikin fungsi sendiri
-    // input bisa pagination object + panjang page yang mau di display
+    if (cari !== '') qsParam['cari'] = cari
+    models.queryString(qsParam)
+
     let firstPage =
       models.currentPage - 2 > 0
         ? models.currentPage - 2
@@ -85,7 +90,7 @@ export default class ModelsController {
         firstPage -= 4 - (lastPage - firstPage)
       }
     }
-    // sampe sini
+
     const tempLastData = 10 + (models.currentPage - 1) * limit
 
     const tambahan = {
@@ -104,7 +109,7 @@ export default class ModelsController {
     return view.render('barang/model/form-model')
   }
 
-  public async store ({ request, response }: HttpContextContract) {
+  public async store ({ request, response, session }: HttpContextContract) {
     const newModelsSchema = schema.create({
       nama: schema.string({ trim: true }, [rules.maxLength(40)]),
       bentuk: schema.enum([
@@ -125,13 +130,20 @@ export default class ModelsController {
       const bentuk = await Bentuk.findByOrFail('bentuk', validrequest.bentuk)
       const prepareNama = (!validrequest.nama.includes(bentuk.bentuk))? bentuk.bentuk + ' ' + validrequest.nama : validrequest.nama
 
-      const modelbaru = await bentuk.related('models').create({
+      let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
+
+      await bentuk.related('models').create({
         nama: await this.kapitalKalimat(prepareNama),
         deskripsi: await this.kapitalHurufPertama(validrequest.deskripsi),
+        penggunaId: placeholderPengguna
       })
+
+      session.flash('alertSukses', 'Model baru berhasil disimpan!')
 
       return response.redirect().toPath('/app/barang/model/')
     } catch (error) {
+      console.error(error)
+      session.flash('alertError', 'Ada masalah saat membuat model baru. Silahkan coba lagi setelah beberapa saat.')
       return response.redirect().back()
     }
   }
@@ -140,8 +152,17 @@ export default class ModelsController {
     try {
       const model = await Model.findOrFail(params.id)
       await model.load('bentuk')
+      await model.load('pengguna', (query)=>{
+        query.preload('jabatan')
+      })
 
-      return view.render('barang/model/view-model', { model })
+      const urlPencatat = (model.pengguna.foto)? await Drive.getUrl('profilePict/' + model.pengguna.foto) : ''
+
+      const tambahan = {
+        urlFotoPencatat: urlPencatat
+      }
+
+      return view.render('barang/model/view-model', { model, tambahan })
     } catch (error) {
       return response.redirect().toPath('/app/barang/model/')
     }
@@ -160,7 +181,7 @@ export default class ModelsController {
     }
   }
 
-  public async update ({ request, response, params }: HttpContextContract) {
+  public async update ({ request, response, params, session }: HttpContextContract) {
     const updateModelsSchema = schema.create({
       nama: schema.string({ trim: true }, [rules.maxLength(40)]),
       bentuk: schema.enum([
@@ -189,13 +210,16 @@ export default class ModelsController {
       model.bentukId = bentuk.id
       model.save()
 
+      session.flash('alertSukses', 'Data model berhasil diubah!')
+
       return response.redirect().toPath('/app/barang/model/' + model.id)
     } catch (error) {
+      session.flash('alertError', 'Ada masalah saat mengubah data model. Silahkan coba lagi setelah beberapa saat.')
       return response.redirect().back()
     }
   }
 
-  public async destroy ({params, response}: HttpContextContract) {
+  public async destroy ({params, response, session}: HttpContextContract) {
     try {
       const model = await Model.findOrFail(params.id)
       if(model.apakahPlaceholder) throw 'Gaboleh diedit'
@@ -203,8 +227,11 @@ export default class ModelsController {
       model.deletedAt = DateTime.now()
       model.save()
 
+      session.flash('alertSukses', 'Model "'+ model.nama +'" berhasil dihapus!')
+
       return response.redirect().toPath('/app/barang/model/')
     } catch (error) {
+      session.flash('alertError', 'Ada masalah saat menghapus data model. Silahkan coba lagi setelah beberapa saat.')
       return response.redirect().back()
     }
   }

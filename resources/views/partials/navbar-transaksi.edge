@@ -7,9 +7,9 @@
       </svg>
     </label>
   </div>
-  <div class="flex-1" x-data="{ data:moment().format('dddd ['+pasaranBerformat()+'], DD MMMM YYYY') }">
+  <div class="flex-1">
     {{--  Ntar dibikin live, pake window.setinterval 1 detik. Sambil tanyain mending pake jam apa ngga  --}}
-    <span class="text-lg hidden lg:flex lg:ml-4" x-text="data">
+    <span class="text-lg hidden lg:flex lg:ml-4" id="tanggalSekarang">
       Memuat...
     </span>
     <span class="text-lg font-bold font-libre-baskerville lg:ml-4 lg:hidden">

@@ -19,7 +19,11 @@ module.exports = {
       'input-success',
       'text-success',
       'input-error',
-      'text-error'
+      'text-error',
+      'animate-reverse-spin',
+      'select-error',
+      'select-primary',
+      'w-16'
     ]
   },
   // purge: {
@@ -57,6 +61,19 @@ module.exports = {
         // pallete 2
         'custom-brink-pink': "$ff6384",
         'custom-california-blue': "#36a2eb"
+      },
+      scale: {
+        flip: '-1',
+      },
+      animation: {
+        'reverse-spin': 'reverse-spin 1s linear infinite'
+      },
+      keyframes: {
+        'reverse-spin': {
+          from: {
+            transform: 'rotate(360deg)'
+          },
+        }
       }
     },
   },

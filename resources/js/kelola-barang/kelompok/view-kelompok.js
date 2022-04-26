@@ -24,7 +24,7 @@ $(function () {
     const wadahLoadingStatistik = document.getElementById('wadahLoadingStatistik')
     const wadahSebaranData = document.getElementById('sebaranData');
 
-    $.get("/app/barang/cumaData/peringkatKelompok/" + ($('.base-page').data('idk') || 'kosong'), {},
+    $.get("/app/cumaData/peringkatKelompok/" + ($('.base-page').data('idk') || 'kosong'), {},
         function (data, textStatus, jqXHR) {
             // kalau mau ini bisa dibikin promise, mulai dari getnya. trus bisa dikasi preventif kalau error ngapain
             if (data.peringkatTotal) {
@@ -69,7 +69,7 @@ $(function () {
     let wadahChart = undefined
 
     function loadStatistik(mode = 0) {
-        $.get("/app/barang/cumaData/sebaranData/" + ($('.base-page').data('idk') || 'kosong'), { mode: mode },
+        $.get("/app/cumaData/sebaranData/" + ($('.base-page').data('idk') || 'kosong'), { mode: mode },
             function (data, textStatus, jqXHR) {
                 let labels = []
                 let datas = []
@@ -152,12 +152,12 @@ let printAturStatistikHTML = function () {
 
                 <div class="form-control">
                     <select id="swal-range" class="select select-bordered w-full max-w-md swal">
-                    <option value="0">Penjualan minggu ini</option> 
-                    <option value="1">Penjualan bulan ini</option> 
+                    <option value="0">Penjualan minggu ini</option>
+                    <option value="1">Penjualan bulan ini</option>
                     <option value="2">Penjualan tahun ini</option>
                     </select>
                 </div>
- 
+
             </div>
         `
     return html

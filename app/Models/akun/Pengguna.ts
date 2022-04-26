@@ -18,7 +18,12 @@ import PenambahanStok from 'App/Models/barang/PenambahanStok'
 import Gadai from 'App/Models/transaksi/Gadai'
 import Pembelian from 'App/Models/transaksi/Pembelian'
 import Penjualan from 'App/Models/transaksi/Penjualan'
-import PenggajianPegawai from './PenggajianPegawai'
+import PenggajianPegawai from 'App/Models/akun/PenggajianPegawai'
+import Notifikasi from 'App/Models/sistem/Notifikasi'
+import KodeProduksi from 'App/Models/barang/KodeProduksi'
+import Kelompok from 'App/Models/barang/Kelompok'
+import Kerusakan from 'App/Models/barang/Kerusakan'
+import Model from 'App/Models/barang/Model'
 
 type PenggunaQuery = ModelQueryBuilderContract<typeof Pengguna>
 
@@ -98,14 +103,19 @@ export default class Pengguna extends BaseModel {
   public kas: HasMany<typeof Ka>
 
   @hasMany(() => PenggajianPegawai, {
-    foreignKey: 'penggunaId'
+    foreignKey: 'pencatatGajianId',
+    localKey: 'id'
   })
-  public penggajianPegawais: HasMany<typeof PenggajianPegawai>
+  public pencatatGajians: HasMany<typeof PenggajianPegawai>
 
   @hasMany(() => PenggajianPegawai, {
-    foreignKey: 'penerimaGajiId'
+    foreignKey: 'penerimaGajiId',
+    localKey: 'id'
   })
   public penerimaGajis: HasMany<typeof PenggajianPegawai>
+
+  @hasMany(() => Notifikasi)
+  public notifikasis: HasMany<typeof Notifikasi>
 
   @hasMany(() => KoreksiSaldo)
   public koreksiSaldos: HasMany<typeof KoreksiSaldo>
@@ -119,9 +129,23 @@ export default class Pengguna extends BaseModel {
   @hasMany(() => Pembelian)
   public pembelians: HasMany<typeof Pembelian>
 
+  @hasMany(() => KodeProduksi)
+  public kodeProduksis: HasMany<typeof KodeProduksi>
+
+  @hasMany(() => Kelompok)
+  public kelompoks: HasMany<typeof Kelompok>
+
+  @hasMany(() => Kerusakan)
+  public kerusakans: HasMany<typeof Kerusakan>
+
+  @hasMany(() => Model)
+  public models: HasMany<typeof Model>
+
   @hasMany(() => Penjualan)
   public penjualans: HasMany<typeof Penjualan>
 
+
+  // ini decoratorss
   @beforeFetch()
   @beforeFind()
   public static withoutSoftDeletes(query: PenggunaQuery) {

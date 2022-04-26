@@ -28,29 +28,10 @@ export default class Kadar extends BaseModel {
   public toleransiPotonganTukarTambah: number
 
   @column()
-  public persentaseMalUripan: number
-
-  @column()
-  public ongkosMalRosokPerGram: number
-
-  @column()
   public hargaNota: number
 
-  // mulai dari sini
-
   @column()
-  public hargaPerGramNormal: number
-
-  @column()
-  public hargaPerGramBaru: number
-
-  @column()
-  public potonganNormal: number
-
-  @column()
-  public potonganBaru: number
-
-  // sampe sini ntar dihapus kalo dah stabil
+  public warnaNota: string
 
 
   @column.dateTime({ autoCreate: true, serializeAs: null })
@@ -65,7 +46,7 @@ export default class Kadar extends BaseModel {
   public kelompoks: HasMany<typeof Kelompok>
 
   @hasMany(() => KodeProduksi)
-  public kodeProduksi: HasMany<typeof KodeProduksi>
+  public kodeProduksis: HasMany<typeof KodeProduksi>
 
   @hasManyThrough([
     () => Penjualan,

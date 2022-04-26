@@ -1,0 +1,123 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="edit">
+  <h2 class="text-4xl font-semibold">Ubah Data Pembukuan Kas</h2>
+  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mengubah data pembukuan kas keluar dan kas masuk pada sistem.
+  </h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+
+    @if(flashMessages.has('errorServerThingy'))
+    <div class="alert alert-error mb-8" x-data x-ref="alertError">
+      <div class="flex-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+        </svg>
+        <label>{{ flashMessages.get('errorServerThingy') }}</label>
+      </div>
+      <div class="flex-none">
+        <button class="btn btn-ghost btn-square btn-sm opacity-50 hover:opacity-100 hover:bg-transparent"
+          @click="$refs.alertError.remove()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    @endif
+
+    <form action="/app/kas" method="POST" id="formKas">
+      {{csrfField()}}
+
+      <div class="w-full sm:max-w-md space-y-10">
+
+        {{--  Bagian Data Kas  --}}
+        <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Data Kas</h1>
+          </div>
+
+          <div class="form-control" x-data="{ radio: {{ (kas.apakahKasKeluar)? 2:1 }} }">
+            <label for="">Tipe Pembukuan<span class="text-error"> *</span></label>
+            <div class="flex space-x-4 mt-1 w-full sm:w-96">
+              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                :class="(radio == 1)? 'bg-success bg-opacity-10 border-success': 'bg-white border-secondary'">
+                <input type="radio" name="tipeKas" {{ (!kas.apakahKasKeluar)? 'checked':'' }} class="radio radio-success hidden"
+                  value="masuk" @click="radio = 1; $refs.nominal.value = 0">
+                <span class="label-text text-base" :class="(radio == 1)? 'text-success': 'text-secondary'">Kas
+                  Masuk</span>
+              </label>
+              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                :class="(radio == 2)? 'bg-error bg-opacity-10 border-error': 'bg-white border-secondary'">
+                <input type="radio" name="tipeKas" {{ (kas.apakahKasKeluar)? 'checked':'' }} class="radio radio-error hidden" value="keluar"
+                  @click="radio = 2; $refs.nominal.value = 0">
+                <span class="label-text text-base" :class="(radio == 2)? 'text-error': 'text-secondary'">Kas
+                  Keluar</span>
+              </label>
+            </div>
+            @if(flashMessages.has('errors.tipe'))
+            <p class="text-error">{{ flashMessages.get('errors.tipe') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control" x-data>
+            <label for="nominal">Nominal<span class="text-error"> *</span></label>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                Rp.
+              </span>
+              <input type="number" oninput="validity.valid||(value='');" placeholder="0" min="0" name="nominal"
+                id="nominal" class="px-3 py-3 relative input input-bordered w-full pl-12" required value="{{ Math.abs(kas.nominal) }}">
+            </div>
+            @if(flashMessages.has('errors.nominal'))
+            <p class="text-error">{{ flashMessages.get('errors.nominal') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control">
+            <label for="perihal">Perihal<span class="text-error"> *</span></label>
+            <textarea name="perihal" id="perihal" class="textarea textarea-bordered h-24"
+              placeholder="Contoh: Belanja Pasar" required maxlength="100">{{ kas.perihal }}</textarea>
+            @if(flashMessages.has('errors.perihal'))
+            <p class="text-error">{{ flashMessages.get('errors.perihal') }}</p>
+            @endif
+          </div>
+
+
+        </div>
+
+
+        <div class="text-secondary italic ">
+          Pastikan anda mengisi seluruh masukan bertanda bintang (*)
+        </div>
+
+        <div class="mt-8 flex space-x-4 max-w-xs">
+          <div class="flex-1">
+            <button type="button" id="editKas" class="btn btn-primary btn-block text-white">Simpan</button>
+          </div>
+          <div class="flex-1">
+            <a href="/app/kas" class="btn btn-secondary btn-block text-white">Batal</a>
+          </div>
+        </div>
+
+
+      </div>
+    </form>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/all-kas.js')}}"></script>
+
+@endsection

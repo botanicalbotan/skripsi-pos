@@ -1,15 +1,24 @@
 import { DateTime } from 'luxon'
-import { 
-  BaseModel, 
+import {
+  BaseModel,
   column,
   BelongsTo,
-  belongsTo
+  belongsTo,
+  hasMany,
+  HasMany,
+  beforeFetch,
+  beforeFind,
+  ModelQueryBuilderContract
 } from '@ioc:Adonis/Lucid/Orm'
 import RentangUsia from 'App/Models/transaksi/RentangUsia'
 import Kelompok from 'App/Models/barang/Kelompok'
 import Model from 'App/Models/barang/Model'
 import Pengguna from 'App/Models/akun/Pengguna'
 import KodeProduksi from 'App/Models/barang/KodeProduksi'
+import ItemJual from 'App/Models/transaksi/ItemJual'
+
+type PenjualanQuery = ModelQueryBuilderContract<typeof Penjualan>
+
 
 export default class Penjualan extends BaseModel {
   @column({ isPrimary: true })
@@ -19,29 +28,21 @@ export default class Penjualan extends BaseModel {
   @column()
   public kodeTransaksi: string
 
-  // @column()
-  // public kodePerhiasan: string
+  @column()
+  public namaBarang: string
 
   @column()
-  public apakahPerhiasanBaru: boolean
-
-  @column()
-  public keterangan: string
-
-  @column()
-  public beratSebenarnya: number
+  public beratBarang: number
 
   @column()
   public kondisi: string
 
   @column()
-  public fotoBarang: string | null
+  public fotoBarang: string
 
-  // @column()
-  // public potonganDeskripsi: string
+  @column()
+  public apakahStokBaru: boolean
 
-  // @column()
-  // public potonganNominal: number
 
   @column()
   public potongan: number
@@ -50,13 +51,30 @@ export default class Penjualan extends BaseModel {
   public apakahPotonganPersen: boolean
 
   @column()
+  public hargaJualPerGram: number
+
+  @column()
   public hargaJualAkhir: number
+
+
 
   @column()
   public namaPemilik: string | null
 
   @column()
   public genderPemilik: string | null
+
+
+
+  @column.dateTime()
+  public deletedAt: DateTime | null
+
+  @column.dateTime()
+  public dibeliAt: DateTime | null
+
+  @column.dateTime()
+  public maxPrintAt: DateTime
+
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
@@ -95,4 +113,15 @@ export default class Penjualan extends BaseModel {
 
   @belongsTo(() => Pengguna)
   public pengguna: BelongsTo<typeof Pengguna>
+
+  @hasMany(() => ItemJual)
+  public itemJuals: HasMany<typeof ItemJual>
+
+
+  // disini decorators
+  @beforeFetch()
+  @beforeFind()
+  public static withoutSoftDeletes(query: PenjualanQuery){
+    query.whereNull('deleted_at')
+  }
 }

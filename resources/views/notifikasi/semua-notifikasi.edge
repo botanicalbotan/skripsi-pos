@@ -1,0 +1,105 @@
+@layout('layouts/master')
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="detail">
+  <h2 class="text-4xl font-semibold">Notifikasi</h2>
+  <h4 class="text-xl text-secondary">Daftar seluruh notifikasi anda</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+
+    <div class="space-x-2">
+      <button id="btSemua" class="btn {{ (tambahan.filterShow === 0)? 'btn-primary text-white': 'btn-outline btn-secondary' }}">Semua Notifikasi</button>
+      <button id="btBelumDibaca" class="btn {{ (tambahan.filterShow === 1)? 'btn-primary text-white': 'btn-outline btn-secondary' }}">Belum Dibaca</button>
+    </div>
+
+    {{--  informasi  --}}
+    <div class="my-8 min-h-60 flex lg:space-x-8 space-y-6 lg:space-y-0 flex-col lg:flex-row">
+      <div class="w-full lg:w-4/5">
+
+        <div class="mb-8 min-h-60 rounded pb-4">
+          <div class="overflow-x-auto">
+            <table class="table w-full">
+              <tbody>
+
+                @each(notif in notifikasis)
+                <tr class="hover border-b-2 last:border-0">
+                  <td class="text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                    </svg>
+                  </td>
+                  <td class="w-full">
+                    <a href="/app/notifikasi/{{ notif.id }}" class="block font-semibold">{{ notif.isiNotif }}</a>
+                    <div class="block text-secondary">{{ fungsi.waktuDiff(notif.createdAt.toISOString()) }}</div>
+                  </td>
+                  <td>
+                    @if(!notif.diklikAt)
+                    <div class="w-2 h-2 rounded-full bg-primary"></div>
+                    @endif
+                  </td>
+                </tr>
+                @endeach
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        @if(notifikasis.hasPages)
+
+        {{--  pagination bawah tabel  --}}
+        <div class="flex justify-center">
+          <div class="btn-group">
+            <a class="btn btn-sm btn-link" href="{{ notifikasis.getUrl(notifikasis.firstPage) }}">
+              <span class="md:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+              <span class="hidden md:inline">Pertama</span>
+            </a>
+
+            {{--  mulai print pagination page  --}}
+            @each(anchor in notifikasis.getUrlsForRange(tambahan.firstPage, tambahan.lastPage))
+
+            @if(anchor.isActive)
+            <a href="{{ anchor.url }}" class="btn btn-active true-text-white btn-sm">
+              {{ anchor.page }}
+            </a>
+            @else
+            <a href="{{ anchor.url }}" class="btn btn-sm btn-link">
+              {{ anchor.page }}
+            </a>
+            @endif
+
+            @endeach
+
+            <a class="btn btn-sm btn-link" href="{{ notifikasis.getUrl(notifikasis.lastPage) }}">
+              <span class="md:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd" />
+                  <path fill-rule="evenodd"
+                    d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+              <span class="hidden md:inline">Terakhir</span>
+            </a>
+          </div>
+        </div>
+
+        @endif
+      </div>
+    </div>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/all-notifikasi.js')}}"></script>
+@endsection

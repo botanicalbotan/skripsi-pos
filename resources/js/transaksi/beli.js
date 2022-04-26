@@ -25,7 +25,7 @@ $(function () {
   let beliModel = document.getElementById('beliModel')
   let wadahData = document.getElementById('wadah-data')
 
-  $.get("/app/barang/cumaData/kadarBentuk", {},
+  $.get("/app/cumaData/kadarBentuk", {},
     function (data, textStatus, jqXHR) {
       data.bentuk.forEach(element => {
         let opt = document.createElement('option')
@@ -48,7 +48,7 @@ $(function () {
 
   beliBentuk.addEventListener('change', (e) => {
     if (beliBentuk.value && beliBentuk.value != 'kosong') {
-      $.get("/app/barang/cumaData/modelByBentuk", { bentukId: beliBentuk.value },
+      $.get("/app/cumaData/modelByBentuk", { bentukId: beliBentuk.value },
         function (data, textStatus, jqXHR) {
           global.removeElementsByClass('opt-model')
           let opt = document.createElement('option')

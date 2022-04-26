@@ -1,7 +1,7 @@
-import { DateTime } from 'luxon'
+// import { DateTime } from 'luxon'
 import Pengguna from 'App/Models/akun/Pengguna'
-import { 
-  BaseModel, 
+import {
+  BaseModel,
   column,
   hasMany,
   HasMany
@@ -14,13 +14,13 @@ export default class Jabatan extends BaseModel {
   @column()
   public nama: string
 
-  @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+  // @column.dateTime({ autoCreate: true })
+  // public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  // @column.dateTime({ autoCreate: true, autoUpdate: true })
+  // public updatedAt: DateTime
 
-  
+
   // FK dan relasi
   @hasMany(() => Pengguna, {
     localKey: 'id',

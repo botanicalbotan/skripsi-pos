@@ -7,17 +7,20 @@
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="edit">
   <h2 class="text-4xl font-semibold">Ubah Data Kerusakan Perhiasan</h2>
-  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mengubah data kerusakan perhiasan yang tersimpan dalam sistem.</h4>
+  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mengubah data kerusakan perhiasan yang tersimpan dalam
+    sistem.</h4>
 
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
-    <div class="text-secondary italic mb-8">
-      Pastikan anda mengisi seluruh masukan yang bertanda bintang (*)
-    </div>
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 lg:w-min">
+    @include('partials/wadah-alert')
 
-    <div class="w-full sm:max-w-md">
-      <form id="formRusak" action="/app/barang/kerusakan/{{ kerusakan.id }}" method="POST">
-        {{csrfField()}}
+    <form id="formKerusakan" action="/app/barang/kerusakan/{{ kerusakan.id }}" method="POST">
+      {{csrfField()}}
+
+      <div class="w-full sm:max-w-md">
         <div class="space-y-4" x-data="{ radio: {{ (kerusakan.apakahBisaDiperbaiki)? 1:2 }} }">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Data Kerusakan</h1>
+          </div>
 
           <div class="form-control">
             <label for="nama">
@@ -26,18 +29,18 @@
             </label>
             <input type="text" id="nama" name="nama" maxlength="50" class="input input-bordered"
               placeholder="Contoh: Hilang batu permata" required value="{{ kerusakan.nama }}">
-              
+
             @if(flashMessages.has('errors.nama'))
-              <p class="text-error">{{ flashMessages.get('errors.nama') }}</p>
+            <p class="text-error">{{ flashMessages.get('errors.nama') }}</p>
             @endif
           </div>
 
           <div class="form-control">
-            <label for="bentuk">
+            <label id="bentuk" for="bentuk">
               Bentuk Perhiasan
               <span class="text-error"> *</span>
             </label>
-            <select name="bentuk" class="select select-bordered w-full max-w-xs">
+            <select name="bentuk" class="select select-primary bg-primary bg-opacity-10 w-full max-w-xs">
               <option value="Kalung" {{ (kerusakan.bentuk.bentuk === 'Kalung')? 'selected':'' }}>Kalung</option>
               <option value="Gelang" {{ (kerusakan.bentuk.bentuk === 'Gelang')? 'selected':'' }}>Gelang</option>
               <option value="Cincin" {{ (kerusakan.bentuk.bentuk === 'Cincin')? 'selected':'' }}>Cincin</option>
@@ -46,9 +49,9 @@
               <option value="Tindik" {{ (kerusakan.bentuk.bentuk === 'Tindik')? 'selected':'' }}>Tindik</option>
               <option value="Lainnya" {{ (kerusakan.bentuk.bentuk === 'Lainnya')? 'selected':'' }}>Lainnya</option>
             </select>
-            
+
             @if(flashMessages.has('errors.bentuk'))
-                <p class="text-error">{{ flashMessages.get('errors.bentuk') }}</p>
+            <p class="text-error">{{ flashMessages.get('errors.bentuk') }}</p>
             @endif
           </div>
 
@@ -57,20 +60,20 @@
             <div class="flex space-x-4 mt-1 w-full sm:w-96">
               <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                 :class="(radio == 1)? 'bg-warning bg-opacity-10 border-warning': 'bg-white border-secondary'">
-                <input type="radio" name="perbaikan" {{ (kerusakan.apakahBisaDiperbaiki)? 'checked':'' }} class="radio radio-warning hidden"
-                  value="bisa" @click="radio = 1; $refs.ongkos.value = 0">
+                <input type="radio" name="perbaikan" {{ (kerusakan.apakahBisaDiperbaiki)? 'checked':'' }}
+                  class="radio radio-warning hidden" value="bisa" @click="radio = 1; $refs.ongkos.value = ''">
                 <span class="label-text text-base" :class="(radio == 1)? 'text-warning': 'text-secondary'">Bisa</span>
               </label>
               <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                 :class="(radio == 2)? 'bg-error bg-opacity-10 border-error': 'bg-white border-secondary'">
-                <input type="radio" name="perbaikan" {{ (kerusakan.apakahBisaDiperbaiki)? '':'checked' }} class="radio radio-error hidden" value="tidak"
-                  @click="radio = 2; $refs.ongkos.value = 0">
+                <input type="radio" name="perbaikan" {{ (kerusakan.apakahBisaDiperbaiki)? '':'checked' }}
+                  class="radio radio-error hidden" value="tidak" @click="radio = 2; $refs.ongkos.value = 0">
                 <span class="label-text text-base" :class="(radio == 2)? 'text-error': 'text-secondary'">Tidak</span>
               </label>
             </div>
 
             @if(flashMessages.has('errors.perbaikan'))
-                <p class="text-error">{{ flashMessages.get('errors.perbaikan') }}</p>
+            <p class="text-error">{{ flashMessages.get('errors.perbaikan') }}</p>
             @endif
           </div>
 
@@ -81,31 +84,34 @@
                 class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
                 Rp.
               </span>
-              <input type="number" x-ref="ongkos" 
-                @focus="$el.value=($el.value == 0)? '':$el.value"
-                @focusout="$el.value = ($el.value =='')? 0:$el.value"
+              <input type="number" x-ref="ongkos" placeholder="0"
                 oninput="validity.valid||(value='');"
-                value="{{ kerusakan.ongkosNominal }}" min="0" name="ongkos"
-                id="ongkos" class="px-3 py-3 relative input input-bordered w-full pl-12" required> 
+                value="{{ kerusakan.ongkosNominal }}" min="0" name="ongkos" id="ongkos"
+                class="px-3 py-3 relative input input-bordered w-full pl-12" required>
             </div>
 
             @if(flashMessages.has('errors.ongkos'))
-              <p class="text-error">{{ flashMessages.get('errors.ongkos') }}</p>
+            <p class="text-error">{{ flashMessages.get('errors.ongkos') }}</p>
             @endif
           </div>
 
+          <div class="text-secondary italic ">
+            Pastikan anda mengisi seluruh masukan bertanda bintang (*)
+          </div>
         </div>
+
         <div class="mt-8 flex space-x-4 max-w-xs">
           <div class="flex-1">
-            <a id="editRusak" class="btn btn-primary btn-block text-white">Simpan</a>
+            <button type="button" id="editKerusakan" class="btn btn-primary btn-block text-white">Simpan</button>
           </div>
           <div class="flex-1">
             <a href="/app/barang/kerusakan/{{ kerusakan.id }}" class="btn btn-secondary btn-block text-white">Batal</a>
           </div>
         </div>
-      </form>
 
-    </div>
+      </div>
+
+    </form>
 
   </div>
 </div>

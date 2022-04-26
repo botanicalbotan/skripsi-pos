@@ -5,31 +5,41 @@ export default class Penjualans extends BaseSchema {
 
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
+      // AUTO GENERATED
       table.increments('id').primary()
-      table.integer('kelompok_id').unsigned().references('kelompoks.id').notNullable().onDelete('CASCADE')
-      table.string('kode_transaksi', 30).notNullable()
-      // table.string('kode_perhiasan', 10)
-      table.integer('kode_produksi_id').unsigned().references('kode_produksis.id').notNullable().onDelete('CASCADE')
-      table.integer('model_id').unsigned().references('models.id').notNullable().onDelete('CASCADE')
-      table.boolean('apakah_perhiasan_baru').notNullable().defaultTo(false)
-      table.string('keterangan', 100)
-      table.float('berat_sebenarnya').notNullable()
+      table.string('kode_transaksi', 30).notNullable().unique()
+      table.string('nama_barang', 100).notNullable()
+
+      // FK PENTING
+      table.integer('kelompok_id').unsigned().references('kelompoks.id').notNullable()
+      table.integer('kode_produksi_id').unsigned().references('kode_produksis.id').notNullable()
+      table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
+      table.integer('model_id').unsigned().references('models.id').notNullable()
+
+      // KOMPONEN FORM
+      table.float('berat_barang').notNullable()
       table.string('kondisi', 100)
       table.string('foto_barang')
-      // table.string('potongan_deskripsi', 30).notNullable()
-      // table.integer('potongan_nominal').notNullable()
+      table.boolean('apakah_stok_baru').notNullable().defaultTo(false)
+
+      // TRANSACTIONAL, gaboleh keiket sama current model
       table.integer('potongan').notNullable()
-      table.boolean('apakah_potongan_persen')
+      table.boolean('apakah_potongan_persen').notNullable()
+      table.integer('harga_jual_per_gram').notNullable()
       table.integer('harga_jual_akhir').notNullable()
+
+      // OPTIONAL BELOM DIBUAT
       table.string('nama_pemilik', 50)
       table.enum('gender_pemilik', [
         'L',
         'P'
       ]).nullable()
       table.integer('rentang_usia_id').unsigned().references('rentang_usias.id')
-      table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable().onDelete('CASCADE')
-      table.dateTime('dibeli_at').nullable()
-      table.dateTime('deleted_at').nullable()
+
+      // CONSTRAIN
+      table.dateTime('dibeli_at').nullable() // kalo udah dibeli gabisa dibeli lagi
+      table.dateTime('deleted_at').nullable() // kalo udah dihapus gabisa diapa2in
+      table.dateTime('max_print_at').notNullable() // kalo udah dihapus gabisa diapa2in
 
 
       /**

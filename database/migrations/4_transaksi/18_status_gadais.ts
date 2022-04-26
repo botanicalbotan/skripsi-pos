@@ -11,7 +11,7 @@ export default class StatusGadais extends BaseSchema {
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
-       table.timestamps(true, true)
+      //  table.timestamps(true, true)
     })
   }
 

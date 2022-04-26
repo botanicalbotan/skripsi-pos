@@ -8,20 +8,15 @@
   <meta name="csrf-token" content="{{ csrfToken }}">
   <title>Skripsi POS: Aplikasi yang kamu kerjakan untuk skripsi</title>
   <link rel="stylesheet" type="text/css" href="{{ asset('assets/app.css') }}">
-  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script defer src="{{ asset('assets/alpine.js') }}"></script>
+
+  {{--  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>  --}}
   {{--  <script defer src="https://unpkg.com/alpinejs@3.4.2/dist/cdn.min.js"></script>  --}}
-  {{--  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@5.3.6/dist/simplebar.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/simplebar@5.3.6/dist/simplebar.min.js"></script>  --}}
-  
-  
+
   @!section('more-style')
 </head>
 
 <body>
-  {{--  @include('partials/dashboard-sidebar')  --}}
-  {{--  <header class="w-full">
-    @include('partials/navbar-master')
-  </header>  --}}
   <div class="shadow bg-base-300 drawer drawer-mobile h-screen">
     <input id="buka-drawer" type="checkbox" class="drawer-toggle">
 
@@ -90,11 +85,11 @@
                 Penjualan</a>
             </li>
             <li>
-              <a href="/app/pembelian">
+              <a href="/app/transaksi/pembelian">
                 Pembelian</a>
             </li>
             <li>
-              <a href="/app/gadai">Gadai</a>
+              <a href="/app/transaksi/gadai">Gadai</a>
             </li>
           </ul>
         </li>
@@ -146,13 +141,18 @@
             Kelola Barang</a>
         </li>
         <li>
-          <a href="/app/pegawai">
+
+
+          <a href="/app/pegawai" class="relative">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-            Pegawai</a>
+            Pegawai
+
+            <div id="indikatorGajiPegawai" class="hidden badge bg-error border-error text-white absolute right-4">2</div>
+          </a>
         </li>
         <li>
           <a href="/app/pengaturan">
@@ -216,7 +216,7 @@
         @include('partials/navbar-test')
         @!section('content')
     </div>  --}}
-    
+
   @!section('script')
 </body>
 

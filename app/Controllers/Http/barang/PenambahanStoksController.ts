@@ -3,6 +3,7 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import PenambahanStok from 'App/Models/barang/PenambahanStok'
 import Kelompok from 'App/Models/barang/Kelompok'
 import Database from '@ioc:Adonis/Lucid/Database'
+import Drive from '@ioc:Adonis/Core/Drive'
 
 export default class PenambahanStoksController {
 
@@ -166,7 +167,7 @@ export default class PenambahanStoksController {
 
     if (errCount > 0)
       session.flash(
-        'errorRestok',
+        'alertError',
         'Stok ' +
           (itemCount - errCount) +
           ' kelompok berhasil diperbarui, ' +
@@ -175,7 +176,7 @@ export default class PenambahanStoksController {
       )
 
     if (itemCount > 0 && errCount == 0)
-      session.flash('konfirmasiRestok', 'Stok ' + itemCount + ' kelompok berhasil diperbarui!')
+      session.flash('alertSukses', 'Stok ' + itemCount + ' kelompok berhasil diperbarui!')
 
     return response.redirect().back()
   }
@@ -186,7 +187,11 @@ export default class PenambahanStoksController {
       await penambahan.load('kelompoks', (query)=>{
         query.preload('bentuk').preload('kadar')
       })
-      await penambahan.load('pengguna')
+      await penambahan.load('pengguna', (query)=>{
+        query.preload('jabatan')
+      })
+
+      const urlPencatat = (penambahan.pengguna.foto)? await Drive.getUrl('profilePict/' + penambahan.pengguna.foto) : ''
 
       const hitungKelompok = await Database.from('penambahan_stoks')
         .join('kelompok_penambahans', 'penambahan_stoks.id', '=', 'kelompok_penambahans.penambahan_stok_id')
@@ -198,7 +203,8 @@ export default class PenambahanStoksController {
         .groupBy('penambahan_stoks.id')
 
       let tambahan = {
-        jumlahKelompok: hitungKelompok[0].jumlahKelompok
+        jumlahKelompok: hitungKelompok[0].jumlahKelompok,
+        urlFotoPencatat: urlPencatat
       }
 
 
@@ -222,7 +228,7 @@ export default class PenambahanStoksController {
     let kadar = request.input('kadar')
 
     let kelompokCari = await Database.from('kelompoks')
-      .select('id', 'berat_kelompok as beratKelompok', 'stok', 'nama')
+      .select('id', 'berat_kelompok as beratKelompok', 'stok', 'nama', 'kode_kelompok as kodeKelompok')
       .where('bentuk_id', bentuk)
       .andWhere('kadar_id', kadar)
       .andWhereNull('deleted_at')

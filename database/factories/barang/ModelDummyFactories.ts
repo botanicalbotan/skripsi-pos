@@ -21,5 +21,6 @@ export const ModelFactory = Factory.define(Model, ({ faker }) => {
     apakahPlaceholder: false,
     deskripsi: 'Model Dummy',
     bentukId: fate + 1,
+    penggunaId: 1
   }
 }).build()

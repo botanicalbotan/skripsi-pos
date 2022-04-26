@@ -7,6 +7,7 @@ import User from 'App/Models/User'
 
 export default class PenggunasController {
   public async index ({}: HttpContextContract) {
+    return 'ada keluar'
   }
 
   public async create ({}: HttpContextContract) {
@@ -38,7 +39,7 @@ export default class PenggunasController {
       .where('apakah_karyawan_aktif', true)
       .preload('user')
       .preload('jabatan')
-    
+
     return penggunaAktif
   }
 }

@@ -3,10 +3,6 @@
 // import Cropper from "cropperjs";
 import Swal from "sweetalert2";
 
-global.banding = function (tanggal) {
-  return capsFirstWord(moment(tanggal, 'YYYY-MM-DD').fromNow())
-}
-
 // doc ready
 $(function () {
   // ========================================= list ==========================================================
@@ -103,18 +99,25 @@ $(function () {
       }
     }
 
+    let indikatorGP = document.getElementById('indikatorGP')
+
+    if(global.indikatorGaji > 0){
+      indikatorGP.textContent = global.indikatorGaji
+      indikatorGP.classList.remove('hidden')
+    }
+
 
     let printAturTabelHTML = function () {
 
       const htmlAddStock = `
                   <div class="w-full px-6 space-y-6 flex flex-col text-left" >
-                    
+
                     <div class="form-control">
                         <label for="swal-ob">Urutkan Tabel Berdasarkan</label>
                         <select id="swal-ob" class="select select-bordered w-full max-w-md swal mt-2">
                             <option value="0">Nama</option>
-                            <option value="1">Jabatan</option> 
-                            <option value="2">Gender</option> 
+                            <option value="1">Jabatan</option>
+                            <option value="2">Gender</option>
                             <option value="3">Tanggal Gajian</option>
                             <option value="4">Gaji Bulanan</option>W
                             <option value="5">Status</option>
@@ -166,7 +169,7 @@ $(function () {
                       </label>
                       </div>
                   </div>
-                      
+
                 </div>
               `
       return htmlAddStock
@@ -224,7 +227,7 @@ $(function () {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
               }
             });
-  
+
             $.ajax({
               type: "PUT",
               url: location.pathname + '/status',

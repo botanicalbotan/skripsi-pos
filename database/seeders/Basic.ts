@@ -9,6 +9,7 @@ import Pengguna from 'App/Models/akun/Pengguna'
 import Pasaran from 'App/Models/sistem/Pasaran'
 import RentangUsia from 'App/Models/transaksi/RentangUsia'
 import StatusGadai from 'App/Models/transaksi/StatusGadai'
+import TipeNotif from 'App/Models/sistem/TipeNotif'
 import { DateTime, Settings } from 'luxon'
 
 export default class BasicSeeder extends BaseSeeder {
@@ -30,13 +31,13 @@ export default class BasicSeeder extends BaseSeeder {
      * Seeder ini juga dipake buat ngebikin 1 super user / pemilik, yang gabisa dibikin pake cara lain
      */
 
-    await Pengaturan.create({
+    const pengaturan = await Pengaturan.create({
       namaToko: 'Toko Anda',
       alamatToko: 'Alamat Toko Anda',
       deskripsiToko: 'Deskripsi Toko Anda',
       toleransiSusutBerat: 0,
       toleransiPersentaseTawaran: 0,
-      saldoToko: 0,
+      saldoToko: 200000000,
       hargaMal: 800000,
       defaultStokMinimalPerhiasan: 0,
       // ntar ganti jadi false kalo dah jalan
@@ -44,112 +45,6 @@ export default class BasicSeeder extends BaseSeeder {
       defaultIngatkanStokMenipis: true,
       defaultGajiKaryawan: 1000000,
     })
-
-    await Bentuk.createMany([
-      {
-        bentuk: 'Anting'
-      },
-      {
-        bentuk: 'Cincin'
-      },
-      {
-        bentuk: 'Gelang'
-      },
-      {
-        bentuk: 'Kalung'
-      },
-      {
-        bentuk: 'Liontin'
-      },
-      {
-        bentuk: 'Tindik'
-      },
-      {
-        bentuk: 'Lainnya'
-      },
-    ])
-
-    const bentuk1 = await Bentuk.findOrFail(1)
-    await bentuk1.related('models').create({
-      nama: 'Model Anting Lainnya',
-      apakahPlaceholder: true,
-      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
-    })
-    const bentuk2 = await Bentuk.findOrFail(2)
-    await bentuk2.related('models').create({
-      nama: 'Model Cincin Lainnya',
-      apakahPlaceholder: true,
-      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
-    })
-    const bentuk3 = await Bentuk.findOrFail(3)
-    await bentuk3.related('models').create({
-      nama: 'Model Gelang Lainnya',
-      apakahPlaceholder: true,
-      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
-    })
-    const bentuk4 = await Bentuk.findOrFail(4)
-    await bentuk4.related('models').create({
-      nama: 'Model Kalung Lainnya',
-      apakahPlaceholder: true,
-      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
-    })
-    const bentuk5 = await Bentuk.findOrFail(5)
-    await bentuk5.related('models').create({
-      nama: 'Model Liontin Lainnya',
-      apakahPlaceholder: true,
-      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
-    })
-    const bentuk6 = await Bentuk.findOrFail(6)
-    await bentuk6.related('models').create({
-      nama: 'Model Tindik Lainnya',
-      apakahPlaceholder: true,
-      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
-    })
-    const bentuk7 = await Bentuk.findOrFail(7)
-    await bentuk7.related('models').create({
-      nama: 'Model Lain dari Bentuk Lainnya',
-      apakahPlaceholder: true,
-      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem'
-    })
-
-    await Kadar.createMany([
-      {
-        nama: 'Tanggung',
-        deskripsi: 'Perhiasan dengan kadar kandungan emas mulai dari 35% hingga 45%',
-        hargaPerGramNormal: 400000,
-        hargaPerGramBaru: 450000,
-        potonganNormal: 12000,
-        potonganBaru: 15000,
-        apakahPotonganPersen: false,
-        persentaseMalUripan: 20,
-        ongkosMalRosokPerGram: 18,
-        hargaNota: 2000
-      },
-      {
-        nama: 'Muda',
-        deskripsi: 'Perhiasan dengan kadar kandungan emas kurang dari 30%',
-        hargaPerGramNormal: 200000,
-        hargaPerGramBaru: 250000,
-        potonganNormal: 10000,
-        potonganBaru: 12000,
-        apakahPotonganPersen: false,
-        persentaseMalUripan: 20,
-        ongkosMalRosokPerGram: 10,
-        hargaNota: 2000
-      },
-      {
-        nama: 'Tua',
-        deskripsi: 'Perhiasan dengan kadar kandungan emas lebih dari 70%',
-        hargaPerGramNormal: 700000,
-        hargaPerGramBaru: 750000,
-        potonganNormal: 8,
-        potonganBaru: 10,
-        apakahPotonganPersen: true,
-        persentaseMalUripan:32,
-        ongkosMalRosokPerGram: 12,
-        hargaNota: 10000
-      },
-    ])
 
 
     await Jabatan.createMany([
@@ -187,29 +82,140 @@ export default class BasicSeeder extends BaseSeeder {
     pengguna.lamaKerja = 0
     await pengguna.save()
 
+    await Bentuk.createMany([
+      {
+        bentuk: 'Anting',
+        kode: 'ATG'
+      },
+      {
+        bentuk: 'Cincin',
+        kode: 'CC'
+      },
+      {
+        bentuk: 'Gelang',
+        kode: 'GL'
+      },
+      {
+        bentuk: 'Kalung',
+        kode: 'KL'
+      },
+      {
+        bentuk: 'Liontin',
+        kode: 'LT'
+      },
+      {
+        bentuk: 'Tindik',
+        kode: 'TD'
+      },
+      {
+        bentuk: 'Lainnya',
+        kode: 'Lain'
+      },
+    ])
+
+    const bentuk1 = await Bentuk.findOrFail(1)
+    await bentuk1.related('models').create({
+      nama: 'Model Anting Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
+      penggunaId: pengguna.id
+    })
+    const bentuk2 = await Bentuk.findOrFail(2)
+    await bentuk2.related('models').create({
+      nama: 'Model Cincin Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
+      penggunaId: pengguna.id
+    })
+    const bentuk3 = await Bentuk.findOrFail(3)
+    await bentuk3.related('models').create({
+      nama: 'Model Gelang Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
+      penggunaId: pengguna.id
+    })
+    const bentuk4 = await Bentuk.findOrFail(4)
+    await bentuk4.related('models').create({
+      nama: 'Model Kalung Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
+      penggunaId: pengguna.id
+    })
+    const bentuk5 = await Bentuk.findOrFail(5)
+    await bentuk5.related('models').create({
+      nama: 'Model Liontin Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
+      penggunaId: pengguna.id
+    })
+    const bentuk6 = await Bentuk.findOrFail(6)
+    await bentuk6.related('models').create({
+      nama: 'Model Tindik Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
+      penggunaId: pengguna.id
+    })
+    const bentuk7 = await Bentuk.findOrFail(7)
+    await bentuk7.related('models').create({
+      nama: 'Model Lain dari Bentuk Lainnya',
+      apakahPlaceholder: true,
+      deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
+      penggunaId: pengguna.id
+    })
+
+    await Kadar.createMany([
+      {
+        nama: 'Tanggung',
+        deskripsi: 'Perhiasan dengan kadar kandungan emas mulai dari 35% hingga 45%',
+        warnaNota: 'red', // bisa nama, bisa HEX
+        apakahPotonganPersen: false,
+        toleransiPotonganTukarTambah: 3000,
+        hargaNota: 2000
+      },
+      {
+        nama: 'Muda',
+        deskripsi: 'Perhiasan dengan kadar kandungan emas kurang dari 30%',
+        warnaNota: 'green', // bisa nama, bisa HEX
+        apakahPotonganPersen: false,
+        toleransiPotonganTukarTambah: 3000,
+        hargaNota: 2000
+      },
+      {
+        nama: 'Tua',
+        deskripsi: 'Perhiasan dengan kadar kandungan emas lebih dari 70%',
+        warnaNota: 'blue', // bisa nama, bisa HEX
+        apakahPotonganPersen: true,
+        toleransiPotonganTukarTambah: 5,
+        hargaNota: 10000
+      },
+    ])
+
 
     await Pasaran.createMany([
       {
-        hari: 'Pon',
+        hari: 'pon',
         referensiTanggal: DateTime.fromISO('2021-07-01')
       },
       {
-        hari: 'Wage',
+        hari: 'wage',
         referensiTanggal: DateTime.fromISO('2021-07-02')
       },
       {
-        hari: 'Kliwon',
+        hari: 'kliwon',
         referensiTanggal: DateTime.fromISO('2021-07-03')
       },
       {
-        hari: 'Legi',
+        hari: 'legi',
         referensiTanggal: DateTime.fromISO('2021-07-04')
       },
       {
-        hari: 'Pahing',
+        hari: 'pahing',
         referensiTanggal: DateTime.fromISO('2021-07-05')
       },
     ])
+
+    let pasaranPon = await Pasaran.findByOrFail('hari', 'pon')
+    await pengaturan.related('pasarans').attach([pasaranPon.id])
 
     await RentangUsia.createMany([
       {
@@ -242,6 +248,12 @@ export default class BasicSeeder extends BaseSeeder {
     ])
 
 
-
+    // sementara disini dulu, kalo banyak baru dipisah
+    await TipeNotif.create({
+      nama: 'Penggajian',
+      kode: 'pg',
+      sintaksJudul: 'Ada {jumlah} tagihan pembayaran gaji hari ini!',
+      sintaksSubjudul: 'Klik disini untuk mereview tagihan penggajian.'
+    })
   }
 }

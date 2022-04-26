@@ -8,10 +8,12 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * max);
   }
 
-let gacha = (getRandomInt(2) !== 1)
+
 
 export const PenggunaFactory = Factory
   .define(Pengguna, ({ faker }) => {
+      let gacha = getRandomInt(2) === 0
+
       faker.locale = "id_ID"
       return{
           nama: faker.name.findName(),
@@ -22,7 +24,7 @@ export const PenggunaFactory = Factory
           alamat: faker.address.cityName(),
           nohpAktif: '08' + Math.floor(1000000000 + Math.random() * 9000000000).toString(),
           apakahPegawaiAktif: gacha,
-          tanggalGajianSelanjutnya: (gacha)? DateTime.local().plus({ days: getRandomInt(25) }) : null,
+          tanggalGajianSelanjutnya: (gacha)? DateTime.local().plus({ days: getRandomInt(7) }) : null,
           tanggalMulaiAktif: (gacha)? DateTime.local() : null,
           tanggalGajianTerakhir: (gacha)? DateTime.local() : null,
           gajiBulanan: 1000000,

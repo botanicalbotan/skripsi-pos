@@ -6,7 +6,7 @@ export default class Gadais extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
-      table.integer('pembelian_id').unsigned().references('pembelians.id').notNullable().onDelete('CASCADE')
+      table.integer('pembelian_id').unsigned().references('pembelians.id').notNullable()
       table.date('tanggal_tenggat').notNullable()
       table.string('nama_penggadai', 50).notNullable()
       table.string('ktp_penggadai', 20).notNullable()
@@ -15,7 +15,7 @@ export default class Gadais extends BaseSchema {
       table.string('nohp_penggadai', 15).notNullable()
       table.integer('nominal_gadai').notNullable()
       table.integer('status_gadai_id').unsigned().references('status_gadais.id').notNullable()
-      table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable().onDelete('CASCADE')
+      table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
       table.dateTime('deleted_at').nullable()
 
 

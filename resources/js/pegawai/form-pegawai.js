@@ -1,15 +1,14 @@
 import Swal from "sweetalert2";
 
-global.banding = function (tanggal) {
-  return capsFirstWord(moment(tanggal, 'YYYY-MM-DD').fromNow())
-}
-
 $(function () {
-    
+
   if ($('.base-page').data('pagename') == "formpegawai") {
-    // Kalau ternyata ntar simpel banget, gaperlu pake moment.js
-    $('input[type=date]').prop('max', moment().format('YYYY-MM-DD'));
-    $('input[type=date]#pegawai-tanggalmasuk').val(moment().format('YYYY-MM-DD')).prop('min', moment().subtract(20, 'years').format('YYYY-MM-DD'))
+    const tanggalLahir = document.getElementById('tanggalLahir')
+    const tanggalAwalMasuk = document.getElementById('tanggalAwalMasuk')
+
+    tanggalLahir.max = new Date().toISOString().split("T")[0]
+    tanggalAwalMasuk.max = new Date().toISOString().split("T")[0]
+    tanggalAwalMasuk.value = new Date().toISOString().split("T")[0]
 
     $('#fileFotoPegawai').on('change', function () {
       const input = $("#fileFotoPegawai").prop('files')[0]
@@ -33,6 +32,7 @@ $(function () {
           // ini bisa dijadiin method umum yang bisa dipanggil2
           Swal.fire({
             title: 'Pratinjau Pemotongan Gambar',
+            allowOutsideClick: false,
             html: `
             <div>
               <img id="cropperjs" src="` + e.target.result + `">
@@ -52,7 +52,7 @@ $(function () {
                 minCropBoxHeight: 200,
               })
 
-              const confirmButton = Swal.getPopup().querySelector('button.swal2-confirm')
+              const confirmButton = Swal.getConfirmButton()
               confirmButton.addEventListener('click', () => {
                 Swal.showLoading()
                 $('img#fotoPegawai').prop('src', cropper.getCroppedCanvas().toDataURL())

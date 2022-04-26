@@ -4,7 +4,7 @@
   <h2 class="text-4xl font-semibold">Detail Rekap Penambahan Stok</h2>
   <h4 class="text-lg text-secondary opacity-60">Detail data dari model perhiasan yang anda pilih.</h4>
 
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 lg:mb-20 shadow min:h-96">
     {{--  {{ inspect(model) }} --}}
 
     <div class="flex space-x-2">
@@ -14,33 +14,6 @@
       </div>
       <div class="flex-none">
 
-        {{--  @if(!model.apakahPlaceholder)
-
-        <div class="dropdown dropdown-end">
-          <div tabindex="0" class="btn btn-primary text-white">
-            <span class="hidden sm:inline">Tindakan</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:ml-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clip-rule="evenodd" />
-            </svg>
-          </div>
-          <ul tabindex="0"
-            class="p-2 shadow border border-opacity-50 menu dropdown-content bg-base-100 rounded-box w-52">
-            <li>
-              <a href="/app/barang/model/{{ model.id }}/edit">Ubah Detail</a>
-            </li>
-            <li>
-              <a id="hapusModel" class="true-text-error">Hapus model</a>
-              <form id="formModel" action="/app/barang/model/{{ model.id }}" method="POST">
-                {{ csrfField() }}
-              </form>
-            </li>
-          </ul>
-        </div>
-
-        @endif  --}}
-
       </div>
     </div>
 
@@ -49,15 +22,13 @@
       <div class="flex-1 space-y-10">
 
         <div>
-          <div class="flex">
+          <div class="flex px-2">
             <div class="flex-1">
               <h4 class="text-xl mb-2 flex items-center font-semibold">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Informasi Penambahan Stok</h4>
+                Data Penambahan</h4>
             </div>
             <div class="flex-none flex align-bottom mb-2 items-end">
               <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada
@@ -66,48 +37,41 @@
           </div>
           <div class="border-t border-b border-secondary">
             <ul>
-  
+
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tipe Penambahan</h3>
                   <span class="flex-1" id="namaRusak">{{ (penambahan.apakahKulakan)? 'Kulakan': 'Cucian' }}</span>
                 </div>
               </li>
-  
+
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Asal Stok</h3>
                   <span class="flex-1 ">{{ penambahan.asalStok }}</span>
                 </div>
               </li>
-  
+
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Catatan</h3>
                   <span class="flex-1 ">{{ penambahan.catatan }}</span>
                 </div>
               </li>
-  
+
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Jumlah Kelompok Termutasi</h3>
                   <span class="flex-1 ">{{ tambahan.jumlahKelompok }} Kelompok</span>
                 </div>
               </li>
-  
-              <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Pencatat</h3>
-                  <a class="flex-1" href="/app/pengguna/{{ penambahan.pengguna.id }}">{{ penambahan.pengguna.nama }}</a>
-                </div>
-              </li>
-  
+
             </ul>
           </div>
         </div>
 
         <div>
-          <div class="flex">
+          <div class="flex px-2">
             <div class="flex-1">
               <h4 class="text-xl mb-2 flex items-center font-semibold">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -127,7 +91,7 @@
                   </tr>
                 </thead>
                 <tbody>
-      
+
                   @each(kelompok in penambahan.kelompoks)
                   <tr class="hover">
                     <td>
@@ -142,10 +106,10 @@
                     </td>
                     <td class="text-success">+{{ kelompok.$extras.pivot_perubahan_stok }} perhiasan</td>
                     <td>{{ kelompok.$extras.pivot_stok_akhir }} perhiasan</td>
-                    
+
                   </tr>
                   @endeach
-      
+
                 </tbody>
               </table>
             </div>
@@ -155,6 +119,27 @@
       </div>
       <div class="flex-none w-full lg:w-1/4 space-y-6">
 
+      </div>
+    </div>
+
+    <div class="w-full max-w-lg min-h-16 rounded-box space-y-4">
+      <span class="block text-xl font-semibold">Dicatat oleh: </span>
+      <div class="bg-base-200 flex flex-col md:flex-row px-4 py-3 rounded-box md:space-x-4 space-y-4 md:space-y-0">
+        <div class="flex flex-col md:flex-row flex-1 md:space-x-4 space-y-4 md:space-y-0 items-center">
+          <div class="avatar">
+            <div class="w-16 h-16 rounded-full bg-placeholder-user-200 bg-contain">
+              <img src="{{ tambahan.urlFotoPencatat }}" onerror="this.style.display='none'">
+            </div>
+          </div>
+          <div class="flex flex-col justify-center">
+            <a href="/app/pegawai/{{ penambahan.pengguna.id }}" class="link link-primary font-semibold">{{ penambahan.pengguna.nama }}</a>
+            <span class="opacity-75">{{ penambahan.pengguna.jabatan.nama }}</span>
+          </div>
+        </div>
+        <div class="flex-none flex flex-col justify-center italic text-center md:text-right">
+          Pada {{ penambahan.createdAt.toFormat('DDD') }}
+          <span>{{ penambahan.createdAt.toFormat('T') }}</span>
+        </div>
       </div>
     </div>
 

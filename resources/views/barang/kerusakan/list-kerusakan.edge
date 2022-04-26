@@ -10,7 +10,8 @@
   <h4 class="text-lg text-secondary opacity-60">Kumpulan data seluruh kerusakan perhiasan yang tercatat pada sistem.</h4>
 
   {{--  Card Utama  --}}
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+    @include('partials/wadah-alert')
 
     <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
       <div class="flex-1">
@@ -39,17 +40,16 @@
         </div>
       </div>
       <div class="flex-none flex space-x-2">
-        <div class="relative flex w-full flex-wrap items-stretch">
-          <span
-            class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
-            Urutkan:
-          </span>
-          <select id="pengurutan" class="select select-bordered sm:w-40 md:w-60 w-full max-w-xs pl-20 relative">
-            <option value="0" {{ (tambahan.pengurutan == 0)? 'selected':'' }}>Nama Kerusakan</option>
-            <option value="1" {{ (tambahan.pengurutan == 1)? 'selected':'' }}>Bentuk Perhiasan</option>
-            <option value="2" {{ (tambahan.pengurutan == 2)? 'selected':'' }}>Tingkat Kerusakan</option>
-            <option value="3" {{ (tambahan.pengurutan == 3)? 'selected':'' }}>Ongkos</option>
-          </select>
+        <div class="flex-1 sm:flex-none">
+
+          <button class="btn" id="btAturTabel">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+            </svg>
+            <span class="hidden md:inline">Atur Tabel</span>
+          </button>
+
         </div>
         <div class="flex-1 sm:flex-none">
           <a href="/app/barang/kerusakan/create" class="btn btn-primary text-white">
@@ -67,7 +67,17 @@
 
     {{--  tabel  --}}
     <div class="my-8 min-h-60 rounded pb-4">
-      <h5 class=" text-secondary mb-4">Menampilkan data ke 1-10 (100 data) untuk <span class=" text-neutral font-semibold">"Kerusakan"</span></h5>
+      @if(kerusakans.total > 0)
+      <h5 class=" text-secondary mb-4">Menampilkan data ke {{ tambahan.firstDataInPage }}-{{ tambahan.lastDataInPage }}
+        ({{ kerusakans.total }} data) untuk
+        <span class="text-neutral font-semibold">"{{ (tambahan.pencarian)? tambahan.pencarian:'Daftar Kerusakan' }}"</span>
+      </h5>
+      @else
+      <h5 class=" text-secondary mb-4">Menampilkan 0 data untuk
+        <span class="text-neutral font-semibold">"{{ (tambahan.pencarian)? tambahan.pencarian:'Daftar Kerusakan' }}"</span>
+      </h5>
+      @endif
+
       <div class="overflow-x-auto md:overflow-y-visible"> {{-- aslinya ada overflow-x-auto disini --}}
         <table class="table w-full">
           <thead>
@@ -88,7 +98,7 @@
               <td>{{ rusak.bentukPerhiasan }}</td>
               <td>
                 @if(rusak.apakahBisaDiperbaiki)
-                  <p class="text-warning">Bisa Diperbaik</p>
+                  <p class="text-warning">Bisa Diperbaiki</p>
                 @else
                   <p class="text-error">Tidak Bisa Diperbaiki</p>
                 @endif

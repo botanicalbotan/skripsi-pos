@@ -6,8 +6,8 @@ export default class PembelianKerusakans extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
-      table.integer('pembelian_id').unsigned().references('pembelians.id').notNullable().onDelete('CASCADE')
-      table.integer('kerusakan_id').unsigned().references('kerusakans.id').notNullable().onDelete('CASCADE')
+      table.integer('pembelian_id').unsigned().references('pembelians.id').notNullable()
+      table.integer('kerusakan_id').unsigned().references('kerusakans.id').notNullable()
       table.unique(['pembelian_id', 'kerusakan_id'])
       table.boolean('apakah_diabaikan').notNullable().defaultTo(false)
       table.integer('banyak_kerusakan').notNullable()

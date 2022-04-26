@@ -5,7 +5,7 @@ $(function () {
   if ($('.base-page').data('pagename') == "list") {
     const BASEURL = window.location.pathname
     const qsParam = new URLSearchParams(window.location.search)
-    const pencarian = document.querySelector('input#pencariana')
+    const pencarian = document.querySelector('input#pencarian')
     const hapuscari = document.getElementById('hapusPencarian')
     const btAturTabel = document.getElementById('btAturTabel')
 
@@ -111,12 +111,12 @@ $(function () {
 
       const htmlAddStock = `
                   <div class="w-full px-6 space-y-6 flex flex-col text-left" >
-                    
+
                     <div class="form-control">
                         <label for="swal-ob">Urutkan Tabel Berdasarkan</label>
                         <select id="swal-ob" class="select select-bordered w-full max-w-md swal mt-2">
-                            <option value="0">Kelompok Perhiasan</option> 
-                            <option value="1">Berat Kelompok</option> 
+                            <option value="0">Kelompok Perhiasan</option>
+                            <option value="1">Berat Kelompok</option>
                             <option value="2">Kadar Perhiasan</option>
                             <option value="3">Bentuk Perhiasan</option>W
                             <option value="4">Stok</option>
@@ -148,7 +148,7 @@ $(function () {
                             </label>
                         </div>
                     </div>
-                      
+
                 </div>
               `
       return htmlAddStock

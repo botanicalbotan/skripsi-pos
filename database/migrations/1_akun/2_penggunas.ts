@@ -7,13 +7,13 @@ export default class Penggunas extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       // email, password sama username dipindah ke users
       table.increments('id')
-      table.integer('user_id').unsigned().references('users.id').notNullable().onDelete('CASCADE')
-      table.integer('jabatan_id').unsigned().references('jabatans.id').notNullable().onDelete('CASCADE')
-      table.string('nama', 50)
+      table.integer('user_id').unsigned().references('users.id').notNullable()
+      table.integer('jabatan_id').unsigned().references('jabatans.id').notNullable()
+      table.string('nama', 50).notNullable()
       table.enum('gender', [
         'L',
         'P'
-      ]).nullable()
+      ]).notNullable()
       table.string('tempat_lahir').notNullable()
       table.date('tanggal_lahir').notNullable()
 

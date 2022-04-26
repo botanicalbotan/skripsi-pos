@@ -6,7 +6,7 @@ export default class DetailPembelianUmums extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
-      table.integer('pembelian_id').unsigned().references('pembelians.id').notNullable().onDelete('CASCADE')
+      table.integer('pembelian_id').unsigned().references('pembelians.id').notNullable()
       table.string('potongan_deskripsi', 30).notNullable()
       table.integer('potongan_nominal_total').notNullable()
       table.float('berat_nota').notNullable()
