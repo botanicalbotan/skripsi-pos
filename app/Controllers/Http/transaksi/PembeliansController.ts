@@ -5,6 +5,7 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Drive from '@ioc:Adonis/Core/Drive'
 import { DateTime } from 'luxon'
 import Kerusakan from 'App/Models/barang/Kerusakan'
+import KodeProduksi from 'App/Models/barang/KodeProduksi'
 
 export default class PembeliansController {
   rupiahParser(angka: number) {
@@ -19,7 +20,12 @@ export default class PembeliansController {
 
   // ============================= fungsi rute ==========================================
 
-  public async index ({}: HttpContextContract) {
+  public async index ({ view }: HttpContextContract) {
+    const kadars = await Database
+      .from('kadars')
+      .select('id', 'nama')
+
+    return view.render('transaksi/pembelian/form-beli', { kadars })
   }
 
   public async create ({}: HttpContextContract) {
@@ -38,6 +44,214 @@ export default class PembeliansController {
   }
 
   public async destroy ({}: HttpContextContract) {
+  }
+
+  public async tesBuang ({ request }: HttpContextContract) {
+    console.log(request.input('kelengkapanNota'))
+    const newPembelianSchema = schema.create({
+      kelengkapanNota: schema.enum(['tanpa', 'dengan'] as const),
+      asalPerhiasan: schema.enum(['luar', 'leo'] as const),
+      namaToko: schema.string.optional({ trim: true }, [rules.maxLength(50)]), // masih belom yakin dipake apa ngga
+      kodepro: schema.number([
+        rules.unsigned(),
+        rules.exists({
+          table: 'kode_produksis',
+          column: 'id',
+          where: {
+            deleted_at: null,
+          },
+        }),
+      ]),
+      model: schema.number([
+        rules.unsigned(),
+        rules.exists({
+          table: 'models',
+          column: 'id',
+          where: {
+            deleted_at: null,
+          },
+        }),
+      ]),
+      jenisStok: schema.enum(['lama', 'baru'] as const),
+      keteranganCatatan: schema.string.optional({ trim: true }, [rules.maxLength(100)]),
+      beratNota: schema.number.optional([
+        rules.unsigned(),
+        rules.requiredWhen('kelengkapanNota', '=', 'dengan')
+      ]),
+      beratBarang: schema.number([rules.unsigned()]),
+      hargaJualNota: schema.number.optional([
+        rules.unsigned(),
+        rules.requiredWhen('kelengkapanNota', '=', 'dengan')
+      ]),
+      potonganNota: schema.number.optional([
+        rules.unsigned(),
+        rules.requiredWhen('asalPerhiasan', '=', 'leo')
+      ]),
+      tanggalBeli: schema.date.optional({}, [ 
+        rules.beforeOrEqual('today'),
+        rules.requiredWhen('asalPerhiasan', '=', 'leo')
+      ]),
+      ajukanTT: schema.string.optional(), //cukup dicek undefined apa ngga, isinya ngga penting
+      adaJanjiTT: schema.string.optional(), //cukup dicek undefined apa ngga, isinya ngga penting
+
+      idKerusakan: schema.array
+        .optional([
+          rules.minLength(1)
+        ])
+        .members(
+          schema.number([
+            rules.unsigned(),
+            rules.exists({
+              table: 'kerusakans',
+              column: 'id',
+              where: {
+                deleted_at: null,
+              },
+            })
+          ])
+        ),
+
+      ongkosKerusakan: schema.array
+        .optional([
+          rules.minLength(1)
+        ])
+        .members(
+          schema.string({ trim: true }, [rules.maxLength(30)])
+        ),
+      jumlahKerusakan: schema.array
+        .optional([
+          rules.minLength(1)
+        ])
+        .members(
+          schema.number([
+            rules.unsigned()
+          ])
+        ),
+    })
+
+    const validrequest = await request.validate({ schema: newPembelianSchema })
+
+    return validrequest
+  }
+
+  // dari ajax
+  public async hitungHargaBelakang ({ request, response }: HttpContextContract) {
+    const newPembelianSchema = schema.create({
+      kelengkapanNota: schema.enum(['tanpa', 'dengan'] as const),
+      asalPerhiasan: schema.enum(['luar', 'leo'] as const),
+      namaToko: schema.string.optional({ trim: true }, [rules.maxLength(50)]), // masih belom yakin dipake apa ngga
+      kodepro: schema.number([
+        rules.unsigned(),
+        rules.exists({
+          table: 'kode_produksis',
+          column: 'id',
+          where: {
+            deleted_at: null,
+          },
+        }),
+      ]),
+      model: schema.number([
+        rules.unsigned(),
+        rules.exists({
+          table: 'models',
+          column: 'id',
+          where: {
+            deleted_at: null,
+          },
+        }),
+      ]),
+      jenisStok: schema.enum(['lama', 'baru'] as const),
+      keteranganCatatan: schema.string.optional({ trim: true }, [rules.maxLength(100)]),
+      beratNota: schema.number.optional([
+        rules.unsigned(),
+        rules.requiredWhen('kelengkapanNota', '=', 'dengan')
+      ]),
+      beratBarang: schema.number([rules.unsigned()]),
+      hargaJualNota: schema.number.optional([
+        rules.unsigned(),
+        rules.requiredWhen('kelengkapanNota', '=', 'dengan')
+      ]),
+      potonganNota: schema.number.optional([
+        rules.unsigned(),
+        rules.requiredWhen('asalPerhiasan', '=', 'leo')
+      ]),
+      tanggalBeli: schema.date.optional({}, [ 
+        rules.beforeOrEqual('today'),
+        rules.requiredWhen('asalPerhiasan', '=', 'leo')
+      ]),
+      ajukanTT: schema.string.optional(), //cukup dicek undefined apa ngga, isinya ngga penting
+      adaJanjiTT: schema.string.optional(), //cukup dicek undefined apa ngga, isinya ngga penting
+
+      idKerusakan: schema.array
+        .optional([
+          rules.minLength(1)
+        ])
+        .members(
+          schema.number([
+            rules.unsigned(),
+            rules.exists({
+              table: 'kerusakans',
+              column: 'id',
+              where: {
+                deleted_at: null,
+              },
+            })
+          ])
+        ),
+
+      ongkosKerusakan: schema.array
+        .optional([
+          rules.minLength(1)
+        ])
+        .members(
+          schema.string({ trim: true }, [rules.maxLength(30)])
+        ),
+      jumlahKerusakan: schema.array
+        .optional([
+          rules.minLength(1)
+        ])
+        .members(
+          schema.number([
+            rules.unsigned()
+          ])
+        ),
+    })
+
+    try {
+      // trim sama escape deprecated, ntar dipindah ke rules
+      const validrequest = await request.validate({ schema: newPembelianSchema })
+      const kodepro = await KodeProduksi.findOrFail(validrequest.kodepro)
+      await kodepro.load('kadar')
+
+      const gadai = false
+      if(gadai){
+        // ini buat gambaran aja, jangan lupa formulir gadai
+      }
+
+      let potongan = 0
+      let hargaJual = 0
+      let hargaPerGram = 0
+
+     
+      if(validrequest.kelengkapanNota === 'dengan' && validrequest.asalPerhiasan === 'leo'){
+        if(validrequest.potonganNota && validrequest.hargaJualNota){
+          potongan = validrequest.potonganNota
+          hargaJual = validrequest.hargaJualNota
+          hargaPerGram = validrequest.hargaJualNota / validrequest.beratBarang
+
+          
+
+        } else{
+          // ngga valid
+          throw "Input potongan dan harga nota tidak valid."
+        }
+      }
+
+      return "ewe"
+
+    } catch (error) {
+      return response.badRequest(error.messages)
+    }
   }
 
 
@@ -68,7 +282,7 @@ export default class PembeliansController {
       // let file = await Drive.get('transaksi/penjualan/' + penjualan.fotoBarang)
 
       return {
-          namaQR: penjualan.kelompok.bentuk.bentuk + ' ' + penjualan.kelompok.kadar.nama + ' seberat ' + penjualan.beratSebenarnya + 'g, terjual pada ' + tanggal,
+          namaQR: penjualan.kelompok.bentuk.bentuk + ' ' + penjualan.kelompok.kadar.nama + ' seberat ' + penjualan.beratBarang + 'g, terjual pada ' + tanggal,
           kodePenjualan: penjualan.kodeTransaksi,
           foto: await Drive.getUrl('transaksi/penjualan/' + penjualan.fotoBarang),
           // foto2: 'data:image/jpeg;base64,' + file.toString('base64')
@@ -105,7 +319,7 @@ export default class PembeliansController {
       return view.render('transaksi/pembelian/base-umum-QR', {
         penjualan,
         tambahan: {
-          namaQR: penjualan.kelompok.bentuk.bentuk + ' ' + penjualan.kelompok.kadar.nama + ' seberat ' + penjualan.beratSebenarnya + 'g, terjual pada ' + tanggal,
+          namaQR: penjualan.kelompok.bentuk.bentuk + ' ' + penjualan.kelompok.kadar.nama + ' seberat ' + penjualan.beratBarang + 'g, terjual pada ' + tanggal,
           foto: await Drive.getUrl('transaksi/penjualan/' + penjualan.fotoBarang),
           maxSelisih: 0.2 // ntar ngambil dari pengaturan
         },
@@ -176,7 +390,7 @@ export default class PembeliansController {
         })
         .firstOrFail()
 
-      let hargaPerGram = Math.round(penjualan.hargaJualAkhir / penjualan.beratSebenarnya)
+      let hargaPerGram = Math.round(penjualan.hargaJualAkhir / penjualan.beratBarang)
       let listKerusakan: {detail: string, ongkos: number}[] = []
       let kerusakan = 0
 
@@ -233,11 +447,12 @@ export default class PembeliansController {
 
 
   //================================================== RIWAYAT ====================================================
-  public async listRiwayat({ view }: HttpContextContract) {
+  
+  public async listTanggal({ view }: HttpContextContract) {
 
   }
 
-  public async viewRiwayat({ view }: HttpContextContract) {
+  public async viewTanggal({ view }: HttpContextContract) {
 
   }
 }

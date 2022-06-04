@@ -1,8 +1,9 @@
 import Swal from "sweetalert2"
 
 $(function () {
+  const basePage = document.getElementById('base-page').dataset.pagename
 
-  if ($('.base-page').data('pagename') == "list") {
+  if (basePage == "list") {
     const BASEURL = window.location.pathname
     const qsParam = new URLSearchParams(window.location.search)
     const pencarian = document.querySelector('input#pencarian')
@@ -55,6 +56,7 @@ $(function () {
         showCancelButton: true,
         cancelButtonText: 'Batal',
         confirmButtonColor: '#4b6bfb',
+        scrollbarPadding: false,
         html: printAturTabelHTML(),
         willOpen: () => {
           Swal.getHtmlContainer().querySelector('#swal-ob').value = ob

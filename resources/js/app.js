@@ -162,25 +162,28 @@ global.SwalCustomColor = {
   }
 }
 
+const masterWadahProfil = document.getElementById('masterWadahProfil')
+const masterNamaPengguna = document.getElementById('masterNamaPengguna')
+const masterJabatanPengguna = document.getElementById('masterJabatanPengguna')
+const masterFotoPengguna = document.getElementById('masterFotoPengguna')
+const masterLihatProfil = document.getElementById('masterLihatProfil')
+const masterKeluar = document.getElementById('masterKeluar')
 
-// import { pasaranHarIni, hariKePasaranSelanjutnya } from './pasaran.js'
-// const { default: Swal } = require("sweetalert2")
+$.get("/app/cumaData/myProfile", {},
+  function (data, textStatus, jqXHR) {
+    masterNamaPengguna.textContent = data.nama
+    masterJabatanPengguna.textContent = data.jabatan
+    masterFotoPengguna.src = data.urlFoto
+    masterLihatProfil.href = '/app/pegawai/' + data.id
 
-// // ntar kalo bisa ini dikasi global, biar bisa dipanggil semua
-// const Toast = Swal.mixin({
-//   toast: true,
-//   position: 'top-end',
-//   showConfirmButton: false,
-//   timer: 3000,
-//   timerProgressBar: true,
-//   didOpen: (toast) => {
-//     toast.addEventListener('mouseenter', Swal.stopTimer)
-//     toast.addEventListener('mouseleave', Swal.resumeTimer)
-//   }
-// })
+    masterWadahProfil.classList.remove('hidden')
+  },
+  "json"
+).fail(() => {
+  masterNamaPengguna.textContent = 'Data Error'
+    masterJabatanPengguna.textContent = 'Error'
+    masterFotoPengguna.src = 'kosong'
+    masterLihatProfil.href = ''
 
-/** Gini cara makenya */
-// Toast.fire({
-//   icon: 'error',
-//   title: 'Anda harus memilih salah satu kelompok!'
-// })
+    masterWadahProfil.classList.add('hidden')
+})

@@ -1,6 +1,6 @@
 @layout('layouts/master')
 @section('content')
-<div class="w-full p-8 base-page" data-pagename="pasca">
+<div class="w-full p-8 base-page" data-pagename="pasca" id="base-page">
   <h2 class="text-4xl font-semibold">Penjualan Selesai</h2>
   <h4 class="text-lg text-secondary opacity-60">Transaksi penjualan berhasil disimpan pada sistem!</h4>
 
@@ -12,23 +12,68 @@
       </div>
     </div>
 
-    {{--  informasi  --}}
-    <div class="my-8 flex lg:space-x-8 space-y-8 lg:space-y-0 flex-col lg:flex-row mb-10">
-      <div class="flex-1 space-y-10">
-        <div class="flex flex-col">
-          <div class="text-lg font-semibold">Nama Barang</div>
-          <div class="bg-primary bg-opacity-10 pb-4" >{{ PJ.namaBarang }}</div>
-        </div>
+    {{--  informasi, khusus page ini doang, jangan dicopy  --}}
+    <div class="mt-8 flex lg:space-x-8 space-y-8 lg:space-y-0 flex-col lg:flex-row">
+      <div class="flex-1 space-y-6">
+        {{--  <div class="w-80 h-60 p-2 rounded-box border">
+          <div id="wadahFoto" class="w-full h-full bg-base-300 rounded-box bg-contain">
+            <img src="{{ tambahan.urlFoto }}" class="w-full object-contain"
+              @error="adaGambar = false" @load="adaGambar = true">
+          </div>
+        </div>  --}}
 
         <div class="flex flex-col">
+          <div class="text-lg font-semibold">Detail Item</div>
+
+          <div class="flex space-x-4 w-full">
+            <div class="flex-1">Nama Barang</div>
+            <div class="flex-none max-w-md text-right font-semibold">{{ PJ.namaBarang }}</div>
+          </div>
+
+          <div class="flex space-x-4 w-full">
+            <div class="flex-1">Berat Barang</div>
+            <div class="flex-none max-w-sm text-right">{{ PJ.beratBarang }} gram</div>
+          </div>
+
+          <div class="flex space-x-4 w-full">
+            <div class="flex-1">Bentuk & Kadar Perhiasan</div>
+            <div class="flex-none max-w-md text-right">{{ PJ.kelompok.bentuk.bentuk }} {{ PJ.kelompok.kadar.nama }}</div>
+          </div>
+
+          <div class="flex space-x-4 w-full">
+            <div class="flex-1">Model Perhiasan</div>
+            <div class="flex-none max-w-md text-right">{{ PJ.model.nama }}</div>
+          </div>
+
+          <div class="flex space-x-4 w-full">
+            <div class="flex-1">Harga per Gram</div>
+            <div class="flex-none max-w-md text-right">{{ fungsi.rupiahParser(PJ.hargaJualPerGram) }}</div>
+          </div>
+          <div class="flex space-x-4 w-full">
+            @if(PJ.apakahPotonganPersen)
+              <div class="flex-1">Persentase Potongan</div>
+              <div class="flex-none max-w-md text-right">{{ PJ.potongan }}% harga jual</div>
+            @else
+              <div class="flex-1">Potongan per Gram</div>
+              <div class="flex-none max-w-md text-right">{{ fungsi.rupiahParser(PJ.potongan) }}</div>
+            @endif
+          </div>
+
+        </div>
+
+        {{--  <div class="flex flex-col">
           <div class="text-lg font-semibold">Keterangan</div>
           <div>Belum kebayang mau dikasi apa, tp pasti keisi</div>
-        </div>
+        </div>  --}}
 
         <div class="flex flex-col">
-          <div class="text-lg font-semibold">Total Harga</div>
-          <div class="text-lg">{{ fungsi.rupiahParser(PJ.hargaJualAkhir) }}</div>
+          <div class="text-lg font-semibold">Total Harga Jual</div>
+          <div class="text-2xl">{{ fungsi.rupiahParser(PJ.hargaJualAkhir) }}</div>
           <div class=" italic">{{ tambahan.hargaJualTerbilang }}</div>
+        </div>
+
+        <div>
+          <a href="/app/transaksi/penjualan/{{ PJ.id }}" class="btn btn-outline btn-sm">Lihat Detail Penjualan</a>
         </div>
 
       </div>
@@ -42,13 +87,13 @@
           <div class="grid grid-flow-col gap-5 text-center auto-cols-max">
             <div class="flex flex-col">
               <span class="countdown font-mono text-5xl">
-                <span id="cdMenit" style="--value:59;"></span>
+                <span id="cdMenit" style="--value:{{ tambahan.menit }};"></span>
               </span>
               menit
             </div>
             <div class="flex flex-col">
               <span class="countdown font-mono text-5xl">
-                <span id="cdDetik" style="--value:59;"></span>
+                <span id="cdDetik" style="--value:{{ tambahan.detik }};"></span>
               </span>
               detik
             </div>
@@ -59,31 +104,17 @@
           Akses cetak nota hanya dapat dilakukan hingga waktu hitung mundur habis.
         </div>
 
-        <button type="button" id="btCetak" class="btn btn-block btn-primary text-white">Cetak Nota</button>
+        @if(!tambahan.apakahExpired)
+          <button type="button" id="btCetak" class="btn btn-block btn-primary text-white">Cetak Nota</button>
+        @else
+          <div class="text-center text-error">
+            Waktu pencetakan nota telah habis.
+          </div>
+        @endif
 
       </div>
     </div>
 
-    {{--  <div class="w-full max-w-lg min-h-16 rounded-box space-y-4">
-      <span class="block text-xl font-semibold">Dicatat dan Dibayar oleh: </span>
-      <div class="bg-base-200 flex flex-col md:flex-row px-4 py-3 rounded-box md:space-x-4 space-y-4 md:space-y-0">
-        <div class="flex flex-col md:flex-row flex-1 md:space-x-4 space-y-4 md:space-y-0 items-center">
-          <div class="avatar">
-            <div class="w-16 h-16 rounded-full bg-placeholder-user-200 bg-contain">
-              <img src="{{ tambahan.urlFotoPencatat }}" onerror="this.style.display='none'">
-            </div>
-          </div>
-          <div class="flex flex-col justify-center">
-            <a href="/app/pegawai/{{ kas.pengguna.id }}" class="link link-primary font-semibold">{{ kas.pengguna.nama }}</a>
-            <span class="opacity-75">{{ kas.pengguna.jabatan.nama }}</span>
-          </div>
-        </div>
-        <div class="flex-none flex flex-col justify-center italic text-center md:text-right">
-          Pada {{ kas.createdAt.toFormat('DDD') }}
-          <span>{{ kas.createdAt.toFormat('T') }}</span>
-        </div>
-      </div>
-    </div>  --}}
 
   </div>
 </div>

@@ -20,7 +20,9 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import './routes/transaksi'
+import './routes/riwayat'
 import './routes/test-doang'
+import './routes/email-test'
 
 Route.get('/', async ({
   view
@@ -51,6 +53,8 @@ Route.group(() => {
   // ================================ PEMBUKUAN KAS ===============================================
   Route.group(() => {
     Route.resource('rekapHarian', 'kas/RekapHariansController').only(['index', 'show'])
+
+    Route.get('/testing/bikinBanyak', 'kas/KasController.buatBanyak') // WARNING: INI BUAT TEST DOANG, NTAR DIHAPUSSS
   }).prefix('/kas')
   Route.resource('/kas', 'kas/KasController')
 
@@ -58,6 +62,10 @@ Route.group(() => {
   Route.group(() => {
     // ================================ KELOMPOK ===============================================
     Route.get('/', 'barang/KelompoksController.index')
+    Route.put('/kelompok/:id/ubahStok', 'barang/KelompoksController.ubahStok')
+
+    Route.post('/kelompok/cekKelompokDuplikat', 'barang/KelompoksController.cekKelompokDuplikat')
+    Route.post('/kelompok/cekKelompokDuplikatEdit', 'barang/KelompoksController.cekKelompokDuplikatEdit')
     Route.resource('kelompok', 'barang/KelompoksController').except(['index'])
 
     // ================================ MODEL ===============================================
@@ -67,18 +75,23 @@ Route.group(() => {
     Route.resource('kerusakan', 'barang/KerusakansController')
 
     // ================================ KODE PRODUKSI ===============================================
-    Route.get('/kodepro/cekKode', 'barang/KodeProduksisController.cekKode')
-    Route.get('/kodepro/cekKodeEdit', 'barang/KodeProduksisController.cekKodeEdit')
+    Route.post('/kodepro/cekKodeDuplikat', 'barang/KodeProduksisController.cekKode')
+    Route.post('/kodepro/cekKodeDuplikatEdit', 'barang/KodeProduksisController.cekKodeEdit')
     Route.resource('kodepro', 'barang/KodeProduksisController')
 
     // ================================ PENAMBAHAN STOK ===============================================
     Route.resource('penambahan', 'barang/PenambahanStoksController').except(['edit', 'update', 'destroy'])
-    Route.group(() => {
-
-    }).prefix('penambahan')
+    Route.group(() => {}).prefix('penambahan')
 
 
   }).prefix('/barang')
+
+  // ================================ Laporan ===============================================
+  Route.group(() => {
+    Route.get('/', 'laporan/LaporansController.index')
+    Route.get('/generate', 'laporan/LaporansController.generateLaporan')
+    
+  }).prefix('laporan')
 
   // ================================ PEGAWAI ===============================================
   Route.group(() => {
@@ -91,6 +104,13 @@ Route.group(() => {
     Route.resource('/penggajian', 'akun/PenggajianPegawaisController').only(['index', 'show', 'destroy'])
 
     Route.put('/:id/status', 'akun/PegawaisController.ubahStatus')
+    Route.get('/:id/akun', 'akun/PegawaisController.showDataAkun')
+    Route.post('/:id/akun/check', 'akun/PegawaisController.checkCredit')
+    Route.put('/:id/akun/ubahUsername', 'akun/PegawaisController.ubahUsername')
+    Route.put('/:id/akun/ubahPassword', 'akun/PegawaisController.ubahPassword')
+    Route.put('/:id/akun/ubahEmail', 'akun/PegawaisController.ubahEmail')
+    Route.post('/:id/akun/verivyEmail', 'akun/PegawaisController.verivyEmail')
+    // Route.get('/:id/akun', 'akun/PegawaisController.dataAkun')
   }).prefix('/pegawai')
   Route.resource('/pegawai', 'akun/PegawaisController')
 
@@ -104,16 +124,25 @@ Route.group(() => {
 
 
   // ================================ CUMA DATA / API ===============================================
+  // isinya data2 api, tp yang secondary. yang krusial tetep ada di masing2 grup
   Route.group(() => {
     // testing, ini ntar dihapus
     Route.get('/tesAngkaTerbilang', 'transaksi/PenjualansController.testAngkaTerbilang')
+
+    // ini masih ga normal, lu mau benerin silahkan, hapus silahkan
     Route.get('/ambilFoto/:tipe/:id', 'sistem/PengaturansController.ambilFoto')
 
 
     // general
+    Route.get('/myProfile', 'akun/PegawaisController.getMyProfile')
     Route.get('/kadarBentuk', 'barang/KelompoksController.getKadarBentuk')
+    Route.get('/kadarSimpel', 'transaksi/RiwayatJualsController.getKadarMinimal')
     Route.get('/getKadarById', 'barang/KadarsController.getKadarById')
     Route.get('/kodeproById', 'barang/KodeProduksisController.getKodeproById')
+    Route.get('/kodeprosByKadarId', 'barang/KodeProduksisController.getKodeprosByKadarId')
+
+    // pegawai - pegawai
+    Route.get('/myProfiles', 'akun/PegawaisController.getMyProfile')
 
     // view kelompok
     Route.get('/peringkatKelompok', 'barang/KelompoksController.peringkatKelompokAll')
@@ -139,6 +168,12 @@ Route.group(() => {
     Route.get('/semuaPasaran', 'sistem/PasaransController.getAllData')
 
   }).prefix('/cumaData')
+
+  Route.post('/buang', async ({
+    request
+  }) => {
+    return request.all()
+  })
 }).prefix('/app')
 
 

@@ -49,24 +49,19 @@
         "http://localhost:8080/assets/all-rekap.js"
       ]
     },
+    "all-riwayat-jual": {
+      "js": [
+        "http://localhost:8080/assets/all-riwayat-jual.js"
+      ]
+    },
+    "all-riwayat-beli": {
+      "js": [
+        "http://localhost:8080/assets/all-riwayat-beli.js"
+      ]
+    },
     "riwayat": {
       "js": [
         "http://localhost:8080/assets/riwayat.js"
-      ]
-    },
-    "all-pegawai": {
-      "js": [
-        "http://localhost:8080/assets/all-pegawai.js"
-      ]
-    },
-    "form-pegawai": {
-      "js": [
-        "http://localhost:8080/assets/form-pegawai.js"
-      ]
-    },
-    "all-penggajian": {
-      "js": [
-        "http://localhost:8080/assets/all-penggajian.js"
       ]
     },
     "prepare-jual": {
@@ -84,19 +79,19 @@
         "http://localhost:8080/assets/pasca-jual.js"
       ]
     },
-    "base-jual": {
+    "view-jual": {
       "js": [
-        "http://localhost:8080/assets/base-jual.js"
+        "http://localhost:8080/assets/view-jual.js"
       ]
     },
-    "jual": {
+    "form-beli": {
       "js": [
-        "http://localhost:8080/assets/jual.js"
+        "http://localhost:8080/assets/form-beli.js"
       ]
     },
-    "jual-selesai": {
+    "form-beli-qr": {
       "js": [
-        "http://localhost:8080/assets/jual-selesai.js"
+        "http://localhost:8080/assets/form-beli-qr.js"
       ]
     },
     "base-beli": {
@@ -157,6 +152,31 @@
     "all-penambahan": {
       "js": [
         "http://localhost:8080/assets/all-penambahan.js"
+      ]
+    },
+    "all-pegawai": {
+      "js": [
+        "http://localhost:8080/assets/all-pegawai.js"
+      ]
+    },
+    "form-pegawai": {
+      "js": [
+        "http://localhost:8080/assets/form-pegawai.js"
+      ]
+    },
+    "akun-pegawai": {
+      "js": [
+        "http://localhost:8080/assets/akun-pegawai.js"
+      ]
+    },
+    "all-penggajian": {
+      "js": [
+        "http://localhost:8080/assets/all-penggajian.js"
+      ]
+    },
+    "all-laporan": {
+      "js": [
+        "http://localhost:8080/assets/all-laporan.js"
       ]
     },
     "pengaturan": {

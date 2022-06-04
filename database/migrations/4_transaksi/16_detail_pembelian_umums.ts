@@ -10,7 +10,7 @@ export default class DetailPembelianUmums extends BaseSchema {
       table.string('potongan_deskripsi', 30).notNullable()
       table.integer('potongan_nominal_total').notNullable()
       table.float('berat_nota').notNullable()
-      table.float('berat_sebenarnya').notNullable()
+      // table.float('berat_sebenarnya').notNullable()
       table.integer('harga_jual_nota').notNullable()
       table.float('berat_selisih').notNullable()
       table.string('nama_pemilik', 50)

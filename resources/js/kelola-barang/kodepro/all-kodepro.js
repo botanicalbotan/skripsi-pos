@@ -1,8 +1,9 @@
 import Swal from "sweetalert2"
 
 $(function () {
+  const basePage = document.getElementById('base-page').dataset.pagename
   // ===================================== list ================================================
-  if ($('.base-page').data('pagename') == "list") {
+  if (basePage == "list") {
     const BASEURL = window.location.pathname
     const qsParam = new URLSearchParams(window.location.search)
     const pencarian = document.querySelector('input#pencarian')
@@ -57,6 +58,7 @@ $(function () {
           showCancelButton: true,
           cancelButtonText: 'Batal',
           confirmButtonColor: global.SwalCustomColor.button.confirm,
+          scrollbarPadding: false,
           html: printAturTabelHTML(),
           willOpen: () => {
             Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
@@ -133,7 +135,7 @@ $(function () {
     }
   }
   // ========================================== form ===========================================
-  if ($('.base-page').data('pagename') == "form") {
+  if (basePage == "form") {
     let kodeValid = false
     const BASEURL = window.location.pathname
     const kode = document.getElementById('kode')
@@ -150,7 +152,7 @@ $(function () {
     const potonganLama = document.getElementById('potonganLama')
     const potonganBaru = document.getElementById('potonganBaru')
     const persentaseMalUripan = document.getElementById('persentaseMalUripan')
-    const ongkosMalRosokPerGram = document.getElementById('ongkosMalRosokPerGram')
+    // const ongkosMalRosokPerGram = document.getElementById('ongkosMalRosokPerGram')
 
     let resetKadar = function () {
       hargaLama.value = ''
@@ -158,7 +160,7 @@ $(function () {
       potonganLama.value = ''
       potonganBaru.value = ''
       persentaseMalUripan.value = ''
-      ongkosMalRosokPerGram.value = ''
+      // ongkosMalRosokPerGram.value = ''
     }
 
     let fullResetKadar = function () {
@@ -177,7 +179,7 @@ $(function () {
       if (kode.value) {
         teksPengecekanKode.classList.remove('hidden')
 
-        $.get("/app/barang/kodepro/cekKode", {
+        $.post("/app/barang/kodepro/cekKodeDuplikat", {
             kode: kode.value
           },
           function (data, textStatus, jqXHR) {
@@ -303,13 +305,14 @@ $(function () {
       if (!formKode.reportValidity()) return
 
       Swal.fire({
-        title: 'Yakin untuk menyimpan?',
+        title: 'Simpan kode produksi baru?',
         text: 'Pastikan data yang anda isikan sudah benar!',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Ya, ubah!',
+        confirmButtonText: 'Ya, simpan!',
         confirmButtonColor: global.SwalCustomColor.button.confirm,
         cancelButtonText: 'Batal',
+        scrollbarPadding: false,
         focusCancel: true,
       }).then((result) => {
         if (result.isConfirmed) {
@@ -321,7 +324,7 @@ $(function () {
   }
 
   // ========================================== detail ===========================================
-  if ($('.base-page').data('pagename') == "detail") {
+  if (basePage == "detail") {
     const BASEURL = window.location.pathname
     const formKode = document.getElementById('formKode')
     const hapusKode = document.getElementById('hapusKode')
@@ -337,6 +340,7 @@ $(function () {
         showCancelButton: true,
         confirmButtonText: 'Ya, hapus!',
         cancelButtonText: 'Batal',
+        scrollbarPadding: false,
         confirmButtonColor: global.SwalCustomColor.button.deny,
         focusCancel: true,
       }).then((result) => {
@@ -351,7 +355,7 @@ $(function () {
   }
 
   // ========================================== edit ===========================================
-  if ($('.base-page').data('pagename') == "edit") {
+  if (basePage == "edit") {
     const BASEURL = window.location.pathname
 
     // deklarasi submit
@@ -393,7 +397,7 @@ $(function () {
       if (!formKode.reportValidity()) return
 
       Swal.fire({
-        title: 'Yakin untuk mengubah?',
+        title: 'Simpan perubahan?',
         text: 'Pastikan data yang anda isikan sudah benar!',
         icon: 'question',
         // iconColor: '#Dc3741',
@@ -401,6 +405,7 @@ $(function () {
         confirmButtonText: 'Ya, ubah!',
         confirmButtonColor: global.SwalCustomColor.button.confirm,
         cancelButtonText: 'Batal',
+        scrollbarPadding: false,
         focusCancel: true,
       }).then((result) => {
         if (result.isConfirmed) {
@@ -423,7 +428,7 @@ $(function () {
     const potonganLama = document.getElementById('potonganLama')
     const potonganBaru = document.getElementById('potonganBaru')
     const persentaseMalUripan = document.getElementById('persentaseMalUripan')
-    const ongkosMalRosokPerGram = document.getElementById('ongkosMalRosokPerGram')
+    // const ongkosMalRosokPerGram = document.getElementById('ongkosMalRosokPerGram')
 
     let resetKadar = function () {
       hargaLama.value = ''
@@ -431,7 +436,7 @@ $(function () {
       potonganLama.value = ''
       potonganBaru.value = ''
       persentaseMalUripan.value = ''
-      ongkosMalRosokPerGram.value = ''
+      // ongkosMalRosokPerGram.value = ''
     }
 
     let fullResetKadar = function () {
@@ -452,7 +457,7 @@ $(function () {
       if (kode.value) {
         teksPengecekanKode.classList.remove('hidden')
 
-        $.get("/app/barang/kodepro/cekKodeEdit", {
+        $.post("/app/barang/kodepro/cekKodeDuplikatEdit", {
             kode: kode.value,
             currentId: CID
           },

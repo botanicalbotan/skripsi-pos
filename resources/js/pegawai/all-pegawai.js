@@ -3,32 +3,35 @@
 // import Cropper from "cropperjs";
 import Swal from "sweetalert2";
 
-// doc ready
+// doc ready, ntar dihapus / diganti
 $(function () {
-  // ========================================= list ==========================================================
+  const basePage = document.getElementById('base-page').dataset.pagename
 
-  if ($('.base-page').data('pagename') == "list") {
+  // ========================================= list ==========================================================
+  if (basePage == "list") {
     const BASEURL = window.location.pathname
     const qsParam = new URLSearchParams(window.location.search)
     const pencarian = document.querySelector('input#pencarian')
     const hapuscari = document.getElementById('hapusPencarian')
     const btAturTabel = document.getElementById('btAturTabel')
 
-    let ob = 0, aob = 0, fs = 0
+    let ob = 0,
+      aob = 0,
+      fs = 0
     if (qsParam.has('ob')) {
-      if(['0', '1', '2', '3', '4', '5'].includes(qsParam.get('ob'))){
+      if (['0', '1', '2', '3', '4', '5'].includes(qsParam.get('ob'))) {
         ob = qsParam.get('ob')
       }
     }
 
     if (qsParam.has('aob')) {
-      if(['0', '1'].includes(qsParam.get('aob'))){
+      if (['0', '1'].includes(qsParam.get('aob'))) {
         aob = qsParam.get('aob')
       }
     }
 
     if (qsParam.has('fs')) {
-      if(['0', '1'].includes(qsParam.get('fs'))){
+      if (['0', '1'].includes(qsParam.get('fs'))) {
         fs = qsParam.get('fs')
       }
     }
@@ -63,35 +66,36 @@ $(function () {
 
     btAturTabel.addEventListener('click', (e) => {
       Swal.fire({
-        title: 'Atur Tabel',
-        confirmButtonText: 'Terapkan',
-        showCancelButton: true,
-        cancelButtonText: 'Batal',
-        confirmButtonColor: '#4b6bfb',
-        html: printAturTabelHTML(),
-        willOpen: () => {
-          Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
-        },
-        preConfirm: () => {
-          return {
-            ob: Swal.getHtmlContainer().querySelector('#swal-ob').value,
-            aob: Swal.getHtmlContainer().querySelector('input[name="swal-arahOb"]:checked').value,
-            fs: Swal.getHtmlContainer().querySelector('input[name="swal-filterShow"]:checked').value,
+          title: 'Atur Tabel',
+          confirmButtonText: 'Terapkan',
+          showCancelButton: true,
+          cancelButtonText: 'Batal',
+          confirmButtonColor: '#4b6bfb',
+          scrollbarPadding: false,
+          html: printAturTabelHTML(),
+          willOpen: () => {
+            Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
+          },
+          preConfirm: () => {
+            return {
+              ob: Swal.getHtmlContainer().querySelector('#swal-ob').value,
+              aob: Swal.getHtmlContainer().querySelector('input[name="swal-arahOb"]:checked').value,
+              fs: Swal.getHtmlContainer().querySelector('input[name="swal-filterShow"]:checked').value,
+            }
           }
-        }
-      })
-      .then((resolve)=>{
-        if(resolve.isConfirmed){
-          ob = resolve.value.ob
-          aob = resolve.value.aob
-          fs = resolve.value.fs
-          persiapanKirim()
-        }
-      })
+        })
+        .then((resolve) => {
+          if (resolve.isConfirmed) {
+            ob = resolve.value.ob
+            aob = resolve.value.aob
+            fs = resolve.value.fs
+            persiapanKirim()
+          }
+        })
     })
 
 
-    let updateKeyQs = function(key, value){
+    let updateKeyQs = function (key, value) {
       if (qsParam.has(key)) {
         qsParam.set(key, value)
       } else {
@@ -101,7 +105,7 @@ $(function () {
 
     let indikatorGP = document.getElementById('indikatorGP')
 
-    if(global.indikatorGaji > 0){
+    if (global.indikatorGaji > 0) {
       indikatorGP.textContent = global.indikatorGaji
       indikatorGP.classList.remove('hidden')
     }
@@ -122,10 +126,10 @@ $(function () {
                             <option value="4">Gaji Bulanan</option>W
                             <option value="5">Status</option>
                         </select>
-                        <div class="flex space-x-4 mt-2" x-data="{ radio: `+ ((aob == 1)? 2:1) +` }">
+                        <div class="flex space-x-4 mt-2" x-data="{ radio: ` + ((aob == 1) ? 2 : 1) + ` }">
                             <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                                 :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
-                                <input type="radio" name="swal-arahOb" `+ ((aob == 0)? 'checked=checked':'') +` class="radio radio-primary hidden"
+                                <input type="radio" name="swal-arahOb" ` + ((aob == 0) ? 'checked=checked' : '') + ` class="radio radio-primary hidden"
                                 value="0" @click="radio = 1">
                                 <span class="label-text text-base flex items-center"
                                 :class="(radio == 1)? 'text-primary': 'text-secondary'">
@@ -137,7 +141,7 @@ $(function () {
                             </label>
                             <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                                 :class="(radio == 2)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
-                                <input type="radio" name="swal-arahOb" `+ ((aob == 1)? 'checked=checked':'') +` class="radio radio-primary hidden" value="1"
+                                <input type="radio" name="swal-arahOb" ` + ((aob == 1) ? 'checked=checked' : '') + ` class="radio radio-primary hidden" value="1"
                                 @click="radio = 2">
                                 <span class="label-text text-base flex items-center"
                                 :class="(radio == 2)? 'text-primary': 'text-secondary'">
@@ -150,19 +154,19 @@ $(function () {
                         </div>
                     </div>
 
-                    <div class="form-control" x-data="{ radio: `+ ((fs == 1)? 2:1) +` }">
+                    <div class="form-control" x-data="{ radio: ` + ((fs == 1) ? 2 : 1) + ` }">
                       <label for="">Data Karyawan yang Ditampilkan</label>
                       <div class="flex space-x-4 mt-2">
                       <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                           :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
-                          <input type="radio" name="swal-filterShow" `+ ((fs == 0)? 'checked=checked':'') +` class="radio radio-primary hidden"
+                          <input type="radio" name="swal-filterShow" ` + ((fs == 0) ? 'checked=checked' : '') + ` class="radio radio-primary hidden"
                           value="0" @click="radio = 1">
                           <span class="label-text text-base"
                           :class="(radio == 1)? 'text-primary': 'text-secondary'">Karyawan Aktif</span>
                       </label>
                       <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                           :class="(radio == 2)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
-                          <input type="radio" name="swal-filterShow" `+ ((fs == 1)? 'checked=checked':'') +` class="radio radio-primary hidden" value="1"
+                          <input type="radio" name="swal-filterShow" ` + ((fs == 1) ? 'checked=checked' : '') + ` class="radio radio-primary hidden" value="1"
                           @click="radio = 2">
                           <span class="label-text text-base"
                           :class="(radio == 2)? 'text-primary': 'text-secondary'">Semua Karyawan</span>
@@ -177,86 +181,99 @@ $(function () {
 
   }
 
-
   // ========================================= detail ==========================================================
-  if ($('.base-page').data('pagename') == "detail") {
-    $('a#ubahStatus').on('click', function () {
-      console.log(location.pathname.replace('/app/pegawai/', ''))
-      console.log($(this).attr('data-statussekarang'))
+  if (basePage == "detail") {
 
-      const status = ($(this).attr('data-statussekarang') == 0) ? 0 : 1
-      const defineModal = [
-        {
-          title: 'Aktifkan pegawai?',
-          text: "Dengan mengaktifkan pegawai, pegawai tersebut akan kembali mendapat akses ke sistem ini",
-          targetStatus: 1,
-          confirmButton: 'Ya, aktifkan!',
-          confirmButtonColor: '#41BE88'
-        },
-        {
-          title: 'Nonaktifkan pegawai?',
-          text: "Dengan menonaktifkan pegawai, pegawai tersebut akan kehilangan akses ke sistem ini",
-          targetStatus: 0,
-          confirmButton: 'Ya, nonaktifkan!',
-          confirmButtonColor: '#Dc3741'
-        },
-      ]
+    const btUbahStatus = document.getElementById('btUbahStatus')
+    const defineModal = [{
+        title: 'Aktifkan pegawai?',
+        text: "Dengan mengaktifkan pegawai, pegawai tersebut akan kembali mendapat akses ke sistem ini",
+        targetStatus: 1,
+        confirmButton: 'Ya, aktifkan!',
+        confirmButtonColor: '#41BE88'
+      },
+      {
+        title: 'Nonaktifkan pegawai?',
+        text: "Dengan menonaktifkan pegawai, pegawai tersebut akan kehilangan akses ke sistem ini",
+        targetStatus: 0,
+        confirmButton: 'Ya, nonaktifkan!',
+        confirmButtonColor: '#Dc3741'
+      },
+    ]
 
-      Swal.fire({
-        title: defineModal[status].title,
-        text: defineModal[status].text,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: defineModal[status].confirmButtonColor,
-        confirmButtonText: defineModal[status].confirmButton,
-        cancelButtonText: 'Batal',
-        didOpen: ()=>{
-          Swal.getCancelButton().focus()
-        },
-        preConfirm: () => {
+    if (btUbahStatus) {
+      btUbahStatus.addEventListener('click', (e) => {
+        console.log()
+        const status = (e.target.dataset.statusSekarang == 0) ? 0 : 1
 
-          Swal.showLoading(Swal.getConfirmButton())
-          return new Promise(function (resolve, reject) {
-            setTimeout(function () {
+        Swal.fire({
+          title: defineModal[status].title,
+          text: defineModal[status].text,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: defineModal[status].confirmButtonColor,
+          confirmButtonText: defineModal[status].confirmButton,
+          cancelButtonText: 'Batal',
+          scrollbarPadding: false,
+          didOpen: () => {
+            Swal.getCancelButton().focus()
+          },
+          preConfirm: () => {
+
+            Swal.showLoading(Swal.getConfirmButton())
+            return new Promise(function (resolve, reject) {
+              setTimeout(function () {
+                Swal.hideLoading()
+                reject('Tidak ada respon dari server')
+              }, 5000)
+
+              $.ajaxSetup({
+                headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+              });
+
+              $.ajax({
+                type: "PUT",
+                url: location.pathname + '/status',
+                data: {
+                  target: defineModal[status].targetStatus
+                },
+                dataType: "json",
+                success: function () {
+                  resolve()
+                },
+                error: function (xhr) {
+                  reject(xhr.responseJSON.error)
+                }
+              });
+            }).catch(function (error) {
               Swal.hideLoading()
-              reject('Tidak ada respon dari server')
-            }, 5000)
-
-            $.ajaxSetup({
-              headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-              }
-            });
-
-            $.ajax({
-              type: "PUT",
-              url: location.pathname + '/status',
-              data: { target: defineModal[status].targetStatus },
-              dataType: "json",
-              success: function () {
-                resolve()
-              },
-              error: function (xhr) {
-                reject(xhr.responseJSON.error)
-              }
-            });
-          }).catch(function (error) {
-            Swal.hideLoading()
-            Swal.showValidationMessage('Error: ' + error)
-          })
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire(
-            'Sukses!',
-            'Pegawai berhasil ' + ((status == 0)? 'diaktifkan.': 'dinonaktifkan.'),
-            'success'
-          ).then(() => {
-            location.href = location.pathname
-          })
-        }
+              Swal.showValidationMessage('Error: ' + error)
+            })
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire(
+              'Sukses!',
+              'Pegawai berhasil ' + ((status == 0) ? 'diaktifkan.' : 'dinonaktifkan.'),
+              'success'
+            ).then(() => {
+              location.href = location.pathname
+            })
+          }
+        })
       })
-    });
+    }
+
+
+    const btAkun = document.getElementById('btAkun')
+    if(btAkun){
+      btAkun.addEventListener('click', () => {
+        window.location = location.pathname + '/akun'
+      })
+    }
+
   }
 
 });

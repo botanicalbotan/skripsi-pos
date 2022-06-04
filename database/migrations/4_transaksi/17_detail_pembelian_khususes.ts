@@ -7,7 +7,7 @@ export default class DetailPembelianKhususes extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
       table.integer('pembelian_id').unsigned().references('pembelians.id').notNullable()
-      table.float('berat_sebenarnya').notNullable()
+      // table.float('berat_sebenarnya').notNullable()
       table.integer('persentase_harga_mal').notNullable()
       table.integer('harga_beli_pergram').notNullable()
       table.dateTime('deleted_at').nullable()

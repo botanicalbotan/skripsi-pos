@@ -1,8 +1,9 @@
 import Swal from "sweetalert2"
 
 $(function () {
+  const basePage = document.getElementById('base-page').dataset.pagename
   // ========================================= list ==========================================================
-  if ($('.base-page').data('pagename') == "list") {
+  if (basePage == "list") {
     const BASEURL = window.location.pathname
     const qsParam = new URLSearchParams(window.location.search)
     const pencarian = document.querySelector('input#pencarian')
@@ -56,6 +57,7 @@ $(function () {
           confirmButtonText: 'Terapkan',
           showCancelButton: true,
           cancelButtonText: 'Batal',
+          scrollbarPadding: false,
           confirmButtonColor: global.SwalCustomColor.button.confirm,
           html: printAturTabelHTML(),
           willOpen: () => {
@@ -134,7 +136,7 @@ $(function () {
   }
 
   // ========================================== form ===========================================
-  if ($('.base-page').data('pagename') == "form") {
+  if (basePage == "form") {
     const formKas = document.getElementById('formKas')
     const submitKas = document.getElementById('submitKas')
 
@@ -150,6 +152,7 @@ $(function () {
         confirmButtonColor: global.SwalCustomColor.button.confirm,
         confirmButtonText: 'Ya, ubah!',
         cancelButtonText: 'Batal',
+        scrollbarPadding: false,
         focusCancel: true,
       }).then((result)=>{
         if(result.isConfirmed){
@@ -168,7 +171,7 @@ $(function () {
 
 
   // ========================================== detail ===========================================
-  if ($('.base-page').data('pagename') == "detail") {
+  if (basePage == "detail") {
     const BASEURL = window.location.pathname
     const namaKas = document.getElementById('namaKas')
 
@@ -185,6 +188,7 @@ $(function () {
           showCancelButton: true,
           confirmButtonText: 'Ya, hapus!',
           cancelButtonText: 'Batal',
+          scrollbarPadding: false,
           focusCancel: true,
           confirmButtonColor: global.SwalCustomColor.button.deny,
         }).then((result)=>{
@@ -201,7 +205,7 @@ $(function () {
 
 
   // ========================================== edit ===========================================
-  if ($('.base-page').data('pagename') == "edit") {
+  if (basePage == "edit") {
     const BASEURL = window.location.pathname
 
     const formKas = document.getElementById('formKas')
@@ -219,6 +223,7 @@ $(function () {
         confirmButtonColor: global.SwalCustomColor.button.confirm,
         confirmButtonText: 'Ya, ubah!',
         cancelButtonText: 'Batal',
+        scrollbarPadding: false,
         focusCancel: true,
       }).then((result)=>{
         if(result.isConfirmed){

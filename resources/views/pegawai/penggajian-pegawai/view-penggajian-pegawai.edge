@@ -1,6 +1,6 @@
 @layout('layouts/master')
 @section('content')
-<div class="w-full p-8 base-page" data-pagename="detail">
+<div class="w-full p-8 base-page" data-pagename="detail" id="base-page">
   <h2 class="text-4xl font-semibold">Data Penggajian</h2>
   <h4 class="text-xl text-secondary">Detail data dari tagihan pembayaran gaji karyawan yang anda pilih.</h4>
 
@@ -197,7 +197,7 @@
               Perhatian
             </div>
             <div class="lg:w-52">
-              Tagihan ini seharusnya dibayar <span class="font-semibold">10 hari</span> yang lalu. Klik tombol dibawah untuk memproses pembayaran.
+              Tagihan ini seharusnya dibayar <span class="font-semibold">{{ Math.abs(tambahan.jarakHari) }} hari</span> yang lalu. Klik tombol dibawah untuk memproses pembayaran.
             </div>
             <div class="card-actions">
               <button id="btBayar" class="btn btn-block btn-accent text-white">Bayar Tagihan</button>
@@ -206,7 +206,7 @@
         </div>
         @endif
 
-        <div class="bg-base-200 min-h-60 card">
+        <div class="bg-base-200 border min-h-60 card">
           <div class="card-body space-y-4">
             <div class=" card-title">
               Foto Penerima

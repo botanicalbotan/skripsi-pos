@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<div class="w-full p-8 base-page" data-pagename="form">
+<div class="w-full p-8 base-page" data-pagename="form" id="base-page">
   <h2 class="text-4xl font-semibold">Kode Produksi Baru</h2>
   <h4 class="text-lg text-secondary opacity-60">Formulir untuk mencatat kode produksi baru ke sistem.</h4>
 
@@ -352,16 +352,50 @@
                 @endif
               </div>
 
+
               <div class="form-control" x-data>
                 <div class="flex items-center">
-                  <label for="ongkosMalRosokPerGram" class="flex-1">Ongkos Mal Perhiasan Rosok per Gram<span class="text-error"> *</span></label>
+                  <label for="persentaseMalRosok" class="flex-1">Persentase Mal Perhiasan Rosok<span class="text-error"> *</span></label>
 
                   <div class="dropdown dropdown-end dropdown-top">
                     <a href="#" class="hover:underline flex-none">Apa ini?</a>
                     <div tabindex="0"
                       class="shadow border card compact dropdown-content bg-base-100 w-60">
                       <div class="card-body">
-                        <h2 class="card-title">Ongkos Mal Per Gram</h2>
+                        <h2 class="card-title">Persentase Mal Rosok</h2>
+                        <p>Adalah .... tanya ke pak arifin dulu</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="relative flex w-full flex-wrap items-stretch">
+                  <span
+                    class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                    %
+                  </span>
+                  <input type="number"
+                    oninput="validity.valid||(value='');"
+                    placeholder="0" min="0" max="100" name="persentaseMalRosok"
+                    id="persentaseMalRosok" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
+                </div>
+
+                @if(flashMessages.has('errors.persentaseMalRosok'))
+                <p class="text-error">{{ flashMessages.get('errors.persentaseMalRosok') }}</p>
+                @endif
+              </div>
+
+
+              <div class="form-control" x-data>
+                <div class="flex items-center">
+                  <label for="ongkosBeliTanpaNota" class="flex-1">Ongkos Beli Tanpa Nota<span class="text-error"> *</span></label>
+
+                  <div class="dropdown dropdown-end dropdown-top">
+                    <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                    <div tabindex="0"
+                      class="shadow border card compact dropdown-content bg-base-100 w-60">
+                      <div class="card-body">
+                        <h2 class="card-title">Ongkos Beli Tanpa Nota</h2>
                         <p>Adalah .... tanya ke pak arifin dulu</p>
                       </div>
                     </div>
@@ -375,12 +409,12 @@
                   </span>
                   <input type="number"
                     oninput="validity.valid||(value='');"
-                    placeholder="0" min="0" name="ongkosMalRosokPerGram"
-                    id="ongkosMalRosokPerGram" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
+                    placeholder="0" min="0" name="ongkosBeliTanpaNota"
+                    id="ongkosBeliTanpaNota" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
                 </div>
 
-                @if(flashMessages.has('errors.ongkosMalRosokPerGram'))
-                <p class="text-error">{{ flashMessages.get('errors.ongkosMalRosokPerGram') }}</p>
+                @if(flashMessages.has('errors.ongkosBeliTanpaNota'))
+                <p class="text-error">{{ flashMessages.get('errors.ongkosBeliTanpaNota') }}</p>
                 @endif
               </div>
 

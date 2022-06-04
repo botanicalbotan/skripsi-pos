@@ -1,23 +1,25 @@
 import Swal from "sweetalert2"
 
 $(function () {
+  const basePage = document.getElementById('base-page').dataset.pagename
   // ============================================= list =====================================================
-  if ($('.base-page').data('pagename') == "list") {
+  if (basePage == "list") {
     const BASEURL = window.location.pathname
     const qsParam = new URLSearchParams(window.location.search)
     const pencarian = document.querySelector('input#pencarian')
     const hapuscari = document.getElementById('hapusPencarian')
     const btAturTabel = document.getElementById('btAturTabel')
 
-    let ob = 0, aob = 0
+    let ob = 0,
+      aob = 0
     if (qsParam.has('ob')) {
-      if(['0', '1', '2', '3', '4'].includes(qsParam.get('ob'))){
+      if (['0', '1', '2', '3', '4'].includes(qsParam.get('ob'))) {
         ob = qsParam.get('ob')
       }
     }
 
     if (qsParam.has('aob')) {
-      if(['0', '1'].includes(qsParam.get('aob'))){
+      if (['0', '1'].includes(qsParam.get('aob'))) {
         aob = qsParam.get('aob')
       }
     }
@@ -74,32 +76,33 @@ $(function () {
 
     btAturTabel.addEventListener('click', (e) => {
       Swal.fire({
-        title: 'Atur Tabel',
-        confirmButtonText: 'Terapkan',
-        showCancelButton: true,
-        cancelButtonText: 'Batal',
-        confirmButtonColor: '#4b6bfb',
-        html: printAturTabelHTML(),
-        willOpen: () => {
-          Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
-        },
-        preConfirm: () => {
-          return {
-            ob: Swal.getHtmlContainer().querySelector('#swal-ob').value,
-            aob: Swal.getHtmlContainer().querySelector('input[name="swal-arahOb"]:checked').value
+          title: 'Atur Tabel',
+          confirmButtonText: 'Terapkan',
+          showCancelButton: true,
+          cancelButtonText: 'Batal',
+          confirmButtonColor: '#4b6bfb',
+          scrollbarPadding: false,
+          html: printAturTabelHTML(),
+          willOpen: () => {
+            Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
+          },
+          preConfirm: () => {
+            return {
+              ob: Swal.getHtmlContainer().querySelector('#swal-ob').value,
+              aob: Swal.getHtmlContainer().querySelector('input[name="swal-arahOb"]:checked').value
+            }
           }
-        }
-      })
-      .then((resolve)=>{
-        if(resolve.isConfirmed){
-          ob = resolve.value.ob
-          aob = resolve.value.aob
-          persiapanKirim()
-        }
-      })
+        })
+        .then((resolve) => {
+          if (resolve.isConfirmed) {
+            ob = resolve.value.ob
+            aob = resolve.value.aob
+            persiapanKirim()
+          }
+        })
     })
 
-    let updateKeyQs = function(key, value){
+    let updateKeyQs = function (key, value) {
       if (qsParam.has(key)) {
         qsParam.set(key, value)
       } else {
@@ -121,10 +124,10 @@ $(function () {
                             <option value="3">Bentuk Perhiasan</option>W
                             <option value="4">Stok</option>
                         </select>
-                        <div class="flex space-x-4 mt-2" x-data="{ radio: `+ ((aob == 1)? 2:1) +` }">
+                        <div class="flex space-x-4 mt-2" x-data="{ radio: ` + ((aob == 1) ? 2 : 1) + ` }">
                             <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                                 :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
-                                <input type="radio" name="swal-arahOb" `+ ((aob == 0)? 'checked=checked':'') +` class="radio radio-primary hidden"
+                                <input type="radio" name="swal-arahOb" ` + ((aob == 0) ? 'checked=checked' : '') + ` class="radio radio-primary hidden"
                                 value="0" @click="radio = 1">
                                 <span class="label-text text-base flex items-center"
                                 :class="(radio == 1)? 'text-primary': 'text-secondary'">
@@ -136,7 +139,7 @@ $(function () {
                             </label>
                             <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                                 :class="(radio == 2)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
-                                <input type="radio" name="swal-arahOb" `+ ((aob == 1)? 'checked=checked':'') +` class="radio radio-primary hidden" value="1"
+                                <input type="radio" name="swal-arahOb" ` + ((aob == 1) ? 'checked=checked' : '') + ` class="radio radio-primary hidden" value="1"
                                 @click="radio = 2">
                                 <span class="label-text text-base flex items-center"
                                 :class="(radio == 2)? 'text-primary': 'text-secondary'">
@@ -157,7 +160,7 @@ $(function () {
   }
 
   // ============================================= form =====================================================
-  if ($('.base-page').data('pagename') == "form") {
+  if (basePage == "form") {
     const formKelompok = document.querySelector('form#formKelompok')
     const kadar = document.querySelector('select[name="kadar"]')
     let eventKadar = false
@@ -165,14 +168,15 @@ $(function () {
     let eventBentuk = false
     const berat = document.querySelector('input[name="beratKelompok"]')
     let eventBerat = false
+    const btSubmit = document.getElementById('btSubmit')
 
-    formKelompok.addEventListener('submit', function (e) {
+    btSubmit.addEventListener('click', () => {
       let errorMsg = document.createElement('p')
       errorMsg.classList.add('text-error', 'pesanerror')
 
       if (kadar.value === 'kosong') {
-        e.preventDefault()
-        kadar.classList.add('ring', 'ring-error')
+        kadar.classList.add('select-error', 'bg-error')
+        kadar.classList.remove('bg-primary', 'select-primary')
         errorMsg.innerText = 'Pilih salah satu kadar!'
         if (document.getElementsByClassName('pesanerror').length == 0) kadar.after(errorMsg)
         kadar.scrollIntoView({
@@ -184,16 +188,19 @@ $(function () {
         if (!eventKadar) {
           kadar.addEventListener('change', function () {
             if (kadar.value && kadar.value !== 'kosong') {
-              kadar.classList.remove('ring', 'ring-error')
+              kadar.classList.remove('select-error', 'bg-error')
+              kadar.classList.add('bg-primary', 'select-primary')
               global.removeElementsByClass('pesanerror')
             }
           })
           eventKadar = true
         }
 
+        return
+
       } else if (bentuk.value === 'kosong') {
-        e.preventDefault()
-        bentuk.classList.add('ring', 'ring-error')
+        bentuk.classList.add('select-error', 'bg-error')
+        bentuk.classList.remove('bg-primary', 'select-primary')
         errorMsg.innerText = 'Pilih salah satu bentuk perhiasan!'
         if (document.getElementsByClassName('pesanerror').length == 0) bentuk.after(errorMsg)
         bentuk.scrollIntoView({
@@ -205,15 +212,18 @@ $(function () {
         if (!eventBentuk) {
           bentuk.addEventListener('change', function () {
             if (bentuk.value && bentuk.value !== 'kosong') {
-              bentuk.classList.remove('ring', 'ring-error')
+              bentuk.classList.remove('select-error', 'bg-error')
+              bentuk.classList.add('bg-primary', 'select-primary')
               global.removeElementsByClass('pesanerror')
             }
           })
           eventBentuk = true
         }
-      } else if (berat.value == 0) {
-        e.preventDefault()
-        berat.classList.add('ring', 'ring-error')
+
+        return
+
+      } else if (berat.value == 0 || !berat.value) {
+        berat.classList.add('input-error', 'bg-error')
         errorMsg.innerText = 'Berat kelompok tidak boleh 0!'
         if (document.getElementsByClassName('pesanerror').length == 0) berat.after(errorMsg)
         berat.scrollIntoView({
@@ -224,16 +234,304 @@ $(function () {
 
         if (!eventBerat) {
           berat.addEventListener('change', function () {
-            if (berat.value != 0) {
-              berat.classList.remove('ring', 'ring-error')
+            if (berat.value != 0 && berat.value) {
+              berat.classList.remove('input-error', 'bg-error')
               global.removeElementsByClass('pesanerror')
             }
           })
           eventBerat = true
         }
+
+        return
       }
 
+      if (!formKelompok.reportValidity()) return
+
+      Swal.fire({
+        title: 'Simpan kelompok baru?',
+        text: 'Pastikan data yang anda isikan sudah benar!',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, simpan!',
+        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        cancelButtonText: 'Batal',
+        scrollbarPadding: false,
+        focusCancel: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          formKelompok.action = '/app/barang/kelompok'
+          formKelompok.submit()
+        }
+      })
     })
+
+
+  }
+
+
+  // ============================================= edit =====================================================
+  if (basePage == "edit") {
+    const formKelompok = document.querySelector('form#formKelompok')
+    const BASEURL = window.location.pathname
+
+    const kadar = document.querySelector('select[name="kadar"]')
+    let eventKadar = false
+    const bentuk = document.querySelector('select[name="bentuk"]')
+    let eventBentuk = false
+    const berat = document.querySelector('input[name="beratKelompok"]')
+    let eventBerat = false
+    const btSubmit = document.getElementById('btSubmit')
+
+    btSubmit.addEventListener('click', () => {
+      let errorMsg = document.createElement('p')
+      errorMsg.classList.add('text-error', 'pesanerror')
+
+      if (kadar.value === 'kosong') {
+        kadar.classList.add('select-error', 'bg-error')
+        kadar.classList.remove('bg-primary', 'select-primary')
+        errorMsg.innerText = 'Pilih salah satu kadar!'
+        if (document.getElementsByClassName('pesanerror').length == 0) kadar.after(errorMsg)
+        kadar.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "nearest"
+        });
+
+        if (!eventKadar) {
+          kadar.addEventListener('change', function () {
+            if (kadar.value && kadar.value !== 'kosong') {
+              kadar.classList.remove('select-error', 'bg-error')
+              kadar.classList.add('bg-primary', 'select-primary')
+              global.removeElementsByClass('pesanerror')
+            }
+          })
+          eventKadar = true
+        }
+
+        return
+
+      } else if (bentuk.value === 'kosong') {
+        bentuk.classList.add('select-error', 'bg-error')
+        bentuk.classList.remove('bg-primary', 'select-primary')
+        errorMsg.innerText = 'Pilih salah satu bentuk perhiasan!'
+        if (document.getElementsByClassName('pesanerror').length == 0) bentuk.after(errorMsg)
+        bentuk.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "nearest"
+        });
+
+        if (!eventBentuk) {
+          bentuk.addEventListener('change', function () {
+            if (bentuk.value && bentuk.value !== 'kosong') {
+              bentuk.classList.remove('select-error', 'bg-error')
+              bentuk.classList.add('bg-primary', 'select-primary')
+              global.removeElementsByClass('pesanerror')
+            }
+          })
+          eventBentuk = true
+        }
+
+        return
+
+      } else if (berat.value == 0 || !berat.value) {
+        berat.classList.add('input-error', 'bg-error')
+        errorMsg.innerText = 'Berat kelompok tidak boleh 0!'
+        if (document.getElementsByClassName('pesanerror').length == 0) berat.after(errorMsg)
+        berat.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "nearest"
+        });
+
+        if (!eventBerat) {
+          berat.addEventListener('change', function () {
+            if (berat.value != 0 && berat.value) {
+              berat.classList.remove('input-error', 'bg-error')
+              global.removeElementsByClass('pesanerror')
+            }
+          })
+          eventBerat = true
+        }
+
+        return
+      }
+
+      if (!formKelompok.reportValidity()) return
+
+      Swal.fire({
+        title: 'Simpan perubahan?',
+        text: 'Pastikan data yang anda isikan sudah benar!',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, simpan!',
+        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        cancelButtonText: 'Batal',
+        scrollbarPadding: false,
+        focusCancel: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          formKelompok.action = BASEURL.slice(0, -5) + '?_method=PUT'
+          formKelompok.submit()
+        }
+      })
+    })
+
+
+    // disini buat ngedit kelompok
+    const btGantiStok = document.getElementById('btGantiStok')
+    const stok = document.getElementById('stok')
+    let jumlahStok = stok.value
+
+    btGantiStok.addEventListener('click', () => {
+      Swal.fire({
+        title: 'Pengubahan Stok',
+        html: printChangeStockHTML(jumlahStok),
+        showCancelButton: true,
+        scrollbarPadding: false,
+        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        confirmButtonText: 'Selanjutnya',
+        preConfirm: () => {
+          const stokBaru = document.getElementById('swal-stokBaru')
+          const stokTercatat = document.getElementById('swal-stokTercatat')
+          const alasan = document.getElementById('swal-alasan')
+
+          try {
+            if (!stokBaru.value) throw 'Jumlah stok baru tidak boleh kosong!'
+            if (!stokTercatat.value) throw 'Jumlah stok tercatat tidak boleh kosong!'
+            if (!alasan.value) throw 'Alasan pengubahan tidak boleh kosong!'
+
+            if (stokBaru.value < 0) throw 'Jumlah stok baru tidak valid!'
+
+            return {
+              stokBaru: stokBaru.value,
+              stokTercatat: stokTercatat.value,
+              alasan: alasan.value
+            }
+
+          } catch (error) {
+            Swal.showValidationMessage(error)
+          }
+
+        }
+      }).then((gantiStok) => {
+        if (gantiStok.isConfirmed) {
+
+          Swal.fire({
+              title: 'Konfirmasi Pengubahan Stok',
+              html: `Anda akan mengubah stok kelompok ini dari <b>${gantiStok.value.stokTercatat}</b> menjadi <b>${gantiStok.value.stokBaru}</b> dengan alasan "${gantiStok.value.alasan}". Lanjutkan?`,
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: 'Ya, ubah stok!',
+              cancelButtonText: 'Batal',
+              scrollbarPadding: false,
+              focusCancel: true,
+              confirmButtonColor: global.SwalCustomColor.button.confirm,
+              preConfirm: () => {
+                Swal.showLoading()
+
+                return new Promise(function (resolve, reject) {
+                  setTimeout(function () {
+                    reject({
+                      tipe: 'lokal',
+                      msg: 'Tidak ada respon dari server'
+                    })
+                  }, 5000)
+
+                  $.ajax({
+                    type: "PUT",
+                    url: location.pathname.slice(0, -5) + '/ubahStok',
+                    data: {
+                      stokBaru: gantiStok.value.stokBaru,
+                      alasan: gantiStok.value.alasan
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                      resolve({
+                        apakahSukses: true,
+                        msg: 'Stok kelompok berhasil diubah!',
+                        stokBaru: gantiStok.value.stokBaru
+                      })
+                    },
+                    error: function (xhr) {
+                      reject({
+                        tipe: 'lokal',
+                        msg: (typeof xhr.responseJSON.error === 'string') ? xhr.responseJSON.error : 'Ada error pada server!'
+                      })
+                    }
+                  });
+                }).catch(function (error) {
+                  if (error.tipe && error.tipe === 'lokal') {
+                    return error
+                  } else {
+                    return {
+                      apakahSukses: false,
+                      msg: 'Ada kesalahan pada sistem. Silahkan coba lagi.'
+                    }
+                  }
+                })
+
+              }
+            })
+            .then((hasilUbah) => {
+              if (hasilUbah.isConfirmed) {
+                if(hasilUbah.value.apakahSukses){
+                  stok.value = hasilUbah.value.stokBaru
+                  jumlahStok = hasilUbah.value.stokBaru
+                }
+
+                Swal.fire({
+                  title: ((hasilUbah.value.apakahSukses) ? 'Pengubahan Berhasil!' : 'Error'),
+                  text: global.capsFirstWord(hasilUbah.value.msg),
+                  icon: ((hasilUbah.value.apakahSukses) ? 'success' : 'error'),
+                  scrollbarPadding: false,
+                  confirmButtonText: 'Tutup',
+                  confirmButtonColor: global.SwalCustomColor.button.cancel
+                })
+              }
+            })
+
+        }
+      })
+    })
+
+    let printChangeStockHTML = function (stokLama = 0) {
+
+      const html = `
+              <form>
+                <div class="w-full px-6 space-y-6 flex flex-col text-left">   
+                    <div class="form-control">
+                      <label for="swal-stokTercatat">
+                        <span class="">Jumlah Stok Tercatat<span class="text-error"> *</span></span>
+                      </label>
+                      <input type="number" id="swal-stokTercatat" class="input input-bordered"
+                        placeholder="0" value = "${stokLama}" disabled>
+                    </div>
+
+                    <div class="form-control">
+                      <label for="swal-stokBaru">
+                        <span class="">Jumlah Stok Baru<span class="text-error"> *</span></span>
+                      </label>
+                      <input type="number" oninput="validity.valid||(value='');" id="swal-stokBaru" class="input input-bordered"
+                        placeholder="0" min="0" required>
+                    </div>
+    
+                    <div class="form-control">
+                        <label for="swal-alasan">
+                          <span class="">Alasan Pengubahan Stok</span>
+                        </label>
+                        <textarea type="text" id="swal-alasan" name="swal-alasan" class="textarea textarea-bordered h-24"
+                          placeholder="Contoh: Catatan stok tidak cocok dengan stok sebenarnya" maxlength="100" required></textarea>
+
+                      </div>
+                    </div>
+    
+                </div>
+              </form>
+          `
+      return html
+    }
+
   }
 
 

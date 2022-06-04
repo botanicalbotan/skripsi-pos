@@ -29,6 +29,7 @@ $(function () {
                 title: 'Akses Kadaluarsa',
                 text: 'Nota transaksi tidak lagi dapat dicetak!',
                 icon: 'error',
+                scrollbarPadding: false,
                 confirmButtonText: 'Tutup',
                 confirmButtonColor: global.SwalCustomColor.button.cancel
               })
@@ -39,6 +40,7 @@ $(function () {
                 title: 'Permintaan Tidak Valid',
                 text: 'Record penjualan tidak valid atau ada masalah saat menyiapkan nota!',
                 icon: 'error',
+                scrollbarPadding: false,
                 confirmButtonText: 'Tutup',
                 confirmButtonColor: global.SwalCustomColor.button.cancel
               })

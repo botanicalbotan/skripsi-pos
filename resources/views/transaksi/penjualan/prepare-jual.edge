@@ -3,11 +3,10 @@
 
 @section('more-style')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@5.3.6/dist/simplebar.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/simplebar@5.3.6/dist/simplebar.min.js"></script>
 @endsection
 
 @section('content')
-<div class="w-full p-8">
+<div class="w-full p-8" id="base-page">
   <h2 class="text-4xl font-semibold">Persiapan Penjualan</h2>
   <h4 class="text-lg text-secondary opacity-60">Pilih salah satu kelompok yang akan dijual.</h4>
 
@@ -164,6 +163,7 @@
 @endsection
 
 @section('script')
+<script src="https://cdn.jsdelivr.net/npm/simplebar@5.3.6/dist/simplebar.min.js"></script>
 <script src="{{asset('assets/app.js')}}"></script>
 <script src="{{asset('assets/prepare-jual.js')}}"></script>
 @endsection

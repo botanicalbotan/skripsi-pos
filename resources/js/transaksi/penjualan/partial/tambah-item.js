@@ -6,6 +6,7 @@ export function tambahItem() {
     confirmButtonText: 'Tambahkan',
     showCancelButton: true,
     cancelButtonText: 'Batal',
+    scrollbarPadding: false,
     confirmButtonColor: global.SwalCustomColor.button.confirm,
     focusCancel: true,
     html: itemHTML(),

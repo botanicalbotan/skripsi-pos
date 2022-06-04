@@ -21,28 +21,37 @@ Route.group(() => {
       Route.post('/hitung', 'transaksi/PenjualansController.simpanTransaksi')
       Route.get('/pasca', 'transaksi/PenjualansController.pascaTransaksi')  // perlu transaksiId -> tid
 
+
+      // Route.get('/riwayat', 'transaksi/PenjualansController.listRiwayat')
+      // Route.get('/riwayat/:penjualanId', 'transaksi/PenjualansController.viewRiwayat')
+
       // ini ntar dihapus
       Route.get('/formLama', 'transaksi/PenjualansController.formLama')
-      Route.get('/final', async ({
-        response
-      }) => {
-        return response.redirect().toPath('/app/transaksi/penjualan')
-      })
+
 
     }).prefix('penjualan')
-    Route.resource('penjualan', 'transaksi/PenjualansController').only(['index', 'destroy'])
-
-
-    Route.get('/riwayat', 'transaksi/PenjualansController.listRiwayat')
-    Route.get('/riwayat/:penjualanId', 'transaksi/PenjualansController.viewRiwayat')
+    Route.resource('penjualan', 'transaksi/PenjualansController').only(['index', 'destroy', 'show'])
 
     // ======================================================== PEMBELIAN ===========================================================
     Route.group(() => {
-      Route.get('/', async ({
-        view
-      }) => {
+
+      // ini ntar dihapus kalo dah kelar
+      Route.get('/lama', async ({ view }) => {
         return view.render('transaksi/pembelian/prepare')
       })
+
+      Route.post('/QR', 'transaksi/PembeliansController.indexQR')
+      // dilempar balik kalo bukan post
+      Route.get('/QR', async ({ response }) => {
+        return response.redirect().toPath('/app/transaksi/pembelian/')
+      })
+
+
+      Route.post('/hitungHargaBelakang', 'transaksi/PembeliansController.hitungHargaBelakang') // dari ajax
+      Route.get('/hitungHargaBelakang', 'transaksi/PembeliansController.hitungHargaBelakang') // dari ajax, ini ntar dihapus, buat test doang
+  
+      // MULAI DARI SINI NTAR DIHAPUS
+      Route.post('/tesBuang', 'transaksi/PembeliansController.tesBuang')
 
       Route.get('/transaksi', async ({
         view
@@ -66,29 +75,12 @@ Route.group(() => {
         return view.render('transaksi/pembelian/base-umumQRmode')
       })
 
-      // ini yang propper, sementara ditaro di test dulu
-      Route.post('/transaksiv2', 'TestsController.transaksi')
+      // SAMPE SINI DIHAPUS OK
 
-
-      Route.get('/riwayat', 'transaksi/PenjualansController.listRiwayat')
-      Route.get('/riwayat/:penjualanId', 'transaksi/PenjualansController.viewRiwayat')
+      // Route.get('/riwayat', 'transaksi/PembeliansController.listRiwayat')
+      // Route.get('/riwayat/:penjualanId', 'transaksi/PembeliansController.viewRiwayat')
     }).prefix('pembelian')
-
-    // ini buat sementara, tp yang paling gampang buat sekarang
-    Route.post('/pembelian/QR', 'transaksi/PembeliansController.indexQR')
-    Route.get('/pembelian/QR', async ({
-      response
-    }) => {
-      return response.redirect().toPath('/app/pembelian/transaksiumum')
-    })
-    // ini buat nata dulu
-    // Route.get('/pembelian/QR', async ({ view })=>{
-    //   return view.render('transaksi/pembelian/base-umum-QR')
-    // })
-
-    // ini buat sementara, tp yang paling gampang buat sekarang
-    // Route.get('/pembelianQR', 'transaksi/PembeliansController.indexQR')
-    // Route.post('/pembelianQR', 'transaksi/PembeliansController.pembelianQR')
+    Route.resource('pembelian', 'transaksi/PembeliansController').only(['index', 'destroy', 'show'])
 
 
     Route.post('/cariPembelianByQR', 'transaksi/PembeliansController.cariQR')

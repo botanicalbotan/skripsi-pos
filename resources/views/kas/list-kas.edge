@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<div class="w-full p-8 base-page" data-pagename = "list">
+<div class="w-full p-8 base-page" data-pagename = "list" id="base-page">
   {{--  aslinya menu kelompok  --}}
   <h2 class="text-4xl font-semibold">Pembukuan Kas - Hari Ini</h2>
   <h4 class="text-lg text-secondary opacity-60">Pembukuan catatan pemasukan dan pengeluaran kas harian</h4>
@@ -53,7 +53,7 @@
     <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
       <div class="flex-1">
         <div
-          class="relative flex w-full flex-wrap items-stretch border-b-2 text-secondary focus-within:border-primary focus-within:text-primary">
+          class="max-w-md relative flex w-full flex-wrap items-stretch border-b-2 text-secondary focus-within:border-primary focus-within:text-primary">
           <span class="z-10 h-full flex leading-snug absolute text-center items-center justify-center w-8 pl-3 py-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 items-center" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">

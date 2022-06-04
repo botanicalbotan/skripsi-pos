@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<div class="w-full p-8 base-page" data-pagename="pembelian-umum">
+<div class="w-full p-8 base-page" data-pagename="pembelian-umum" id="base-page">
   <h2 class="text-4xl font-semibold">Base Umum</h2>
   <h4 class="text-lg text-secondary opacity-60">Buat penjualan baru dan simpan ke dalam sistem.</h4>
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-40 shadow min:h-96">
@@ -182,7 +182,7 @@
             <label for="beliPotongan">
               <span class="">Potongan Sesuai Nota<span class="text-error"> *</span></span>
             </label>
-            <label class="input-group input-group">
+            <label class="input-group">
               <input type="number" id="beliPotongan" name="beliPotongan" value="0" min="0" class="input input-bordered"
               oninput="validity.valid||(value='');" @focus="$el.value=($el.value == 0)? '':$el.value"
                       @focusout="$el.value = ($el.value =='')? 0:$el.value" required>

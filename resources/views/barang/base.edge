@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<div class="w-full p-8 base-page" data-pagename = "list">
+<div class="w-full p-8 base-page" data-pagename = "list" id="base-page">
   {{--  aslinya menu kelompok  --}}
   <h2 class="text-4xl font-semibold">Kelola Barang</h2>
   <h4 class="text-lg text-secondary opacity-60">Kelola hal-hal seputar catatan barang seperti kelompok, model, kerusakan dan kode produksi.</h4>
@@ -47,10 +47,12 @@
 
   {{--  Card Utama  --}}
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 shadow min:h-96">
+    @include('partials/wadah-alert')
+
     <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
       <div class="flex-1">
         <div
-          class="relative flex w-full flex-wrap items-stretch border-b-2 text-secondary focus-within:border-primary focus-within:text-primary">
+          class="max-w-md relative flex w-full flex-wrap items-stretch border-b-2 text-secondary focus-within:border-primary focus-within:text-primary">
           <span class="z-10 h-full flex leading-snug absolute text-center items-center justify-center w-8 pl-3 py-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 items-center" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
@@ -142,17 +144,29 @@
             <tr class="hover">
               <td>
                 <a href="{{ '/app/barang/kelompok/' + kelompok.id }}" class="font-medium">{{ kelompok.nama }}
-                  @if(kelompok.totalKaliPenambahanHariIni > 0)
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-flex text-warning" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                  </svg>
+                  @if(kelompok.totalKaliPenambahan > 0)
+
+                  @if(kelompok.totalPenjualan > 0)
+                  <div class="tooltip" data-tip="Ada Penjualan">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-flex text-primary" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                    </svg>
+                  </div>
+                  @endif
+                  <div class="tooltip" data-tip="Ada Penambahan Stok">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-flex text-accent" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
                   @endif
 
-                  @if(kelompok.totalPenjualanHariIni > 0)
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-flex text-primary" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                  </svg>
-                  @endif
+                  @if(kelompok.totalKaliKoreksi > 0)
+                  <div class="tooltip" data-tip="Ada Koreksi Stok">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-flex text-error" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                  </div>
+                  @endif     
 
                 </a>
               </td>

@@ -8,7 +8,7 @@ export default class Jabatans extends BaseSchema {
       table.increments('id')
       table.enum('nama', [
         'Karyawan',
-        'Karyawan Khusus',
+        'Kepala Toko',
         'Pemilik'
       ]).notNullable()
       /**

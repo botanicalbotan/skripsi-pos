@@ -18,6 +18,7 @@ import Bentuk from 'App/Models/barang/Bentuk'
 import Penjualan from 'App/Models/transaksi/Penjualan'
 import PenambahanStok from 'App/Models/barang/PenambahanStok'
 import Pengguna from '../akun/Pengguna'
+import KoreksiStok from './KoreksiStok'
 
 type KelompokQuery = ModelQueryBuilderContract<typeof Kelompok>
 
@@ -84,6 +85,9 @@ export default class Kelompok extends BaseModel {
 
   @belongsTo(() => Pengguna)
   public pengguna: BelongsTo<typeof Pengguna>
+
+  @hasMany(() => KoreksiStok)
+  public koreksiStoks: HasMany<typeof KoreksiStok>
 
   @beforeFetch()
   @beforeFind()

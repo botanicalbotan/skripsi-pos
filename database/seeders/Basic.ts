@@ -10,10 +10,13 @@ import Pasaran from 'App/Models/sistem/Pasaran'
 import RentangUsia from 'App/Models/transaksi/RentangUsia'
 import StatusGadai from 'App/Models/transaksi/StatusGadai'
 import TipeNotif from 'App/Models/sistem/TipeNotif'
-import { DateTime, Settings } from 'luxon'
+import {
+  DateTime,
+  Settings
+} from 'luxon'
 
 export default class BasicSeeder extends BaseSeeder {
-  public async run () {
+  public async run() {
 
     // cukup panggil seeder ini SEKALI aja
 
@@ -47,12 +50,11 @@ export default class BasicSeeder extends BaseSeeder {
     })
 
 
-    await Jabatan.createMany([
-      {
+    await Jabatan.createMany([{
         nama: 'Karyawan'
       },
       {
-        nama: 'Karyawan Khusus'
+        nama: 'Kepala Toko'
       },
       {
         nama: 'Pemilik'
@@ -68,22 +70,20 @@ export default class BasicSeeder extends BaseSeeder {
       password: 'admin'
     })
 
-    const pengguna = new Pengguna()
-    pengguna.nama = 'Testing Admin'
-    pengguna.gender= 'L'
-    pengguna.alamat = 'Klego'
-    pengguna.nohpAktif = '0888888888'
-    pengguna.apakahPegawaiAktif = true
-    pengguna.gajiBulanan = 1000000
-    pengguna.userId = userBaru.id
-    pengguna.jabatanId = jabatanPemilik.id
-    pengguna.tempatLahir = 'Semarang'
-    pengguna.tanggalLahir = DateTime.now()
-    pengguna.lamaKerja = 0
-    await pengguna.save()
+    const penggunaBaru = await userBaru.related('pengguna').create({
+      nama: 'Testing Admin',
+      gender: 'L',
+      alamat: 'Klego',
+      nohpAktif: '0888888888',
+      apakahPegawaiAktif: true,
+      gajiBulanan: 1000000,
+      jabatanId: jabatanPemilik.id,
+      tempatLahir: 'Semarang',
+      tanggalLahir: DateTime.now(),
+      lamaKerja: 0
+    })
 
-    await Bentuk.createMany([
-      {
+    await Bentuk.createMany([{
         bentuk: 'Anting',
         kode: 'ATG'
       },
@@ -118,53 +118,52 @@ export default class BasicSeeder extends BaseSeeder {
       nama: 'Model Anting Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: pengguna.id
+      penggunaId: penggunaBaru.id
     })
     const bentuk2 = await Bentuk.findOrFail(2)
     await bentuk2.related('models').create({
       nama: 'Model Cincin Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: pengguna.id
+      penggunaId: penggunaBaru.id
     })
     const bentuk3 = await Bentuk.findOrFail(3)
     await bentuk3.related('models').create({
       nama: 'Model Gelang Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: pengguna.id
+      penggunaId: penggunaBaru.id
     })
     const bentuk4 = await Bentuk.findOrFail(4)
     await bentuk4.related('models').create({
       nama: 'Model Kalung Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: pengguna.id
+      penggunaId: penggunaBaru.id
     })
     const bentuk5 = await Bentuk.findOrFail(5)
     await bentuk5.related('models').create({
       nama: 'Model Liontin Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: pengguna.id
+      penggunaId: penggunaBaru.id
     })
     const bentuk6 = await Bentuk.findOrFail(6)
     await bentuk6.related('models').create({
       nama: 'Model Tindik Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: pengguna.id
+      penggunaId: penggunaBaru.id
     })
     const bentuk7 = await Bentuk.findOrFail(7)
     await bentuk7.related('models').create({
       nama: 'Model Lain dari Bentuk Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: pengguna.id
+      penggunaId: penggunaBaru.id
     })
 
-    await Kadar.createMany([
-      {
+    await Kadar.createMany([{
         nama: 'Tanggung',
         deskripsi: 'Perhiasan dengan kadar kandungan emas mulai dari 35% hingga 45%',
         warnaNota: 'red', // bisa nama, bisa HEX
@@ -175,7 +174,7 @@ export default class BasicSeeder extends BaseSeeder {
       {
         nama: 'Muda',
         deskripsi: 'Perhiasan dengan kadar kandungan emas kurang dari 30%',
-        warnaNota: 'green', // bisa nama, bisa HEX
+        warnaNota: '#FFD700', // bisa nama, bisa HEX
         apakahPotonganPersen: false,
         toleransiPotonganTukarTambah: 3000,
         hargaNota: 2000
@@ -191,8 +190,7 @@ export default class BasicSeeder extends BaseSeeder {
     ])
 
 
-    await Pasaran.createMany([
-      {
+    await Pasaran.createMany([{
         hari: 'pon',
         referensiTanggal: DateTime.fromISO('2021-07-01')
       },
@@ -217,8 +215,7 @@ export default class BasicSeeder extends BaseSeeder {
     let pasaranPon = await Pasaran.findByOrFail('hari', 'pon')
     await pengaturan.related('pasarans').attach([pasaranPon.id])
 
-    await RentangUsia.createMany([
-      {
+    await RentangUsia.createMany([{
         golongan: 'Muda',
         deskripsi: 'Rentang usia 15-24 tahun'
       },
@@ -232,8 +229,7 @@ export default class BasicSeeder extends BaseSeeder {
       },
     ])
 
-    await StatusGadai.createMany([
-      {
+    await StatusGadai.createMany([{
         status: 'berjalan'
       },
       {

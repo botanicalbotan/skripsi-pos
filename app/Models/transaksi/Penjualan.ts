@@ -43,6 +43,9 @@ export default class Penjualan extends BaseModel {
   @column()
   public apakahStokBaru: boolean
 
+  @column()
+  public apakahJanjiTukarTambah: boolean
+
 
   @column()
   public potongan: number
@@ -62,8 +65,12 @@ export default class Penjualan extends BaseModel {
   public namaPemilik: string | null
 
   @column()
-  public genderPemilik: string | null
+  public alamatPemilik: string | null
 
+
+  // Gender ama rentang usia ada kemungkiann bakal dihapus, tp jangan dulu!
+  @column()
+  public genderPemilik: string | null
 
 
   @column.dateTime()

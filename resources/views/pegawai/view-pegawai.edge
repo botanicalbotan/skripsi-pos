@@ -1,6 +1,6 @@
 @layout('layouts/master')
 @section('content')
-<div class="w-full p-8 base-page" data-pagename="detail">
+<div class="w-full p-8 base-page" data-pagename="detail" id="base-page">
   <h2 class="text-4xl font-semibold">Profil Pegawai</h2>
   <h4 class="text-xl text-secondary">Detail data dari pegawai yang anda pilih.</h4>
 
@@ -20,6 +20,7 @@
         <p class="opacity-75">{{ pegawai.jabatan.nama }}</p>
       </div>
       <div class="flex-none">
+        @if(tambahan.bisaEdit)
         <div class="dropdown dropdown-end">
           <div tabindex="0" class="btn btn-primary text-white">
             <span class="hidden sm:inline">Tindakan</span>
@@ -34,14 +35,19 @@
             <li>
               <a id="ubahData">Ubah Data Pegawai</a>
             </li>
+
+            @if(tambahan.isAdmin)
             <li>
-              <a id="ubahStatus" data-statussekarang = "{{ pegawai.apakahPegawaiAktif }}">{{ (pegawai.apakahPegawaiAktif)? 'Nonaktifkan Pegawai': 'Aktifkan Pegawai' }}</a>
+              <a id="btUbahStatus" data-statusSekarang = "{{ pegawai.apakahPegawaiAktif }}">{{ (pegawai.apakahPegawaiAktif)? 'Nonaktifkan Pegawai': 'Aktifkan Pegawai' }}</a>
               </li>
             <li>
               <a id="hapus" class="true-text-error">Hapus Pegawai</a>
-            </li>
+            </li>              
+            @endif
           </ul>
         </div>
+        @endif
+
       </div>
     </div>
 
@@ -117,6 +123,7 @@
         </div>
 
         {{--  Informasi Akun  --}}
+        @if(tambahan.bisaEdit)
         <div>
           <div class="flex">
             <div class="flex-1">
@@ -129,36 +136,15 @@
                 Data Akun</h4>
             </div>
             <div class="flex-none flex align-bottom mb-2 items-end">
-              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada {{ pegawai.user.updatedAt.setLocale('id-ID').toLocaleString() }}</p>
+              {{--  <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada {{ pegawai.user.updatedAt.setLocale('id-ID').toLocaleString() }}</p>  --}}
             </div>
           </div>
-          <div class="border-t border-b border-secondary">
-            <ul>
-
-              <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Username</h3>
-                  <span class="flex-1 ">{{ pegawai.user.username }}</span>
-                </div>
-              </li>
-
-              <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Password</h3>
-                  <span class="flex-1 ">terkonfirmasi</span>
-                </div>
-              </li>
-
-              <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Email?</h3>
-                  <span class="flex-1 ">{{ pegawai.user.email }}</span>
-                </div>
-              </li>
-
-            </ul>
+          <div class="space-y-4 border-secondary">
+            <div>Anda dapat melihat dan mengubah data akun seperti username, email dan password pada menu <span class="font-semibold">Data Akun</span>.</div>
+            <button id="btAkun" class="btn btn-secondary text-white">Akses Data Akun</button>
           </div>
         </div>
+        @endif
 
         {{--  Status Pekerjaan  --}}
         <div>

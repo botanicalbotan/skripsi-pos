@@ -48,7 +48,7 @@ export const KelompokFactory = Factory.define(Kelompok, ({ faker }) => {
       ' ' +
       faker.random.alpha().toUpperCase(),
     kodeKelompok: generateKodeKelompok(kadar[gacha2], bentuk[gacha]),
-    beratKelompok: getRandomInt(15),
+    beratKelompok: getRandomInt(15) + 1,
     kadarId: gacha2 + 1,
     bentukId: gacha + 1,
     stokMinimal: getRandomInt(11),

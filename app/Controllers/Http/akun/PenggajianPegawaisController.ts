@@ -120,7 +120,7 @@ export default class PenggajianPegawaisController {
 
   public async store({}: HttpContextContract) {}
 
-  public async show({ view, params, response }: HttpContextContract) {
+  public async show({ view, params, response, session }: HttpContextContract) {
     try {
       let penggajian = await PenggajianPegawai.findOrFail(params.id)
       await penggajian.load('pencatatGajian', (query) => {
@@ -137,9 +137,20 @@ export default class PenggajianPegawaisController {
         .andWhere('status', 'dibayar')
         .orderBy('updated_at', 'desc')
 
+
       // return tanggalTerakhir
-      const urlPenerima = (penggajian.penerimaGaji.foto)? await Drive.getUrl('profilePict/' + penggajian.penerimaGaji.foto) : ''
-      const urlPencatat = (penggajian.pencatatGajian?.foto)? await Drive.getUrl('profilePict/' + penggajian.pencatatGajian.foto) : ''
+      const urlPenerima = (await Drive.exists('profilePict/' + penggajian.penerimaGaji.foto))? (Drive.getUrl('profilePict/' + penggajian.penerimaGaji.foto)) : ''
+      const urlPencatat = (await Drive.exists('profilePict/' + penggajian.pencatatGajian?.foto))? (Drive.getUrl('profilePict/' + penggajian.pencatatGajian?.foto)) : ''
+
+      // Get today's date and time
+      var countDownDate = new Date(penggajian.tanggalSeharusnyaDibayar.toJSDate()).getTime();
+      var now = new Date().getTime();
+
+      // Find the distance between now and the count down date
+      var distance = countDownDate - now;
+
+      // Time calculations for days, hours, minutes and seconds
+      var jarakHari = Math.floor(distance / (1000 * 60 * 60 * 24));
 
       let fungsi = {
         rupiahParser: this.rupiahParser
@@ -148,6 +159,7 @@ export default class PenggajianPegawaisController {
         terakhirGajian: (tanggalTerakhir.length > 0)? tanggalTerakhir[0].terakhirGajian : null,
         urlFotoPenerima: urlPenerima,
         urlFotoPencatat: urlPencatat,
+        jarakHari: jarakHari
       }
       // return penggajian
       return view.render('pegawai/penggajian-pegawai/view-penggajian-pegawai', { penggajian, fungsi, tambahan })
@@ -155,7 +167,9 @@ export default class PenggajianPegawaisController {
 
     } catch (error) {
       // ntar tambahin flag flashmessage biar bisa diakses di listnya
-      response.redirect().toPath('/app/pegawai/penggajian')
+      console.error(error)
+      session.flash('alertError', 'Ada masalah saat mengakses data penggajian pegawai. Silahkan coba lagi setelah beberapa saat.')
+      return response.redirect().toPath('/app/pegawai/penggajian')
     }
   }
 
@@ -235,7 +249,7 @@ export default class PenggajianPegawaisController {
       let penggunaPenting = await Database
         .from('penggunas')
         .join('jabatans', 'penggunas.jabatan_id', 'jabatans.id')
-        .where('jabatans.nama', 'Karyawan Khusus')
+        .where('jabatans.nama', 'Kepala Toko')
         .orWhere('jabatans.nama', 'Pemilik')
         .select('penggunas.id')
         .whereNull('deleted_at')

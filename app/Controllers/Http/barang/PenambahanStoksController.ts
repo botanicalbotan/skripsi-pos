@@ -136,14 +136,14 @@ export default class PenambahanStoksController {
 
       let i = 0
       for (const element of validrequest.stokIdPerhiasan) {
-        console.log('no ' + i + ', value; ' + element + ', stok: ' + validrequest.stokTambahan[i])
+        // console.log('no ' + i + ', value; ' + element + ', stok: ' + validrequest.stokTambahan[i])
 
         try {
           let kelompok = await Kelompok.findOrFail(element)
           kelompok.stok += validrequest.stokTambahan[i]
-          console.log(
-            'harusnya ketambahan ' + validrequest.stokTambahan[i] + ' jadi ' + kelompok.stok
-          )
+          // console.log(
+          //   'harusnya ketambahan ' + validrequest.stokTambahan[i] + ' jadi ' + kelompok.stok
+          // )
 
           penambahanBaru.related('kelompoks').attach({
             [kelompok.id]: {
@@ -191,7 +191,8 @@ export default class PenambahanStoksController {
         query.preload('jabatan')
       })
 
-      const urlPencatat = (penambahan.pengguna.foto)? await Drive.getUrl('profilePict/' + penambahan.pengguna.foto) : ''
+      const urlPencatat = (await Drive.exists('profilePict/' + penambahan.pengguna.foto))? (await Drive.getUrl('profilePict/' + penambahan.pengguna.foto)) : ''
+
 
       const hitungKelompok = await Database.from('penambahan_stoks')
         .join('kelompok_penambahans', 'penambahan_stoks.id', '=', 'kelompok_penambahans.penambahan_stok_id')

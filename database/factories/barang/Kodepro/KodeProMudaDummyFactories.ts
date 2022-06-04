@@ -15,7 +15,7 @@ export const KodeProMudaDummyFactories = Factory.define(KodeProduksi, ({ faker }
 
   faker.locale = 'id_ID'
   return {
-    kode: varian[gacha] + getRandomInt(99),
+    kode: varian[gacha] + getRandomInt(899),
     apakahBuatanTangan: gachaBuatan,
     asalProduksi: faker.company.companyName(),
     kadarId: 2,
@@ -24,6 +24,8 @@ export const KodeProMudaDummyFactories = Factory.define(KodeProduksi, ({ faker }
     potonganLama: gachaPotongan,
     potonganBaru: gachaPotongan + 2000,
     persentaseMalUripan: getRandomInt(20) + 1,
+    persentaseMalRosok: getRandomInt(10) + 1,
+    ongkosBeliTanpaNota: (getRandomInt(20)*1000),
     ongkosMalRosokPerGram: (getRandomInt(20)*1000),
     penggunaId: 1,
     deskripsi: faker.random.words(30)

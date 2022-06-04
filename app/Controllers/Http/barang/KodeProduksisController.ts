@@ -181,7 +181,11 @@ export default class KodeProduksisController {
         rules.unsigned(),
         rules.range(0, 99)
       ]),
-      ongkosMalRosokPerGram: schema.number([
+      persentaseMalRosok: schema.number([
+        rules.unsigned(),
+        rules.range(0, 99)
+      ]),
+      ongkosBeliTanpaNota: schema.number([
         rules.unsigned()
       ])
     })
@@ -191,7 +195,6 @@ export default class KodeProduksisController {
     })
 
     try {
-      console.log(validrequest.kadar)
       let kadar = await Kadar.findOrFail(validrequest.kadar)
       let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
 
@@ -221,7 +224,9 @@ export default class KodeProduksisController {
         potonganBaru: validrequest.potonganBaru,
         potonganLama: validrequest.potonganLama,
         persentaseMalUripan: validrequest.persentaseMalUripan,
-        ongkosMalRosokPerGram: validrequest.ongkosMalRosokPerGram,
+        persentaseMalRosok: validrequest.persentaseMalRosok,
+        ongkosBeliTanpaNota: validrequest.ongkosBeliTanpaNota,
+        ongkosMalRosokPerGram: 0, // persiapan dihapus
         penggunaId: placeholderPengguna
       })
 
@@ -246,7 +251,8 @@ export default class KodeProduksisController {
         query.preload('jabatan')
       })
 
-      const urlPencatat = (kodepro.pengguna.foto)? await Drive.getUrl('profilePict/' + kodepro.pengguna.foto) : ''
+      const urlPencatat = (await Drive.exists('profilePict/' + kodepro.pengguna.foto))? (await Drive.getUrl('profilePict/' + kodepro.pengguna.foto)) : ''
+
 
       let pengaturan = await Pengaturan.findOrFail(1)
 
@@ -356,7 +362,11 @@ export default class KodeProduksisController {
         rules.unsigned(),
         rules.range(0, 99)
       ]),
-      ongkosMalRosokPerGram: schema.number([
+      persentaseMalRosok: schema.number([
+        rules.unsigned(),
+        rules.range(0, 99)
+      ]),
+      ongkosBeliTanpaNota: schema.number([
         rules.unsigned()
       ])
     })
@@ -396,7 +406,9 @@ export default class KodeProduksisController {
       kodepro.potonganBaru = validrequest.potonganBaru
       kodepro.potonganLama = validrequest.potonganLama
       kodepro.persentaseMalUripan = validrequest.persentaseMalUripan
-      kodepro.ongkosMalRosokPerGram = validrequest.ongkosMalRosokPerGram
+      kodepro.persentaseMalRosok = validrequest.persentaseMalRosok
+      kodepro.ongkosBeliTanpaNota = validrequest.ongkosBeliTanpaNota
+      kodepro.ongkosMalRosokPerGram = 0 // persiapan dihapus
       kodepro.penggunaId = placeholderPengguna
       await kodepro.save()
 
@@ -458,8 +470,8 @@ export default class KodeProduksisController {
     let kode = request.input('kode')
     let currentId = request.input('currentId')
 
-    if (kode === null || typeof kode === 'undefined') {
-      return response.badRequest('Kode tidak boleh kosong')
+    if (kode === null || typeof kode === 'undefined' || currentId === null || typeof currentId === 'undefined') {
+      return response.badRequest('Kode dan id tidak boleh kosong')
     }
 
     let cekKode = await Database
@@ -486,21 +498,70 @@ export default class KodeProduksisController {
     let kodeId = request.input('id')
 
     if (kodeId === null || typeof kodeId === 'undefined') {
-      return response.badRequest('ID kode produksi tidak boleh kosong')
+      return response.badRequest({error: 'ID kode produksi tidak boleh kosong'})
     }
 
     try {
-      const kodepro = await KodeProduksi.findOrFail(kodeId)
-      await kodepro.load('kadar', (query) =>{
-        query.select('nama', 'apakah_potongan_persen')
-      })
+      // const kodepro = await KodeProduksi.findOrFail(kodeId)
+      // await kodepro.load('kadar', (query) =>{
+      //   query.select('nama', 'apakah_potongan_persen')
+      // })
+
+      const kodepro = await Database
+        .from('kode_produksis')
+        .join('kadars', 'kode_produksis.kadar_id', 'kadars.id')
+        .select(
+          'kode_produksis.harga_per_gram_lama as hargaPerGramLama',
+          'kode_produksis.harga_per_gram_baru as hargaPerGramBaru',
+          'kode_produksis.potongan_lama as potonganLama',
+          'kode_produksis.potongan_baru as potonganBaru',
+          'kadars.apakah_potongan_persen as apakahPotonganPersen'
+        )
+        .whereNull('kode_produksis.deleted_at')
+        .andWhere('kode_produksis.id', kodeId)
+        .firstOrFail()
 
       return kodepro
 
     } catch (error) {
-      return response.notFound('Kode produksi tidak ditemukan')
+      return response.notFound({error: 'Kode produksi tidak ditemukan'})
     }
 
 
   }
+
+  public async getKodeprosByKadarId({
+    request,
+    response
+  }: HttpContextContract) {
+    let kadarId = request.input('id')
+
+
+
+    try {
+      if (kadarId === null || typeof kadarId === 'undefined') {
+        throw 'waduh'
+      }
+
+      const kodepros = await Database
+      .from('kode_produksis')
+      .select('id', 'kode', 'deskripsi')
+      .where('kadar_id', kadarId)
+      .andWhereNull('deleted_at')
+      .orderBy('kode')
+
+      const kadar = await Database
+        .from('kadars')
+        .where('id', kadarId)
+        .select('nama', 'apakah_potongan_persen as apakahPotonganPersen')
+        .firstOrFail()
+
+      return { kodepros, kadar }
+    } catch (error) {
+      return response.badRequest('Id kadar tidak valid.')
+    }
+  }
+
+
+
 }

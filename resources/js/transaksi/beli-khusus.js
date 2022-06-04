@@ -34,6 +34,7 @@ $(function () {
       showCancelButton: true,
       cancelButtonText: 'Batal',
       confirmButtonColor: '#4b6bfb',
+      scrollbarPadding: false,
       html: printKerusakanHTML(),
       willOpen: () => {
         // disini harusya minta data ke server, trus taro di select yang awalnya gaada isinya

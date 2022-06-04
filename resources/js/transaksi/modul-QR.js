@@ -23,6 +23,7 @@ function cariTransaksiDariQR(kode){
         imageUrl: data.foto,
         confirmButtonText: 'Ya, benar!',
         showCancelButton: true,
+        scrollbarPadding: false,
         cancelButtonText: 'Tidak',
         confirmButtonColor: '#4b6bfb',
         didOpen: () => {
@@ -48,6 +49,7 @@ export function bukaScanner () {
       showCancelButton: true,
       cancelButtonText: 'Tutup Kamera',
       title: 'Pindai Kode QR',
+      scrollbarPadding: false,
       html: printKameraHTML(),
       willOpen: () => {
         var video = document.createElement("video");

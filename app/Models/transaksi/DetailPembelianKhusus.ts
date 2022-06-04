@@ -11,8 +11,8 @@ export default class DetailPembelianKhusus extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
-  @column()
-  public beratSebenarnya: number
+  // @column()
+  // public beratSebenarnya: number
 
   @column()
   public persentaseHargaMal: number

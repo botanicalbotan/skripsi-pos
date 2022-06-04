@@ -33,7 +33,10 @@ export default class PengaturansController {
         if(await Drive.exists('profilePict/' + pegawai.foto)){ // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
           const fotoBarang = await Drive.get('profilePict/' + pegawai.foto) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
 
+          const logoToko = await Drive.get('logos/logo-leo.png')
+
           return fotoBarang.toString('base64')
+          // return {foto: 'data:image/png;base64,' + fotoBarang.toString('base64')}
         } else{
           throw 'kosong'
         }

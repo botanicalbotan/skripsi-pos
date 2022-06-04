@@ -74,6 +74,7 @@ $(function () {
       showCancelButton: true,
       cancelButtonText: 'Batal',
       confirmButtonColor: '#4b6bfb',
+      scrollbarPadding: false,
       html: printAddStockHTML(),
       willOpen: () => {
         let kadar = document.getElementById('swal-kadar')
@@ -246,6 +247,7 @@ $(function () {
         showCancelButton: true,
         confirmButtonText: 'Ya, tambahkan!',
         cancelButtonText: 'Batal',
+        scrollbarPadding: false,
         focusCancel: true,
       }).then((result) => {
         if (result.isConfirmed) {

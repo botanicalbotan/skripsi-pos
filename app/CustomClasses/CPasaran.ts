@@ -32,8 +32,34 @@ export default class CPasaran{
   pasaranHarIni(){
     const today = DateTime.local().set({hour: 0, minute: 0, second: 0, millisecond: 0 })
     const diff = today.diff(baseData[0].tanggal, 'days').toObject()
-    const diffrerence = Math.round((diff.days)? diff.days:0)
-    const urutanHari = diffrerence % 5
+    const difference = Math.round((diff.days)? diff.days:0)
+    const urutanHari = difference % 5
+
+    return baseData[urutanHari].pasaran
+  }
+
+  pasaranDariTanggal(tanggal: DateTime){
+    const target = tanggal.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+    const diff = target.diff(baseData[0].tanggal, 'days').toObject()
+    const difference = Math.round((diff.days)? diff.days:0)
+    let urutanHari = difference % 5
+
+    if(difference < 0){
+      urutanHari = 4 - Math.abs(difference % 5)
+    }
+
+    return baseData[urutanHari].pasaran
+  }
+
+  pasaranDariTanggalPlus(tanggal: DateTime){
+    const target = tanggal.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+    const diff = target.diff(baseData[0].tanggal, 'days').toObject()
+    const difference = Math.round((diff.days)? diff.days:0)
+    let urutanHari = difference % 5
+
+    if(difference < 0){
+      urutanHari = 4 - Math.abs(difference % 5)
+    }
 
     return baseData[urutanHari].pasaran
   }

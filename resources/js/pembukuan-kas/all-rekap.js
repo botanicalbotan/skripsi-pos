@@ -1,8 +1,9 @@
 import Swal from "sweetalert2"
 
 $(function () {
+  const basePage = document.getElementById('base-page').dataset.pagename
   // ========================================= list ==========================================================
-  if ($('.base-page').data('pagename') == "list") {
+  if (basePage == "list") {
     const BASEURL = window.location.pathname
     const qsParam = new URLSearchParams(window.location.search)
     const btAturTabel = document.getElementById('btAturTabel')
@@ -36,6 +37,7 @@ $(function () {
           confirmButtonText: 'Terapkan',
           showCancelButton: true,
           cancelButtonText: 'Batal',
+          scrollbarPadding: false,
           confirmButtonColor: global.SwalCustomColor.button.confirm,
           html: printAturTabelHTML(),
           willOpen: () => {

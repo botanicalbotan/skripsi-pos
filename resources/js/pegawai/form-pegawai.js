@@ -33,6 +33,8 @@ $(function () {
           Swal.fire({
             title: 'Pratinjau Pemotongan Gambar',
             allowOutsideClick: false,
+            scrollbarPadding: false,
+            
             html: `
             <div>
               <img id="cropperjs" src="` + e.target.result + `">

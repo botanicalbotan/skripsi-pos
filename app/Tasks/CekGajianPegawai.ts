@@ -78,7 +78,7 @@ export default class CekGajianPegawai extends BaseTask {
       let penggunaPenting = await Database
         .from('penggunas')
         .join('jabatans', 'penggunas.jabatan_id', 'jabatans.id')
-        .where('jabatans.nama', 'Karyawan Khusus')
+        .where('jabatans.nama', 'Kepala Toko')
         .orWhere('jabatans.nama', 'Pemilik')
         .select('penggunas.id')
         .whereNull('deleted_at')

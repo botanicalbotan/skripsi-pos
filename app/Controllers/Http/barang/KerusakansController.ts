@@ -149,7 +149,7 @@ export default class KerusakansController {
         query.preload('jabatan')
       })
 
-      const urlPencatat = (kerusakan.pengguna.foto)? await Drive.getUrl('profilePict/' + kerusakan.pengguna.foto) : ''
+      const urlPencatat = (await Drive.exists('profilePict/' + kerusakan.pengguna.foto))? (await Drive.getUrl('profilePict/' + kerusakan.pengguna.foto)) : ''
 
       const tambahan = {
         urlFotoPencatat: urlPencatat
@@ -220,6 +220,7 @@ export default class KerusakansController {
   }
 
   public async destroy({ params, response, session }: HttpContextContract) {
+    // jangan lupa cek role dulu
     try {
       const kerusakan = await Kerusakan.findOrFail(params.id)
       kerusakan.deletedAt = DateTime.now()

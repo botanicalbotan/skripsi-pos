@@ -41,11 +41,11 @@ $(function () {
         id: kodepro.value
       },
       function (data, textStatus, jqXHR) {
-        hargas[0] = data.harga_per_gram_lama
-        hargas[1] = data.harga_per_gram_baru
-        apakahPotonganPersen = data.kadar.apakah_potongan_persen
-        potongans[0] = data.potongan_lama
-        potongans[1] = data.potongan_baru
+        hargas[0] = data.hargaPerGramLama
+        hargas[1] = data.hargaPerGramBaru
+        apakahPotonganPersen = data.apakahPotonganPersen
+        potongans[0] = data.potonganLama
+        potongans[1] = data.potonganBaru
 
         kodeproDipilih = true
         refreshSamping()
@@ -193,6 +193,7 @@ $(function () {
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Ya, proses!',
+      scrollbarPadding: false,
       confirmButtonColor: global.SwalCustomColor.button.confirm,
       cancelButtonText: 'Batal',
       focusCancel: true,
@@ -203,6 +204,21 @@ $(function () {
     })
   })
 
+  // ==================================================== TUKAR TAMBAH ==========================================================
+  const ajukanTT = document.getElementById('ajukanTT')
+  const wadahTanggalTT = document.getElementById('wadahTanggalTT')
+  const tanggalTT = document.getElementById('tanggalTT')
+
+  const besok = new Date(new Date().setDate(new Date().getDate() + 1))
+  tanggalTT.value = besok.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year:'numeric' })
+
+  ajukanTT.addEventListener('change', () => {
+    if(ajukanTT.checked){
+      wadahTanggalTT.classList.remove('hidden')
+    } else{
+      wadahTanggalTT.classList.add('hidden')
+    }
+  })
 
   // ==================================================== KAMERA FULL ==========================================================
   let btnBukaKamera = document.getElementById('bukaKamera')
@@ -221,6 +237,7 @@ $(function () {
       showCancelButton: true,
       cancelButtonText: 'Batal',
       confirmButtonText: 'Ambil Foto',
+      scrollbarPadding: false,
       confirmButtonColor: global.SwalCustomColor.button.confirm,
       title: 'Ambil Foto',
       html: printHTML(),
@@ -317,6 +334,7 @@ $(function () {
       cancelButtonText: 'Batal',
       denyButtonText: 'Ulangi',
       confirmButtonText: 'Gunakan',
+      scrollbarPadding: false,
       confirmButtonColor: global.SwalCustomColor.button.confirm,
       title: 'Gunakan Foto Ini?',
       imageUrl: gambar,
@@ -343,6 +361,7 @@ $(function () {
             </div>
           `,
       showCancelButton: true,
+      scrollbarPadding: false,
       confirmButtonColor: global.SwalCustomColor.button.confirm,
       willOpen: () => {
         const image = Swal.getPopup().querySelector('#cropperWadah')

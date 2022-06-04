@@ -156,7 +156,8 @@ export default class ModelsController {
         query.preload('jabatan')
       })
 
-      const urlPencatat = (model.pengguna.foto)? await Drive.getUrl('profilePict/' + model.pengguna.foto) : ''
+      const urlPencatat = (await Drive.exists('profilePict/' + model.pengguna.foto))? (await Drive.getUrl('profilePict/' + model.pengguna.foto)) : ''
+
 
       const tambahan = {
         urlFotoPencatat: urlPencatat

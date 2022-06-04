@@ -6,9 +6,9 @@ import { KelompokFactory } from 'Database/factories/barang/KelompokDummyFactorie
 export default class UserDummySeeder extends BaseSeeder {
   public static developmentOnly = true
   public async run () {
-    await ModelFactory.createMany(20)
+    await ModelFactory.createMany(40)
     await KerusakanFactory.createMany(20)
-    await KelompokFactory.createMany(20)
+    await KelompokFactory.createMany(50)
 
     // aslinya ada kelompok sama transaksi juga, tp ntar dulu
   }

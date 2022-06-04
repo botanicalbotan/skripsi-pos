@@ -30,19 +30,21 @@ export default class KadarsController {
     let kadarId = request.input('id')
 
     if (kadarId === null || typeof kadarId === 'undefined') {
-      return response.badRequest('ID Kadar tidak boleh kosong')
+      throw 'error'
     }
 
-    let cekKadar = await Database
+    try {
+      let cekKadar = await Database
       .from('kadars')
       .select('*')
       .where('id', kadarId)
       .firstOrFail()
-      .catch(() => {
-        return response.notFound('Kadar tidak ditemukan')
-      })
 
-    return cekKadar
+      return cekKadar
+    } catch (error) {
+      return response.badRequest('ID kadar tidak valid')
+    }
+    
   }
 
 

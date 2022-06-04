@@ -1,4 +1,6 @@
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import {
+  HttpContextContract
+} from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import RekapHarian from 'App/Models/kas/RekapHarian'
 
@@ -17,7 +19,10 @@ export default class RekapHariansController {
     }
   }
 
-  public async index ({ view, request }: HttpContextContract) {
+  public async index({
+    view,
+    request
+  }: HttpContextContract) {
     const opsiOrder = [
       'tanggal_rekap',
       'pasaran',
@@ -29,8 +34,8 @@ export default class RekapHariansController {
     const page = request.input('page', 1)
     const order = request.input('ob', 0)
     const arahOrder = request.input('aob', 0)
-    const sanitizedOrder = order < opsiOrder.length && order >= 0 && order? order : 0
-    const sanitizedArahOrder = arahOrder == 1? 1:0
+    const sanitizedOrder = order < opsiOrder.length && order >= 0 && order ? order : 0
+    const sanitizedArahOrder = arahOrder == 1 ? 1 : 0
     const limit = 10
 
     const rekaps = await Database.from('rekap_harians')
@@ -68,29 +73,35 @@ export default class RekapHariansController {
           "(SELECT IFNULL(SUM(kas.nominal), 0) FROM kas WHERE kas.rekap_harian_id = rekap_harians.id AND kas.apakah_kas_keluar = TRUE AND kas.deleted_at IS NULL) as 'totalPengeluaran'"
         )
       )
+      .select(
+        Database.raw(
+          "(SELECT IFNULL(SUM(penjualans.harga_jual_akhir), 0) FROM penjualans WHERE DATE(penjualans.created_at) = DATE(rekap_harians.created_at) AND penjualans.deleted_at IS NULL) as totalPenjualan"
+        )
+      )
       .if(sanitizedOrder !== 0, (query) => {
-        query.orderBy(opsiOrder[sanitizedOrder], ((sanitizedArahOrder == 1)? 'desc': 'asc'))
+        query.orderBy(opsiOrder[sanitizedOrder], ((sanitizedArahOrder == 1) ? 'desc' : 'asc'))
       })
       .orderBy('tanggal_rekap', 'desc')
       .paginate(page, limit)
 
-    console.log('order: ' + sanitizedOrder +', arah: ' + sanitizedArahOrder)
     rekaps.baseUrl('/app/kas/rekapHarian')
 
-    rekaps.queryString({ ob: sanitizedOrder })
+    rekaps.queryString({
+      ob: sanitizedOrder
+    })
 
     let firstPage =
-      rekaps.currentPage - 2 > 0
-        ? rekaps.currentPage - 2
-        : rekaps.currentPage - 1 > 0
-        ? rekaps.currentPage - 1
-        : rekaps.currentPage
+      rekaps.currentPage - 2 > 0 ?
+      rekaps.currentPage - 2 :
+      rekaps.currentPage - 1 > 0 ?
+      rekaps.currentPage - 1 :
+      rekaps.currentPage
     let lastPage =
-      rekaps.currentPage + 2 <= rekaps.lastPage
-        ? rekaps.currentPage + 2
-        : rekaps.currentPage + 1 <= rekaps.lastPage
-        ? rekaps.currentPage + 1
-        : rekaps.currentPage
+      rekaps.currentPage + 2 <= rekaps.lastPage ?
+      rekaps.currentPage + 2 :
+      rekaps.currentPage + 1 <= rekaps.lastPage ?
+      rekaps.currentPage + 1 :
+      rekaps.currentPage
 
     if (lastPage - firstPage < 4 && rekaps.lastPage > 4) {
       if (rekaps.currentPage < rekaps.firstPage + 2) {
@@ -117,27 +128,34 @@ export default class RekapHariansController {
       kapitalHurufPertama: this.kapitalHurufPertama
     }
 
-    return view.render('kas/rekap-harian/list-rekap-harian', { rekaps, tambahan, fungsi })
+    return view.render('kas/rekap-harian/list-rekap-harian', {
+      rekaps,
+      tambahan,
+      fungsi
+    })
   }
 
-  public async create ({}: HttpContextContract) {
-  }
+  public async create({}: HttpContextContract) {}
 
-  public async store ({}: HttpContextContract) {
-  }
+  public async store({}: HttpContextContract) {}
 
-  public async show ({ params, view, session, response }: HttpContextContract) {
+  public async show({
+    params,
+    view,
+    session,
+    response
+  }: HttpContextContract) {
     try {
       const rekap = await RekapHarian.findOrFail(params.id)
       await rekap.load('kas')
 
       const totalKasMasuk = await Database
-      .from('kas')
-      .sum('nominal', 'nominal')
-      .count('*', 'count')
-      .whereNull('deleted_at')
-      .andWhere('apakah_kas_keluar', 0)
-      .andWhereRaw('DATE(created_at) = DATE(?)', [ rekap.tanggalRekap.toISO() ])
+        .from('kas')
+        .sum('nominal', 'nominal')
+        .count('*', 'count')
+        .whereNull('deleted_at')
+        .andWhere('apakah_kas_keluar', 0)
+        .andWhereRaw('DATE(created_at) = DATE(?)', [rekap.tanggalRekap.toISO()])
 
       const totalKasKeluar = await Database
         .from('kas')
@@ -145,19 +163,19 @@ export default class RekapHariansController {
         .count('*', 'count')
         .whereNull('deleted_at')
         .andWhere('apakah_kas_keluar', 1)
-        .andWhereRaw('DATE(created_at) = DATE(?)', [ rekap.tanggalRekap.toISO() ])
+        .andWhereRaw('DATE(created_at) = DATE(?)', [rekap.tanggalRekap.toISO()])
 
       const totalJual = await Database
-      .from('penjualans')
-      .sum('harga_jual_akhir', 'nominal')
-      .whereNull('deleted_at')
-      .whereRaw('DATE(created_at) = DATE(?)', [ rekap.tanggalRekap.toISO() ])
+        .from('penjualans')
+        .sum('harga_jual_akhir', 'nominal')
+        .whereNull('deleted_at')
+        .whereRaw('DATE(created_at) = DATE(?)', [rekap.tanggalRekap.toISO()])
 
       const totalBeli = await Database
         .from('pembelians')
         .sum('harga_beli_akhir', 'nominal')
         .whereNull('deleted_at')
-        .whereRaw('DATE(created_at) = DATE(?)', [ rekap.tanggalRekap.toISO() ])
+        .whereRaw('DATE(created_at) = DATE(?)', [rekap.tanggalRekap.toISO()])
 
       const rekapPenjualan = {
         apakahKasKeluar: 0,
@@ -175,7 +193,7 @@ export default class RekapHariansController {
         createdAt: rekap.tanggalRekap
       }
 
-      const fungsi= {
+      const fungsi = {
         rupiahParser: this.rupiahParser,
         kapitalHurufPertama: this.kapitalHurufPertama
       }
@@ -187,7 +205,13 @@ export default class RekapHariansController {
         hitungKasKeluar: totalKasKeluar[0].count + 1
       }
 
-      return view.render('kas/rekap-harian/view-rekap-harian', { rekap, rekapPenjualan, rekapPembelian, fungsi, tambahan })
+      return view.render('kas/rekap-harian/view-rekap-harian', {
+        rekap,
+        rekapPenjualan,
+        rekapPembelian,
+        fungsi,
+        tambahan
+      })
 
     } catch (error) {
       session.flash('alertError', 'Rekap harian yang anda pilih tidak valid!')
@@ -195,12 +219,9 @@ export default class RekapHariansController {
     }
   }
 
-  public async edit ({}: HttpContextContract) {
-  }
+  public async edit({}: HttpContextContract) {}
 
-  public async update ({}: HttpContextContract) {
-  }
+  public async update({}: HttpContextContract) {}
 
-  public async destroy ({}: HttpContextContract) {
-  }
+  public async destroy({}: HttpContextContract) {}
 }

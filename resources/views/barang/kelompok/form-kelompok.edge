@@ -5,16 +5,23 @@
 @endsection
 
 @section('content')
-<div class="w-full p-8 base-page" data-pagename = "form">
+<div class="w-full p-8 base-page" data-pagename="form" id="base-page">
   <h2 class="text-4xl font-semibold">Kelompok Perhiasan Baru</h2>
-  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mencatat kelompok perhiasan baru berdasarkan kadar, berat dan bentuk perhiasannya.</h4>
+  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mencatat kelompok perhiasan baru berdasarkan kadar, berat
+    dan bentuk perhiasannya.</h4>
 
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 md:w-min">
+    @include('partials/wadah-alert')
 
-    <div class="w-full sm:max-w-md">
-      <form id="formKelompok" action="/app/barang/kelompok" method="POST">
-        {{csrfField()}}
+    <form id="formKelompok" action="/app/barang/kelompok" method="POST">
+      {{csrfField()}}
+
+      <div class="w-full md:w-96 space-y-10">
+
         <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Data Kelompok</h1>
+          </div>
 
           <div class="form-control">
             <label for="nama">
@@ -32,11 +39,11 @@
             <label for="kadar">
               <span class="">Kadar Perhiasan<span class="text-error"> *</span></span>
             </label>
-            <select id="kadar" name="kadar" class="select select-bordered w-full max-w-xs" required>
-              <option disabled="disabled" selected="selected" value="kosong">Pilih</option>
-              <option value="Tanggung">Tanggung</option>
-              <option value="Muda">Muda</option>
-              <option value="Tua">Tua</option>
+            <select id="kadar" name="kadar" class="select select-primary bg-primary bg-opacity-10 w-full max-w-xs" required>
+              <option disabled="disabled" selected="selected" value="kosong">Pilih Kadar</option>
+              @each(kadar in kadars)
+              <option value="{{kadar.id}}">{{ kadar.nama }}</option>
+              @endeach
             </select>
 
             @if(flashMessages.has('errors.kadar'))
@@ -48,15 +55,11 @@
             <label for="bentuk">
               <span class="">Bentuk Perhiasan<span class="text-error"> *</span></span>
             </label>
-            <select id="bentuk" name="bentuk" class="select select-bordered w-full max-w-xs" required>
-              <option disabled="disabled" selected="selected" value="kosong">Pilih</option>
-              <option value="Kalung">Kalung</option>
-              <option value="Gelang">Gelang</option>
-              <option value="Cincin">Cincin</option>
-              <option value="Anting">Anting</option>
-              <option value="Liontin">Liontin</option>
-              <option value="Tindik">Tindik</option>
-              <option value="Lainnya">Lainnya</option>
+            <select id="bentuk" name="bentuk" class="select select-primary bg-primary bg-opacity-10 w-full max-w-xs" required>
+              <option disabled="disabled" selected="selected" value="kosong">Pilih Bentuk</option>
+              @each(bentuk in bentuks)
+              <option value="{{bentuk.id}}">{{ bentuk.bentuk }}</option>
+              @endeach
             </select>
 
             @if(flashMessages.has('errors.bentuk'))
@@ -70,10 +73,13 @@
 
               <div class="dropdown dropdown-end dropdown-top">
                 <a href="#" class="hover:underline flex-none">Apa ini?</a>
-                <div tabindex="0" class="shadow border border-opacity-50 card compact dropdown-content bg-base-100 w-60">
+                <div tabindex="0"
+                  class="shadow border border-opacity-50 card compact dropdown-content bg-base-100 w-60">
                   <div class="card-body">
                     <h2 class="card-title">Berat Kelompok</h2>
-                    <p>Berat kelompok adalah berat yang mewakili pembulatan berat perhiasan dengan satuan berat yang sama. Contoh: anda dapat mengumpulkan perhiasan dengan berat 2.5 gram dan 2.1 gram menjadi kelompok berat 2 gram.</p>
+                    <p>Berat kelompok adalah berat yang mewakili pembulatan berat perhiasan dengan satuan berat yang
+                      sama. Contoh: anda dapat mengumpulkan perhiasan dengan berat 2.5 gram dan 2.1 gram menjadi
+                      kelompok berat 2 gram.</p>
                   </div>
                 </div>
               </div>
@@ -81,9 +87,9 @@
             </div>
 
             <div class="relative flex w-full flex-wrap items-stretch">
-              <input type="number" id="beratKelompok" required @focus="$el.value=($el.value == 0)? '':$el.value"
-                @focusout="$el.value = ($el.value =='')? 0:$el.value" oninput="validity.valid||(value='');" value="{{ defaultPengaturan.stokMinimal }}"
-                min="0" name="beratKelompok" class="uang px-3 py-3 relative input input-bordered w-full">
+              <input type="number" id="beratKelompok" required oninput="validity.valid||(value='');"
+                min="0" placeholder="0" name="beratKelompok"
+                class="uang px-3 py-3 relative input input-bordered bg-opacity-10 w-full">
               <span
                 class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
                 gram
@@ -97,10 +103,8 @@
 
           <div class="form-control" x-data>
             <label for="stok">Stok<span class="text-error"> *</span></label>
-            <input type="number" name="stok" id="stok"  class="input input-bordered max-w-xs"
-            min="0" required @focus="$el.value=($el.value == 0)? '':$el.value"
-            @focusout="$el.value = ($el.value =='')? 0:$el.value" oninput="validity.valid||(value='');" value="0"
-            min="0" name="beratKelompok">
+            <input type="number" name="stok" id="stok" class="input input-bordered max-w-xs" min="0" required
+              oninput="validity.valid||(value='');" min="0" placeholder="0" name="beratKelompok">
 
             @if(flashMessages.has('errors.stok'))
             <p class="text-error">{{ flashMessages.get('errors.stok') }}</p>
@@ -115,51 +119,52 @@
 
               <div class="dropdown dropdown-end dropdown-top">
                 <a href="#" class="hover:underline flex-none">Apa ini?</a>
-                <div tabindex="0" class="shadow border border-opacity-50 card compact dropdown-content bg-base-100 w-60">
+                <div tabindex="0"
+                  class="shadow border border-opacity-50 card compact dropdown-content bg-base-100 w-60">
                   <div class="card-body">
                     <h2 class="card-title">Stok Minimal</h2>
-                    <p>Sistem akan memberikan peringatan bila stok kelompok perhiasan berada dibawah stok minimal yang ditetapkan</p>
+                    <p>Sistem akan memberikan peringatan bila stok kelompok perhiasan berada dibawah stok minimal yang
+                      ditetapkan</p>
                   </div>
                 </div>
               </div>
 
             </div>
 
-            <input type="number" name="stokMinimal" id="stokMinimal" class="input input-bordered"
-            min="0" required @focus="$el.value=($el.value == 0)? '':$el.value"
-            @focusout="$el.value = ($el.value =='')? 0:$el.value" oninput="validity.valid||(value='');" value="0"
-            min="0" name="beratKelompok">
+            <input type="number" name="stokMinimal" id="stokMinimal" class="input input-bordered" min="0" required
+              oninput="validity.valid||(value='');" min="0" placeholder="0" name="beratKelompok">
 
             @if(flashMessages.has('errors.stokMinimal'))
             <p class="text-error">{{ flashMessages.get('errors.stokMinimal') }}</p>
             @endif
           </div>
 
-          <div class="pt-4">
-            <div class="form-control p-4 border rounded-box">
-              <label class="cursor-pointer label">
-                <span>Ingatkan saat stok menipis</span>
-                <input type="checkbox" name="ingatkanStokMenipis" {{ (defaultPengaturan.ingatkanStokMenipis)? 'checked': '' }} class="checkbox">
-              </label>
-            </div>
+          <div class="form-control max-w-xs">
+            <label class="label cursor-pointer justify-start space-x-4">
+              <input type="checkbox" name="ingatkanStokMenipis" {{ (defaultPengaturan.ingatkanStokMenipis)? 'checked': '' }} class="checkbox">
+              <span class="">Kirimkan notifikasi saat stok mencapai batas minimum</span>
+            </label>
           </div>
 
-          <div class="text-secondary italic ">
-            Pastikan anda mengisi seluruh masukan bertanda bintang (*)
-          </div>
+        </div>
+
+
+        <div class="text-secondary italic ">
+          Pastikan anda mengisi seluruh masukan bertanda bintang (*)
         </div>
 
         <div class="mt-8 flex space-x-4 max-w-xs">
           <div class="flex-1">
-            <button type="submit" class="btn btn-primary btn-block text-white">Simpan</button>
+            <button type="button" id="btSubmit" class="btn btn-primary btn-block text-white">Simpan</button>
           </div>
           <div class="flex-1">
             <a href="/app/barang/model" class="btn btn-secondary btn-block text-white">Batal</a>
           </div>
         </div>
-      </form>
 
-    </div>
+      </div>
+    </form>
+
 
   </div>
 </div>

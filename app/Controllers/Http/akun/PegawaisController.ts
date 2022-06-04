@@ -7,6 +7,7 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
 import Jabatan from 'App/Models/akun/Jabatan'
 import Drive from '@ioc:Adonis/Core/Drive'
+import Hash from '@ioc:Adonis/Core/Hash'
 var isBase64 = require('is-base64')
 
 
@@ -202,15 +203,33 @@ export default class PegawaisController {
   }
 
   public async show ({ view, params, response }: HttpContextContract) {
+    let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
+
     try {
       const pegawai = await Pengguna.findOrFail(params.id)
       await pegawai.load('user')
       await pegawai.load('jabatan')
 
-      const url = (pegawai.foto)? await Drive.getUrl('profilePict/' + pegawai.foto) : 'kosong'
+      const url = (await Drive.exists('profilePict/' + pegawai.foto))? (await Drive.getUrl('profilePict/' + pegawai.foto)) : ''
+
+      // cek constrain, kalo lulus bisa ngedit2
+      let bisaEdit = false
+      let isAdmin = false
+      const pengakses = await Pengguna.findOrFail(placeholderPengguna)
+      await pengakses.load('jabatan')
+
+      if(pengakses.id === pegawai.id || pengakses.jabatan.nama === 'Pemilik'){ // ntar bisa dijadiin yang lebih propper
+        bisaEdit = true
+      }
+
+      if(pengakses.jabatan.nama === 'Pemilik'){
+        isAdmin = true
+      }
 
       let tambahan = {
         urlFoto: url,
+        bisaEdit,
+        isAdmin
       }
 
       return view.render('pegawai/view-pegawai', {
@@ -224,6 +243,43 @@ export default class PegawaisController {
 
   }
 
+  public async showDataAkun ({ view, params, response, session }: HttpContextContract) {
+    let placeholderUser = 1  // ini harusnya ngambil dari current active session, ID_USER bukan ID_Pengguna
+
+    try {
+      // ntar cek constrainnya ganti
+      // PAKEMIDDLEWARE
+      const pegawai = await Pengguna.findOrFail(params.id) // ID_PENGGUNA bukan ID_USER
+      await pegawai.load('user')
+      await pegawai.load('jabatan')
+
+      const userPengakses = await User.findOrFail(placeholderUser)
+      await userPengakses.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+
+      if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){ // bisa dijadiin middleware
+        session.flash('alertError', 'Anda tidak memiliki izin untuk mengakses laman tersebut!')
+        return response.redirect().toPath('/app/pegawai/' + params.id)
+      }
+
+
+      return view.render('pegawai/akun/view-akun-pegawai', {
+        pegawai: {
+          nama: pegawai.nama,
+          jabatan: pegawai.jabatan.nama,
+          id: pegawai.id,
+          email: pegawai.user.email,
+          username: pegawai.user.username,
+          apakahPegawaiAktif: pegawai.apakahPegawaiAktif
+        },
+      })
+    } catch (error) {
+      session.flash('alertError', 'Anda tidak memiliki izin untuk mengakses laman tersebut!')
+      return response.redirect().toPath('/app/pegawai')
+    }
+  }
+
   public async edit ({}: HttpContextContract) {
   }
 
@@ -234,6 +290,9 @@ export default class PegawaisController {
   }
 
   public async ubahStatus ({ request, response, params }: HttpContextContract) {
+
+    // ntar cek constrainnya ganti
+    // PAKEMIDDLEWARE
 
     try {
       const pegawai = await Pengguna.findOrFail(params.id)
@@ -246,10 +305,162 @@ export default class PegawaisController {
       pegawai.apakahPegawaiAktif = statusBaru
       await pegawai.save()
 
-      return response.noContent()
+      return response.ok({message: 'Status pegawai berhasil diubah'})
     } catch (error) {
-      return response.badRequest({error: error})
+      // return response.badRequest({error: error})
+      if(typeof error === 'string'){
+        return response.badRequest({error: error})
+      } else{
+        return response.badRequest({error: 'Ada masalah pada server!'})
+      }
     }
 
+  }
+
+  public async checkCredit ({ params, request, response }: HttpContextContract) {
+    const pass = request.input('pass')
+    let placeholderUser = 1  // ini harusnya ngambil dari current active session, ID_USER bukan ID_PENGGUNA
+
+    try {
+      if(!pass) throw 'Password tidak boleh kosong!'
+
+      // ntar cek constrainnya ganti
+      // PAKEMIDDLEWARE
+      const pegawai = await Pengguna.findOrFail(params.id) // PENGGUNA bukan USER
+      await pegawai.load('user')
+      await pegawai.load('jabatan')
+
+      const userPengakses = await User.findOrFail(placeholderUser) // USER bukan PENGUNA
+      await userPengakses.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+
+      if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){ // bisa dijadiin middleware
+        throw 'Anda tidak memiliki izin untuk melakukan perubahan!'
+      }
+   
+      if(await Hash.verify(userPengakses.password, pass)){
+        return response.ok({message: 'Ok', yangPunya: (userPengakses.id === pegawai.id)})
+      } else {
+        throw 'Password yang anda isikan tidak tepat!'
+      }
+
+    } catch (error) {
+      // return response.badRequest({error: error})
+      if(typeof error === 'string'){
+        return response.badRequest({error: error})
+      } else{
+        return response.badRequest({error: 'Ada masalah pada server!'})
+      }
+    }
+  }
+
+  public async ubahUsername ({ response, request, params }: HttpContextContract) {    
+    const newUN = request.input('newUN')
+    let placeholderUser = 1  // ini harusnya ngambil dari current active session, ID_USER bukan ID_PENGGUNA
+
+    try {
+      if(!newUN) throw 'Username tidak boleh kosong!'
+
+      // ntar cek constrainnya ganti
+      // PAKEMIDDLEWARE
+      const pegawai = await Pengguna.findOrFail(params.id) // PENGGUNA bukan USER
+      await pegawai.load('user')
+      await pegawai.load('jabatan')
+
+      const userPengakses = await User.findOrFail(placeholderUser) // USER bukan PENGUNA
+      await userPengakses.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+
+      if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){ // bisa dijadiin middleware
+        throw 'Anda tidak memiliki izin untuk melakukan perubahan!'
+      }
+      
+      const cekPegawai = await User.findBy('username', newUN)
+      if(cekPegawai && cekPegawai.id !== pegawai.user.id) throw 'Username sudah digunakan. Silahkan gunakan username yang lain!'
+
+      pegawai.user.username = newUN
+      await pegawai.user.save()
+
+      return response.ok({message: 'Username berhasil diubah'})
+    } catch (error) {
+      // return response.badRequest({error: error})
+      if(typeof error === 'string'){
+        return response.badRequest({error: error})
+      } else{
+        return response.badRequest({error: 'Ada masalah pada server!'})
+      }
+    }
+  }
+
+  public async ubahPassword ({request, response, params}: HttpContextContract) {
+    const passbaru = request.input('passbaru')
+    const passlama = request.input('passlama')
+    let placeholderUser = 1  // ini harusnya ngambil dari current active session, ID_USER bukan ID_PENGGUNA
+
+    try {
+      if(!passbaru || !passlama) throw 'Password tidak boleh kosong!'
+
+      // ntar cek constrainnya ganti
+      // PAKEMIDDLEWARE
+      const pegawai = await Pengguna.findOrFail(params.id) // PENGGUNA bukan USER
+      await pegawai.load('user')
+      await pegawai.load('jabatan')
+
+      const userPengakses = await User.findOrFail(placeholderUser) // USER bukan PENGUNA
+      await userPengakses.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+
+      if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){ // bisa dijadiin middleware
+        throw 'Anda tidak memiliki izin untuk melakukan perubahan!'
+      }
+
+   
+      if(await Hash.verify(userPengakses.password, passlama)){
+        pegawai.user.password = passbaru
+        await pegawai.user.save()
+
+        return response.ok({message: 'Ok'})
+      } else {
+        throw 'Password yang anda isikan tidak tepat!'
+      }
+
+    } catch (error) {
+      // return response.badRequest({error: error})
+      if(typeof error === 'string'){
+        return response.badRequest({error: error})
+      } else{
+        return response.badRequest({error: 'Ada masalah pada server!'})
+      }
+    }
+  }
+
+  public async ubahEmail ({}: HttpContextContract) {
+  }
+
+  public async verivyEmail ({}: HttpContextContract) {
+  }
+
+  public async getMyProfile ({ response }: HttpContextContract) {
+    let placeholderPengguna = 1 // ini ntar diganti jadi current active session
+
+    try {
+      const pengguna = await Pengguna.findOrFail(placeholderPengguna)
+      await pengguna.load('jabatan')
+
+      const url = (await Drive.exists('profilePict/' + pengguna.foto))? (await Drive.getUrl('profilePict/' + pengguna.foto)) : ''
+
+      return {
+        nama: pengguna.nama,
+        jabatan: pengguna.jabatan.nama,
+        id: pengguna.id,
+        urlFoto: url
+      }
+    } catch (error) {
+      return response.notFound('Profil tidak ditemukan!')
+    }
+    
   }
 }

@@ -1,10 +1,12 @@
 @layout('layouts/master')
 @section('content')
-<div class="w-full p-8 base-page" data-idk = {{ kelompok.id }}>
+<div class="w-full p-8 base-page" data-idk = {{ kelompok.id }} id="base-page">
   <h2 class="text-4xl font-semibold">Detail Kelompok</h2>
   <h4 class="text-lg text-secondary opacity-60">Detail data dan analisa transaksi dari kelompok perhiasan yang anda
     pilih.</h4>
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+    @include('partials/wadah-alert')
+    
     <div class="flex space-x-2">
       <div class="flex-1">
         <h4 class="text-2xl">{{ kelompok.nama }}</h4>
@@ -22,8 +24,7 @@
           </div>
           <ul tabindex="0" class="p-2 shadow border menu dropdown-content bg-base-100 rounded-box w-52">
             <li>
-              <a>
-                Ubah Data</a>
+              <a href="/app/barang/kelompok/1/edit">Ubah Data</a>
             </li>
             <li>
               <a class="true-text-error">
@@ -68,7 +69,7 @@
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kadar Perhiasan</h3>
-                  <span class="flex-1 ">Emas {{ kelompok.kadar.nama }}</span>
+                  <span class="flex-1 " style="color: {{ kelompok.kadar.warnaNota }}">Emas {{ kelompok.kadar.nama }}</span>
                 </div>
               </li>
 
@@ -111,7 +112,6 @@
           </div>
         </div>
 
-
         {{--  analisis kelompok perhiasan  --}}
         <div>
           <div class="flex px-2">
@@ -122,13 +122,9 @@
                 </svg>
                 Analisis Transaksi Kelompok</h4>
             </div>
-            <div class="flex-none flex align-bottom mb-2 items-end">
-              <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada
-                {{ kelompok.updatedAt.setLocale('id-ID').toLocaleString() }}
-              </p>
-            </div>
+
           </div>
-          <div class="border-t border-b border-secondary">
+          <div class="border-secondary">
             <div id="wadahLoadingAnalisis" class="flex w-full h-60 items-center justify-center animate-pulse bg-base-200">
               <div class="flex flex-col items-center space-y-4">
                 <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 w-16 h-16"></div>
@@ -136,63 +132,68 @@
               </div>
             </div>
 
-            <ul id="wadahAnalisis" class="hidden">
-              <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Penjualan Terakhir</h3>
-                  <span class="flex-1" id="penjualanTerakhir"></span>
-                </div>
-              </li>
-
-              <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Total Seluruh Penjualan</h3>
-                  <span class="flex-1" id="totalTerjual"></span>
-                </div>
-              </li>
-
-              <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Peringkat Penjualan Total</h3>
-                  <span class="flex-1 " id="peringkatPenjualanTotal"></span>
-                </div>
-              </li>
-
-              <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Penjualan Bulan Ini</h3>
-                  <span class="flex-1 " id="penjualanBulanIni"></span>
-                </div>
-              </li>
-
-              <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Peringkat Penjualan Bulan Ini</h3>
-                  <span class="flex-1 " id="peringkatPenjualanBulanIni"></span>
-                </div>
-              </li>
-
-              <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Penjualan Tahun Ini</h3>
-                  <span class="flex-1 " id="penjualanTahunIni"></span>
-                </div>
-              </li>
-
-              <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Peringkat Penjualan Tahun Ini</h3>
-                  <span class="flex-1 " id="peringkatPenjualanTahunIni"></span>
-                </div>
-              </li>
-            </ul>
+            <div id="wadahAnalisis" x-data="{ pilih: 0 }">
+              <div class="tabs tabs-boxed true-rounded-none bg-transparent items-center justify-center">
+                <a class="tab" :class="(pilih == 0)? 'tab-active true-rounded-none true-text-white' : ''" @click="pilih = 0">Semua Hari</a> 
+                <a class="tab" :class="(pilih == 1)? 'tab-active true-rounded-none true-text-white' : ''" @click="pilih = 1">Bulan Ini</a> 
+                <a class="tab" :class="(pilih == 2)? 'tab-active true-rounded-none true-text-white' : ''" @click="pilih = 2">Tahun Ini</a>
+              </div>
+  
+              <ul class="border-t border-b border-secondary">
+                <li class="border-b last:border-b-0">
+                  <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Penjualan Terakhir</h3>
+                    <span class="flex-1" id="penjualanTerakhir">tes</span>
+                  </div>
+                </li>
+  
+                <li class="border-b last:border-b-0" x-cloak x-show="pilih == 0">
+                  <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Total Seluruh Penjualan</h3>
+                    <span class="flex-1" id="totalTerjual">awe</span>
+                  </div>
+                </li>
+  
+                <li class="border-b last:border-b-0" x-cloak x-show="pilih == 0">
+                  <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Peringkat Penjualan Total</h3>
+                    <span class="flex-1 " id="peringkatPenjualanTotal">mantap</span>
+                  </div>
+                </li>
+  
+                <li class="border-b last:border-b-0" x-cloak x-show="pilih == 1">
+                  <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Penjualan Bulan Ini</h3>
+                    <span class="flex-1 " id="penjualanBulanIni"></span>
+                  </div>
+                </li>
+  
+                <li class="border-b last:border-b-0" x-cloak x-show="pilih == 1">
+                  <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Peringkat Penjualan Bulan Ini</h3>
+                    <span class="flex-1 " id="peringkatPenjualanBulanIni"></span>
+                  </div>
+                </li>
+  
+                <li class="border-b last:border-b-0" x-cloak x-show="pilih == 2">
+                  <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Penjualan Tahun Ini</h3>
+                    <span class="flex-1 " id="penjualanTahunIni"></span>
+                  </div>
+                </li>
+  
+                <li class="border-b last:border-b-0" x-cloak x-show="pilih == 2">
+                  <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Peringkat Penjualan Tahun Ini</h3>
+                    <span class="flex-1 " id="peringkatPenjualanTahunIni"></span>
+                  </div>
+                </li>
+              </ul>
+            </div>                 
 
           </div>
         </div>
 
-        <div>
-
-        </div>
 
         {{--  statistik kelompok perhiasan  --}}
         <div>
@@ -215,7 +216,7 @@
 
 
           </div>
-          <div class="border-t border-b border-secondary">
+          <div class="border-secondary">
             <div id="wadahLoadingStatistik" class="flex w-full h-60 items-center justify-center animate-pulse bg-base-200">
               <div class="flex flex-col items-center space-y-4">
                 <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 w-16 h-16"></div>
@@ -233,20 +234,21 @@
 
 
         <div class="mt-8 w-full h-72 p-4 border border-secondary">
-          disini bisa diisi transaksi sebelumnya kalau mau
+          disini bisa diisi mutasi stok (penambahan + anomali stok)
         </div>
 
       </div>
 
       <div class="flex-none w-full lg:w-1/4 space-y-6">
-        <div class="bg-base-200 min-h-60 card">
+
+        <div class="bg-base-200 border min-h-60 card">
           <div class="card-body space-y-4">
             <div class=" card-title flex items-center border-b-2 pb-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-              </svg> Informasi Kadar
+              </svg>Kadar
             </div>
             <div>
               <h5 class="text-sm font-semibold opacity-50">Kadar Perhiasan</h5>
@@ -259,7 +261,9 @@
 
           </div>
         </div>
-        <div class="bg-base-200 min-h-60 card">
+
+
+        <div class="border min-h-60 card">
           <div class="card-body space-y-4">
             <div class=" card-title flex items-center border-b-2 pb-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
@@ -269,31 +273,38 @@
               </svg>
               Harga & Potongan
             </div>
+
+            <select class="select select-bordered w-full" id="selectCekHarga">
+              <option value="kosong" disabled selected>Pilih Kode</option>
+              @each(kode in kelompok.kadar.kodeProduksis)
+                <option value="{{kode.id}}">{{ kode.kode }}</option>
+              @endeach
+            </select>
+
             <div>
-              <h5 class="text-sm font-semibold opacity-50">Harga Perhiasan</h5>
-              <p>{{ fungsi.rupiahParser(kelompok.kadar.hargaPerGramNormal) }} /gram</p>
+              <h5 class="text-sm font-semibold opacity-50">Harga Stok Lama</h5>
+              <p><span id="hargaLama">Rp 0</span> /gram</p>
             </div>
             <div>
-              <h5 class="text-sm font-semibold opacity-50">Harga Perhiasan Baru</h5>
-              <p>{{ fungsi.rupiahParser(kelompok.kadar.hargaPerGramBaru) }} /gram</p>
+              <h5 class="text-sm font-semibold opacity-50">Harga Stok Baru</h5>
+              <p><span id="hargaBaru">Rp 0</span> /gram</p>
             </div>
             <div>
-              <h5 class="text-sm font-semibold opacity-50">Potongan</h5>
-              {{--  disini ntar di cek, misal persenan, isi p nya diganti yang baru  --}}
-              <p>
-                {{ (kelompok.kadar.apakahPotonganPersen)? kelompok.kadar.potonganNormal + '% dari harga jual': fungsi.rupiahParser(kelompok.kadar.potonganNormal) + ' per gram' }}
+              <h5 class="text-sm font-semibold opacity-50">Potongan Stok Lama</h5>
+              <p id="potonganLama">
+                Rp 0
               </p>
             </div>
             <div>
-              <h5 class="text-sm font-semibold opacity-50">Potongan Perhiasan Baru</h5>
-              {{--  disini ntar di cek, misal persenan, isi p nya diganti yang baru  --}}
-              <p>
-                {{ (kelompok.kadar.apakahPotonganPersen)? kelompok.kadar.potonganBaru + '% dari harga jual': fungsi.rupiahParser(kelompok.kadar.potonganBaru) + ' per gram' }}
+              <h5 class="text-sm font-semibold opacity-50">Potongan Stok Baru</h5>
+              <p id="potonganBaru">
+                Rp 0
               </p>
             </div>
 
           </div>
         </div>
+
       </div>
     </div>
 

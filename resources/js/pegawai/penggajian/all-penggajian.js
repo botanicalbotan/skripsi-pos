@@ -3,8 +3,9 @@ import Swal from "sweetalert2"
 
 
 $(function () {
+  const basePage = document.getElementById('base-page').dataset.pagename
   // ========================================= list ==========================================================
-  if ($('.base-page').data('pagename') == "list") {
+  if (basePage == "list") {
 
     const BASEURL = window.location.pathname
     const qsParam = new URLSearchParams(window.location.search)
@@ -67,6 +68,7 @@ $(function () {
           confirmButtonText: 'Terapkan',
           showCancelButton: true,
           cancelButtonText: 'Batal',
+          scrollbarPadding: false,
           confirmButtonColor: global.SwalCustomColor.button.confirm,
           html: printAturTabelHTML(),
           willOpen: () => {
@@ -175,6 +177,7 @@ $(function () {
         allowOutsideClick: false,
         allowEscapeKey: false,
         showConfirmButton: false,
+        scrollbarPadding: false,
         didOpen: () => {
           Swal.showLoading()
 
@@ -190,6 +193,7 @@ $(function () {
             Swal.fire({
               icon: 'error',
               title: 'Terdapat error dari server!',
+              scrollbarPadding: false,
               text: xhr.statusText,
               confirmButtonText: 'Tutup'
             })
@@ -205,6 +209,7 @@ $(function () {
           title: param + ' tagihan baru ditambahkan',
           text: 'Tutup pop-up ini untuk memperbarui daftar pegawai',
           timer: 5000,
+          scrollbarPadding: false,
           confirmButtonText: 'Tutup'
         })
         .then(() => {
@@ -215,7 +220,7 @@ $(function () {
 
 
   // ========================================= detail ==========================================================
-  if ($('.base-page').data('pagename') == "detail") {
+  if (basePage == "detail") {
     let btBayar = document.getElementById('btBayar')
     let judul = document.getElementById('judulTagihan')
     let nominal = document.getElementById('nominalGaji')
@@ -230,6 +235,7 @@ $(function () {
           showCancelButton: true,
           allowOutsideClick: false,
           allowEscapeKey: false,
+          scrollbarPadding: false,
           confirmButtonColor: global.SwalCustomColor.button.confirm,
           confirmButtonText: 'Ya, bayar!',
           cancelButtonText: 'Batal',
@@ -290,6 +296,7 @@ $(function () {
           showCancelButton: true,
           confirmButtonText: 'Ya, batal bayar!',
           cancelButtonText: 'Batal',
+          scrollbarPadding: false,
           focusCancel: true,
           confirmButtonColor: global.SwalCustomColor.button.deny,
           preConfirm: () => {
@@ -351,6 +358,7 @@ $(function () {
           iconColor: global.SwalCustomColor.icon.error,
           showCancelButton: true,
           confirmButtonText: 'Ya, hapus!',
+          scrollbarPadding: false,
           cancelButtonText: 'Batal',
           confirmButtonColor: global.SwalCustomColor.button.deny,
           focusCancel: true

@@ -1,17 +1,17 @@
 $(function () {
 
     let form = document.getElementById('formPrepare')
-    
+
     form.addEventListener('submit', (e) => {
         if(form.action !== '/app/pembelian/transaksi' || form.action !== '/app/pembelian/transaksiumum'){
             e.preventDefault()
 
             if (document.querySelector('input[name=prepareAsal]:checked').value == 1 || document.querySelector('input[name=prepareNota]:checked').value == 1 || document.querySelector('input[name=prepareRusak]:checked').value == 2 || document.querySelector('input[name=prepareSusut]:checked').value == 2) {
                 // ntar ganti routingnya biar lebih propper
-                form.action = '/app/pembelian/transaksi'
+                form.action = '/app/transaksi/pembelian/'
             } else {
                 // ntar ganti routingnya biar lebih propper
-                form.action = '/app/pembelian/transaksiumum'
+                form.action = '/app/transaksi/pembelian/transaksiumum'
             }
 
             form.submit()

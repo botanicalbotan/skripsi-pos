@@ -86,6 +86,7 @@ $(function () {
         showCancelButton: true,
         cancelButtonText: 'Tidak',
         confirmButtonText: 'Ya, alihkan!',
+        scrollbarPadding: false,
         confirmButtonColor: '#4b6bfb',
       })
     } else {
@@ -198,6 +199,7 @@ $(function () {
       showCancelButton: true,
       cancelButtonText: 'Batal',
       confirmButtonColor: '#4b6bfb',
+      scrollbarPadding: false,
       html: printKerusakanHTML(),
       footer: '<a href="#" id="linkPindah" class="link">Kerusakan yang anda cari tidak ada?</a>',
       willOpen: () => {
@@ -350,6 +352,7 @@ function otwPindah (){
     icon: 'info',
     cancelButtonText: 'Tidak',
     confirmButtonText: 'Ya, alihkan!',
+    scrollbarPadding: false,
     confirmButtonColor: '#4b6bfb',
   })
 }

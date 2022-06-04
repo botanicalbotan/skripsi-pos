@@ -34,6 +34,7 @@ $(function () {
           imageAlt: 'Custom image',
           confirmButtonText: 'Simpan',
           showCancelButton: true,
+          scrollbarPadding: false,
           cancelButtonText: 'Batalkan',
         }).then((result) => {
           if (result.isConfirmed) {

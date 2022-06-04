@@ -5,17 +5,17 @@
 @endsection
 
 @section('content')
-<div class="w-full p-8 base-page" data-pagename="form">
+<div class="w-full p-8 base-page" data-pagename="form" id="base-page">
   <h2 class="text-4xl font-semibold">Kerusakan Perhiasan Baru</h2>
   <h4 class="text-lg text-secondary opacity-60">Formulir untuk mencatat kerusakan perhiasan baru ke sistem.</h4>
 
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 lg:w-min">
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 md:w-min">
     @include('partials/wadah-alert')
 
     <form id="formKerusakan" action="/app/barang/kerusakan/" method="POST">
       {{csrfField()}}
 
-      <div class="w-full sm:max-w-md space-y-10">
+      <div class="w-full md:w-96 space-y-10">
 
         <div class="space-y-4" x-data="{ radio: 1 }">
           <div class="mb-4">
@@ -78,7 +78,7 @@
             @endif
           </div>
 
-          <div class="form-control" x-show="radio == 1">
+          <div class="form-control max-w-xs" x-show="radio == 1">
             <label for="ongkos">Ongkos Perbaikan per Satuan Kerusakan<span class="text-error"> *</span></label>
             <div class="relative flex w-full flex-wrap items-stretch">
               <span

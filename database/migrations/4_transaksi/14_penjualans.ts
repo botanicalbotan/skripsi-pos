@@ -21,6 +21,7 @@ export default class Penjualans extends BaseSchema {
       table.string('kondisi', 100)
       table.string('foto_barang')
       table.boolean('apakah_stok_baru').notNullable().defaultTo(false)
+      table.boolean('apakah_janji_tukar_tambah').notNullable().defaultTo(false)
 
       // TRANSACTIONAL, gaboleh keiket sama current model
       table.integer('potongan').notNullable()
@@ -29,7 +30,10 @@ export default class Penjualans extends BaseSchema {
       table.integer('harga_jual_akhir').notNullable()
 
       // OPTIONAL BELOM DIBUAT
-      table.string('nama_pemilik', 50)
+      table.string('nama_pemilik', 50).nullable()
+      table.string('alamat_pemilik', 50).nullable()
+
+      // Ada kemungkinan 2 ini dihapus, back to basic jadi nama ama alamat doang, TP JANGAN DIHAPUS DULU
       table.enum('gender_pemilik', [
         'L',
         'P'

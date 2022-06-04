@@ -21,8 +21,8 @@ export default class DetailPembelianUmum extends BaseModel {
   @column()
   public beratNota: number
 
-  @column()
-  public beratSebenarnya: number
+  // @column()
+  // public beratSebenarnya: number
 
   @column()
   public hargaJualNota: number

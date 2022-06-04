@@ -1,0 +1,182 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="edit" id="base-page">
+  <h2 class="text-4xl font-semibold">Kelompok Perhiasan Baru</h2>
+  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mencatat kelompok perhiasan baru berdasarkan kadar, berat
+    dan bentuk perhiasannya.</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 md:w-min">
+    @include('partials/wadah-alert')
+
+    <form id="formKelompok" method="POST">
+      {{csrfField()}}
+
+      <div class="w-full md:w-96 space-y-10">
+
+        <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Data Kelompok</h1>
+          </div>
+
+          <div class="form-control">
+            <label for="nama">
+              <span class="">Nama Kelompok Perhiasan<span class="text-error"> *</span></span>
+            </label>
+            <input type="text" id="nama" name="nama" class="input input-bordered" maxlength="40"
+              placeholder="Contoh: Cincin Muda 2 gram" value="{{ kelompok.nama }}" required>
+
+            @if(flashMessages.has('errors.nama'))
+            <p class="text-error">{{ flashMessages.get('errors.nama') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control">
+            <label for="kadar">
+              <span class="">Kadar Perhiasan<span class="text-error"> *</span></span>
+            </label>
+            <select id="kadar" name="kadar" class="select select-primary bg-primary bg-opacity-10 w-full max-w-xs" required>
+              <option disabled="disabled" selected="selected" value="kosong">Pilih Kadar</option>
+              @each(kadar in kadars)
+              <option value="{{kadar.id}}" {{ (kadar.id === kelompok.kadarId)? 'selected': '' }}>{{ kadar.nama }}</option>
+              @endeach
+            </select>
+
+            @if(flashMessages.has('errors.kadar'))
+            <p class="text-error">{{ flashMessages.get('errors.kadar') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control">
+            <label for="bentuk">
+              <span class="">Bentuk Perhiasan<span class="text-error"> *</span></span>
+            </label>
+            <select id="bentuk" name="bentuk" class="select select-primary bg-primary bg-opacity-10 w-full max-w-xs" required>
+              <option disabled="disabled" selected="selected" value="kosong">Pilih Bentuk</option>
+              @each(bentuk in bentuks)
+              <option value="{{bentuk.id}}" {{ (bentuk.id === kelompok.bentukId)? 'selected': '' }}>{{ bentuk.bentuk }}</option>
+              @endeach
+            </select>
+
+            @if(flashMessages.has('errors.bentuk'))
+            <p class="text-error">{{ flashMessages.get('errors.bentuk') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control max-w-xs" x-data>
+            <div class="flex items-center">
+              <label for="beratKelompok" class="flex-1">Berat Kelompok<span class="text-error"> *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0"
+                  class="shadow border border-opacity-50 card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Berat Kelompok</h2>
+                    <p>Berat kelompok adalah berat yang mewakili pembulatan berat perhiasan dengan satuan berat yang
+                      sama. Contoh: anda dapat mengumpulkan perhiasan dengan berat 2.5 gram dan 2.1 gram menjadi
+                      kelompok berat 2 gram.</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <input type="number" id="beratKelompok" required oninput="validity.valid||(value='');"
+                min="0" placeholder="0" value="{{ kelompok.beratKelompok }}" name="beratKelompok"
+                class="uang px-3 py-3 relative input input-bordered bg-opacity-10 w-full">
+              <span
+                class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
+                gram
+              </span>
+            </div>
+
+            @if(flashMessages.has('errors.beratKelompok'))
+            <p class="text-error">{{ flashMessages.get('errors.beratKelompok') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control" x-data>
+            <label for="stok">Stok<span class="text-error"> *</span></label>
+            <div class="max-w-xs flex space-x-2">
+              <input type="number" id="stok" class="input input-bordered flex-1" min="0" disabled
+              oninput="validity.valid||(value='');" min="0" placeholder="0" value="{{ kelompok.stok }}" name="beratKelompok">
+              <button type="button" id="btGantiStok" class="btn btn-secondary text-white">Ubah<span class="hidden sm:inline ml-1">Stok</span></button>
+            </div>
+            
+
+            @if(flashMessages.has('errors.stok'))
+            <p class="text-error">{{ flashMessages.get('errors.stok') }}</p>
+            @endif
+          </div>
+
+          {{--  kalau mau dibikin default, ntar stok minimal sama ingatkan stok menipis dihapus dari form create  --}}
+
+          <div class="form-control max-w-xs" x-data>
+            <div class="flex items-center">
+              <label for="stokMinimal" class="flex-1">Stok Minimal<span class="text-error"> *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0"
+                  class="shadow border border-opacity-50 card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Stok Minimal</h2>
+                    <p>Sistem akan memberikan peringatan bila stok kelompok perhiasan berada dibawah stok minimal yang
+                      ditetapkan</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <input type="number" name="stokMinimal" id="stokMinimal" class="input input-bordered" min="0" required
+              oninput="validity.valid||(value='');" min="0" placeholder="0" value="{{ kelompok.stokMinimal }}" name="beratKelompok">
+
+            @if(flashMessages.has('errors.stokMinimal'))
+            <p class="text-error">{{ flashMessages.get('errors.stokMinimal') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control max-w-xs">
+            <label class="label cursor-pointer justify-start space-x-4">
+              <input type="checkbox" name="ingatkanStokMenipis" {{ (kelompok.ingatkanStokMenipis)? 'checked': '' }} class="checkbox">
+              <span class="">Kirimkan notifikasi saat stok mencapai batas minimum</span>
+            </label>
+          </div>
+
+
+        </div>
+
+
+        <div class="text-secondary italic ">
+          Pastikan anda mengisi seluruh masukan bertanda bintang (*)
+        </div>
+
+        <div class="mt-8 flex space-x-4 max-w-xs">
+          <div class="flex-1">
+            <button type="button" id="btSubmit" class="btn btn-primary btn-block text-white">Simpan</button>
+          </div>
+          <div class="flex-1">
+            <a href="/app/barang/model" class="btn btn-secondary btn-block text-white">Batal</a>
+          </div>
+        </div>
+
+      </div>
+    </form>
+
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/all-kelompok.js')}}"></script>
+
+@endsection

@@ -19,6 +19,7 @@ module.exports = {
       'input-success',
       'text-success',
       'input-error',
+      'input-primary',
       'text-error',
       'animate-reverse-spin',
       'select-error',
