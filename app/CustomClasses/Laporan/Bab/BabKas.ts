@@ -99,12 +99,16 @@ export default class BabKas {
         text: 'Rekap Pembukuan Kas',
         style: 'subBab'
       },
-      `Pada subbab ini, akan dilampirkan rekap olahan data dari seluruh kas yang tercatat pada sistem pada tanggal ${tanggalString}. Berikut selengkapnya:`,
+      {
+        text: `Pada subbab ini, akan dilampirkan rekap olahan data dari seluruh kas yang tercatat pada sistem pada tanggal ${tanggalString}. Berikut selengkapnya:`,
+        style: 'paragrafNormal'
+      },
       {
         table: {
           widths: [120, 'auto', 200],
           headerRows: 1,
-          body: isiTabel
+          body: isiTabel,
+          dontBreakRows: true
         },
         style: 'tabelBasic'
       }
@@ -253,12 +257,16 @@ export default class BabKas {
         text: 'Daftar Kas Tercatat',
         style: 'subBab'
       },
-      `Pada subbab ini, akan dilampirkan daftar seluruh kas tercatat pada sistem pada tanggal ${tanggalString}. Isi kolom nominal dari tabel akan diberi warna sesuai dengan jenis pembukuan kas, yakni warna hijau untuk kas masuk (kredit) dan warna merah untuk kas keluar (debit). Berikut selengkapnya:`,
+      {
+        text: `Pada subbab ini, akan dilampirkan daftar seluruh kas tercatat pada sistem pada tanggal ${tanggalString}. Isi kolom nominal dari tabel akan diberi warna sesuai dengan jenis pembukuan kas, yakni warna hijau untuk kas masuk (kredit) dan warna merah untuk kas keluar (debit). Berikut selengkapnya:`,
+        style: 'paragrafNormal'
+      },
       {
         table: {
           widths: [80, '*', 200, '*'],
           headerRows: 1,
-          body: isiTabel
+          body: isiTabel,
+          dontBreakRows: true
         },
         style: 'tabelBasic'
       }

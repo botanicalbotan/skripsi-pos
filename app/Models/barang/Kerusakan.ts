@@ -33,7 +33,7 @@ export default class Kerusakan extends BaseModel {
   public ongkosNominal: number
 
   @column.dateTime({ serializeAs: null })
-  public deletedAt: DateTime
+  public deletedAt: DateTime | null
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

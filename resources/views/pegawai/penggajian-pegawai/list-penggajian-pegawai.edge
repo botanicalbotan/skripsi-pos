@@ -1,7 +1,7 @@
 @layout('layouts/master')
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="list" id="base-page">
-  <h2 class="text-4xl font-semibold">Daftar Penggajian Pegawai - {{ (tambahan.filterShow == 1)? 'Belum Dibayar':'Semua' }}</h2>
+  <h2 class="text-4xl font-semibold">Daftar Penggajian Pegawai - {{ (tambahan.filterShow == 0)? 'Belum Dibayar':'Semua' }}</h2>
   <h4 class="text-lg text-secondary opacity-60">Kumpulan data rekap penggajian pegawai yang tercatat pada sistem baik yang sudah maupun belum dibayar.</h4>
 
   {{--  card utama  --}}
@@ -71,7 +71,7 @@
           </div>
         </div>
         <div class="flex-none italic"> {{-- buat datnya mungkin butuh tabel baru, ntar dipikir --}}
-          Terakhir diperbarui: 12/12/12 12:21
+          Terakhir diperbarui: {{ tambahan.direfreshAt.toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) }}
         </div>
       </div>
       <div class="overflow-x-auto"> {{-- aslinya ada overflow-x-auto disini --}}
@@ -96,7 +96,7 @@
                   <div class="avatar">
                     <div class="w-12 h-12 mask mask-squircle bg-placeholder-user-100 bg-contain">
                       @if(gajian.fotoPegawai && gajian.fotoPegawai !== '')
-                        <img src="{{ tambahan.lifehackUrlSementara + gajian.fotoPegawai }}" onerror="this.style.display='none'">
+                        <img src="{{ '/app/cumaData/foto/pegawai/' + gajian.idPegawai }}" onerror="this.style.display='none'">
                       @endif
                     </div>
                   </div>

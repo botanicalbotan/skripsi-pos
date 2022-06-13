@@ -147,35 +147,35 @@
           <div class="border-t border-b border-secondary">
             <ul>
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Nama Penerima</h3>
                   <span class="flex-1 ">{{ penggajian.penerimaGaji.nama }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Jabatan Penerima</h3>
                   <span class="flex-1 ">{{ penggajian.penerimaGaji.jabatan.nama }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Status Pegawai</h3>
                   <span class="flex-1 ">{{ (penggajian.penerimaGaji.apakahPegawaiAktif)? 'Aktif': 'Keluar' }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Jenis Kelamin</h3>
                   <span class="flex-1 ">{{ (penggajian.penerimaGaji.gender === 'L')? 'Laki-laki': 'Perempuan' }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Terakhir Gajian</h3>
                   <span
                     class="flex-1 ">{{ (tambahan.terakhirGajian)? penggajian.tanggalSeharusnyaDibayar.toLocaleString({ day: 'numeric', month:'long', year:'numeric' }) : 'Belum pernah menerima gaji' }}</span>

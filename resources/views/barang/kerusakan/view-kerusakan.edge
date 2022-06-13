@@ -54,35 +54,35 @@
               <ul>
 
                 <li class="border-b last:border-b-0">
-                  <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                     <h3 class="flex-none w-full sm:w-1/3 opacity-75">Nama Kerusakan</h3>
                     <span class="flex-1" id="namaRusak">{{ kerusakan.nama }}</span>
                   </div>
                 </li>
 
                 <li class="border-b last:border-b-0">
-                  <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                     <h3 class="flex-none w-full sm:w-1/3 opacity-75">Bentuk Perhiasan Terkait</h3>
                     <span class="flex-1 ">{{ kerusakan.bentuk.bentuk }}</span>
                   </div>
                 </li>
 
                 <li class="border-b last:border-b-0">
-                  <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                     <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tingkat Kerusakan</h3>
                     <span class="flex-1 ">{{ (kerusakan.apakahBisaDiperbaiki)? 'Bisa Diperbaiki' : 'Tidak Bisa Diperbaiki' }}</span>
                   </div>
                 </li>
 
                 <li class="border-b last:border-b-0">
-                  <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                  <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                     <h3 class="flex-none w-full sm:w-1/3 opacity-75">Ongkos Perbaikan</h3>
                     <span class="flex-1 ">{{ kerusakan.ongkosDeskripsi }}</span>
                   </div>
                 </li>
 
                 <li class="border-b last:border-b-0">
-                    <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                    <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                       <h3 class="flex-none w-full sm:w-1/3 opacity-75">Keterangan Ongkos</h3>
                       @if(kerusakan.apakahBisaDiperbaiki)
                         <span class="flex-1">Ongkos yang dipatok pada kerusakan ini akan dikali dengan seberapa banyak kerusakan yang terdapat di suatu perhiasan. Misal ditemukan ada 3 kerusakan ini, nilai beli perhiasan akan dipotong sebesar {{ new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0}).format((kerusakan.ongkosNominal * 3)) }}</span>

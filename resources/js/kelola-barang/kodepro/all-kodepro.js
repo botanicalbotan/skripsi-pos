@@ -151,7 +151,7 @@ $(function () {
     const tipePotongan = document.getElementById('tipePotongan')
     const potonganLama = document.getElementById('potonganLama')
     const potonganBaru = document.getElementById('potonganBaru')
-    const persentaseMalUripan = document.getElementById('persentaseMalUripan')
+    // const persentaseMalUripan = document.getElementById('persentaseMalUripan')
     // const ongkosMalRosokPerGram = document.getElementById('ongkosMalRosokPerGram')
 
     let resetKadar = function () {
@@ -159,7 +159,7 @@ $(function () {
       hargaBaru.value = ''
       potonganLama.value = ''
       potonganBaru.value = ''
-      persentaseMalUripan.value = ''
+      // persentaseMalUripan.value = ''
       // ongkosMalRosokPerGram.value = ''
     }
 
@@ -427,7 +427,7 @@ $(function () {
     const tipePotongan = document.getElementById('tipePotongan')
     const potonganLama = document.getElementById('potonganLama')
     const potonganBaru = document.getElementById('potonganBaru')
-    const persentaseMalUripan = document.getElementById('persentaseMalUripan')
+    // const persentaseMalUripan = document.getElementById('persentaseMalUripan')
     // const ongkosMalRosokPerGram = document.getElementById('ongkosMalRosokPerGram')
 
     let resetKadar = function () {
@@ -435,7 +435,7 @@ $(function () {
       hargaBaru.value = ''
       potonganLama.value = ''
       potonganBaru.value = ''
-      persentaseMalUripan.value = ''
+      // persentaseMalUripan.value = ''
       // ongkosMalRosokPerGram.value = ''
     }
 

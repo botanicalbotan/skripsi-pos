@@ -97,7 +97,7 @@ export default class PegawaisController {
       lastPage: lastPage,
       firstDataInPage: 1 + ((pegawais.currentPage - 1) * limit),
       lastDataInPage: (tempLastData >= pegawais.total)? pegawais.total: tempLastData,
-      lifehackUrlSementara: '/uploads/profilePict/'
+      // lifehackUrlSementara: '/uploads/profilePict/'
     }
 
     return view.render('pegawai/base', { pegawais, tambahan })
@@ -108,8 +108,13 @@ export default class PegawaisController {
     return view.render('pegawai/form-pegawai', { gaji: pengaturan.defaultGajiKaryawan })
   }
 
-  public async store ({ request, response }: HttpContextContract) {
+  public async store ({ request, response, session }: HttpContextContract) {
     const newPegawaiSchema = schema.create({
+      jabatan: schema.enum([
+        'karyawan',
+        'kepalatoko',
+        'pemiliktoko'
+      ] as const),
       nama: schema.string({ trim: true }, [
         rules.maxLength(50)
       ]),
@@ -134,16 +139,14 @@ export default class PegawaisController {
       password: schema.string({ trim: true }),
       email: schema.string.optional({ trim: true }, [
         rules.email(),
-        rules.maxLength(100)
+        rules.maxLength(100),
+        rules.requiredWhen('jabatan', '=', 'pemiliktoko')
       ]),
       status: schema.enum([
         'aktif',
         'keluar'
       ] as const),
-      // tanggalAwalMasuk: schema.date(),
-      lamaKerja: schema.number([
-        rules.unsigned()
-      ]),
+      tanggalMulaiAktif: schema.date(),
       gajiBulanan: schema.number([
         rules.unsigned()
       ]),
@@ -151,15 +154,6 @@ export default class PegawaisController {
     })
 
     const validrequest = await request.validate({ schema: newPegawaiSchema })
-
-    // ntar rillnya di cek pake tekstual, find by nama ato bebas lah
-    const jabatan = await Jabatan.findOrFail(1)
-
-    const userbaru = await User.create({
-      username: validrequest.username,
-      email: validrequest.email,
-      password: validrequest.password
-    })
 
     let namaFileFoto = ''
     // typescript ngga mau kalau ambigu, buat ngeyakinin mereka kalo ini string, kudu eksplisit
@@ -179,30 +173,55 @@ export default class PegawaisController {
       await Drive.put('profilePict/' + namaFileFoto, buffer)
 
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       namaFileFoto = ''
     }
 
-    const penggunabaru = await userbaru.related('pengguna').create({
-      nama: validrequest.nama,
-      gender: validrequest.gender,
-      tempatLahir: validrequest.tempatLahir,
-      tanggalLahir: validrequest.tanggalLahir,
-      lamaKerja: validrequest.lamaKerja,
-      alamat: validrequest.alamat,
-      nohpAktif: validrequest.nohpAktif,
-      apakahPegawaiAktif: validrequest.status === 'aktif',
-      foto: (namaFileFoto)? namaFileFoto : null,
-      gajiBulanan: validrequest.gajiBulanan,
-      tanggalMulaiAktif: DateTime.now(),
-      tanggalGajianSelanjutnya: DateTime.now().plus({ months: 1 }),
-      jabatanId: jabatan.id
-    })
+    try {
+      let idJabatan = 0
 
-    return response.redirect().toPath('/app/pegawai/' + penggunabaru.id)
+      const userbaru = await User.create({
+        username: validrequest.username,
+        email: validrequest.email,
+        password: validrequest.password
+      })
+
+      if(validrequest.jabatan == 'karyawan'){
+        idJabatan = 1
+      } else if(validrequest.jabatan == 'kepalatoko'){
+        idJabatan = 2
+      } else if(validrequest.jabatan == 'pemiliktoko'){
+        idJabatan = 3
+      } else{
+        throw 'error'
+      }
+
+
+      const penggunabaru = await userbaru.related('pengguna').create({
+        nama: validrequest.nama,
+        gender: validrequest.gender,
+        tempatLahir: validrequest.tempatLahir,
+        tanggalLahir: validrequest.tanggalLahir,
+        alamat: validrequest.alamat,
+        nohpAktif: validrequest.nohpAktif,
+        apakahPegawaiAktif: validrequest.status === 'aktif',
+        foto: (namaFileFoto)? namaFileFoto : null,
+        gajiBulanan: validrequest.gajiBulanan,
+        tanggalMulaiAktif: DateTime.now(),
+        tanggalGajianSelanjutnya: DateTime.now().plus({ months: 1 }),
+        jabatanId: idJabatan
+      })
+  
+      session.flash('alertSukses', 'Pegawai baru berhasil disimpan!')
+      return response.redirect().toPath('/app/pegawai/' + penggunabaru.id)
+    } catch (error) {
+      session.flash('alertError', 'Ada masalah saat membuat pegawai baru. Silahkan coba lagi setelah beberapa saat.')
+      return response.redirect().back()
+    }
+    
   }
 
-  public async show ({ view, params, response }: HttpContextContract) {
+  public async show ({ view, params, response, session }: HttpContextContract) {
     let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
 
     try {
@@ -232,13 +251,20 @@ export default class PegawaisController {
         isAdmin
       }
 
+      let fungsi = {
+        rupiahParser: rupiahParser
+      }
+
       return view.render('pegawai/view-pegawai', {
         pegawai,
-        tambahan
+        tambahan,
+        fungsi
       })
     } catch (error) {
       // sebener e kalo bisa raise error flag dulu
-      response.redirect().toPath('/app/pegawai')
+      session.flash('alertError', 'Pegawai yang anda akses tidak valid atau terhapus.')
+
+      return response.redirect().toPath('/app/pegawai')
     }
 
   }
@@ -247,7 +273,6 @@ export default class PegawaisController {
     let placeholderUser = 1  // ini harusnya ngambil dari current active session, ID_USER bukan ID_Pengguna
 
     try {
-      // ntar cek constrainnya ganti
       // PAKEMIDDLEWARE
       const pegawai = await Pengguna.findOrFail(params.id) // ID_PENGGUNA bukan ID_USER
       await pegawai.load('user')
@@ -259,7 +284,7 @@ export default class PegawaisController {
       })
 
       if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){ // bisa dijadiin middleware
-        session.flash('alertError', 'Anda tidak memiliki izin untuk mengakses laman tersebut!')
+        session.flash('alertError', 'Anda tidak memiliki hak untuk mengakses laman tersebut!')
         return response.redirect().toPath('/app/pegawai/' + params.id)
       }
 
@@ -275,7 +300,7 @@ export default class PegawaisController {
         },
       })
     } catch (error) {
-      session.flash('alertError', 'Anda tidak memiliki izin untuk mengakses laman tersebut!')
+      session.flash('alertError', 'Anda tidak memiliki hak untuk mengakses laman tersebut!')
       return response.redirect().toPath('/app/pegawai')
     }
   }
@@ -286,12 +311,26 @@ export default class PegawaisController {
   public async update ({}: HttpContextContract) {
   }
 
-  public async destroy ({}: HttpContextContract) {
+  public async destroy ({params, response, session}: HttpContextContract) {
+    try {
+      const pengguna = await Pengguna.findOrFail(params.id)
+      await pengguna.load('user')
+
+      pengguna.deletedAt = DateTime.now()
+      await pengguna.save()
+
+      pengguna.user.deletedAt = DateTime.now()
+      await pengguna.user.save()
+
+      session.flash('alertSukses', 'Pegawai "'+ pengguna.nama +'" berhasil dihapus!')
+      return response.redirect().toPath('/app/pegawai/')
+    } catch (error) {
+      session.flash('alertError', 'Ada masalah saat menghapus data pegawai. Silahkan coba lagi setelah beberapa saat.')
+      return response.redirect().back()
+    }
   }
 
   public async ubahStatus ({ request, response, params }: HttpContextContract) {
-
-    // ntar cek constrainnya ganti
     // PAKEMIDDLEWARE
 
     try {
@@ -336,7 +375,7 @@ export default class PegawaisController {
       })
 
       if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){ // bisa dijadiin middleware
-        throw 'Anda tidak memiliki izin untuk melakukan perubahan!'
+        throw 'Anda tidak memiliki hak untuk melakukan perubahan!'
       }
    
       if(await Hash.verify(userPengakses.password, pass)){
@@ -374,7 +413,7 @@ export default class PegawaisController {
       })
 
       if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){ // bisa dijadiin middleware
-        throw 'Anda tidak memiliki izin untuk melakukan perubahan!'
+        throw 'Anda tidak memiliki hak untuk melakukan perubahan!'
       }
       
       const cekPegawai = await User.findBy('username', newUN)
@@ -414,7 +453,7 @@ export default class PegawaisController {
       })
 
       if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){ // bisa dijadiin middleware
-        throw 'Anda tidak memiliki izin untuk melakukan perubahan!'
+        throw 'Anda tidak memiliki hak untuk melakukan perubahan!'
       }
 
    
@@ -462,5 +501,18 @@ export default class PegawaisController {
       return response.notFound('Profil tidak ditemukan!')
     }
     
+  }
+}
+
+
+function rupiahParser(angka: number) {
+  if (typeof angka == 'number') {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(angka)
+  } else {
+    return 'error'
   }
 }

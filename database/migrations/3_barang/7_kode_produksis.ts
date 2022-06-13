@@ -16,17 +16,13 @@ export default class KodeProduksis extends BaseSchema {
       table.integer('harga_per_gram_baru').notNullable()
       table.integer('potongan_lama').notNullable()
       table.integer('potongan_baru').notNullable()
-      table.integer('persentase_mal_uripan').notNullable().unsigned()
       table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
 
-      // ini baru
-      table.integer('persentase_mal_rosok').notNullable().unsigned()
-      table.integer('ongkos_beli_tanpa_nota').notNullable().unsigned() // dipanggil kalo pas jual gaada notanya
-
-      // belom kepikir soal tuker tambah sama penawaran
-
-      // ini kebawah otw dihapus
-      table.integer('ongkos_mal_rosok_per_gram').notNullable().unsigned()
+      // ini dihapus
+      // table.integer('persentase_mal_uripan').notNullable().unsigned()
+      // table.integer('persentase_mal_rosok').notNullable().unsigned()
+      // table.integer('ongkos_beli_tanpa_nota').notNullable().unsigned() // dipanggil kalo pas jual gaada notanya
+      // table.integer('ongkos_mal_rosok_per_gram').notNullable().unsigned()
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

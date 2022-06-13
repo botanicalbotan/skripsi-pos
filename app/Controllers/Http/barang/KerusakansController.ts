@@ -141,7 +141,7 @@ export default class KerusakansController {
     }
   }
 
-  public async show({ view, params, response }: HttpContextContract) {
+  public async show({ view, params, response, session }: HttpContextContract) {
     try {
       const kerusakan = await Kerusakan.findOrFail(params.id)
       await kerusakan.load('bentuk')
@@ -157,6 +157,7 @@ export default class KerusakansController {
 
       return view.render('barang/kerusakan/view-kerusakan', { kerusakan, tambahan })
     } catch (error) {
+      session.flash('alertError', 'Kerusakan yang anda akses tidak valid atau terhapus.')
       return response.redirect().toPath('/app/barang/kerusakan/')
     }
   }

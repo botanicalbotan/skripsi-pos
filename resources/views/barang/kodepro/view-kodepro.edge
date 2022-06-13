@@ -63,35 +63,35 @@
             <ul>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kode Produksi</h3>
                   <span class="flex-1" id="namaRusak">{{ kodepro.kode }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kadar Perhiasan Kode</h3>
                   <span class="flex-1 ">{{ kodepro.kadar.nama }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Asal Produksi</h3>
                   <span class="flex-1 ">{{ kodepro.asalProduksi }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Metode Produksi</h3>
                   <span class="flex-1 ">{{ (kodepro.apakahBuatanTangan)? 'Buatan Tangan': 'Pabrikan' }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Deskripsi Kode</h3>
                   <span class="flex-1 ">{{ kodepro.deskripsi }}</span>
                 </div>
@@ -125,21 +125,21 @@
             <ul>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Harga Stok Lama</h3>
                   <span class="flex-1">{{ fungsi.rupiahParser(kodepro.hargaPerGramLama) }} per gram</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Harga Stok Baru</h3>
                   <span class="flex-1 ">{{ fungsi.rupiahParser(kodepro.hargaPerGramBaru) }} per gram</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Potongan Stok Lama</h3>
                   @if(kodepro.kadar.apakahPotonganPersen)
                   <span class="flex-1 ">{{ kodepro.potonganLama }}% dari harga jual</span>
@@ -150,7 +150,7 @@
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Potongan Stok Baru</h3>
                   @if(kodepro.kadar.apakahPotonganPersen)
                   <span class="flex-1 ">{{ kodepro.potonganBaru }}% dari harga jual</span>
@@ -161,19 +161,23 @@
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Harga Nota</h3>
-                  <span class="flex-1 ">{{ fungsi.rupiahParser(kodepro.kadar.hargaNota) }} per nota</span>
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Pengurangan Potongan Tukar Tambah Minimal</h3>
+                  @if(kodepro.kadar.apakahPotonganPersen)
+                  <span class="flex-1 ">{{ kodepro.kadar.toleransiPenguranganPotonganMin }}% dari total potongan</span>
+                  @else
+                  <span class="flex-1 ">{{ fungsi.rupiahParser(kodepro.kadar.toleransiPenguranganPotonganMin) }} dari potongan per gram</span>
+                  @endif
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Toleransi Tukar Tambah</h3>
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Pengurangan Potongan Tukar Tambah Maksimal</h3>
                   @if(kodepro.kadar.apakahPotonganPersen)
-                  <span class="flex-1 ">{{ kodepro.kadar.toleransiPotonganTukarTambah }}% dari total potongan</span>
+                  <span class="flex-1 ">{{ kodepro.kadar.toleransiPenguranganPotonganMax }}% dari total potongan</span>
                   @else
-                  <span class="flex-1 ">{{ fungsi.rupiahParser(kodepro.kadar.toleransiPotonganTukarTambah) }} dari potongan per gram</span>
+                  <span class="flex-1 ">{{ fungsi.rupiahParser(kodepro.kadar.toleransiPenguranganPotonganMax) }} dari potongan per gram</span>
                   @endif
                 </div>
               </li>
@@ -184,7 +188,7 @@
 
 
         {{--  Harga Mal  --}}
-        <div>
+        {{--  <div>
           <div class="flex px-2">
             <div class="flex-1">
               <h4 class="text-xl mb-2 flex items-center font-semibold">
@@ -227,7 +231,7 @@
 
             </ul>
           </div>
-        </div>
+        </div>  --}}
 
 
       </div>

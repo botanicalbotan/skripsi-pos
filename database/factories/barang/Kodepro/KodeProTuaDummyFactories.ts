@@ -23,10 +23,10 @@ export const KodeProTuaDummyFactories = Factory.define(KodeProduksi, ({ faker })
     hargaPerGramBaru: gachaHarga + 150000,
     potonganLama: gachaPotongan,
     potonganBaru: gachaPotongan + 3,
-    persentaseMalUripan: getRandomInt(70) + 20,
-    persentaseMalRosok: getRandomInt(10) + 1,
-    ongkosBeliTanpaNota: (getRandomInt(20)*1000),
-    ongkosMalRosokPerGram: (getRandomInt(16)*2000),
+    // persentaseMalUripan: getRandomInt(70) + 20,
+    // persentaseMalRosok: getRandomInt(10) + 1,
+    // ongkosBeliTanpaNota: (getRandomInt(20)*1000),
+    // ongkosMalRosokPerGram: (getRandomInt(16)*2000),
     penggunaId: 1,
     deskripsi: faker.random.words(30)
   }

@@ -4,11 +4,11 @@ $(function () {
 
   if ($('.base-page').data('pagename') == "formpegawai") {
     const tanggalLahir = document.getElementById('tanggalLahir')
-    const tanggalAwalMasuk = document.getElementById('tanggalAwalMasuk')
+    const tanggalMulaiAktif = document.getElementById('tanggalMulaiAktif')
 
     tanggalLahir.max = new Date().toISOString().split("T")[0]
-    tanggalAwalMasuk.max = new Date().toISOString().split("T")[0]
-    tanggalAwalMasuk.value = new Date().toISOString().split("T")[0]
+    tanggalMulaiAktif.max = new Date().toISOString().split("T")[0]
+    tanggalMulaiAktif.value = new Date().toISOString().split("T")[0]
 
     $('#fileFotoPegawai').on('change', function () {
       const input = $("#fileFotoPegawai").prop('files')[0]
@@ -16,7 +16,6 @@ $(function () {
       if (input) {
         // ganti maxsize disini
         const maxSize = 1000
-        console.log(input)
         if (input.size / 1024 > maxSize || input.size <= 0) {
           Swal.fire({
             title: 'File terlalu besar!',
@@ -62,16 +61,24 @@ $(function () {
               })
 
             },
-          }).then((result) => {
-            // $('div#wadahInputFoto').load(' div#wadahInputFoto > * ')
-            if (result.isConfirmed) {
-              console.log('berhasil')
-            }
           })
         };
         reader.readAsDataURL(input);
       }
     });
+    const wadahEmail = document.getElementById('wadahEmail')
+    const email = document.getElementById('email')
+
+    const jabatan = document.getElementById('jabatan')
+    jabatan.addEventListener('change', (e)=>{
+      if(e.target.value == 'pemiliktoko'){
+        wadahEmail.classList.remove('hidden')
+        email.required = true
+      } else{
+        wadahEmail.classList.add('hidden')
+        email.required = false
+      }
+    })
 
     $('form#pegawaiBaru').on('submit', function (e) {
       // gaperlu trigger submit, cukup cek yang ga lu bolehin, trus panggil prevent default
@@ -79,11 +86,19 @@ $(function () {
         e.preventDefault()
         var scrollKe = document.getElementById("repassword");
         scrollKe.scrollIntoView({
-          behavior: "smooth",
           block: "center",
           inline: "nearest"
         });
       }
+
+      if(jabatan.value == 'kosong' || !['karyawan', 'kepalatoko', 'pemiliktoko'].includes(jabatan.value)){
+        e.preventDefault()
+        jabatan.scrollIntoView({
+          block: "center",
+          inline: "nearest"
+        });
+      }
+
     });
   }
 })

@@ -56,6 +56,7 @@ export default class LaporansController {
       daftarPenambahan: schema.string.optional(),
       daftarKoreksi: schema.string.optional(),
       daftarKelompokLaku: schema.string.optional(),
+      daftarKodeproLaku: schema.string.optional(),
       daftarKelompokMenipis: schema.string.optional(),
       daftarModalLaku: schema.string.optional(),
     })
@@ -82,7 +83,7 @@ export default class LaporansController {
         adaTransaksi = true
       }
 
-      if (validrequest.semuaBarang || validrequest.daftarPenambahan || validrequest.daftarKoreksi || validrequest.daftarKelompokLaku || validrequest.daftarKelompokMenipis || validrequest.daftarModalLaku) {
+      if (validrequest.semuaBarang || validrequest.daftarPenambahan || validrequest.daftarKoreksi || validrequest.daftarKelompokLaku || validrequest.daftarKodeproLaku || validrequest.daftarKelompokMenipis || validrequest.daftarModalLaku) {
         adaBarang = true
       }
 
@@ -111,11 +112,14 @@ export default class LaporansController {
         daftarPenambahan: (validrequest.daftarPenambahan) ? true : false,
         daftarKoreksi: (validrequest.daftarKoreksi) ? true : false,
         daftarKelompokLaku: (validrequest.daftarKelompokLaku) ? true : false,
+        daftarKodeproLaku: (validrequest.daftarKodeproLaku) ? true : false,
         daftarKelompokMenipis: (validrequest.daftarKelompokMenipis) ? true : false,
         daftarModelLaku: (validrequest.daftarModalLaku) ? true : false
       }
 
       // ================================= NYIAPIN DATA DISINI =============================================================
+      const pengaturan = await Pengaturan.findOrFail(1)
+
       let isiKonten: Array < any > = []
       const Konten = new KontenLaporanMaker()
 
@@ -163,9 +167,11 @@ export default class LaporansController {
       }
 
       let bgGambar
-      if (await Drive.exists('logos/logo-leo.png')) { // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
-        const logoToko = await Drive.get('logos/logo-leo.png') // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
-        // console.log(logoToko)
+      const placeholderLogo = 'logos/logo-leo.png'
+      let urlFoto = (pengaturan.logoToko)? 'logoToko/' + pengaturan.logoToko : placeholderLogo
+
+      if (await Drive.exists(urlFoto)) { // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
+        const logoToko = await Drive.get(urlFoto) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
         bgGambar = logoToko
       }
 

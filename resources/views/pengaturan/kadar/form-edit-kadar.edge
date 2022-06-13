@@ -1,0 +1,437 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="edit" id="base-page">
+  <h2 class="text-4xl font-semibold">Ubah Data Kadar</h2>
+  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mengubah data kadar yang tercatat pada sistem.</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 md:w-min">
+    @include('partials/wadah-alert')
+
+    <form id="formEditKadar" action="/app/pengaturan/kadar/{{ kadar.id }}" method="POST">
+      {{csrfField()}}
+
+      <div class="w-full md:w-96 space-y-10">
+
+        <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Data Umum</h1>
+          </div>
+
+          <div class="form-control">
+            <label for="nama">
+              <span class="">Nama Kadar<span class="text-error"> *</span></span>
+            </label>
+            <input type="text" id="nama" name="nama" class="input input-bordered" maxlength="40"
+              placeholder="Contoh: Tanggung" required value="{{ kadar.nama }}">
+
+            @if(flashMessages.has('errors.nama'))
+            <p class="text-error">{{ flashMessages.get('errors.nama') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control">
+            <label for="warna">
+              <span class="">Warna Nota<span class="text-error"> *</span></span>
+            </label>
+            <div class="mt-2 flex space-x-2 items-center">
+              {{--  <input type="text" class="input input-bordered" placeholder="HEX">  --}}
+
+              <input type="color" name="warna" id="warna" value="{{ kadar.warnaNota }}">
+              <span id="hexWarna">{{ kadar.warnaNota }}</span>
+            </div>
+
+            @if(flashMessages.has('errors.warna'))
+            <p class="text-error">{{ flashMessages.get('errors.warna') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control">
+            <label for="deskripsi">Deskripsi<span class="text-error"> *</span></label>
+            <textarea id="deskripsi" name="deskripsi" class="textarea textarea-bordered h-24" maxlength="100"
+              placeholder="Contoh: Memiliki kadar diatas n%, dlsb." required>{{ kadar.deskripsi }}</textarea>
+
+            @if(flashMessages.has('errors.deskripsi'))
+            <p class="text-error">{{ flashMessages.get('errors.deskripsi') }}</p>
+            @endif
+          </div>
+
+        </div>
+
+        <div class="space-y-4" x-data="{ radioPotong: {{ (kadar.apakahPotonganPersen)? 1:0 }}}">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Data Transaksional</h1>
+          </div>
+
+          <div class="form-control">
+            <label for="">Jenis Potongan<span class="text-error"> *</span></label>
+            <div class="flex space-x-4 mt-1 w-full sm:w-96">
+              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                :class="(radioPotong == 0)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                <input type="radio" name="jenisPotongan" id="potNominal"
+                  {{ (!kadar.apakahPotonganPersen)? 'checked': '' }} class="radio radio-primary hidden" value="nominal"
+                  @click="radioPotong = 0">
+                <span class="label-text text-base"
+                  :class="(radioPotong == 0)? 'text-primary': 'text-secondary'">Nominal</span>
+              </label>
+              <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                :class="(radioPotong == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                <input type="radio" name="jenisPotongan" id="potPersen"
+                  {{ (kadar.apakahPotonganPersen)? 'checked': '' }} class="radio radio-primary hidden" value="persen"
+                  @click="radioPotong = 1">
+                <span class="label-text text-base"
+                  :class="(radioPotong == 1)? 'text-primary': 'text-secondary'">Persentase</span>
+              </label>
+            </div>
+
+            @if(flashMessages.has('errors.jenisPotongan'))
+            <p class="text-error">{{ flashMessages.get('errors.jenisPotongan') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control max-w-xs">
+            <div class="flex items-center space-x-2">
+              <label for="penguranganPotonganMin" class="flex-1">Pengurangan Potongan Tukar Tambah Minimal<span class="text-error">
+                  *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0" class="shadow border card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Pengurangan Potongan Tukar Tambah Minimal</h2>
+                    <p>Adalah nominal paling sedikit untuk mengurangi ongkos potongan sebagai bentuk apresiasi transaksi
+                      tukar tambah. Dapat berupa persentase dan nominal rupiah.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span id="tandaPenguranganMin"
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                Rp.
+              </span>
+              <input type="number" oninput="validity.valid||(value='');" min="0" placeholder="0"
+                name="penguranganPotonganMin" id="penguranganPotonganMin"
+                value="{{ kadar.toleransiPenguranganPotonganMin }}"
+                class="px-3 py-3 relative input input-bordered w-full pl-12 pr-24" required>
+              <span id="tandaPenguranganMinPlus"
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-20 pr-3 py-3 right-0">
+                per gram
+              </span>
+            </div>
+
+            @if(flashMessages.has('errors.penguranganPotonganMin'))
+            <p class="text-error">{{ flashMessages.get('errors.penguranganPotonganMin') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control max-w-xs">
+            <div class="flex items-center space-x-2">
+              <label for="penguranganPotonganMax" class="flex-1">Pengurangan Potongan Tukar Tambah Maksimal<span class="text-error">
+                  *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0" class="shadow border card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Pengurangan Potongan Tukar Tambah Maksimal</h2>
+                    <p>Adalah nominal paling banyak untuk mengurangi ongkos potongan sebagai bentuk apresiasi transaksi
+                      tukar tambah. Dapat berupa persentase dan nominal rupiah.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span id="tandaPenguranganMax"
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                Rp.
+              </span>
+              <input type="number" oninput="validity.valid||(value='');" min="0" placeholder="0"
+                name="penguranganPotonganMax" id="penguranganPotonganMax"
+                value="{{ kadar.toleransiPenguranganPotonganMax }}"
+                class="px-3 py-3 relative input input-bordered w-full pl-12 pr-24" required>
+              <span id="tandaPenguranganMaxPlus"
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-20 pr-3 py-3 right-0">
+                per gram
+              </span>
+            </div>
+
+            @if(flashMessages.has('errors.penguranganPotonganMax'))
+            <p class="text-error">{{ flashMessages.get('errors.penguranganPotonganMax') }}</p>
+            @endif
+          </div>
+
+        </div>
+
+        <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Harga Mal & Persentase Kadar</h1>
+          </div>
+
+
+          <div class="form-control max-w-xs" x-show="radio == 1">
+            <div class="flex items-center space-x-2">
+              <label for="persentaseKadarUripan" class="flex-1">Persentase Kadar Uripan<span class="text-error">
+                  *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0" class="shadow border card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Persentase Kadar Uripan</h2>
+                    <p>Adalah persentase tingkat kandungan emas pada perhiasan uripan. Makin tinggi angka persentase, makin tinggi kandungan emasnya.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                %
+              </span>
+              <input type="number" placeholder="0" oninput="validity.valid||(value='');" min="0" value="{{ kadar.persentaseMalUripan }}"
+                name="persentaseKadarUripan" id="persentaseKadarUripan" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
+            </div>
+
+            @if(flashMessages.has('errors.persentaseKadarUripan'))
+            <p class="text-error">{{ flashMessages.get('errors.persentaseKadarUripan') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control max-w-xs" x-show="radio == 1">
+            <div class="flex items-center space-x-2">
+              <label for="persentaseKadarRosok" class="flex-1">Persentase Kadar Rosok<span class="text-error">
+                  *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0" class="shadow border card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Persentase Kadar Rosok</h2>
+                    <p>Adalah persentase tingkat kandungan emas pada perhiasan rosok. Makin tinggi angka persentase, makin tinggi kandungan emasnya.</p>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                %
+              </span>
+              <input type="number" placeholder="0" oninput="validity.valid||(value='');" min="0" value="{{ kadar.persentaseMalRosok }}"
+                name="persentaseKadarRosok" id="persentaseKadarRosok" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
+            </div>
+
+            @if(flashMessages.has('errors.persentaseKadarRosok'))
+            <p class="text-error">{{ flashMessages.get('errors.persentaseKadarRosok') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control max-w-xs" x-show="radio == 1">
+            <div class="flex items-center space-x-2">
+              <label for="marginPersenUntungUripanMin" class="flex-1">Margin Pengambilan Untung Uripan Minimal<span class="text-error">
+                  *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0" class="shadow border card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Margin Pengambilan Untung Uripan Minimal</h2>
+                    <p>Adalah persentase minimal keuntungan yang bisa didapat dari pembelian perhiasan uripan.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                %
+              </span>
+              <input type="number" placeholder="0" oninput="validity.valid||(value='');" min="0" value="{{ kadar.marginPersenUntungUripanMin }}"
+                name="marginPersenUntungUripanMin" id="marginPersenUntungUripanMin" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
+            </div>
+
+            @if(flashMessages.has('errors.marginPersenUntungUripanMin'))
+            <p class="text-error">{{ flashMessages.get('errors.marginPersenUntungUripanMin') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control max-w-xs" x-show="radio == 1">
+            <div class="flex items-center space-x-2">
+              <label for="marginPersenUntungUripanMax" class="flex-1">Margin Pengambilan Untung Uripan Maksimal<span class="text-error">
+                  *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0" class="shadow border card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Margin Pengambilan Untung Uripan Maksimal</h2>
+                    <p>Adalah persentase maksimal keuntungan yang bisa didapat dari pembelian perhiasan uripan.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                %
+              </span>
+              <input type="number" placeholder="0" oninput="validity.valid||(value='');" min="0" value="{{ kadar.marginPersenUntungUripanMax }}"
+                name="marginPersenUntungUripanMax" id="marginPersenUntungUripanMax" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
+            </div>
+
+            @if(flashMessages.has('errors.marginPersenUntungUripanMax'))
+            <p class="text-error">{{ flashMessages.get('errors.marginPersenUntungUripanMax') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control max-w-xs" x-show="radio == 1">
+            <div class="flex items-center space-x-2">
+              <label for="marginPersenUntungRosokMin" class="flex-1">Margin Pengambilan Untung Rosok Minimal<span class="text-error">
+                  *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0" class="shadow border card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Margin Pengambilan Untung Rosok Minimal</h2>
+                    <p>Adalah persentase minimal keuntungan yang bisa didapat dari pembelian perhiasan rosok.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                %
+              </span>
+              <input type="number" placeholder="0" oninput="validity.valid||(value='');" min="0" value="{{ kadar.marginPersenUntungRosokMin }}"
+                name="marginPersenUntungRosokMin" id="marginPersenUntungRosokMin" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
+            </div>
+
+            @if(flashMessages.has('errors.marginPersenUntungRosokMin'))
+            <p class="text-error">{{ flashMessages.get('errors.marginPersenUntungRosokMin') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control max-w-xs" x-show="radio == 1">
+            <div class="flex items-center space-x-2">
+              <label for="marginPersenUntungRosokMax" class="flex-1">Margin Pengambilan Untung Rosok Maksimal<span class="text-error">
+                  *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0" class="shadow border card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Margin Pengambilan Untung Uripan Maksimal</h2>
+                    <p>Adalah persentase maksimal keuntungan yang bisa didapat dari pembelian perhiasa rosok.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                %
+              </span>
+              <input type="number" placeholder="0" oninput="validity.valid||(value='');" min="0" value="{{ kadar.marginPersenUntungRosokMax }}"
+                name="marginPersenUntungRosokMax" id="marginPersenUntungRosokMax" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
+            </div>
+
+            @if(flashMessages.has('errors.marginPersenUntungRosokMax'))
+            <p class="text-error">{{ flashMessages.get('errors.marginPersenUntungRosokMax') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control max-w-xs" x-show="radio == 1">
+            <div class="flex items-center space-x-2">
+              <label for="marginPersenUntungRosokTTMin" class="flex-1">Margin Pengambilan Untung Rosok Tukar Tambah Minimal<span class="text-error">
+                  *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0" class="shadow border card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Margin Pengambilan Untung Rosok Tukar Tambah Minimal</h2>
+                    <p>Adalah persentase minimal keuntungan yang bisa didapat dari pembelian tukar tambah perhiasan uripan.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                %
+              </span>
+              <input type="number" placeholder="0" oninput="validity.valid||(value='');" min="0" value="{{ kadar.marginPersenUntungRosokTtMin }}"
+                name="marginPersenUntungRosokTTMin" id="marginPersenUntungRosokTTMin" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
+            </div>
+
+            @if(flashMessages.has('errors.marginPersenUntungRosokTTMin'))
+            <p class="text-error">{{ flashMessages.get('errors.marginPersenUntungRosokTTMin') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control max-w-xs" x-show="radio == 1">
+            <div class="flex items-center space-x-2">
+              <label for="marginPersenUntungRosokTTMax" class="flex-1">Margin Pengambilan Untung Rosok Tukar Tambah Maksimal<span class="text-error">
+                  *</span></label>
+
+              <div class="dropdown dropdown-end dropdown-top">
+                <a href="#" class="hover:underline flex-none">Apa ini?</a>
+                <div tabindex="0" class="shadow border card compact dropdown-content bg-base-100 w-60">
+                  <div class="card-body">
+                    <h2 class="card-title">Margin Pengambilan Untung Rosok Tukar Tambah Maksimal</h2>
+                    <p>Adalah persentase maksimal keuntungan yang bisa didapat dari pembelian tukar tambah perhiasan uripan.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                %
+              </span>
+              <input type="number" placeholder="0" oninput="validity.valid||(value='');" min="0" value="{{ kadar.marginPersenUntungRosokTtMax }}"
+                name="marginPersenUntungRosokTTMax" id="marginPersenUntungRosokTTMax" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
+            </div>
+
+            @if(flashMessages.has('errors.marginPersenUntungRosokTTMax'))
+            <p class="text-error">{{ flashMessages.get('errors.marginPersenUntungRosokTTMax') }}</p>
+            @endif
+          </div>
+
+
+        </div>
+
+        <div class="text-secondary italic ">
+          Pastikan anda mengisi seluruh masukan bertanda bintang (*)
+        </div>
+
+        <div class="mt-8 flex space-x-4 max-w-xs">
+          <div class="flex-1">
+            <button type="button" id="btEditKadar" class="btn btn-primary btn-block text-white">Simpan</button>
+          </div>
+          <div class="flex-1">
+            <a href="/app/pengaturan/kadar" class="btn btn-secondary btn-block text-white">Batal</a>
+          </div>
+        </div>
+
+
+      </div>
+    </form>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/atur-kadar.js')}}"></script>
+
+@endsection

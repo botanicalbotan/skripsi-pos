@@ -7,7 +7,6 @@ import Pengguna from 'App/Models/akun/Pengguna'
 import PenggajianPegawai from 'App/Models/akun/PenggajianPegawai'
 import Drive from '@ioc:Adonis/Core/Drive'
 import RekapHarian from 'App/Models/kas/RekapHarian'
-import Ka from 'App/Models/kas/Ka'
 import CPasaran from 'App/CustomClasses/CPasaran'
 import Pengaturan from 'App/Models/sistem/Pengaturan'
 import TipeNotif from 'App/Models/sistem/TipeNotif'
@@ -48,7 +47,16 @@ export default class PenggajianPegawaisController {
       .join('penggunas', 'penggajian_pegawais.penerima_gaji_id', 'penggunas.id')
       .join('jabatans', 'penggunas.jabatan_id', 'jabatans.id')
       .whereNull('penggunas.deleted_at')
-      .select('penggajian_pegawais.id as gajiId', 'penggajian_pegawais.tanggal_seharusnya_dibayar as tanggalSeharusnyaDibayar', 'penggunas.nama as namaPegawai', 'penggunas.foto as fotoPegawai', 'penggajian_pegawais.nominal_gaji as nominalGaji', 'jabatans.nama as jabatanPegawai', 'penggajian_pegawais.status as status')
+      .select(
+        'penggajian_pegawais.id as gajiId', 
+        'penggajian_pegawais.tanggal_seharusnya_dibayar as tanggalSeharusnyaDibayar',
+        'penggunas.id as idPegawai',
+        'penggunas.nama as namaPegawai', 
+        'penggunas.foto as fotoPegawai', 
+        'penggajian_pegawais.nominal_gaji as nominalGaji', 
+        'jabatans.nama as jabatanPegawai', 
+        'penggajian_pegawais.status as status'
+        )
       .if(cari !== '', (query) => {
         query.where('penggunas.nama', 'like', `%${cari}%`)
       })
@@ -99,6 +107,12 @@ export default class PenggajianPegawaisController {
     // sampe sini
     const tempLastData = 10 + ((penggajians.currentPage - 1) * limit)
 
+    const tanggalRefresh = await Database
+      .from('refresh_penggajians')
+      .select('direfresh_at as direfreshAt')
+      .orderBy('id', 'desc')
+      .first()
+
     const tambahan = {
       pengurutan: sanitizedOrder,
       pencarian: cari,
@@ -107,7 +121,8 @@ export default class PenggajianPegawaisController {
       lastPage: lastPage,
       firstDataInPage: 1 + ((penggajians.currentPage - 1) * limit),
       lastDataInPage: (tempLastData >= penggajians.total) ? penggajians.total : tempLastData,
-      lifehackUrlSementara: '/uploads/profilePict/',
+      direfreshAt: tanggalRefresh.direfreshAt
+      // lifehackUrlSementara: '/uploads/profilePict/',
     }
 
     return view.render('pegawai/penggajian-pegawai/list-penggajian-pegawai', {
@@ -229,7 +244,7 @@ export default class PenggajianPegawaisController {
             months: 1
           })
           pengguna.tanggalGajianTerakhir = DateTime.now()
-          pengguna.lamaKerja += 1
+          pengguna.kaliGajian += 1
 
           await pengguna.save()
           counter++
@@ -267,6 +282,11 @@ export default class PenggajianPegawaisController {
       // ngga dikasi await karna ga perlu ditunggu
       puterNotif()
     }
+
+    await Database
+      .insertQuery()
+      .table('refresh_penggajians')
+      .insert({ direfresh_at: DateTime.now().toSQL() })
 
     return response.ok({message: 'Refresh berhasil, ' + counter + ' data ditambahkan', jumlah: counter})
   }

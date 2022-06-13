@@ -17,7 +17,8 @@ export default class CekGajianPegawai extends BaseTask {
     // tiap menit
     return '* * * * *'
 
-    // ntar diganti jadi tiap jam 6 pagi / waktu laen
+    // tiap 12 jam, pake yang ini ntar
+    // return '0 */12 * * *'
   }
   /**
    * Set enable use .lock file for block run retry task
@@ -58,13 +59,13 @@ export default class CekGajianPegawai extends BaseTask {
             months: 1
           })
           pengguna.tanggalGajianTerakhir = DateTime.now()
-          pengguna.lamaKerja += 1
+          pengguna.kaliGajian += 1
 
           await pengguna.save()
           counter++
 
         } catch (error) {
-          console.log(error)
+          console.error(error)
         }
       }
     }
@@ -93,8 +94,14 @@ export default class CekGajianPegawai extends BaseTask {
         }
       }
 
-      await puterNotif()
+      // ngga dikasi await karna ga perlu ditunggu
+      puterNotif()
     }
+
+    await Database
+      .insertQuery()
+      .table('refresh_penggajians')
+      .insert({ direfresh_at: DateTime.now().toSQL() })
 
     // counter ini nanti buat bikin notifikasi
     Logger.info(counter + ' data telah ditambahkan')

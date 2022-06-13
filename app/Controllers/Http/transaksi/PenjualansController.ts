@@ -14,86 +14,9 @@ import RekapHarian from 'App/Models/kas/RekapHarian'
 var isBase64 = require('is-base64')
 var QRCode = require('qrcode')
 let PDFDocument = require('pdfkit')
-let sharp = require('sharp')
+// let sharp = require('sharp')
 
 export default class PenjualansController {
-  // ============================ Fungsi Tambahan=====================================
-
-  getRandomInt(max: number) {
-    return Math.floor(Math.random() * max)
-  }
-
-  kapitalHurufPertama(text: string) {
-    return text.charAt(0).toUpperCase() + text.slice(1)
-  }
-
-  kapitalKalimat(text: string) {
-    let pure = text.split(' ')
-    let newText = ''
-    for (let i = 0; i < pure.length; i++) {
-      newText += this.kapitalHurufPertama(pure[i])
-      if (i !== pure.length - 1) {
-        newText += ' '
-      }
-    }
-    return newText
-  }
-
-  belakangKoma(angka: number) {
-    return angka / Math.pow(10, angka.toString().replace(/\D/gi, '').length)
-  }
-
-  rupiahParser(angka: number) {
-    if (typeof angka == 'number') {
-      return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-      }).format(angka)
-    }
-  }
-
-  pembulatanRupiah(angka: number, bulat:number = 1000){
-    return Math.ceil(angka / bulat) * bulat
-  }
-
-  generateKodePenjualan(kadar: string, bentuk: string){
-    let kodebentuk = {
-      Cincin: 'CC',
-      Kalung: 'KL',
-      Anting: 'AT',
-      Liontin: 'LT',
-      Tindik: 'TD',
-      Gelang: 'GL'
-    }
-
-    let kodekadar = {
-      Muda: 1,
-      Tanggung: 2,
-      Tua: 3
-    }
-
-    // varian ini bisa dipake buat yang butuh random2
-    // let kodekadar = {
-    //   Muda: {nomer: 1, huruf: ['M', 'MU', 'YO', 'NO']},
-    //   Tanggung: {nomer: 2, huruf: ['TA', 'TG', 'MI', 'CE']},
-    //   Tua: {nomer:3, huruf: ['TU', 'NE', 'GR', 'OL']}
-    // }
-
-    let tipetempat = 'PJT1' // aslinya T1 ini kata pertama ruko, tp gaapa ntar diganti
-
-    return tipetempat + '-' + DateTime.local().toMillis() + '-' + kodekadar[kadar] + kodebentuk[bentuk] + '-' + (100 + this.getRandomInt(800))
-  }
-
-  tigaDigit(angka: number){
-    let teks = angka.toString()
-    let finalTeks = teks
-    if(teks.length == 2) finalTeks = '0' + teks
-    if(teks.length <= 1) finalTeks = '00' + teks
-
-    return finalTeks
-  }
-
   // ========================================== Fungsi Routing ==================================================
 
   public async index({ view, request }: HttpContextContract) {
@@ -229,8 +152,8 @@ export default class PenjualansController {
       const urlFotoBarang = (await Drive.exists('transaksi/penjualan/' + PJ.fotoBarang))? (await Drive.getUrl('transaksi/penjualan/' + PJ.fotoBarang)) : ''
 
       const fungsi = {
-        rupiahParser: this.rupiahParser,
-        kapitalHurufPertama: this.kapitalHurufPertama
+        rupiahParser: rupiahParser,
+        kapitalHurufPertama: kapitalHurufPertama
       }
 
       const tambahan = {
@@ -386,7 +309,7 @@ export default class PenjualansController {
     let latestId = '001'
 
     if(lastPenjualan[0]){
-      latestId = this.tigaDigit(lastPenjualan[0].id + 1)
+      latestId = tigaDigit(lastPenjualan[0].id + 1)
     }
 
     let kodeTransaksi = 'PJ' + validrequest.id.toString() + validrequest.model.toString() + latestId
@@ -437,8 +360,8 @@ export default class PenjualansController {
       const potongan = (validrequest.jenisStok == 'baru')? kodepro.potonganBaru : kodepro.potonganLama
 
       const hargaPerGram = (validrequest.jenisStok == 'baru')? kodepro.hargaPerGramBaru : kodepro.hargaPerGramLama
-      const beratBarang = this.belakangKoma(validrequest.beratDesimal) + kelompok.beratKelompok
-      const hargaJual = this.pembulatanRupiah(hargaPerGram * beratBarang)
+      const beratBarang = belakangKoma(validrequest.beratDesimal) + kelompok.beratKelompok
+      const hargaJual = pembulatanRupiah(hargaPerGram * beratBarang)
 
       const model = await Model.findOrFail(validrequest.model)
 
@@ -536,7 +459,7 @@ export default class PenjualansController {
       await PJ.load('model')
 
     const fungsi = {
-      rupiahParser: this.rupiahParser
+      rupiahParser: rupiahParser
     }
 
     const terparser = new Terbilang()
@@ -551,7 +474,7 @@ export default class PenjualansController {
     let seconds = (distance > 0 )? Math.floor((distance % (1000 * 60)) / 1000) : 0
 
     const tambahan = {
-      hargaJualTerbilang: this.kapitalHurufPertama(terparser.ubahKeTeks(PJ?.hargaJualAkhir || 0)) + ' rupiah',
+      hargaJualTerbilang: kapitalHurufPertama(terparser.ubahKeTeks(PJ?.hargaJualAkhir || 0)) + ' rupiah',
       urlFoto: url,
       apakahExpired: distance <= 0 ,
       menit: minutes,
@@ -598,6 +521,8 @@ export default class PenjualansController {
     const idpj = request.input('idpj', '')
 
     try {
+      const pengaturan = await Pengaturan.findOrFail(1)
+
       const penjualan = await Penjualan.findOrFail(idpj)
       await penjualan.load('kelompok', (query) => {
         query.preload('kadar')
@@ -622,7 +547,6 @@ export default class PenjualansController {
         margin: pMargins
       })
 
-      // doc.pipe(response.response) // di bind ke response
       response.stream(doc) // di bind ke response
 
       let TIPE = 2 // ntar dihapus, cuma buat tes
@@ -652,8 +576,12 @@ export default class PenjualansController {
           width: 350
         })
 
-      if(await Drive.exists('logos/logo-leo.png')){ // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
-        const logoToko = await Drive.get('logos/logo-leo.png') // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
+      const placeholderLogo = 'logos/logo-leo.png' // ini bisa dipake buat testing / maen aman
+      // const urlFoto = placeholderLogo
+      const urlFoto =  (pengaturan.logoToko)? 'logoToko/' + pengaturan.logoToko : placeholderLogo
+
+      if(await Drive.exists(urlFoto)){ // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
+        const logoToko = await Drive.get(urlFoto) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
         doc.image(logoToko, pMargins, pMargins, {
           height: 60
         })
@@ -683,7 +611,7 @@ export default class PenjualansController {
 
       let hRow2 = pMargins + 80
 
-      let potongan = (penjualan.apakahPotonganPersen)? penjualan.potongan + '%' : this.rupiahParser(penjualan.potongan) + '/ Gr'
+      let potongan = (penjualan.apakahPotonganPersen)? penjualan.potongan + '%' : rupiahParser(penjualan.potongan) + '/ Gr'
       let potonganFinal = (penjualan.apakahStokBaru)? potongan + ' (NEW)' : potongan
 
       if(TIPE == 1){
@@ -807,7 +735,7 @@ export default class PenjualansController {
       doc.fontSize(13)
         .fill(warnaNetral)
         .font('Times-Roman')
-        .text(this.rupiahParser(penjualan.hargaJualAkhir), wCol1 + wCol2 + pMargins + 10, hRow3 + hContentRow3 + (hContentRow3 / 2), {
+        .text(rupiahParser(penjualan.hargaJualAkhir), wCol1 + wCol2 + pMargins + 10, hRow3 + hContentRow3 + (hContentRow3 / 2), {
           width: wCol3 - 20
         })
 
@@ -828,7 +756,7 @@ export default class PenjualansController {
 
       doc.fontSize(13)
         .font('Times-Bold')
-        .text(this.rupiahParser(penjualan.hargaJualAkhir), maxWRow3 - wCol3 + 10, hRow3 + 100 + (hContentRow3 / 4))
+        .text(rupiahParser(penjualan.hargaJualAkhir), maxWRow3 - wCol3 + 10, hRow3 + 100 + (hContentRow3 / 4))
 
 
       if(TIPE == 2){
@@ -882,3 +810,81 @@ export default class PenjualansController {
 
   
 }
+
+
+  // ============================ Fungsi Tambahan=====================================
+
+  function getRandomInt(max: number) {
+    return Math.floor(Math.random() * max)
+  }
+
+  function kapitalHurufPertama(text: string) {
+    return text.charAt(0).toUpperCase() + text.slice(1)
+  }
+
+  function kapitalKalimat(text: string) {
+    let pure = text.split(' ')
+    let newText = ''
+    for (let i = 0; i < pure.length; i++) {
+      newText += this.kapitalHurufPertama(pure[i])
+      if (i !== pure.length - 1) {
+        newText += ' '
+      }
+    }
+    return newText
+  }
+
+  function belakangKoma(angka: number) {
+    return angka / Math.pow(10, angka.toString().replace(/\D/gi, '').length)
+  }
+
+  function rupiahParser(angka: number) {
+    if (typeof angka == 'number') {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+      }).format(angka)
+    }
+  }
+
+  function pembulatanRupiah(angka: number, bulat:number = 1000){
+    return Math.ceil(angka / bulat) * bulat
+  }
+
+  function generateKodePenjualan(kadar: string, bentuk: string){
+    let kodebentuk = {
+      Cincin: 'CC',
+      Kalung: 'KL',
+      Anting: 'AT',
+      Liontin: 'LT',
+      Tindik: 'TD',
+      Gelang: 'GL'
+    }
+
+    let kodekadar = {
+      Muda: 1,
+      Tanggung: 2,
+      Tua: 3
+    }
+
+    // varian ini bisa dipake buat yang butuh random2
+    // let kodekadar = {
+    //   Muda: {nomer: 1, huruf: ['M', 'MU', 'YO', 'NO']},
+    //   Tanggung: {nomer: 2, huruf: ['TA', 'TG', 'MI', 'CE']},
+    //   Tua: {nomer:3, huruf: ['TU', 'NE', 'GR', 'OL']}
+    // }
+
+    let tipetempat = 'PJT1' // aslinya T1 ini kata pertama ruko, tp gaapa ntar diganti
+
+    return tipetempat + '-' + DateTime.local().toMillis() + '-' + kodekadar[kadar] + kodebentuk[bentuk] + '-' + (100 + getRandomInt(800))
+  }
+
+  function tigaDigit(angka: number){
+    let teks = angka.toString()
+    let finalTeks = teks
+    if(teks.length == 2) finalTeks = '0' + teks
+    if(teks.length <= 1) finalTeks = '00' + teks
+
+    return finalTeks
+  }

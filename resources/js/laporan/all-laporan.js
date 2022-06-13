@@ -60,7 +60,7 @@ const semuaTransaksi = document.getElementById('semuaTransaksi')
 const rekapTransaksi = document.getElementById('rekapTransaksi')
 const daftarPenjualan = document.getElementById('daftarPenjualan')
 const daftarPembelian = document.getElementById('daftarPembelian')
-const daftarGadai = document.getElementById('daftarGadai')
+// const daftarGadai = document.getElementById('daftarGadai')
 
 
 semuaTransaksi.addEventListener('change', () => {
@@ -68,22 +68,22 @@ semuaTransaksi.addEventListener('change', () => {
     rekapTransaksi.checked = true
     daftarPenjualan.checked = true
     daftarPembelian.checked = true
-    daftarGadai.checked = true
+    // daftarGadai.checked = true
 
     rekapTransaksi.disabled = true
     daftarPenjualan.disabled = true
     daftarPembelian.disabled = true
-    daftarGadai.disabled = true
+    // daftarGadai.disabled = true
   } else {
     rekapTransaksi.checked = false
     daftarPenjualan.checked = false
     daftarPembelian.checked = false
-    daftarGadai.checked = false
+    // daftarGadai.checked = false
 
     rekapTransaksi.disabled = false
     daftarPenjualan.disabled = false
     daftarPembelian.disabled = false
-    daftarGadai.disabled = false
+    // daftarGadai.disabled = false
   }
 })
 
@@ -91,6 +91,7 @@ const semuaBarang = document.getElementById('semuaBarang')
 const penambahanStok = document.getElementById('daftarPenambahan')
 const koreksiStok = document.getElementById('daftarKoreksi')
 const daftarKelompokLaku = document.getElementById('daftarKelompokLaku')
+const daftarKodeproLaku = document.getElementById('daftarKodeproLaku')
 const daftarKelompokMenipis = document.getElementById('daftarKelompokMenipis')
 const daftarModelLaku = document.getElementById('daftarModelLaku')
 
@@ -99,24 +100,28 @@ semuaBarang.addEventListener('change', () => {
     penambahanStok.checked = true
     koreksiStok.checked = true
     daftarKelompokLaku.checked = true
+    daftarKodeproLaku.checked = true
     daftarKelompokMenipis.checked = true
     daftarModelLaku.checked = true
 
     penambahanStok.disabled = true
     koreksiStok.disabled = true
     daftarKelompokLaku.disabled = true
+    daftarKodeproLaku.disabled = true
     daftarKelompokMenipis.disabled = true
     daftarModelLaku.disabled = true
   } else {
     penambahanStok.checked = false
     koreksiStok.checked = false
     daftarKelompokLaku.checked = false
+    daftarKodeproLaku.checked = false
     daftarKelompokMenipis.checked = false
     daftarModelLaku.checked = false
 
     penambahanStok.disabled = false
     koreksiStok.disabled = false
     daftarKelompokLaku.disabled = false
+    daftarKodeproLaku.disabled = false
     daftarKelompokMenipis.disabled = false
     daftarModelLaku.disabled = false
   }

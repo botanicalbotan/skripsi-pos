@@ -17,23 +17,25 @@ export default class Penggunas extends BaseSchema {
       table.string('tempat_lahir').notNullable()
       table.date('tanggal_lahir').notNullable()
 
-      table.integer('lama_kerja').notNullable().defaultTo(0) // bulan
-      table.string('alamat', 100)
-      table.string('nohp_aktif', 15)
-      table.boolean('apakah_pegawai_aktif').notNullable().defaultTo(false)
+      table.string('alamat', 100).notNullable()
+      table.string('nohp_aktif', 15).notNullable()
       table.string('foto')
+      table.string('catatan', 100)
 
-      table.integer('gaji_bulanan').notNullable()
+      table.boolean('apakah_pegawai_aktif').notNullable().defaultTo(false)
+      table.date('tanggal_mulai_aktif').nullable() // hapus kalo di deactivate, reset kalo diaktifin lagi
       table.dateTime('deleted_at').nullable()
 
-      // ini nanti tambahannya
-      table.date('tanggal_mulai_aktif').nullable() // hapus kalo di deactivate, reset kalo diaktifin lagi
+
+      table.integer('gaji_bulanan').notNullable()
       table.date('tanggal_gajian_selanjutnya').nullable()
       table.date('tanggal_gajian_terakhir').nullable()
+      table.integer('kali_gajian').notNullable().defaultTo(0)
 
       // ini dipertanyakan
       // table.date('tanggal_awal_masuk').notNullable()
       // table.date('tanggal_gajian').notNullable()
+      // table.integer('lama_kerja').notNullable().defaultTo(0) // bulan
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

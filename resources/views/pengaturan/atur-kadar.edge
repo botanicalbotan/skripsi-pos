@@ -1,0 +1,96 @@
+@layout('layouts/master')
+
+@section('more-style')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.css"
+  integrity="sha512-+VDbDxc9zesADd49pfvz7CgsOl2xREI/7gnzcdyA9XjuTxLXrdpuz21VVIqc5HPfZji2CypSbxx1lgD7BgBK5g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+@endsection
+
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="atur-kadar" id="base-page">
+  <h2 class="text-4xl font-semibold">Pengaturan</h2>
+  <h4 class="text-lg text-secondary opacity-60">Opsi dan aturan dalam pengoperasian aplikasi.</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+    @include('partials/wadah-alert')
+
+    {{--  informasi  --}}
+    <div class="min-h-96 flex lg:space-x-8 space-y-6 lg:space-y-0 flex-col lg:flex-row">
+      <div class="flex-none md:w-1/2 lg:w-1/4">
+        <ul class="menu bg-base-300 w-full py-4">
+          <li class="menu-title">
+            <span>Menu Pengaturan</span>
+          </li>
+          <li><a href="/app/pengaturan/general">General</a></li>
+          <li class="bordered"><a href="/app/pengaturan/kadar">Kadar Perhiasan</a></li>
+          <li><a href="/app/pengaturan/transaksi">Transaksi</a></li>
+          <li><a href="/app/pengaturan/barang">Kelola Barang</a></li>
+          <li><a href="/app/pengaturan/pegawai">Pegawai</a></li>
+        </ul>
+      </div>
+      <div class="flex-1 space-y-4">
+        <div>
+          <span class="text-2xl font-semibold">Menu Kadar Perhiasan</span>
+        </div>
+
+
+        <div class="space-y-10">
+
+          {{--  Logo Toko  --}}
+          {{--  Data Toko  --}}
+          <div>
+            <h4 class="text-2xl mb-4">Daftar Kadar Perhiasan</h4>
+            <p>Menu ini berfungsi untuk mengubah identitas toko, meliputi nama, alamat dan deskripsi toko pada nota.</p>
+
+            <div class="mt-4 space-y-8">
+
+                @each(kadar in kadars)
+                <div class=" p-4 border border-l-8 border-secondary" style="border-color: {{ kadar.warnaNota }}">
+                    <div class="space-y-4">
+                      <div class="flex">
+                        <div class="flex-1">
+                          <div class="text-xl font-semibold" style="color: {{ kadar.warnaNota }}">Kadar {{ kadar.nama }}</div>
+                          <div class="opacity-75">Tipe potongan: <span>{{ (kadar.apakahPotonganPersen)? 'Persentase (%)' : 'Nominal (Rp.)' }}</span></div>
+                        </div>
+                        {{--  <div class="flex-none text-secondary hidden sm:block">Terakhir diubah 20/20/12</div>  --}}
+                      </div>
+    
+                      <div>
+                        {{ kadar.deskripsi }}
+                      </div>
+                    </div>
+    
+                    <div class="flex justify-end mt-2">
+                      <a href="/app/pengaturan/kadar/{{ kadar.id }}" class="btn btn-sm btn-ghost">Lihat Detail</a>
+                    </div>
+                  </div>
+                @endeach
+
+              
+
+              
+
+            </div>
+          </div>
+
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js"
+  integrity="sha512-ZK6m9vADamSl5fxBPtXw6ho6A4TuX89HUbcfvxa2v2NYNT/7l8yFGJ3JlXyMN4hlNbz0il4k6DvqbIW5CCwqkw=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/atur-kadar.js')}}"></script>
+@endsection

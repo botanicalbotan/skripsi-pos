@@ -6,7 +6,8 @@
 
   {{--  card utama  --}}
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 shadow min:h-96">
-
+    @include('partials/wadah-alert')
+    
     <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
       <div class="flex-1">
         <div
@@ -86,7 +87,7 @@
                   <div class="avatar">
                     <div class="w-12 h-12 mask mask-squircle bg-placeholder-user-100 bg-contain">
                       @if(user.foto && user.foto !== '')
-                        <img src="{{ tambahan.lifehackUrlSementara + user.foto }}" onerror="this.style.display='none'">
+                        <img src="{{ '/app/cumaData/foto/pegawai/' + user.id }}" onerror="this.style.display='none'">
                       @endif
                     </div>
                   </div>

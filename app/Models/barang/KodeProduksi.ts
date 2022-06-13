@@ -44,24 +44,18 @@ export default class KodeProduksi extends BaseModel {
   @column()
   public potonganBaru: number
 
-  @column()
-  public persentaseMalUripan: number
 
+  // @column()
+  // public persentaseMalUripan: number
 
+  // @column()
+  // public persentaseMalRosok: number
 
-  // mulai dari sini
-  @column()
-  public persentaseMalRosok: number
+  // @column()
+  // public ongkosBeliTanpaNota: number
 
-  @column()
-  public ongkosBeliTanpaNota: number
-
-  // sampe sini, kolom baru
-
-
-  // bawah ini otw dihapus
-  @column()
-  public ongkosMalRosokPerGram: number
+  // @column()
+  // public ongkosMalRosokPerGram: number
 
 
 

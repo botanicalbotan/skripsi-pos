@@ -15,16 +15,19 @@ export default class Pengaturan extends BaseModel {
   public namaToko: string
 
   @column()
-  public alamatToko: string
+  public alamatTokoLengkap: string
 
   @column()
-  public deskripsiToko: string
+  public alamatTokoSingkat: string
+
+  @column()
+  public logoToko: string | null
 
   @column()
   public toleransiSusutBerat: number
 
-  @column()
-  public toleransiPersentaseTawaran: number
+  // @column()
+  // public toleransiPersentaseTawaran: number
 
   @column()
   public saldoToko: number
@@ -33,13 +36,22 @@ export default class Pengaturan extends BaseModel {
   public hargaMal: number
 
   @column()
-  public defaultStokMinimalPerhiasan: number
+  public defaultStokMinimalKelompok: number
 
   @column()
   public defaultBolehPrintNota: boolean
 
   @column()
+  public defaultWaktuMaksimalPrintNota: number
+
+  @column()
   public defaultIngatkanStokMenipis: boolean
+
+  @column()
+  public penaltiTelatJanjiMin: number
+
+  @column()
+  public penaltiTelatJanjiMax: number
 
   @column()
   public defaultGajiKaryawan: number

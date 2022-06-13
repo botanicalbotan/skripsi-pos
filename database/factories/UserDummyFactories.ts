@@ -20,7 +20,6 @@ export const PenggunaFactory = Factory
           gender: (getRandomInt(2) === 1)? 'L': 'P',
           tempatLahir: faker.address.cityName(),
           tanggalLahir: DateTime.fromJSDate(faker.date.past(50)),
-          lamaKerja: getRandomInt(10),
           alamat: faker.address.cityName(),
           nohpAktif: '08' + Math.floor(1000000000 + Math.random() * 9000000000).toString(),
           apakahPegawaiAktif: gacha,

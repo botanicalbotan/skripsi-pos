@@ -63,21 +63,21 @@
             <ul>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tipe Kas</h3>
                   <span class="flex-1">{{ (kas.apakahKasKeluar)? 'Kas Keluar': 'Kas Masuk' }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Nominal Kas</h3>
                   <span class="flex-1 {{ (kas.apakahKasKeluar)? 'text-error' : 'text-accent' }}">{{ fungsi.rupiahParser(kas.nominal) }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Perihal Kas</h3>
                   <span class="flex-1 ">{{ kas.perihal }}</span>
                 </div>

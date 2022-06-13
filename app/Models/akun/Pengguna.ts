@@ -1,4 +1,6 @@
-import { DateTime } from 'luxon'
+import {
+  DateTime
+} from 'luxon'
 import Jabatan from 'App/Models/akun/Jabatan'
 import {
   BaseModel,
@@ -26,135 +28,149 @@ import Kerusakan from 'App/Models/barang/Kerusakan'
 import Model from 'App/Models/barang/Model'
 import KoreksiStok from 'App/Models/barang/KoreksiStok'
 
-type PenggunaQuery = ModelQueryBuilderContract<typeof Pengguna>
+type PenggunaQuery = ModelQueryBuilderContract < typeof Pengguna >
 
-export default class Pengguna extends BaseModel {
-  @column({ isPrimary: true })
-  public id: number
+  export default class Pengguna extends BaseModel {
+    @column({
+      isPrimary: true
+    })
+    public id: number
 
-  @column()
-  public nama: string
+    @column()
+    public nama: string
 
-  @column()
-  public gender: string
+    @column()
+    public gender: string
 
-  @column()
-  public tempatLahir: string
+    @column()
+    public tempatLahir: string
 
-  @column.date()
-  public tanggalLahir: DateTime
+    @column.date()
+    public tanggalLahir: DateTime
 
-  // lama kerja ini bulan
-  @column()
-  public lamaKerja: number
+    @column()
+    public alamat: string
 
-  @column()
-  public alamat: string
+    @column()
+    public nohpAktif: string
 
-  @column()
-  public nohpAktif: string
+    @column()
+    public apakahPegawaiAktif: boolean
 
-  @column()
-  public apakahPegawaiAktif: boolean
+    @column({
+      serializeAs: null
+    })
+    public foto ? : string | null
 
-  @column({ serializeAs: null })
-  public foto?: string | null
+    @column()
+    public catatan: string
 
-  @column()
-  public gajiBulanan: number
+    @column()
+    public gajiBulanan: number
 
-  @column.dateTime()
-  public deletedAt: DateTime | null
+    @column.dateTime()
+    public deletedAt: DateTime | null
 
-  @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+    @column.dateTime({
+      autoCreate: true
+    })
+    public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+    @column.dateTime({
+      autoCreate: true,
+      autoUpdate: true
+    })
+    public updatedAt: DateTime
 
-  // ini tambahan baru
-  @column.date()
-  public tanggalMulaiAktif: DateTime | null
+    // ini tambahan baru
+    @column.date()
+    public tanggalMulaiAktif: DateTime | null
 
-  @column.date()
-  public tanggalGajianSelanjutnya: DateTime | null
+    @column.date()
+    public tanggalGajianSelanjutnya: DateTime | null
 
-  @column.date()
-  public tanggalGajianTerakhir: DateTime | null
-
-
-  // FK dan relasi
-  @column()
-  public jabatanId: number
-
-  @belongsTo(() => Jabatan, {
-    localKey: 'id'
-  })
-  public jabatan: BelongsTo<typeof Jabatan>
-
-  @column()
-  public userId: number
-
-  @belongsTo(() => User, {
-    localKey: 'id',
-  })
-  public user: BelongsTo<typeof User>
-
-  @hasMany(() => Ka)
-  public kas: HasMany<typeof Ka>
-
-  @hasMany(() => PenggajianPegawai, {
-    foreignKey: 'pencatatGajianId',
-    localKey: 'id'
-  })
-  public pencatatGajians: HasMany<typeof PenggajianPegawai>
-
-  @hasMany(() => PenggajianPegawai, {
-    foreignKey: 'penerimaGajiId',
-    localKey: 'id'
-  })
-  public penerimaGajis: HasMany<typeof PenggajianPegawai>
-
-  @hasMany(() => Notifikasi)
-  public notifikasis: HasMany<typeof Notifikasi>
-
-  @hasMany(() => KoreksiSaldo)
-  public koreksiSaldos: HasMany<typeof KoreksiSaldo>
-
-  @hasMany(() => PenambahanStok)
-  public penambahanStoks: HasMany<typeof PenambahanStok>
-
-  @hasMany(() => KoreksiStok)
-  public koreksiStoks: HasMany<typeof KoreksiStok>
-
-  @hasMany(() => Gadai)
-  public gadais: HasMany<typeof Gadai>
-
-  @hasMany(() => Pembelian)
-  public pembelians: HasMany<typeof Pembelian>
-
-  @hasMany(() => KodeProduksi)
-  public kodeProduksis: HasMany<typeof KodeProduksi>
-
-  @hasMany(() => Kelompok)
-  public kelompoks: HasMany<typeof Kelompok>
-
-  @hasMany(() => Kerusakan)
-  public kerusakans: HasMany<typeof Kerusakan>
-
-  @hasMany(() => Model)
-  public models: HasMany<typeof Model>
-
-  @hasMany(() => Penjualan)
-  public penjualans: HasMany<typeof Penjualan>
+    @column.date()
+    public tanggalGajianTerakhir: DateTime | null
 
 
-  // ini decoratorss
-  @beforeFetch()
-  @beforeFind()
-  public static withoutSoftDeletes(query: PenggunaQuery) {
-    query.whereNull('deleted_at')
+    // di ++ tiap gajian
+    @column()
+    public kaliGajian: number
+
+
+
+    // FK dan relasi
+    @column()
+    public jabatanId: number
+
+    @belongsTo(() => Jabatan, {
+      localKey: 'id'
+    })
+    public jabatan: BelongsTo < typeof Jabatan >
+
+      @column()
+    public userId: number
+
+    @belongsTo(() => User, {
+      localKey: 'id',
+    })
+    public user: BelongsTo < typeof User >
+
+      @hasMany(() => Ka)
+    public kas: HasMany < typeof Ka >
+
+      @hasMany(() => PenggajianPegawai, {
+        foreignKey: 'pencatatGajianId',
+        localKey: 'id'
+      })
+    public pencatatGajians: HasMany < typeof PenggajianPegawai >
+
+      @hasMany(() => PenggajianPegawai, {
+        foreignKey: 'penerimaGajiId',
+        localKey: 'id'
+      })
+    public penerimaGajis: HasMany < typeof PenggajianPegawai >
+
+      @hasMany(() => Notifikasi)
+    public notifikasis: HasMany < typeof Notifikasi >
+
+      @hasMany(() => KoreksiSaldo)
+    public koreksiSaldos: HasMany < typeof KoreksiSaldo >
+
+      @hasMany(() => PenambahanStok)
+    public penambahanStoks: HasMany < typeof PenambahanStok >
+
+      @hasMany(() => KoreksiStok)
+    public koreksiStoks: HasMany < typeof KoreksiStok >
+
+      @hasMany(() => Gadai)
+    public gadais: HasMany < typeof Gadai >
+
+      @hasMany(() => Pembelian)
+    public pembelians: HasMany < typeof Pembelian >
+
+      @hasMany(() => KodeProduksi)
+    public kodeProduksis: HasMany < typeof KodeProduksi >
+
+      @hasMany(() => Kelompok)
+    public kelompoks: HasMany < typeof Kelompok >
+
+      @hasMany(() => Kerusakan)
+    public kerusakans: HasMany < typeof Kerusakan >
+
+      @hasMany(() => Model)
+    public models: HasMany < typeof Model >
+
+      @hasMany(() => Penjualan)
+    public penjualans: HasMany < typeof Penjualan >
+
+
+      // ini decoratorss
+      @beforeFetch()
+    @beforeFind()
+    public static withoutSoftDeletes(query: PenggunaQuery) {
+      query.whereNull('deleted_at')
+    }
+
+
   }
-
-
-}

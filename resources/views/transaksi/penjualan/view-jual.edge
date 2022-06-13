@@ -92,42 +92,42 @@
             <ul>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Nama Barang</h3>
                   <span class="flex-1 font-semibold">{{ fungsi.kapitalHurufPertama(PJ.namaBarang) }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Berat Barang</h3>
                   <span class="flex-1">{{ PJ.beratBarang }} Gram</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Bentuk & Kadar Perhiasan</h3>
                   <span class="flex-1" style="color: {{ PJ.kodeProduksi.kadar.warnaNota }}">{{ PJ.model.bentuk.bentuk }} {{ PJ.kodeProduksi.kadar.nama }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Jenis Stok</h3>
                   <span class="flex-1 ">{{ (PJ.apakahStokBaru)? 'Stok Baru' : 'Stok Lama' }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Model Perhiasan</h3>
                   <span class="flex-1 ">{{ PJ.model.nama }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kondisi Perhiasan</h3>
                   <span class="flex-1 ">{{ PJ.kondisi }}</span>
                 </div>
@@ -155,7 +155,7 @@
           <div class="border-t border-b border-secondary">
             <ul>
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Harga per Gram</h3>
                   <span class="flex-1">{{ fungsi.rupiahParser(PJ.hargaJualPerGram) }}</span>
                 </div>
@@ -163,14 +163,14 @@
 
               @if(PJ.apakahPotonganPersen)
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Persentase Potongan</h3>
                   <span class="flex-1 ">{{ PJ.potongan }}% dari harga jual</span>
                 </div>
               </li>
               @else
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Potongan per Gram</h3>
                   <span class="flex-1 ">{{ fungsi.rupiahParser(PJ.potongan) }}</span>
                 </div>
@@ -178,7 +178,7 @@
               @endif
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Harga Jual Akhir</h3>
                   <span class="flex-1 font-semibold">{{ fungsi.rupiahParser(PJ.hargaJualAkhir) }}</span>
                 </div>

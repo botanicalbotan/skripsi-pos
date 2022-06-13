@@ -13,16 +13,6 @@ import Drive from '@ioc:Adonis/Core/Drive'
 import { DateTime } from 'luxon'
 
 export default class KodeProduksisController {
-  rupiahParser(angka: number) {
-    if (typeof angka == 'number') {
-      return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-      }).format(angka)
-    }
-  }
-
   public async index({
     view,
     request
@@ -177,17 +167,17 @@ export default class KodeProduksisController {
       potonganBaru: schema.number([
         rules.unsigned()
       ]),
-      persentaseMalUripan: schema.number([
-        rules.unsigned(),
-        rules.range(0, 99)
-      ]),
-      persentaseMalRosok: schema.number([
-        rules.unsigned(),
-        rules.range(0, 99)
-      ]),
-      ongkosBeliTanpaNota: schema.number([
-        rules.unsigned()
-      ])
+      // persentaseMalUripan: schema.number([
+      //   rules.unsigned(),
+      //   rules.range(0, 99)
+      // ]),
+      // persentaseMalRosok: schema.number([
+      //   rules.unsigned(),
+      //   rules.range(0, 99)
+      // ]),
+      // ongkosBeliTanpaNota: schema.number([
+      //   rules.unsigned()
+      // ])
     })
 
     const validrequest = await request.validate({
@@ -223,10 +213,10 @@ export default class KodeProduksisController {
         hargaPerGramLama: validrequest.hargaLama,
         potonganBaru: validrequest.potonganBaru,
         potonganLama: validrequest.potonganLama,
-        persentaseMalUripan: validrequest.persentaseMalUripan,
-        persentaseMalRosok: validrequest.persentaseMalRosok,
-        ongkosBeliTanpaNota: validrequest.ongkosBeliTanpaNota,
-        ongkosMalRosokPerGram: 0, // persiapan dihapus
+        // persentaseMalUripan: validrequest.persentaseMalUripan,
+        // persentaseMalRosok: validrequest.persentaseMalRosok,
+        // ongkosBeliTanpaNota: validrequest.ongkosBeliTanpaNota,
+        // ongkosMalRosokPerGram: 0, // persiapan dihapus
         penggunaId: placeholderPengguna
       })
 
@@ -242,7 +232,8 @@ export default class KodeProduksisController {
   public async show({
     view,
     params,
-    response
+    response,
+    session
   }: HttpContextContract) {
     try {
       let kodepro = await KodeProduksi.findOrFail(params.id)
@@ -261,7 +252,7 @@ export default class KodeProduksisController {
       }
 
       let fungsi = {
-        rupiahParser: this.rupiahParser
+        rupiahParser: rupiahParser
       }
 
       return view.render('barang/kodepro/view-kodepro', {
@@ -271,6 +262,7 @@ export default class KodeProduksisController {
         hargaMal: pengaturan.hargaMal
       })
     } catch (error) {
+      session.flash('alertError', 'Kode produksi yang anda akses tidak valid atau terhapus.')
       return response.redirect().toPath('/app/barang/kodepro/')
     }
   }
@@ -358,17 +350,17 @@ export default class KodeProduksisController {
       potonganBaru: schema.number([
         rules.unsigned()
       ]),
-      persentaseMalUripan: schema.number([
-        rules.unsigned(),
-        rules.range(0, 99)
-      ]),
-      persentaseMalRosok: schema.number([
-        rules.unsigned(),
-        rules.range(0, 99)
-      ]),
-      ongkosBeliTanpaNota: schema.number([
-        rules.unsigned()
-      ])
+      // persentaseMalUripan: schema.number([
+      //   rules.unsigned(),
+      //   rules.range(0, 99)
+      // ]),
+      // persentaseMalRosok: schema.number([
+      //   rules.unsigned(),
+      //   rules.range(0, 99)
+      // ]),
+      // ongkosBeliTanpaNota: schema.number([
+      //   rules.unsigned()
+      // ])
     })
 
     const validrequest = await request.validate({
@@ -405,10 +397,10 @@ export default class KodeProduksisController {
       kodepro.hargaPerGramLama = validrequest.hargaLama
       kodepro.potonganBaru = validrequest.potonganBaru
       kodepro.potonganLama = validrequest.potonganLama
-      kodepro.persentaseMalUripan = validrequest.persentaseMalUripan
-      kodepro.persentaseMalRosok = validrequest.persentaseMalRosok
-      kodepro.ongkosBeliTanpaNota = validrequest.ongkosBeliTanpaNota
-      kodepro.ongkosMalRosokPerGram = 0 // persiapan dihapus
+      // kodepro.persentaseMalUripan = validrequest.persentaseMalUripan
+      // kodepro.persentaseMalRosok = validrequest.persentaseMalRosok
+      // kodepro.ongkosBeliTanpaNota = validrequest.ongkosBeliTanpaNota
+      // kodepro.ongkosMalRosokPerGram = 0 // persiapan dihapus
       kodepro.penggunaId = placeholderPengguna
       await kodepro.save()
 
@@ -564,4 +556,14 @@ export default class KodeProduksisController {
 
 
 
+}
+
+function rupiahParser(angka: number) {
+  if (typeof angka == 'number') {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(angka)
+  }
 }

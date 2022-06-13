@@ -1,4 +1,6 @@
-import { DateTime } from 'luxon'
+import {
+  DateTime
+} from 'luxon'
 import {
   BaseModel,
   column,
@@ -12,7 +14,9 @@ import Penjualan from 'App/Models/transaksi/Penjualan'
 import KodeProduksi from 'App/Models/barang/KodeProduksi'
 
 export default class Kadar extends BaseModel {
-  @column({ isPrimary: true })
+  @column({
+    isPrimary: true
+  })
   public id: number
 
   @column()
@@ -25,32 +29,69 @@ export default class Kadar extends BaseModel {
   public apakahPotonganPersen: boolean
 
   @column()
-  public toleransiPotonganTukarTambah: number
-
-  @column()
-  public hargaNota: number
-
-  @column()
   public warnaNota: string
 
 
-  @column.dateTime({ autoCreate: true, serializeAs: null })
+
+  // ================== transaksi pembelian ==========================
+
+  @column()
+  public toleransiPenguranganPotonganMin: number
+
+  @column()
+  public toleransiPenguranganPotonganMax: number
+
+  // ================== harga mal dan persentase kadar ==========================
+
+  @column()
+  public persentaseMalUripan: number
+
+  @column()
+  public persentaseMalRosok: number
+
+  @column()
+  public marginPersenUntungUripanMin: number
+
+  @column()
+  public marginPersenUntungUripanMax: number
+
+  @column()
+  public marginPersenUntungRosokMin: number
+
+  @column()
+  public marginPersenUntungRosokMax: number
+
+  @column()
+  public marginPersenUntungRosokTtMin: number
+
+  @column()
+  public marginPersenUntungRosokTtMax: number
+
+
+
+  @column.dateTime({
+    autoCreate: true,
+    serializeAs: null
+  })
   public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime({
+    autoCreate: true,
+    autoUpdate: true
+  })
   public updatedAt: DateTime
 
 
   // FK dan relasi
   @hasMany(() => Kelompok)
-  public kelompoks: HasMany<typeof Kelompok>
+  public kelompoks: HasMany < typeof Kelompok >
 
-  @hasMany(() => KodeProduksi)
-  public kodeProduksis: HasMany<typeof KodeProduksi>
+    @hasMany(() => KodeProduksi)
+  public kodeProduksis: HasMany < typeof KodeProduksi >
 
-  @hasManyThrough([
-    () => Penjualan,
-    () => Kelompok
-  ])
-  public penjualans: HasManyThrough<typeof Penjualan>
+    @hasManyThrough([
+      () => Penjualan,
+      () => Kelompok
+    ])
+  public penjualans: HasManyThrough < typeof Penjualan >
 }

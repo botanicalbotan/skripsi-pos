@@ -37,6 +37,10 @@ export default class KontenLaporanMaker {
         color: 'black',
         margin: [0, 0, 0, 30]
       },
+      paragrafNormal: {
+        lineHeight: 1.5,
+        fontSize: 11
+      },
       subBab: {
         fontSize: 12,
         margin: [0, 5, 0, 10]
@@ -57,7 +61,7 @@ export default class KontenLaporanMaker {
       },
       olWadah: {
         fontSize: 11,
-        margin: [0, 10, 0, 30]
+        margin: [0, 10, 0, 15]
       },
       olTabel: {
         margin: [0, 0, 0, 15]
@@ -257,6 +261,7 @@ export default class KontenLaporanMaker {
     daftarPenambahan: boolean,
     daftarKoreksi: boolean,
     daftarKelompokLaku: boolean,
+    daftarKodeproLaku: boolean,
     daftarKelompokMenipis: boolean,
     daftarModelLaku: boolean,
   }, tanggalLaporan: string, tanggalMulai: DateTime, tanggalAkhir: DateTime, adaNext: boolean = false) {
@@ -289,30 +294,35 @@ export default class KontenLaporanMaker {
 
     if (checklistBarang.semua) {
       subbab.push(await babBarang.generateSubDaftarPenambahan(tanggalLaporan, tanggalMulai, tanggalAkhir))
-      // subbab.push(await babBarang.generateSubDaftarKoreksi(tanggalLaporan, tanggalMulai, tanggalAkhir))
-      // subbab.push(await babBarang.generateSubDaftarKelompokLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
-      // subbab.push(await babBarang.generateSubDaftarKelompokMenipis(tanggalLaporan, tanggalMulai, tanggalAkhir))
-      // subbab.push(await babBarang.generateSubDaftarModelLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      subbab.push(await babBarang.generateSubDaftarKoreksi(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      subbab.push(await babBarang.generateSubDaftarKelompokLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      subbab.push(await babBarang.generateSubDaftarKodeproLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      subbab.push(await babBarang.generateSubDaftarKelompokMenipis())
+      subbab.push(await babBarang.generateSubDaftarModelLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
     } else{
       if(checklistBarang.daftarPenambahan){
         subbab.push(await babBarang.generateSubDaftarPenambahan(tanggalLaporan, tanggalMulai, tanggalAkhir))
       }
 
       if(checklistBarang.daftarKoreksi){
-        // subbab.push(await babBarang.generateSubDaftarKoreksi(tanggalLaporan, tanggalMulai, tanggalAkhir))
+        subbab.push(await babBarang.generateSubDaftarKoreksi(tanggalLaporan, tanggalMulai, tanggalAkhir))
       }
 
 
       if(checklistBarang.daftarKelompokLaku){
-        // subbab.push(await babBarang.generateSubDaftarKelompokLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
+        subbab.push(await babBarang.generateSubDaftarKelompokLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      }
+
+      if(checklistBarang.daftarKodeproLaku){
+        subbab.push(await babBarang.generateSubDaftarKodeproLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
       }
 
       if(checklistBarang.daftarKelompokMenipis){
-        // subbab.push(await babBarang.generateSubDaftarKelompokMenipis(tanggalLaporan, tanggalMulai, tanggalAkhir))
+        subbab.push(await babBarang.generateSubDaftarKelompokMenipis())
       }
 
       if(checklistBarang.daftarModelLaku){
-        // subbab.push(await babBarang.generateSubDaftarModelLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
+        subbab.push(await babBarang.generateSubDaftarModelLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
       }
     }
 

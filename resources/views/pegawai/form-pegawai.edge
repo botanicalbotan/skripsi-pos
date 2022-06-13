@@ -18,6 +18,27 @@
         <div class="w-full md:w-3/5 md:max-w-md space-y-8">
 
           {{--  ada template buat gambar sama jabatan, cek di test-1  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Jabatan Pegawai</h1>
+            </div>
+
+            <div class="form-control">
+              <label for="jabatan">
+                <span class="">Jabatan Pegawai<span class="text-error"> *</span></span>
+              </label>
+              <select id="jabatan" name="jabatan" required class="select select-primary bg-primary bg-opacity-10 w-full max-w-xs">
+                <option value="kosong" disabled="disabled" selected="selected">Pilih jabatan</option>
+                <option value="karyawan">Karyawan</option>
+                <option value="kepalatoko">Kepala Toko</option>
+                <option value="pemiliktoko">Pemilik Toko</option>
+              </select>
+
+              @if(flashMessages.has('errors.jabatan'))
+                <p class="text-error">{{ flashMessages.get('errors.jabatan') }}</p>
+              @endif
+            </div>
+          </div>
 
           {{--  Kelompok data umum  --}}
           <div class="space-y-4">
@@ -88,17 +109,7 @@
                 </div>
               </div>
             </div>
-            <div class="form-control">
-              <label for="alamat">
-                <span class="">Alamat Pegawai<span class="text-error"> *</span></span>
-              </label>
-              <input type="text" id="alamat" name="alamat" class="input input-bordered"
-                placeholder="Contoh: Jl. Pemuda Kebaktian No.12, RT01/RW02 Semarang" required maxlength="100">
 
-              @if(flashMessages.has('errors.alamat'))
-                <p class="text-error">{{ flashMessages.get('errors.alamat') }}</p>
-              @endif
-            </div>
             <div class="form-control">
               <label for="nohpAktif">
                 <span class="">Nomor Handphone Aktif<span class="text-error"> *</span></span>
@@ -110,6 +121,33 @@
                 <p class="text-error">{{ flashMessages.get('errors.nohpAktif') }}</p>
               @endif
             </div>
+
+            <div class="form-control">
+              <label for="alamat">
+                <span class="">Alamat Pegawai<span class="text-error"> *</span></span>
+              </label>
+
+              <textarea type="text" id="alamat" name="alamat" class="textarea textarea-bordered h-24"
+                placeholder="Contoh: Jl. A, Kecamatan B, Kota C" maxlength="100"></textarea>
+
+              @if(flashMessages.has('errors.alamat'))
+                <p class="text-error">{{ flashMessages.get('errors.alamat') }}</p>
+              @endif
+            </div>
+
+            <div class="form-control">
+              <label for="catatan">
+                <span class="">Catatan</span>
+              </label>
+
+              <textarea type="text" id="catatan" name="catatan" class="textarea textarea-bordered h-24"
+                placeholder="Catatan mengenai pegawai" maxlength="100"></textarea>
+
+              @if(flashMessages.has('errors.catatan'))
+                <p class="text-error">{{ flashMessages.get('errors.catatan') }}</p>
+              @endif
+            </div>
+            
 
           </div>
 
@@ -173,9 +211,9 @@
               <p x-cloak class="text-error" :class="(repassclass != '')? 'flex':'hidden'">Kedua password tidak sama!</p>
             </div>
 
-            <div class="form-control">
+            <div class="form-control hidden" id="wadahEmail">
               <label for="email">
-                <span class="">Email</span>
+                <span class="">Email<span class="text-error"> *</span></span>
               </label>
               <input type="email" id="email" name="email" class="input input-bordered"
                 placeholder="Contoh: budi@gmail.com" maxlength="100">
@@ -217,34 +255,14 @@
 
             <div x-data class="form-control">
               <label for="tanggalAwalMasuk" class="flex">
-                <span class="flex-1">Tanggal Awal Masuk<span class="text-error"> *</span></span>
+                <span class="flex-1">Tanggal Mulai Aktif<span class="text-error"> *</span></span>
                 <span x-cloak class="flex-none text-primary"></span>
               </label>
-              <input type="date" id="tanggalAwalMasuk"
-                name="tanggalAwalMasuk" class="input input-bordered">
+              <input type="date" id="tanggalMulaiAktif"
+                name="tanggalMulaiAktif" class="input input-bordered">
 
               @if(flashMessages.has('errors.tanggalAwalMasuk'))
                 <p class="text-error">{{ flashMessages.get('errors.tanggalAwalMasuk') }}</p>
-              @endif
-            </div>
-
-            <div class="form-control" x-data>
-              <label for="lamaKerja">
-                <span class="">Lama Bekerja di Toko Leo (tahun)<span class="text-error"> *</span></span>
-              </label>
-              <div class="relative flex w-full flex-wrap items-stretch">
-                <input type="number" value="0" min="0" id="lamaKerja" name="lamaKerja"
-                  class="px-3 py-3 relative input input-bordered w-full pr-16"
-                  @focus="$el.value=($el.value == 0)? '':$el.value"
-                  @focusout="$el.value = ($el.value =='')? 0:$el.value" value="0"
-                  oninput="validity.valid||(value='');" />
-                <span
-                  class="z-10 h-full leading-snug absolute text-center text-secondary right-0 items-center justify-center w-auto pr-4 py-3">
-                  tahun
-                </span>
-              </div>
-              @if(flashMessages.has('errors.lamaKerja'))
-                <p class="text-error">{{ flashMessages.get('errors.lamaKerja') }}</p>
               @endif
             </div>
 
@@ -268,9 +286,7 @@
                   Rp.
                 </span>
                 {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
-                <input type="number" placeholder="1.000.000" id="gajiBulanan" min="0" name="gajiBulanan"
-                  @focus="$el.value=($el.value == 0)? '':$el.value"
-                  @focusout="$el.value = ($el.value =='')? 0:$el.value" value="0"
+                <input type="number" placeholder="0" id="gajiBulanan" min="0" name="gajiBulanan"
                   oninput="validity.valid||(value='');"
                   class="uang px-3 py-3 relative input input-bordered w-full pl-10" value="{{ (gaji)? gaji:0 }}"/>
               </div>
@@ -280,52 +296,54 @@
               @endif
             </div>
 
-            <div class="text-secondary italic ">
-              Pastikan anda mengisi seluruh masukan bertanda bintang (*)
-            </div>
           </div>
 
         </div>
 
         <div class="flex-none mt-5" x-data="{ adaGambar: false }">
-          <input type="file" id="fileFotoPegawai" class="hidden-but-real hidden"
+          <input type="file" id="fileFotoPegawai" x-ref="fileFotoPegawai" class="hidden-but-real hidden"
             accept="image/*">
           <textarea name="fotoPegawaiBase64" x-ref="fotokirim" id="fotoPegawaiBase64" class="hidden-but-real hidden" hidden></textarea>
+
           <div class="mb-4">
             <h1 class="text-2xl">Foto Pegawai</h1>
           </div>
-          <div class="flex justify-center">
+
+          <div class="flex justify-center mb-4">
             <div
-              class="flex rounded-box ring-2 ring-base-300 w-52 h-52 justify-center items-center p-2 group hover:ring-neutral relative">
+              class="flex rounded-box ring-2 ring-base-300 w-52 h-52 justify-center items-center p-2 group">
               <div class="w-full h-full bg-placeholder-user-200 bg-contain">
-                {{--  gambar cuma buat wadah dan udah ada backgroundnya, jadi kalo gaada biarin kosong aja dan jangan kasi alternative text  --}}
                 <img src="" id="fotoPegawai" x-ref="fotoPegawai" @load="adaGambar = true" @error="adaGambar = false">
               </div>
 
-              <label for="fileFotoPegawai"
-                class="btn btn-ghost text-white absolute invisible group-hover:visible w-full h-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                </svg>
-              </label>
             </div>
           </div>
+
           <div class="flex flex-col items-center">
-            <button type="button" x-cloak x-show="adaGambar" @click="$refs.fotoPegawai.src = ''; $refs.fotokirim.value = ''" class="btn btn-sm btn-link text-error">Hapus Foto</button>
-            <div class="w-52 mt-3">
-              <p class=" text-justify text-sm ">Pilih file foto pegawai berukuran maskimal 1 MB.</p>
+            <div x-cloak x-show="adaGambar" class="w-full sm:w-52  flex flex-col space-y-2">
+              <button class="btn btn-block btn-sm btn-outline" type="button" @click="$refs.fileFotoPegawai.click()">Pilih Ulang Foto</button>
+              <button class="btn btn-block btn-sm btn-outline btn-error" type="button"  @click="$refs.fotoPegawai.src = ''; $refs.fotokirim.value = ''">Hapus Foto</button>
+            </div>
+
+            <div x-cloak x-show="!adaGambar" class="w-full sm:w-52 ">
+              <button class="btn btn-block btn-sm btn-outline" type="button" @click="$refs.fileFotoPegawai.click()">Pilih Foto</button>
+            </div>
+            <div class="w-full sm:w-52 mt-3">
+              <p class="text-justify text-sm ">Pilih file foto pegawai berukuran maskimal 1 MB.</p>
             </div>
           </div>
+
         </div>
       </div>
-
-      <div x-data
-        class="mt-24 flex flex-col sm:flex-row justify-center items-center space-y-5 sm:space-y-0 sm:space-x-5">
-        {{--  Ini ntar kalau dah fix urlnya diganti, dia ngecek ini edit ato bukan, kalo bukan dilempar ke pegawai, kalo iya balikin ke idnya  --}}
-        <button type="submit" class="btn btn-block sm:btn-wide btn-primary text-white">Buat Pegawai</button>
-
-        <a href="/app/pegawai" class="btn btn-block sm:btn-wide btn-secondary text-white ">Kembali</a>
+      
+      <div class="mt-24 flex flex-col space-y-4 items-center">
+        <div class="text-secondary italic ">
+          Pastikan anda mengisi seluruh masukan bertanda bintang (*)
+        </div>
+        <div class="w-full flex flex-col sm:flex-row justify-center items-center space-y-5 sm:space-y-0 sm:space-x-5">
+          <button type="submit" class="btn btn-block sm:btn-wide btn-primary text-white">Buat Pegawai</button>
+          <a href="/app/pegawai" class="btn btn-block sm:btn-wide btn-secondary text-white ">Kembali</a>
+        </div>
       </div>
     </form>
 

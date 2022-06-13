@@ -182,14 +182,18 @@ export default class BabTransaksi {
         text: 'Rekap Pembukuan Transaksi',
         style: 'subBab'
       },
-      `Pada subbab ini, akan dilampirkan rekap olahan data dari seluruh transaksi penjualan, pembelian dan gadai yang tercatat pada sistem pada tanggal ${tanggalString}. Berikut selengkapnya:`,
+      {
+        text: `Pada subbab ini, akan dilampirkan rekap olahan data dari seluruh transaksi penjualan, pembelian dan gadai yang tercatat pada sistem pada tanggal ${tanggalString}. Berikut selengkapnya:`,
+        style: 'paragrafNormal'
+      },
       {
         table: {
           widths: [120, 'auto', 200],
           headerRows: 1,
-          body: isiTabel
+          body: isiTabel,
+          dontBreakRows: true
         },
-        style: 'tabelBasic'
+        style: 'tabelBasic',
       }
     ]
 
@@ -309,12 +313,16 @@ export default class BabTransaksi {
         text: 'Daftar Transaksi Penjualan',
         style: 'subBab'
       },
-      `Pada subbab ini, akan dilampirkan daftar seluruh penjualan yang tercatat pada sistem pada tanggal ${tanggalString}. Kolom nama barang akan dilengkapi dengan informasi kadar dan bentuk perhiasan, serta penanda warna sesuai dengan warna nota yang diatur pada sistem. Berikut selengkapnya:`,
+      {
+        text: `Pada subbab ini, akan dilampirkan daftar seluruh penjualan yang tercatat pada sistem pada tanggal ${tanggalString}. Kolom nama barang akan dilengkapi dengan informasi kadar dan bentuk perhiasan, serta penanda warna sesuai dengan warna nota yang diatur pada sistem. Berikut selengkapnya:`,
+        style: 'paragrafNormal'
+      },
       {
         table: {
           widths: [80, '*', 200, '*'],
           headerRows: 1,
-          body: isiTabel
+          body: isiTabel,
+          dontBreakRows: true
         },
         style: 'tabelBasic'
       }
@@ -434,12 +442,16 @@ export default class BabTransaksi {
         text: 'Daftar Transaksi Pembelian',
         style: 'subBab'
       },
-      `Pada subbab ini, akan dilampirkan daftar seluruh penjualan yang tercatat pada sistem pada tanggal ${tanggalString}. Kolom nama barang akan dilengkapi dengan informasi kadar dan bentuk perhiasan, serta penanda warna sesuai dengan warna nota yang diatur pada sistem. Berikut selengkapnya:`,
+      {
+        text: `Pada subbab ini, akan dilampirkan daftar seluruh penjualan yang tercatat pada sistem pada tanggal ${tanggalString}. Kolom nama barang akan dilengkapi dengan informasi kadar dan bentuk perhiasan, serta penanda warna sesuai dengan warna nota yang diatur pada sistem. Berikut selengkapnya:`,
+        style: 'paragrafNormal'
+      },
       {
         table: {
           widths: [80, '*', 200, '*'],
           headerRows: 1,
-          body: isiTabel
+          body: isiTabel,
+          dontBreakRows: true
         },
         style: 'tabelBasic'
       }

@@ -5,8 +5,8 @@ Settings.defaultZone = 'Asia/Jakarta'
 Settings.defaultLocale = 'id'
 
 
-const Pasaran = require('./pasaran')
-const Notifikasi = require('./notifikasi')
+const Pasaran = require('./sistem/pasaran/pasaran')
+const Notifikasi = require('./sistem/notifikasi/generateNotif')
 
 
 global.$ = require('jquery');
@@ -148,6 +148,25 @@ penutupFullScreen.addEventListener('click', () => {
   badanNotif.style.opacity = 0
   badanNotif.style.visibility = 'hidden'
   penutupFullScreen.classList.add('hidden')
+})
+
+const navNamaToko = document.getElementById('navNamaToko')
+const dalemNamaToko = document.getElementById('dalemNamaToko')
+const dalemAlamatToko = document.getElementById('dalemAlamatToko')
+
+$.get("/app/cumaData/myToko", {},
+  function (data, textStatus, jqXHR) {
+    navNamaToko.classList.remove('hidden')
+    navNamaToko.textContent = data.toko.namaToko
+    dalemNamaToko.textContent = data.toko.namaToko
+    dalemAlamatToko.textContent = data.toko.alamatTokoLengkap
+  },
+  "json"
+).fail(()=>{
+  navNamaToko.classList.add('hidden')
+  navNamaToko.textContent = 'TOKO_ERROR'
+  dalemNamaToko.textContent = 'Data Toko Error'
+  dalemAlamatToko.textContent = 'Alamat Toko Error'
 })
 
 

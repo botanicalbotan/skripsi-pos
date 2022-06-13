@@ -54,7 +54,7 @@ Encore.addEntry('beranda', './resources/js/beranda.js')
 Encore.addEntry('alpine', './resources/js/lib/alpine.js')
 
 // Notifikasi
-Encore.addEntry('all-notifikasi', './resources/js/notifikasi/all-notifikasi.js')
+Encore.addEntry('all-notifikasi', './resources/js/sistem/notifikasi/all-notifikasi.js')
 
 // Pembukuan Kas
 Encore.addEntry('all-kas', './resources/js/pembukuan-kas/all-kas.js')
@@ -64,7 +64,7 @@ Encore.addEntry('all-rekap', './resources/js/pembukuan-kas/all-rekap.js')
 Encore.addEntry('all-riwayat-jual', './resources/js/riwayat/all-riwayat-jual.js')
 Encore.addEntry('all-riwayat-beli', './resources/js/riwayat/all-riwayat-beli.js')
 
-Encore.addEntry('riwayat', './resources/js/riwayat.js') // ini ntar dihapus
+// Encore.addEntry('riwayat', './resources/js/riwayat.js') // ini ntar dihapus
 
 
 
@@ -111,7 +111,13 @@ Encore.addEntry('all-penggajian', './resources/js/pegawai/penggajian/all-penggaj
 Encore.addEntry('all-laporan', './resources/js/laporan/all-laporan.js')
 
 // Pengaturan ===================================
-Encore.addEntry('pengaturan', './resources/js/pengaturan.js')
+// Encore.addEntry('all-pengaturan', './resources/js/sistem/all-pengaturan.js') // ntar dihapus
+// Encore.addEntry('pengaturan', './resources/js/pengaturan.js') // ntar dihapus 
+Encore.addEntry('atur-general', './resources/js/sistem/pengaturan/atur-general.js')
+Encore.addEntry('atur-kadar', './resources/js/sistem/pengaturan/atur-kadar.js')
+Encore.addEntry('atur-transaksi', './resources/js/sistem/pengaturan/atur-transaksi.js')
+Encore.addEntry('atur-barang', './resources/js/sistem/pengaturan/atur-barang.js')
+Encore.addEntry('atur-pegawai', './resources/js/sistem/pengaturan/atur-pegawai.js')
 
 
 // Testing purpose

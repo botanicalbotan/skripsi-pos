@@ -39,42 +39,42 @@
             <ul>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Rekap</h3>
                   <span class="flex-1" id="namaRusak">{{ rekap.tanggalRekap.toFormat('DDD') }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Hari Pasaran</h3>
                   <span class="flex-1 ">{{ fungsi.kapitalHurufPertama(rekap.pasaran) }} {{ (rekap.apakahHariPasaran)? '(Pasaran)': '' }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Jumlah Kas Masuk</h3>
                   <span class="flex-1 ">{{ tambahan.hitungKasMasuk }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Total Kas Masuk</h3>
                   <span class="flex-1 text-accent-focus">{{ fungsi.rupiahParser(tambahan.totalKasMasuk) }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Jumlah Kas Keluar</h3>
                   <span class="flex-1 ">{{ tambahan.hitungKasKeluar }}</span>
                 </div>
               </li>
 
               <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 group hover:bg-base-300 flex-col sm:flex-row">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Total Kas Keluar</h3>
                   <span class="flex-1 text-error">{{ fungsi.rupiahParser(tambahan.totalKasKeluar) }}</span>
                 </div>

@@ -1,0 +1,176 @@
+@layout('layouts/master')
+
+@section('more-style')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.css"
+  integrity="sha512-+VDbDxc9zesADd49pfvz7CgsOl2xREI/7gnzcdyA9XjuTxLXrdpuz21VVIqc5HPfZji2CypSbxx1lgD7BgBK5g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+@endsection
+
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="atur-general" id="base-page">
+  <h2 class="text-4xl font-semibold">Pengaturan</h2>
+  <h4 class="text-lg text-secondary opacity-60">Opsi dan aturan dalam pengoperasian aplikasi.</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+    @include('partials/wadah-alert')
+
+    {{--  informasi  --}}
+    <div class="min-h-96 flex lg:space-x-8 space-y-6 lg:space-y-0 flex-col lg:flex-row">
+      <div class="flex-none md:w-1/2 lg:w-1/4">
+        <ul class="menu bg-base-300 w-full py-4">
+          <li class="menu-title">
+            <span>Menu Pengaturan</span>
+          </li>
+          <li class="bordered"><a href="/app/pengaturan/general">General</a></li>
+          <li><a href="/app/pengaturan/kadar">Kadar Perhiasan</a></li>
+          <li><a href="/app/pengaturan/transaksi">Transaksi</a></li>
+          <li><a href="/app/pengaturan/barang">Kelola Barang</a></li>
+          <li><a href="/app/pengaturan/pegawai">Pegawai</a></li>
+        </ul>
+      </div>
+      <div class="flex-1 space-y-4">
+        <div>
+          <span class="text-2xl font-semibold">Menu General</span>
+        </div>
+
+
+        <div class="space-y-10">
+
+          {{--  Logo Toko  --}}
+          <div x-data="{ adaGambar: {{ tambahan.adaLogo }} }">
+            <h4 class="text-2xl mb-4">Logo Toko</h4>
+            <p>Menu ini berfungsi untuk memperbarui atau menghapus logo toko. Logo toko akan digunakan sebagai penanda
+              identitas toko pada beberapa fungsi aplikasi ini, seperti pencetakan nota dan pencetakan laporan. Untuk
+              mencapai hasil maksimal, gunakan logo dengan background transparan dan berkala 2:1.</p>
+            <input type="file" name="fileLogoToko" id="fileLogoToko" x-ref="fileLogoToko" class="hidden-but-real"
+              accept=".jpg,.gif,.png,.svg">
+
+            <div class="form-control">
+              <div class="w-full flex flex-col space-y-4 items-center">
+                <div class="w-64 p-2 border" :class="(!adaGambar)? 'h-32' : ''">
+                  <div id="wadahFoto" class="w-full h-full bg-contain" :class="(adaGambar)? '': 'bg-base-300'">
+                    <div x-show="adaGambar == false" x-cloak class="w-full h-full flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-secondary" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <img src="{{ (tambahan.adaLogo)? '/app/cumaData/foto/logo-toko/1': '' }}" id="logoToko"
+                      x-ref="logoToko" class="w-full object-contain">
+                  </div>
+                </div>
+                <div class="space-y-4 flex flex-col items-center">
+                  <div x-show="adaGambar == false" x-cloak>
+                    {{--  kalo gaada foto  --}}
+                    <button type="button" class="btn btn-outline" @click="$refs.fileLogoToko.click()">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path
+                          d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
+                      Pilih Logo</button>
+                  </div>
+                  <div class="space-x-2 flex items-start" x-show="adaGambar == true" x-cloak>
+                    {{--  kalo ada foto  --}}
+                    <button type="button" class="btn btn-outline" @click="$refs.fileLogoToko.click()">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path
+                          d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>Ubah Logo</button>
+                    <button type="button" id="btHapusLogoToko" class="btn btn-outline btn-error">Hapus</button>
+                  </div>
+                  <div id="logoTokoError">
+                    {{--  wadah error  --}}
+
+                  </div>
+                </div>
+
+              </div>
+              <div class="flex flex-col items-center">
+                <p class="mt-1 text-sm">Pilih file gambar dengan format JPG, PNG atau GIF dan maksimal ukuran 1 MB</p>
+              </div>
+
+            </div>
+          </div>
+
+          {{--  Data Toko  --}}
+          <div>
+            <h4 class="text-2xl mb-4">Data Identitas Toko</h4>
+            <p>Menu ini berfungsi untuk mengubah identitas toko, meliputi nama, alamat dan deskripsi toko pada nota.</p>
+
+            <ul class="mt-4">
+
+              <li class="border-b">
+                <a href="#" class="flex py-3 px-2 group hover:bg-base-300">
+                  <div class="flex-1">
+                    <h3 class="font-semibold">Nama toko</h3>
+                    <span class="opacity-75">{{ pengaturan.namaToko }}</span>
+                  </div>
+                  <span class="flex-none flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </a>
+              </li>
+    
+              <li class="border-b">
+                <a href="#" class="flex py-3 px-2 group hover:bg-base-300">
+                  <div class="flex-1">
+                    <h3 class="font-semibold">Alamat toko lengkap</h3>
+                    <span class="opacity-75">{{ pengaturan.alamatTokoLengkap }}</span>
+                  </div>
+                  <span class="flex-none flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </a>
+              </li>
+    
+              <li class="border-b">
+                <a href="#" class="flex py-3 px-2 group hover:bg-base-300">
+                  <div class="flex-1">
+                    <h3 class="font-semibold">Alamat toko singkat (untuk nota)</h3>
+                    <span class="opacity-75">{{ pengaturan.alamatTokoSingkat }}</span>
+                  </div>
+                  <span class="flex-none flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </a>
+              </li>
+    
+            </ul>
+          </div>
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js"
+  integrity="sha512-ZK6m9vADamSl5fxBPtXw6ho6A4TuX89HUbcfvxa2v2NYNT/7l8yFGJ3JlXyMN4hlNbz0il4k6DvqbIW5CCwqkw=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/atur-general.js')}}"></script>
+@endsection

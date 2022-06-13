@@ -148,7 +148,7 @@ export default class ModelsController {
     }
   }
 
-  public async show ({ view, params, response }: HttpContextContract) {
+  public async show ({ view, params, response, session }: HttpContextContract) {
     try {
       const model = await Model.findOrFail(params.id)
       await model.load('bentuk')
@@ -165,6 +165,7 @@ export default class ModelsController {
 
       return view.render('barang/model/view-model', { model, tambahan })
     } catch (error) {
+      session.flash('alertError', 'Model yang anda akses tidak valid atau terhapus.')
       return response.redirect().toPath('/app/barang/model/')
     }
   }

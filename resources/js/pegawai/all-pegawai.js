@@ -1,6 +1,3 @@
-// Selalu panggil file satuan gini abis manggil app.js biar ngga redundant
-
-// import Cropper from "cropperjs";
 import Swal from "sweetalert2";
 
 // doc ready, ntar dihapus / diganti
@@ -203,7 +200,6 @@ $(function () {
 
     if (btUbahStatus) {
       btUbahStatus.addEventListener('click', (e) => {
-        console.log()
         const status = (e.target.dataset.statusSekarang == 0) ? 0 : 1
 
         Swal.fire({
@@ -266,13 +262,41 @@ $(function () {
       })
     }
 
-
     const btAkun = document.getElementById('btAkun')
     if(btAkun){
       btAkun.addEventListener('click', () => {
         window.location = location.pathname + '/akun'
       })
     }
+
+    const BASEURL = window.location.pathname
+    const btHapus = document.getElementById('btHapus')
+    const formHapusPegawai = document.getElementById('formHapusPegawai')
+    const namaPegawai = document.getElementById('namaPegawai').textContent
+
+    if(btHapus){
+      btHapus.addEventListener('click', ()=>{
+        Swal.fire({
+          title: 'Yakin untuk menghapus?',
+          text: 'Anda akan menghapus model "'+namaPegawai+'", dan pegawai yang dihapus tidak dapat dikembalikan.',
+          icon: 'info',
+          iconColor: global.SwalCustomColor.icon.error,
+          showCancelButton: true,
+          confirmButtonText: 'Ya, hapus!',
+          cancelButtonText: 'Batal',
+          scrollbarPadding: false,
+          confirmButtonColor: global.SwalCustomColor.button.deny,
+          focusCancel: true,
+        }).then((result)=>{
+          if(result.isConfirmed){
+            formHapusPegawai.action = BASEURL + '?_method=DELETE'
+            formHapusPegawai.submit()
+          }
+        })
+      })
+    }
+
+
 
   }
 

@@ -23,6 +23,7 @@ import './routes/transaksi'
 import './routes/riwayat'
 import './routes/test-doang'
 import './routes/email-test'
+import './routes/pengaturan'
 
 Route.get('/', async ({
   view
@@ -41,13 +42,6 @@ Route.group(() => {
     view
   }) => {
     return view.render('index')
-  })
-
-  // ================================ PENGATURAN ===============================================
-  Route.get('/pengaturan', async ({
-    view
-  }) => {
-    return view.render('pengaturan/base')
   })
 
   // ================================ PEMBUKUAN KAS ===============================================
@@ -129,12 +123,13 @@ Route.group(() => {
     // testing, ini ntar dihapus
     Route.get('/tesAngkaTerbilang', 'transaksi/PenjualansController.testAngkaTerbilang')
 
-    // ini masih ga normal, lu mau benerin silahkan, hapus silahkan
-    Route.get('/ambilFoto/:tipe/:id', 'sistem/PengaturansController.ambilFoto')
+    // ini udah bisa
+    Route.get('/foto/:tipe/:id', 'sistem/PengaturansController.ambilFoto')
 
 
     // general
     Route.get('/myProfile', 'akun/PegawaisController.getMyProfile')
+    Route.get('/myToko', 'sistem/PengaturansController.getMyToko')
     Route.get('/kadarBentuk', 'barang/KelompoksController.getKadarBentuk')
     Route.get('/kadarSimpel', 'transaksi/RiwayatJualsController.getKadarMinimal')
     Route.get('/getKadarById', 'barang/KadarsController.getKadarById')

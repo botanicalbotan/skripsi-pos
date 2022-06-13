@@ -5,7 +5,6 @@ import Bentuk from 'App/Models/barang/Bentuk'
 import Kadar from 'App/Models/barang/Kadar'
 import Jabatan from 'App/Models/akun/Jabatan'
 import User from 'App/Models/User'
-import Pengguna from 'App/Models/akun/Pengguna'
 import Pasaran from 'App/Models/sistem/Pasaran'
 import RentangUsia from 'App/Models/transaksi/RentangUsia'
 import StatusGadai from 'App/Models/transaksi/StatusGadai'
@@ -35,14 +34,17 @@ export default class BasicSeeder extends BaseSeeder {
      */
 
     const pengaturan = await Pengaturan.create({
-      namaToko: 'Toko Anda',
-      alamatToko: 'Alamat Toko Anda',
-      deskripsiToko: 'Deskripsi Toko Anda',
+      namaToko: 'Toko Mas Leo',
+      alamatTokoLengkap: 'Alamat Toko Anda',
+      alamatTokoSingkat: 'Timur Pasar Karanggede - BOYOLALI',
       toleransiSusutBerat: 0,
-      toleransiPersentaseTawaran: 0,
+      // toleransiPersentaseTawaran: 0,
+      defaultWaktuMaksimalPrintNota: 30,
+      penaltiTelatJanjiMin: 5000,
+      penaltiTelatJanjiMax: 10000,
       saldoToko: 200000000,
       hargaMal: 800000,
-      defaultStokMinimalPerhiasan: 0,
+      defaultStokMinimalKelompok: 0,
       // ntar ganti jadi false kalo dah jalan
       defaultBolehPrintNota: true,
       defaultIngatkanStokMenipis: true,
@@ -80,7 +82,6 @@ export default class BasicSeeder extends BaseSeeder {
       jabatanId: jabatanPemilik.id,
       tempatLahir: 'Semarang',
       tanggalLahir: DateTime.now(),
-      lamaKerja: 0
     })
 
     await Bentuk.createMany([{
@@ -166,26 +167,50 @@ export default class BasicSeeder extends BaseSeeder {
     await Kadar.createMany([{
         nama: 'Tanggung',
         deskripsi: 'Perhiasan dengan kadar kandungan emas mulai dari 35% hingga 45%',
-        warnaNota: 'red', // bisa nama, bisa HEX
+        warnaNota: '#ff0000', // bisa nama, bisa HEX
         apakahPotonganPersen: false,
-        toleransiPotonganTukarTambah: 3000,
-        hargaNota: 2000
+        persentaseMalRosok: 40,
+        persentaseMalUripan: 42,
+        toleransiPenguranganPotonganMin: 1000,
+        toleransiPenguranganPotonganMax: 3000,
+        marginPersenUntungRosokMin: 0,
+        marginPersenUntungRosokMax: 0,
+        marginPersenUntungUripanMin: 0,
+        marginPersenUntungUripanMax: 0,
+        marginPersenUntungRosokTtMin: 0,
+        marginPersenUntungRosokTtMax: 0
       },
       {
         nama: 'Muda',
         deskripsi: 'Perhiasan dengan kadar kandungan emas kurang dari 30%',
         warnaNota: '#FFD700', // bisa nama, bisa HEX
         apakahPotonganPersen: false,
-        toleransiPotonganTukarTambah: 3000,
-        hargaNota: 2000
+        persentaseMalRosok: 20,
+        persentaseMalUripan: 22,
+        toleransiPenguranganPotonganMin: 1000,
+        toleransiPenguranganPotonganMax: 3000,
+        marginPersenUntungRosokMin: 0,
+        marginPersenUntungRosokMax: 0,
+        marginPersenUntungUripanMin: 0,
+        marginPersenUntungUripanMax: 0,
+        marginPersenUntungRosokTtMin: 0,
+        marginPersenUntungRosokTtMax: 0
       },
       {
         nama: 'Tua',
         deskripsi: 'Perhiasan dengan kadar kandungan emas lebih dari 70%',
-        warnaNota: 'blue', // bisa nama, bisa HEX
+        warnaNota: '#0000ff', // bisa nama, bisa HEX
         apakahPotonganPersen: true,
-        toleransiPotonganTukarTambah: 5,
-        hargaNota: 10000
+        persentaseMalRosok: 70,
+        persentaseMalUripan: 72,
+        toleransiPenguranganPotonganMin: 1,
+        toleransiPenguranganPotonganMax: 2,
+        marginPersenUntungRosokMin: 0,
+        marginPersenUntungRosokMax: 0,
+        marginPersenUntungUripanMin: 0,
+        marginPersenUntungUripanMax: 0,
+        marginPersenUntungRosokTtMin: 0,
+        marginPersenUntungRosokTtMax: 0
       },
     ])
 
