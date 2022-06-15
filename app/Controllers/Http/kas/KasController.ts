@@ -14,18 +14,9 @@ import {
 import RekapHarian from 'App/Models/kas/RekapHarian'
 import CPasaran from 'App/CustomClasses/CPasaran'
 import Drive from '@ioc:Adonis/Core/Drive'
+import User from 'App/Models/User'
 
 export default class KasController {
-  rupiahParser(angka: number) {
-    if (typeof angka == 'number') {
-      return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-      }).format(angka)
-    }
-  }
-
 
   public async index({
     view,
@@ -143,7 +134,7 @@ export default class KasController {
     const pengaturan = await Pengaturan.findOrFail(1)
 
     const fungsi = {
-      rupiahParser: this.rupiahParser
+      rupiahParser: rupiahParser
     }
 
     const tambahan = {
@@ -178,7 +169,8 @@ export default class KasController {
   public async store({
     request,
     response,
-    session
+    session,
+    auth
   }: HttpContextContract) {
     const newKasSchema = schema.create({
       tipeKas: schema.enum([
@@ -232,10 +224,13 @@ export default class KasController {
     }
     /** Sampe sini. Kepake buat ngecek udah ada rekap harian apa blom */
 
-    let placeholderPengguna = 1 // ini harusnya ngambil dari current active session
     let cek = (validrequest.tipeKas === 'keluar')
 
     try {
+      if(!auth.user) throw 'auth ngga valid'
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
+
       if (cek) {
         pengaturan.saldoToko -= validrequest.nominal
       } else {
@@ -248,12 +243,12 @@ export default class KasController {
         apakahKasKeluar: cek,
         nominal: (cek) ? -Math.abs(validrequest.nominal) : Math.abs(validrequest.nominal),
         perihal: kapitalHurufPertama(validrequest.perihal),
-        penggunaId: placeholderPengguna
+        penggunaId: userPengakses.pengguna.id
       })
 
       session.flash('alertSukses', 'Pembukuan kas baru berhasil disimpan!')
-
       return response.redirect().toPath('/app/kas')
+
     } catch (error) {
       console.error(error)
       session.flash('alertError', 'Kas yang anda pilih tidak valid!')
@@ -278,7 +273,7 @@ export default class KasController {
 
 
       const fungsi = {
-        rupiahParser: this.rupiahParser,
+        rupiahParser: rupiahParser,
       }
 
       const tambahan = {
@@ -326,7 +321,8 @@ export default class KasController {
     request,
     session,
     params,
-    response
+    response,
+    auth
   }: HttpContextContract) {
     const newKasSchema = schema.create({
       tipeKas: schema.enum([
@@ -346,10 +342,13 @@ export default class KasController {
 
     const pengaturan = await Pengaturan.findOrFail(1) // ntar diganti jadi ngecek toko aktif di session
 
-    let placeholderPengguna = 1 // ini harusnya ngambil dari current active session
     const cek = (validrequest.tipeKas === 'keluar')
 
     try {
+      if(!auth.user) throw 'auth ngga valid'
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
+
       const kas = await Ka.findOrFail(params.id)
       if (kas.apakahDariSistem) {
         session.flash('alertError', 'Kas yang anda pilih tidak boleh diubah!')
@@ -362,7 +361,7 @@ export default class KasController {
       kas.apakahKasKeluar = cek
       kas.perihal = kapitalHurufPertama(validrequest.perihal),
         kas.nominal = nominalBaru
-      kas.penggunaId = placeholderPengguna
+      kas.penggunaId = userPengakses.pengguna.id
       await kas.save()
 
       const selisih = nominalBaru - nominalLama
@@ -403,7 +402,7 @@ export default class KasController {
       // Kalau mau bisa input report kas kalo ada duit masuk dari pembatalan kas
       // disini ntar, jangan lupa cek ada rekapHarian apa ngga dulu
 
-      session.flash('alertSukses', 'Kas ' + ((kas.apakahKasKeluar) ? 'keluar ' : 'masuk ') + this.rupiahParser(kas.nominal) + ' berhasil dihapus!')
+      session.flash('alertSukses', 'Kas ' + ((kas.apakahKasKeluar) ? 'keluar ' : 'masuk ') + rupiahParser(kas.nominal) + ' berhasil dihapus!')
       return response.redirect().toPath('/app/kas/')
     } catch (error) {
       session.flash('alertError', 'Ada masalah saat menghapus data kas. Silahkan coba lagi setelah beberapa saat.')
@@ -415,7 +414,7 @@ export default class KasController {
   // =========================================== TESTING ONLY ==============================================================
   // NTAR DIHAPUS 
 
-  public async buatBanyak({}: HttpContextContract) {
+  public async buatBanyak({ auth }: HttpContextContract) {
     /** Mulai dari sini wajib banget */
     const CP = new CPasaran()
     const pasaranSekarang = CP.pasaranHarIni()
@@ -441,8 +440,11 @@ export default class KasController {
     let berhasil= 0
     let error= 0
 
+    if(!auth.user) return { error: 'auth ngga valid' }
+    const userPengakses = await User.findOrFail(auth.user.id)
+    await userPengakses.load('pengguna')
+
    async function puter() {
-    let placeholderPengguna = 1 // ini harusnya ngambil dari current active session
 
     for (let i = 0; i < 10; i++) {
       let gacha = getRandomInt(2)
@@ -473,7 +475,7 @@ export default class KasController {
           apakahKasKeluar: (gacha == 0),
           nominal: (gacha == 0) ? -Math.abs(gachaNominal) : Math.abs(gachaNominal),
           perihal: kapitalHurufPertama('Ini kas dummy auto generated'),
-          penggunaId: placeholderPengguna
+          penggunaId: userPengakses.pengguna.id
         })
 
         berhasil++
@@ -501,14 +503,12 @@ function kapitalHurufPertama(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
-function kapitalKalimat(text: string) {
-  let pure = text.split(' ')
-  let newText = ''
-  for (let i = 0; i < pure.length; i++) {
-    newText += this.kapitalHurufPertama(pure[i])
-    if (i !== pure.length - 1) {
-      newText += ' '
-    }
+function rupiahParser(angka: number) {
+  if (typeof angka == 'number') {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(angka)
   }
-  return newText
 }

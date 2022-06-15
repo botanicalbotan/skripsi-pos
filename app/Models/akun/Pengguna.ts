@@ -63,7 +63,7 @@ type PenggunaQuery = ModelQueryBuilderContract < typeof Pengguna >
     public foto ? : string | null
 
     @column()
-    public catatan: string
+    public catatan: string | null
 
     @column()
     public gajiBulanan: number

@@ -11,6 +11,7 @@ import KodeProduksi from 'App/Models/barang/KodeProduksi'
 import Pengaturan from 'App/Models/sistem/Pengaturan'
 import Drive from '@ioc:Adonis/Core/Drive'
 import { DateTime } from 'luxon'
+import User from 'App/Models/User'
 
 export default class KodeProduksisController {
   public async index({
@@ -121,7 +122,8 @@ export default class KodeProduksisController {
   public async store({
     request,
     response,
-    session
+    session,
+    auth
   }: HttpContextContract) {
     const createKodeProduksiSchema = schema.create({
       kode: schema.string({
@@ -186,7 +188,11 @@ export default class KodeProduksisController {
 
     try {
       let kadar = await Kadar.findOrFail(validrequest.kadar)
-      let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
+
+      if(!auth.user) throw 'auth ngga valid'
+
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
 
       if(kadar.apakahPotonganPersen){
         if(validrequest.potonganLama > 100){
@@ -217,7 +223,7 @@ export default class KodeProduksisController {
         // persentaseMalRosok: validrequest.persentaseMalRosok,
         // ongkosBeliTanpaNota: validrequest.ongkosBeliTanpaNota,
         // ongkosMalRosokPerGram: 0, // persiapan dihapus
-        penggunaId: placeholderPengguna
+        penggunaId: userPengakses.pengguna.id
       })
 
       session.flash('alertSukses', 'Kode produksi baru berhasil disimpan!')
@@ -301,7 +307,8 @@ export default class KodeProduksisController {
     response,
     request,
     session,
-    params
+    params,
+    auth
   }: HttpContextContract) {
     const editKodeProduksiSchema = schema.create({
       kode: schema.string({
@@ -369,7 +376,10 @@ export default class KodeProduksisController {
 
     try {
       let kadar = await Kadar.findOrFail(validrequest.kadar)
-      let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
+
+      if(!auth.user) throw 'auth ngga valid'
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
 
       if(kadar.apakahPotonganPersen){
         if(validrequest.potonganLama > 100){
@@ -401,7 +411,7 @@ export default class KodeProduksisController {
       // kodepro.persentaseMalRosok = validrequest.persentaseMalRosok
       // kodepro.ongkosBeliTanpaNota = validrequest.ongkosBeliTanpaNota
       // kodepro.ongkosMalRosokPerGram = 0 // persiapan dihapus
-      kodepro.penggunaId = placeholderPengguna
+      kodepro.penggunaId = userPengakses.pengguna.id
       await kodepro.save()
 
       session.flash('alertSukses', 'Data kode produksi berhasil diubah!')

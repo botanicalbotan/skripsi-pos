@@ -384,6 +384,7 @@ $(function () {
           // ngeinput gambar ke image tag, masih belum nemu cara yang bagus
           let fotoBarang = document.getElementById('fotoBarang')
           fotoBarang.src = cropper.getCroppedCanvas().toDataURL()
+          fotoBarang.style.display = 'block'
           document.getElementById('fotoBarangBase64').value = cropper.getCroppedCanvas().toDataURL()
           sudahFoto = true
           resetFoto()

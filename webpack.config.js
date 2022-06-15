@@ -46,6 +46,7 @@ Encore.setPublicPath('/assets')
 |
 */
 Encore.addEntry('app', './resources/js/app.js')
+Encore.addEntry('guest', './resources/js/guest.js')
 Encore.addEntry('welcome-css', '/resources/css/template-welcome.css')
 Encore.addEntry('landing', './resources/js/landing.js')
 Encore.addEntry('beranda', './resources/js/beranda.js')
@@ -104,6 +105,7 @@ Encore.addEntry('all-penambahan', './resources/js/kelola-barang/penambahan-stok/
 // Pegawai & Penggajian ===================================
 Encore.addEntry('all-pegawai', './resources/js/pegawai/all-pegawai.js')
 Encore.addEntry('form-pegawai', './resources/js/pegawai/form-pegawai.js')
+Encore.addEntry('edit-pegawai', './resources/js/pegawai/edit-pegawai.js')
 Encore.addEntry('akun-pegawai', './resources/js/pegawai/akun/akun-pegawai.js')
 Encore.addEntry('all-penggajian', './resources/js/pegawai/penggajian/all-penggajian.js')
 

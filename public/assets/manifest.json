@@ -1,6 +1,8 @@
 {
   "assets/app.css": "http://localhost:8080/assets/app.css",
   "assets/app.js": "http://localhost:8080/assets/app.js",
+  "assets/guest.css": "http://localhost:8080/assets/guest.css",
+  "assets/guest.js": "http://localhost:8080/assets/guest.js",
   "assets/welcome-css.css": "http://localhost:8080/assets/welcome-css.css",
   "assets/welcome-css.js": "http://localhost:8080/assets/welcome-css.js",
   "assets/landing.css": "http://localhost:8080/assets/landing.css",
@@ -32,6 +34,7 @@
   "assets/all-penambahan.js": "http://localhost:8080/assets/all-penambahan.js",
   "assets/all-pegawai.js": "http://localhost:8080/assets/all-pegawai.js",
   "assets/form-pegawai.js": "http://localhost:8080/assets/form-pegawai.js",
+  "assets/edit-pegawai.js": "http://localhost:8080/assets/edit-pegawai.js",
   "assets/akun-pegawai.js": "http://localhost:8080/assets/akun-pegawai.js",
   "assets/all-penggajian.js": "http://localhost:8080/assets/all-penggajian.js",
   "assets/all-laporan.js": "http://localhost:8080/assets/all-laporan.js",

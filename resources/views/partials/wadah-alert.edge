@@ -8,7 +8,7 @@
         <label>{{ flashMessages.get('alertSukses') }}</label>
       </div>
       <div class="flex-none">
-        <button class="btn btn-ghost btn-square btn-sm opacity-50 hover:opacity-100 hover:bg-transparent"
+        <button type="button" class="btn btn-ghost btn-square btn-sm opacity-50 hover:opacity-100 hover:bg-transparent"
           @click="$refs.alertSukses.remove()">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd"
@@ -31,7 +31,7 @@
         <label>{{ flashMessages.get('alertError') }}</label>
       </div>
       <div class="flex-none">
-        <button class="btn btn-ghost btn-square btn-sm opacity-50 hover:opacity-100 hover:bg-transparent"
+        <button type="button" class="btn btn-ghost btn-square btn-sm opacity-50 hover:opacity-100 hover:bg-transparent"
           @click="$refs.alertError.remove()">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd"

@@ -126,6 +126,10 @@ input[type=number] {
   min-height: 16rem;
 }
 
+.min-h-80{
+  min-height: 20rem;
+}
+
 .min-h-96{
   min-height: 24rem;
 }

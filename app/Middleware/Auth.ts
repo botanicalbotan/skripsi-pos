@@ -23,7 +23,7 @@ export default class AuthMiddleware {
    * of the mentioned guards and that guard will be used by the rest of the code
    * during the current request.
    */
-  protected async authenticate(auth: HttpContextContract['auth'], guards: (keyof GuardsList)[]) {
+  protected async authenticate(auth: HttpContextContract['auth'], guards: (keyof GuardsList)[], session: HttpContextContract['session']) {
     /**
      * Hold reference to the guard last attempted within the for loop. We pass
      * the reference of the guard to the "AuthenticationException", so that
@@ -49,6 +49,10 @@ export default class AuthMiddleware {
     /**
      * Unable to authenticate using any guard
      */
+
+    // session, kalau lu ngeset data ke session juga, lupain disini
+    session.flash('alertError', 'Anda harus login terlebih dahulu!')
+
     throw new AuthenticationException(
       'Unauthorized access',
       'E_UNAUTHORIZED_ACCESS',
@@ -61,7 +65,7 @@ export default class AuthMiddleware {
    * Handle request
    */
   public async handle (
-    { auth }: HttpContextContract,
+    { auth, session }: HttpContextContract,
     next: () => Promise<void>,
     customGuards: (keyof GuardsList)[]
   ) {
@@ -70,7 +74,8 @@ export default class AuthMiddleware {
      * the config file
      */
     const guards = customGuards.length ? customGuards : [auth.name]
-    await this.authenticate(auth, guards)
+    // ini udah ku edit
+    await this.authenticate(auth, guards, session)
     await next()
   }
 }

@@ -8,37 +8,40 @@
 
 @section('content')
 <div class="w-full p-8 base-page" data-pagename= "formpegawai" id="base-page">
-  <h2 class="text-4xl font-semibold">Buat Pegawai Baru</h2>
+  <h2 class="text-4xl font-semibold">Ubah Data Pegawai</h2>
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 lg:w-min">
     @include('partials/wadah-alert')
 
-    <form id="pegawaiBaru" action="/app/pegawai" method="POST">
+    <form id="formUbah" action="/app/pegawai" method="POST">
       {{ csrfField() }}
       <div class="flex flex-col md:flex-row md:space-x-8">
         <div class="w-full md:w-3/5 md:max-w-md space-y-8">
 
-          {{--  ada template buat gambar sama jabatan, cek di test-1  --}}
-          <div class="space-y-4">
-            <div class="mb-4">
-              <h1 class="text-2xl font-semibold">Jabatan Pegawai</h1>
-            </div>
+          @if(tambahan.isAdmin)
+            {{--  Kelompok jabatan  --}}
+            <div class="space-y-4">
+              <div class="mb-4">
+                <h1 class="text-2xl font-semibold">Jabatan Pegawai</h1>
+              </div>
 
-            <div class="form-control">
-              <label for="jabatan">
-                <span class="">Jabatan Pegawai<span class="text-error"> *</span></span>
-              </label>
-              <select id="jabatan" name="jabatan" required class="select select-primary bg-primary bg-opacity-10 w-full max-w-xs">
-                <option value="kosong" disabled="disabled" selected="selected">Pilih jabatan</option>
-                <option value="karyawan">Karyawan</option>
-                <option value="kepalatoko">Kepala Toko</option>
-                <option value="pemiliktoko">Pemilik Toko</option>
-              </select>
+              <div class="form-control">
+                <label for="jabatan">
+                  <span class="">Jabatan Pegawai<span class="text-error"> *</span></span>
+                </label>
+                <select id="jabatan" name="jabatan" required class="select select-primary bg-primary bg-opacity-10 w-full max-w-xs">
+                  <option value="kosong" disabled="disabled">Pilih jabatan</option>
+                  <option value="karyawan" {{ (pegawai.jabatan.nama == 'Karyawan')? 'selected' : '' }}>Karyawan</option>
+                  <option value="kepalatoko" {{ (pegawai.jabatan.nama == 'Kepala Toko')? 'selected' : '' }}>Kepala Toko</option>
+                  <option value="pemiliktoko" {{ (pegawai.jabatan.nama == 'Pemilik')? 'selected' : '' }}>Pemilik Toko</option>
+                </select>
 
-              @if(flashMessages.has('errors.jabatan'))
-                <p class="text-error">{{ flashMessages.get('errors.jabatan') }}</p>
-              @endif
+                @if(flashMessages.has('errors.jabatan'))
+                  <p class="text-error">{{ flashMessages.get('errors.jabatan') }}</p>
+                @endif
+              </div>
             </div>
-          </div>
+          @endif
+          
 
           {{--  Kelompok data umum  --}}
           <div class="space-y-4">
@@ -50,26 +53,26 @@
                 <span class="">Nama Pegawai<span class="text-error"> *</span></span>
               </label>
               <input type="text" id="nama" name="nama" class="input input-bordered"
-                placeholder="Contoh: Muhammad Arif Fadhilah" required maxlength="50">
+                placeholder="Contoh: Muhammad Arif Fadhilah" required maxlength="50" value="{{ pegawai.nama }}">
 
               @if(flashMessages.has('errors.nama'))
                 <p class="text-error">{{ flashMessages.get('errors.nama') }}</p>
               @endif
             </div>
 
-            <div class="form-control" x-data="{ radio: 1 }">
+            <div class="form-control" x-data="{ radio: {{ (pegawai.gender == 'P')? 2:1 }} }">
               <label for="">Gender<span class="text-error"> *</span></label>
               <div class="flex space-x-4 mt-1 w-full md:w-96">
                 <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                   :class="(radio == 1)? ' bg-info bg-opacity-10 border-info': 'bg-white border-secondary'">
-                  <input type="radio" name="gender" checked="checked" class="radio radio-primary hidden"
+                  <input type="radio" name="gender" {{ (pegawai.gender == 'L')? 'checked':'' }} class="radio radio-primary hidden"
                     value="L" @click="radio = 1">
                   <span class="label-text text-base"
                     :class="(radio == 1)? 'text-info': 'text-secondary'">Laki-laki</span>
                 </label>
                 <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                   :class="(radio == 2)? ' bg-pink-500 bg-opacity-10 border-pink-500': 'bg-white border-secondary'">
-                  <input type="radio" name="gender" class="radio radio-primary hidden" value="P"
+                  <input type="radio" name="gender" {{ (pegawai.gender == 'P')? 'checked':'' }} class="radio radio-primary hidden" value="P"
                     @click="radio = 2">
                   <span class="label-text text-base"
                     :class="(radio == 2)? 'text-pink-500': 'text-secondary'">Perempuan</span>
@@ -88,7 +91,7 @@
                     <span class="">Tempat Lahir<span class="text-error"> *</span></span>
                   </label>
                   <input type="text" name="tempatLahir" id="tempatLahir" class="input input-bordered"
-                    placeholder="Contoh: Boyolali" required maxlength="100">
+                    placeholder="Contoh: Boyolali" required maxlength="100" value="{{ pegawai.tempatLahir }}">
 
                   @if(flashMessages.has('errors.tempatlahir'))
                     <p class="text-error">{{ flashMessages.get('errors.tempatlahir') }}</p>
@@ -101,7 +104,7 @@
                     <span class="">Tanggal Lahir<span class="text-error"> *</span></span>
                   </label>
                   <input type="date" name="tanggalLahir" id="tanggalLahir"
-                    class="input input-bordered" required>
+                    class="input input-bordered" required value="{{ pegawai.tanggalLahir.toFormat('yyyy-MM-dd') }}">
 
                   @if(flashMessages.has('errors.tanggallahir'))
                     <p class="text-error">{{ flashMessages.get('errors.tanggallahir') }}</p>
@@ -115,7 +118,7 @@
                 <span class="">Nomor Handphone Aktif<span class="text-error"> *</span></span>
               </label>
               <input type="text" id="nohpAktif" name="nohpAktif" class="input input-bordered"
-                placeholder="Contoh: 081123456789" required maxlength="15">
+                placeholder="Contoh: 081123456789" required maxlength="15" value="{{ pegawai.nohpAktif }}">
 
               @if(flashMessages.has('errors.nohpAktif'))
                 <p class="text-error">{{ flashMessages.get('errors.nohpAktif') }}</p>
@@ -128,7 +131,7 @@
               </label>
 
               <textarea type="text" id="alamat" name="alamat" class="textarea textarea-bordered h-24"
-                placeholder="Contoh: Jl. A, Kecamatan B, Kota C" maxlength="100"></textarea>
+                placeholder="Contoh: Jl. A, Kecamatan B, Kota C" maxlength="100">{{ pegawai.alamat }}</textarea>
 
               @if(flashMessages.has('errors.alamat'))
                 <p class="text-error">{{ flashMessages.get('errors.alamat') }}</p>
@@ -141,7 +144,7 @@
               </label>
 
               <textarea type="text" id="catatan" name="catatan" class="textarea textarea-bordered h-24"
-                placeholder="Catatan mengenai pegawai" maxlength="100"></textarea>
+                placeholder="Catatan mengenai pegawai" maxlength="100">{{ (pegawai.catatan)? pegawai.catatan : '' }}</textarea>
 
               @if(flashMessages.has('errors.catatan'))
                 <p class="text-error">{{ flashMessages.get('errors.catatan') }}</p>
@@ -157,71 +160,10 @@
               <h1 class="text-2xl font-semibold">Data Akun</h1>
             </div>
 
-            <div class="form-control">
-              <div class="flex items-center">
-                <label for="username" class="flex-1">Username<span class="text-error"> *</span></label>
-                <div class="dropdown dropdown-end dropdown-top">
-                  <a href="#" class="hover:underline flex-none">Apa ini?</a>
-                  <div tabindex="0" class="shadow card compact dropdown-content bg-base-100 rounded-box w-52">
-                    <div class="card-body">
-                      <h2 class="card-title">Username</h2>
-                      <p>Username adalah teks yang digunakan untuk dapat mengakses sistem. Username
-                        harus digunakan dengan pasangan passwordnya.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <input type="text" id="username" name="username" class="input input-bordered"
-                placeholder="Contoh: budibalado" autocomplete="username" required maxlength="30">
-
-              @if(flashMessages.has('errors.username'))
-                <p class="text-error">{{ flashMessages.get('errors.username') }}</p>
-              @endif
+            <div>
+              Ubah data akun pegawai dari menu <b>Data Akun</b> pada profil pegawai.
             </div>
-
-            <div class="form-control">
-              <label for="password">
-                <span class="">Password<span class="text-error"> *</span></span>
-              </label>
-              <input type="password" x-model="pass" id="password" name="password" placeholder="Password anda"
-                x-on:focusout="repassclass= (pass == '' || repass == '')? '': (pass!=repass)? 'input-error': ''"
-                class="input input-bordered" autocomplete="new-password" required>
-
-              @if(flashMessages.has('errors.password'))
-                <p class="text-error">{{ flashMessages.get('errors.password') }}</p>
-              @endif
-            </div>
-            <div class="form-control">
-              <div class="flex items-center">
-                <label for="repassword" class="flex-1">Isikan password kembali<span class="text-error"> *</span></label>
-                <div class="dropdown dropdown-end dropdown-top">
-                  <a href="#" class="hover:underline flex-none">Apa ini?</a>
-                  <div tabindex="0" class="shadow card border border-opacity-50 compact dropdown-content bg-base-100 w-60">
-                    <div class="card-body">
-                      <h2 class="card-title">Isi password kembali</h2>
-                      <p>Anda perlu mengisikan kembali password anda sebagai konfirmasi bahwa password yang anda isikan
-                        sesuai dengan yang anda harapkan.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <input type="password" x-model="repass" x-on:focusout="repassclass= (pass!=repass)? 'input-error': ''"
-                :class="repassclass" id="repassword" class="input input-bordered" placeholder="Password anda kembali"
-                autocomplete="new-password" required>
-              <p x-cloak class="text-error" :class="(repassclass != '')? 'flex':'hidden'">Kedua password tidak sama!</p>
-            </div>
-
-            <div class="form-control hidden" id="wadahEmail">
-              <label for="email">
-                <span class="">Email<span class="text-error"> *</span></span>
-              </label>
-              <input type="email" id="email" name="email" class="input input-bordered"
-                placeholder="Contoh: budi@gmail.com" maxlength="100">
-
-              @if(flashMessages.has('errors.email'))
-                <p class="text-error">{{ flashMessages.get('errors.email') }}</p>
-              @endif
-            </div>
+            
           </div>
 
           {{--  Kelompok data teknis  --}}
@@ -230,19 +172,19 @@
               <h1 class="text-2xl font-semibold">Status Pekerjaan</h1>
             </div>
 
-            <div class="form-control" x-data="{ radio: 1 }">
+            <div class="form-control" x-data="{ radio: {{ (pegawai.apakahPegawaiAktif)? 1:2 }} }">
               <label for="">Status Pegawai<span class="text-error"> *</span></label>
               <div class="flex space-x-4 mt-1 w-full md:w-96">
                 <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                   :class="(radio == 1)? 'bg-success bg-opacity-10 border-success': 'bg-white border-secondary'">
-                  <input type="radio" name="status" id="setStatusAktif" checked="checked" class="radio radio-primary hidden"
+                  <input type="radio" name="status" id="setStatusAktif" {{ (pegawai.apakahPegawaiAktif)? 'checked': '' }} class="radio radio-primary hidden"
                     value="aktif" @click="radio = 1">
                   <span class="label-text text-base"
                     :class="(radio == 1)? 'text-success': 'text-secondary'">Aktif</span>
                 </label>
                 <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                   :class="(radio == 2)? 'bg-error bg-opacity-10 border-error': 'bg-white border-secondary'">
-                  <input type="radio" name="status" id="setStatusKeluar" class="radio radio-primary hidden" value="keluar"
+                  <input type="radio" name="status" id="setStatusKeluar" {{ (!pegawai.apakahPegawaiAktif)? 'checked': '' }}  class="radio radio-primary hidden" value="keluar"
                     @click="radio = 2">
                   <span class="label-text text-base" :class="(radio == 2)? 'text-error': 'text-secondary'">Keluar</span>
                 </label>
@@ -254,15 +196,28 @@
             </div>
 
             <div x-data class="form-control" id="wadahTanggalAktif">
-              <label for="tanggalAwalMasuk" class="flex">
+              <label for="tanggalMulaiAktif" class="flex">
                 <span class="flex-1">Tanggal Mulai Aktif<span class="text-error"> *</span></span>
                 <span x-cloak class="flex-none text-primary"></span>
               </label>
               <input type="date" id="tanggalMulaiAktif"
-                name="tanggalMulaiAktif" class="input input-bordered">
+                name="tanggalMulaiAktif" class="input input-bordered" value="{{ (pegawai.apakahPegawaiAktif)? pegawai.tanggalMulaiAktif.toFormat('yyyy-MM-dd') : '' }}">
 
-              @if(flashMessages.has('errors.tanggalAwalMasuk'))
-                <p class="text-error">{{ flashMessages.get('errors.tanggalAwalMasuk') }}</p>
+              @if(flashMessages.has('errors.tanggalMulaiAktif'))
+                <p class="text-error">{{ flashMessages.get('errors.tanggalMulaiAktif') }}</p>
+              @endif
+            </div>
+
+            <div x-data class="form-control" id="wadahTanggalGajian">
+              <label for="tanggalGajianSelanjutnya" class="flex">
+                <span class="flex-1">Tanggal Gajian Selanjutnya<span class="text-error"> *</span></span>
+                <span x-cloak class="flex-none text-primary"></span>
+              </label>
+              <input type="date" id="tanggalGajianSelanjutnya"
+                name="tanggalGajianSelanjutnya" class="input input-bordered" value="{{ (pegawai.apakahPegawaiAktif)? pegawai.tanggalGajianSelanjutnya.toFormat('yyyy-MM-dd') : '' }}">
+
+              @if(flashMessages.has('errors.tanggalGajianSelanjutnya'))
+                <p class="text-error">{{ flashMessages.get('errors.tanggalGajianSelanjutnya') }}</p>
               @endif
             </div>
 
@@ -288,7 +243,7 @@
                 {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
                 <input type="number" placeholder="0" id="gajiBulanan" min="0" name="gajiBulanan"
                   oninput="validity.valid||(value='');"
-                  class="uang px-3 py-3 relative input input-bordered w-full pl-10" value="{{ (gaji)? gaji:0 }}"/>
+                  class="uang px-3 py-3 relative input input-bordered w-full pl-10" value="{{ pegawai.gajiBulanan }}"/>
               </div>
 
               @if(flashMessages.has('errors.gajiBulanan'))
@@ -300,10 +255,11 @@
 
         </div>
 
-        <div class="flex-none mt-5" x-data="{ adaGambar: false }">
+        <div class="flex-none mt-5" x-data="{ adaGambar: {{ tambahan.adaFoto }} }">
           <input type="file" id="fileFotoPegawai" x-ref="fileFotoPegawai" class="hidden-but-real hidden"
             accept="image/*">
           <textarea name="fotoPegawaiBase64" x-ref="fotokirim" id="fotoPegawaiBase64" class="hidden-but-real hidden" hidden></textarea>
+          <input type="text" name="indiGambarBerubah" id="indiGambarBerubah" class="hidden" value="tidak">
 
           <div class="mb-4">
             <h1 class="text-2xl">Foto Pegawai</h1>
@@ -313,7 +269,7 @@
             <div
               class="flex rounded-box ring-2 ring-base-300 w-52 h-52 justify-center items-center p-2 group">
               <div class="w-full h-full bg-placeholder-user-200 bg-contain">
-                <img src="" id="fotoPegawai" x-ref="fotoPegawai" @load="adaGambar = true" @error="adaGambar = false">
+                <img src="{{ (tambahan.adaFoto)? '/app/cumaData/foto/pegawai/' + pegawai.id : ''  }}" id="fotoPegawai" x-ref="fotoPegawai" @load="adaGambar = true" @error="adaGambar = false">
               </div>
 
             </div>
@@ -322,7 +278,7 @@
           <div class="flex flex-col items-center">
             <div x-cloak x-show="adaGambar" class="w-full sm:w-52  flex flex-col space-y-2">
               <button class="btn btn-block btn-sm btn-outline" type="button" @click="$refs.fileFotoPegawai.click()">Pilih Ulang Foto</button>
-              <button class="btn btn-block btn-sm btn-outline btn-error" type="button"  @click="$refs.fotoPegawai.src = ''; $refs.fotokirim.value = ''">Hapus Foto</button>
+              <button class="btn btn-block btn-sm btn-outline btn-error" id="btHapusFoto" type="button"  @click="$refs.fotoPegawai.src = ''; $refs.fotokirim.value = ''">Hapus Foto</button>
             </div>
 
             <div x-cloak x-show="!adaGambar" class="w-full sm:w-52 ">
@@ -341,8 +297,8 @@
           Pastikan anda mengisi seluruh masukan bertanda bintang (*)
         </div>
         <div class="w-full flex flex-col sm:flex-row justify-center items-center space-y-5 sm:space-y-0 sm:space-x-5">
-          <button type="button" id="btSubmit" class="btn btn-block sm:btn-wide btn-primary text-white">Buat Pegawai</button>
-          <a href="/app/pegawai" class="btn btn-block sm:btn-wide btn-secondary text-white ">Kembali</a>
+          <button type="button" id="btSimpan" class="btn btn-block sm:btn-wide btn-primary text-white">Simpan Perubahan</button>
+          <a href="/app/pegawai/{{ pegawai.id }}" class="btn btn-block sm:btn-wide btn-secondary text-white ">Kembali</a>
         </div>
       </div>
     </form>
@@ -355,5 +311,5 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js" integrity="sha512-ZK6m9vADamSl5fxBPtXw6ho6A4TuX89HUbcfvxa2v2NYNT/7l8yFGJ3JlXyMN4hlNbz0il4k6DvqbIW5CCwqkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script src="{{asset('assets/app.js')}}"></script>
-<script src="{{asset('assets/form-pegawai.js')}}"></script>
+<script src="{{asset('assets/edit-pegawai.js')}}"></script>
 @endsection

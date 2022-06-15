@@ -5,26 +5,11 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Model from 'App/Models/barang/Model'
 import { DateTime } from 'luxon'
 import Drive from '@ioc:Adonis/Core/Drive'
+import User from 'App/Models/User'
 
 export default class ModelsController {
 
-  // Fungsi Tambahan
-
-  kapitalHurufPertama(text: string) {
-    return text.charAt(0).toUpperCase() + text.slice(1)
-  }
-
-  kapitalKalimat(text: string) {
-    let pure = text.split(' ')
-    let newText = ''
-    for (let i = 0; i < pure.length; i++) {
-      newText += this.kapitalHurufPertama(pure[i])
-      if (i !== pure.length - 1) {
-        newText += ' '
-      }
-    }
-    return newText
-  }
+  
 
   // Fungsi Routing
 
@@ -109,7 +94,7 @@ export default class ModelsController {
     return view.render('barang/model/form-model')
   }
 
-  public async store ({ request, response, session }: HttpContextContract) {
+  public async store ({ request, response, session, auth }: HttpContextContract) {
     const newModelsSchema = schema.create({
       nama: schema.string({ trim: true }, [rules.maxLength(40)]),
       bentuk: schema.enum([
@@ -130,17 +115,19 @@ export default class ModelsController {
       const bentuk = await Bentuk.findByOrFail('bentuk', validrequest.bentuk)
       const prepareNama = (!validrequest.nama.includes(bentuk.bentuk))? bentuk.bentuk + ' ' + validrequest.nama : validrequest.nama
 
-      let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
+      if(!auth.user) throw 'auth ngga valid'
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
 
       await bentuk.related('models').create({
-        nama: await this.kapitalKalimat(prepareNama),
-        deskripsi: await this.kapitalHurufPertama(validrequest.deskripsi),
-        penggunaId: placeholderPengguna
+        nama: kapitalKalimat(prepareNama),
+        deskripsi: kapitalHurufPertama(validrequest.deskripsi),
+        penggunaId: userPengakses.pengguna.id
       })
 
       session.flash('alertSukses', 'Model baru berhasil disimpan!')
-
       return response.redirect().toPath('/app/barang/model/')
+
     } catch (error) {
       console.error(error)
       session.flash('alertError', 'Ada masalah saat membuat model baru. Silahkan coba lagi setelah beberapa saat.')
@@ -207,8 +194,8 @@ export default class ModelsController {
       const model = await Model.findOrFail(params.id)
       if(model.apakahPlaceholder) throw 'Gaboleh diedit'
 
-      model.nama = await this.kapitalKalimat(prepareNama)
-      model.deskripsi = await this.kapitalHurufPertama(validrequest.deskripsi)
+      model.nama = kapitalKalimat(prepareNama)
+      model.deskripsi = kapitalHurufPertama(validrequest.deskripsi)
       model.bentukId = bentuk.id
       model.save()
 
@@ -254,4 +241,23 @@ export default class ModelsController {
       model
     }
   }
+}
+
+
+// Fungsi Tambahan
+
+function kapitalHurufPertama(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+function kapitalKalimat(text: string) {
+  let pure = text.split(' ')
+  let newText = ''
+  for (let i = 0; i < pure.length; i++) {
+    newText += this.kapitalHurufPertama(pure[i])
+    if (i !== pure.length - 1) {
+      newText += ' '
+    }
+  }
+  return newText
 }

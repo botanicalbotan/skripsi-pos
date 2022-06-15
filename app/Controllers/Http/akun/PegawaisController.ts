@@ -2,10 +2,9 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import Pengguna from 'App/Models/akun/Pengguna'
 import Pengaturan from 'App/Models/sistem/Pengaturan'
-import { DateTime, Settings } from 'luxon'
+import { DateTime } from 'luxon'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
-import Jabatan from 'App/Models/akun/Jabatan'
 import Drive from '@ioc:Adonis/Core/Drive'
 import Hash from '@ioc:Adonis/Core/Hash'
 var isBase64 = require('is-base64')
@@ -129,6 +128,9 @@ export default class PegawaisController {
       alamat: schema.string({ trim: true }, [
         rules.maxLength(100)
       ]),
+      catatan: schema.string.optional({ trim: true }, [
+        rules.maxLength(100)
+      ]),
       nohpAktif: schema.string({ trim: true }, [
         rules.maxLength(15)
       ]),
@@ -146,7 +148,9 @@ export default class PegawaisController {
         'aktif',
         'keluar'
       ] as const),
-      tanggalMulaiAktif: schema.date(),
+      tanggalMulaiAktif: schema.date.optional({}, [
+        rules.requiredWhen('status', '=', 'aktif')
+      ]),
       gajiBulanan: schema.number([
         rules.unsigned()
       ]),
@@ -156,7 +160,6 @@ export default class PegawaisController {
     const validrequest = await request.validate({ schema: newPegawaiSchema })
 
     let namaFileFoto = ''
-    // typescript ngga mau kalau ambigu, buat ngeyakinin mereka kalo ini string, kudu eksplisit
     let fileFoto = validrequest.fotoPegawaiBase64 || ''
 
     try {
@@ -173,7 +176,6 @@ export default class PegawaisController {
       await Drive.put('profilePict/' + namaFileFoto, buffer)
 
     } catch (error) {
-      // console.error(error)
       namaFileFoto = ''
     }
 
@@ -203,12 +205,13 @@ export default class PegawaisController {
         tempatLahir: validrequest.tempatLahir,
         tanggalLahir: validrequest.tanggalLahir,
         alamat: validrequest.alamat,
+        catatan: validrequest.catatan,
         nohpAktif: validrequest.nohpAktif,
         apakahPegawaiAktif: validrequest.status === 'aktif',
         foto: (namaFileFoto)? namaFileFoto : null,
         gajiBulanan: validrequest.gajiBulanan,
-        tanggalMulaiAktif: DateTime.now(),
-        tanggalGajianSelanjutnya: DateTime.now().plus({ months: 1 }),
+        tanggalMulaiAktif: (validrequest.status === 'aktif' && validrequest.tanggalMulaiAktif)? DateTime.now() : null,
+        tanggalGajianSelanjutnya: (validrequest.status === 'aktif')? DateTime.now().plus({ months: 1 }) : null,
         jabatanId: idJabatan
       })
   
@@ -221,32 +224,33 @@ export default class PegawaisController {
     
   }
 
-  public async show ({ view, params, response, session }: HttpContextContract) {
-    let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
-
+  public async show ({ view, params, response, session, auth }: HttpContextContract) {
     try {
+      if(!auth.user) throw 'ngga valid'
+
       const pegawai = await Pengguna.findOrFail(params.id)
       await pegawai.load('user')
       await pegawai.load('jabatan')
 
-      const url = (await Drive.exists('profilePict/' + pegawai.foto))? (await Drive.getUrl('profilePict/' + pegawai.foto)) : ''
-
       // cek constrain, kalo lulus bisa ngedit2
       let bisaEdit = false
       let isAdmin = false
-      const pengakses = await Pengguna.findOrFail(placeholderPengguna)
-      await pengakses.load('jabatan')
 
-      if(pengakses.id === pegawai.id || pengakses.jabatan.nama === 'Pemilik'){ // ntar bisa dijadiin yang lebih propper
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+
+      if(userPengakses.pengguna.id === pegawai.id || userPengakses.pengguna.jabatan.nama === 'Pemilik'){ // ntar bisa dijadiin yang lebih propper
         bisaEdit = true
       }
 
-      if(pengakses.jabatan.nama === 'Pemilik'){
+      if(userPengakses.pengguna.jabatan.nama === 'Pemilik'){
         isAdmin = true
       }
 
       let tambahan = {
-        urlFoto: url,
+        adaFoto: (await Drive.exists('profilePict/' + pegawai.foto)),
         bisaEdit,
         isAdmin
       }
@@ -270,24 +274,11 @@ export default class PegawaisController {
   }
 
   public async showDataAkun ({ view, params, response, session }: HttpContextContract) {
-    let placeholderUser = 1  // ini harusnya ngambil dari current active session, ID_USER bukan ID_Pengguna
-
     try {
-      // PAKEMIDDLEWARE
+      // Udah pake Middleware
       const pegawai = await Pengguna.findOrFail(params.id) // ID_PENGGUNA bukan ID_USER
       await pegawai.load('user')
       await pegawai.load('jabatan')
-
-      const userPengakses = await User.findOrFail(placeholderUser)
-      await userPengakses.load('pengguna', (query) => {
-        query.preload('jabatan')
-      })
-
-      if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){ // bisa dijadiin middleware
-        session.flash('alertError', 'Anda tidak memiliki hak untuk mengakses laman tersebut!')
-        return response.redirect().toPath('/app/pegawai/' + params.id)
-      }
-
 
       return view.render('pegawai/akun/view-akun-pegawai', {
         pegawai: {
@@ -300,19 +291,173 @@ export default class PegawaisController {
         },
       })
     } catch (error) {
+      session.flash('alertError', 'Permintaan anda tidak dapat diproses.')
+      return response.redirect().toPath('/app/pegawai')
+    }
+  }
+
+  public async edit ({ view, params, response, session, auth }: HttpContextContract) {
+    // udah pake middleware
+    try {
+      if(!auth.user) throw 'auth ngga valid'
+
+      const pegawai = await Pengguna.findOrFail(params.id) // ID_PENGGUNA bukan ID_USER
+      await pegawai.load('user')
+      await pegawai.load('jabatan')
+
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+
+      let isAdmin = false
+      if(userPengakses.pengguna.jabatan.nama === 'Pemilik'){
+        isAdmin = true
+      }
+
+      const tambahan = {
+        adaFoto: await Drive.exists('profilePict/' + pegawai.foto),
+        isAdmin
+      }
+
+      // lanjut disini
+      return view.render('pegawai/form-edit-pegawai', { pegawai, tambahan })
+
+    } catch (error) {
       session.flash('alertError', 'Anda tidak memiliki hak untuk mengakses laman tersebut!')
       return response.redirect().toPath('/app/pegawai')
     }
   }
 
-  public async edit ({}: HttpContextContract) {
-  }
+  public async update ({request, response, session, params, auth}: HttpContextContract) {
+    const editPegawaiSchema = schema.create({
+      jabatan: schema.enum.optional([
+        'karyawan',
+        'kepalatoko',
+        'pemiliktoko'
+      ] as const),
+      nama: schema.string({ trim: true }, [
+        rules.maxLength(50)
+      ]),
+      gender: schema.enum([
+        'L',
+        'P'
+      ] as const),
+      tempatLahir: schema.string({ trim: true }, [
+        rules.maxLength(100)
+      ]),
+      tanggalLahir: schema.date(),
+      alamat: schema.string({ trim: true }, [
+        rules.maxLength(100)
+      ]),
+      catatan: schema.string.optional({ trim: true }, [
+        rules.maxLength(100)
+      ]),
+      nohpAktif: schema.string({ trim: true }, [
+        rules.maxLength(15)
+      ]),
 
-  public async update ({}: HttpContextContract) {
+      status: schema.enum([
+        'aktif',
+        'keluar'
+      ] as const),
+      tanggalMulaiAktif: schema.date.optional({}, [
+        rules.requiredWhen('status', '=', 'aktif')
+      ]),
+      tanggalGajianSelanjutnya: schema.date.optional({}, [
+        rules.requiredWhen('status', '=', 'aktif')
+      ]),
+      gajiBulanan: schema.number([
+        rules.unsigned()
+      ]),
+      fotoPegawaiBase64: schema.string.optional(),
+      indiGambarBerubah: schema.string({ trim: true })
+    })
+
+    const validrequest = await request.validate({ schema: editPegawaiSchema })
+
+    const gantiFoto = validrequest.indiGambarBerubah === 'ganti'
+    let namaFileFoto = ''
+    let fileFoto = validrequest.fotoPegawaiBase64 || ''
+
+    if(gantiFoto){
+      try {
+        if(!isBase64(fileFoto, {mimeRequired: true, allowEmpty: false}) || fileFoto === ''){
+          throw new Error('gambar tidak valid')
+        }
+  
+        var block = fileFoto.split(';')
+        var realData = block[1].split(',')[1] // In this case "iVBORw0KGg...."
+        namaFileFoto = (validrequest.nama || '').replace(/\s/gm, '') + DateTime.now().toMillis() + '.jpg'
+  
+        // ntar di resize buffernya pake sharp dulu jadi 300x300
+        const buffer = Buffer.from(realData, 'base64')
+        await Drive.put('profilePict/' + namaFileFoto, buffer)
+  
+      } catch (error) {
+        namaFileFoto = ''
+      }
+    }
+
+    try {
+      if(!auth.user) throw 'auth ngga valid'
+
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+
+      let bolehGantiJabatan = (userPengakses.pengguna.jabatan.nama === 'Pemilik')
+
+      const pengguna = await Pengguna.findOrFail(params.id)
+      pengguna.nama = validrequest.nama
+      pengguna.gender = validrequest.gender
+      pengguna.tanggalLahir = validrequest.tanggalLahir
+      pengguna.tempatLahir = validrequest.tempatLahir
+      pengguna.alamat = validrequest.alamat
+      pengguna.catatan = validrequest.catatan || null
+      pengguna.nohpAktif = validrequest.nohpAktif
+      pengguna.apakahPegawaiAktif = validrequest.status === 'aktif'
+
+      if(gantiFoto){
+        pengguna.foto = (namaFileFoto)? namaFileFoto : null
+      }
+      
+      pengguna.tanggalMulaiAktif = (validrequest.status === 'aktif' && validrequest.tanggalMulaiAktif)? validrequest.tanggalMulaiAktif : null
+      pengguna.tanggalGajianSelanjutnya = (validrequest.status === 'aktif' && validrequest.tanggalGajianSelanjutnya)? validrequest.tanggalGajianSelanjutnya : null
+      pengguna.gajiBulanan = validrequest.gajiBulanan
+
+      if(bolehGantiJabatan && validrequest.jabatan){
+        let idJabatan = 0
+
+        if(validrequest.jabatan == 'karyawan'){
+          idJabatan = 1
+        } else if(validrequest.jabatan == 'kepalatoko'){
+          idJabatan = 2
+        } else if(validrequest.jabatan == 'pemiliktoko'){
+          idJabatan = 3
+        } else{
+          throw 'error'
+        }
+
+        pengguna.jabatanId = idJabatan
+      }
+      
+
+      await pengguna.save()
+  
+      session.flash('alertSukses', 'Data pegawai berhasil diubah!')
+      return response.redirect().toPath('/app/pegawai/' + params.id)
+    } catch (error) {
+      session.flash('alertError', 'Ada masalah saat mengubah data pegawai. Silahkan coba lagi setelah beberapa saat.')
+      return response.redirect().back()
+    }
+
   }
 
   public async destroy ({params, response, session}: HttpContextContract) {
     try {
+      // udah pake middleware
       const pengguna = await Pengguna.findOrFail(params.id)
       await pengguna.load('user')
 
@@ -330,46 +475,20 @@ export default class PegawaisController {
     }
   }
 
-  public async ubahStatus ({ request, response, params }: HttpContextContract) {
-    // PAKEMIDDLEWARE
-
-    try {
-      const pegawai = await Pengguna.findOrFail(params.id)
-      const statusBaru = request.input('target')
-
-      if(statusBaru != 0 && statusBaru!= 1){
-        throw 'Input tidak valid'
-      }
-
-      pegawai.apakahPegawaiAktif = statusBaru
-      await pegawai.save()
-
-      return response.ok({message: 'Status pegawai berhasil diubah'})
-    } catch (error) {
-      // return response.badRequest({error: error})
-      if(typeof error === 'string'){
-        return response.badRequest({error: error})
-      } else{
-        return response.badRequest({error: 'Ada masalah pada server!'})
-      }
-    }
-
-  }
-
-  public async checkCredit ({ params, request, response }: HttpContextContract) {
+  public async checkCredit ({ params, request, response, auth }: HttpContextContract) {
     const pass = request.input('pass')
-    let placeholderUser = 1  // ini harusnya ngambil dari current active session, ID_USER bukan ID_PENGGUNA
 
     try {
+      if(!auth.user) throw 'ngga valid'
+
       if(!pass) throw 'Password tidak boleh kosong!'
 
-      // ntar cek constrainnya ganti
-      // PAKEMIDDLEWARE
+      // Built in middleware
       const pegawai = await Pengguna.findOrFail(params.id) // PENGGUNA bukan USER
       await pegawai.load('user')
       await pegawai.load('jabatan')
 
-      const userPengakses = await User.findOrFail(placeholderUser) // USER bukan PENGUNA
+      const userPengakses = await User.findOrFail(auth.user.id) // USER bukan PENGUNA
       await userPengakses.load('pengguna', (query) => {
         query.preload('jabatan')
       })
@@ -379,13 +498,12 @@ export default class PegawaisController {
       }
    
       if(await Hash.verify(userPengakses.password, pass)){
-        return response.ok({message: 'Ok', yangPunya: (userPengakses.id === pegawai.id)})
+        return response.ok({message: 'Ok', yangPunya: (userPengakses.pengguna.id === pegawai.id)})
       } else {
         throw 'Password yang anda isikan tidak tepat!'
       }
 
     } catch (error) {
-      // return response.badRequest({error: error})
       if(typeof error === 'string'){
         return response.badRequest({error: error})
       } else{
@@ -394,25 +512,25 @@ export default class PegawaisController {
     }
   }
 
-  public async ubahUsername ({ response, request, params }: HttpContextContract) {    
+  public async ubahUsername ({ response, request, params, auth }: HttpContextContract) {    
     const newUN = request.input('newUN')
-    let placeholderUser = 1  // ini harusnya ngambil dari current active session, ID_USER bukan ID_PENGGUNA
 
     try {
+      if(!auth.user) throw 'ngga valid'
+
       if(!newUN) throw 'Username tidak boleh kosong!'
 
-      // ntar cek constrainnya ganti
-      // PAKEMIDDLEWARE
+      // Udah built in middleware
       const pegawai = await Pengguna.findOrFail(params.id) // PENGGUNA bukan USER
       await pegawai.load('user')
       await pegawai.load('jabatan')
 
-      const userPengakses = await User.findOrFail(placeholderUser) // USER bukan PENGUNA
+      const userPengakses = await User.findOrFail(auth.user.id) // USER bukan PENGUNA
       await userPengakses.load('pengguna', (query) => {
         query.preload('jabatan')
       })
 
-      if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){ // bisa dijadiin middleware
+      if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){
         throw 'Anda tidak memiliki hak untuk melakukan perubahan!'
       }
       
@@ -433,29 +551,28 @@ export default class PegawaisController {
     }
   }
 
-  public async ubahPassword ({request, response, params}: HttpContextContract) {
+  public async ubahPassword ({request, response, params, auth}: HttpContextContract) {
     const passbaru = request.input('passbaru')
     const passlama = request.input('passlama')
-    let placeholderUser = 1  // ini harusnya ngambil dari current active session, ID_USER bukan ID_PENGGUNA
 
     try {
+      if(!auth.user) throw 'ngga valid'
+
       if(!passbaru || !passlama) throw 'Password tidak boleh kosong!'
 
-      // ntar cek constrainnya ganti
-      // PAKEMIDDLEWARE
+      // Udah built in middleware
       const pegawai = await Pengguna.findOrFail(params.id) // PENGGUNA bukan USER
       await pegawai.load('user')
       await pegawai.load('jabatan')
 
-      const userPengakses = await User.findOrFail(placeholderUser) // USER bukan PENGUNA
+      const userPengakses = await User.findOrFail(auth.user.id) // USER bukan PENGUNA
       await userPengakses.load('pengguna', (query) => {
         query.preload('jabatan')
       })
 
-      if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){ // bisa dijadiin middleware
+      if(userPengakses.pengguna.id !== pegawai.id && userPengakses.pengguna.jabatan.nama !== 'Pemilik'){
         throw 'Anda tidak memiliki hak untuk melakukan perubahan!'
       }
-
    
       if(await Hash.verify(userPengakses.password, passlama)){
         pegawai.user.password = passbaru
@@ -482,23 +599,23 @@ export default class PegawaisController {
   public async verivyEmail ({}: HttpContextContract) {
   }
 
-  public async getMyProfile ({ response }: HttpContextContract) {
-    let placeholderPengguna = 1 // ini ntar diganti jadi current active session
-
+  public async getMyProfile ({ response, auth }: HttpContextContract) {
     try {
-      const pengguna = await Pengguna.findOrFail(placeholderPengguna)
-      await pengguna.load('jabatan')
+      if(!auth.user) throw 'Error'
 
-      const url = (await Drive.exists('profilePict/' + pengguna.foto))? (await Drive.getUrl('profilePict/' + pengguna.foto)) : ''
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
 
       return {
-        nama: pengguna.nama,
-        jabatan: pengguna.jabatan.nama,
-        id: pengguna.id,
-        urlFoto: url
+        nama: userPengakses.pengguna.nama,
+        jabatan: userPengakses.pengguna.jabatan.nama,
+        id: userPengakses.pengguna.id,
+        adaFoto: (await Drive.exists('profilePict/' + userPengakses.pengguna.foto))
       }
     } catch (error) {
-      return response.notFound('Profil tidak ditemukan!')
+      return response.notFound({error: 'Profil tidak ditemukan!'})
     }
     
   }

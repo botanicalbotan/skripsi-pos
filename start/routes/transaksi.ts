@@ -88,13 +88,6 @@ Route.group(() => {
 
     Route.post('/pembelian/hitungHargaNormal', 'transaksi/PembeliansController.hitungHargaNormal')
 
-
-    // ======================================================== GADAI ===========================================================
-    Route.get('/gadai', async ({
-      view
-    }) => {
-      return view.render('transaksi/gadai')
-    })
   }).prefix('transaksi')
 
-}).prefix('app')
+}).prefix('app').middleware(['auth'])

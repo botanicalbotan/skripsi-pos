@@ -45,6 +45,9 @@ Server.middleware.register([
 |
 */
 Server.middleware.registerNamed({
+    auth: () => import('App/Middleware/Auth'),
+    guestOnly: () => import('App/Middleware/GuestOnly'),
     isPemilikWeb: () => import('App/Middleware/IsPemilikWeb'),
     isPemilikApi: () => import('App/Middleware/IsPemilikApi'),
+    izinEditPegawaiWeb: () => import('App/Middleware/IzinEditPegawaiWeb'),
 })

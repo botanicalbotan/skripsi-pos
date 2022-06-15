@@ -2,13 +2,13 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 
 export default class IsPemilikWeb {
-  public async handle({ response, session }: HttpContextContract, next: () => Promise<void>) {
-
+  public async handle({ response, session, auth }: HttpContextContract, next: () => Promise<void>) {
     // beberapa url udah ready dikasi ginian, cek yang ada komen PAKEMIDDLEWARE
-    let placeholderUser = 1  // ini harusnya ngambil dari AUTH, ID_USER bukan ID_Pengguna
 
     try {
-      const userPengakses = await User.findOrFail(placeholderUser)
+      if(!auth.user) throw 'auth ngga valid'
+
+      const userPengakses = await User.findOrFail(auth.user.id)
       await userPengakses.load('pengguna', (query) => {
         query.preload('jabatan')
       })

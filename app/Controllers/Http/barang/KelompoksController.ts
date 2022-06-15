@@ -18,74 +18,6 @@ import Drive from '@ioc:Adonis/Core/Drive'
 import User from 'App/Models/User'
 
 export default class KelompoksController {
-  // Fungsi Tambahan
-
-  getRandomInt(max: number) {
-    return Math.floor(Math.random() * max);
-  }
-
-  kapitalHurufPertama(text: string) {
-    return text.charAt(0).toUpperCase() + text.slice(1)
-  }
-
-  kapitalKalimat(text: string) {
-    let pure = text.split(' ')
-    let newText = ''
-    for (let i = 0; i < pure.length; i++) {
-      newText += this.kapitalHurufPertama(pure[i])
-      if (i !== pure.length - 1) {
-        newText += ' '
-      }
-    }
-    return newText
-  }
-
-  rupiahParser(angka: number) {
-    if (typeof angka == 'number') {
-      return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-      }).format(angka)
-    }
-  }
-
-  generateKodeKelompok(kadar: string, bentuk: string) {
-    let kodebentuk = {
-      Cincin: 'CC',
-      Kalung: 'KL',
-      Anting: 'AT',
-      Liontin: 'LT',
-      Tindik: 'TD',
-      Gelang: 'GL'
-    }
-
-    // varian ini bisa dipake buat yang butuh random2
-    // let kodekadar = {
-    //   Muda: {nomer: 1, huruf: ['M', 'MU', 'YO', 'NO']},
-    //   Tanggung: {nomer: 2, huruf: ['TA', 'TG', 'MI', 'CE']},
-    //   Tua: {nomer:3, huruf: ['TU', 'NE', 'GR', 'OL']}
-    // }
-
-    let kodekadar = {
-      Muda: {
-        nomer: 1,
-        huruf: 'MD'
-      },
-      Tanggung: {
-        nomer: 2,
-        huruf: 'TG'
-      },
-      Tua: {
-        nomer: 3,
-        huruf: 'TU'
-      }
-    }
-
-    return kodebentuk[bentuk] + kodekadar[kadar].nomer + kodekadar[kadar].huruf + DateTime.local().toMillis()
-  }
-
-  // Fungsi Routing
 
   public async index({
     view,
@@ -235,7 +167,7 @@ export default class KelompoksController {
   }: HttpContextContract) {
     const pengaturan = await Pengaturan.findOrFail(1)
     let defaultPengaturan = {
-      stokMinimal: pengaturan.defaultStokMinimalPerhiasan,
+      stokMinimal: pengaturan.defaultStokMinimalKelompok,
       ingatkanStokMenipis: pengaturan.defaultIngatkanStokMenipis,
     }
 
@@ -263,7 +195,8 @@ export default class KelompoksController {
   public async store({
     request,
     response,
-    session
+    session,
+    auth
   }: HttpContextContract) {
     const newKelompokSchema = schema.create({
       nama: schema.string({
@@ -301,20 +234,25 @@ export default class KelompoksController {
     })
 
     try {
+      if(!auth.user) throw 'auth ngga valid'
+
       const kadar = await Kadar.findOrFail(validrequest.kadar)
       const bentuk = await Bentuk.findOrFail(validrequest.bentuk)
 
-      let placeholderPengguna = 1 // ini harusnya ngambil dari current active session
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna', (query) =>{
+        query.preload('jabatan')
+      })
 
       await kadar.related('kelompoks').create({
-        nama: await this.kapitalKalimat(validrequest.nama),
-        kodeKelompok: await this.generateKodeKelompok(kadar.nama, bentuk.bentuk),
+        nama: await kapitalKalimat(validrequest.nama),
+        kodeKelompok: await generateKodeKelompok(kadar.nama, bentuk.bentuk),
         bentukId: bentuk.id,
         beratKelompok: validrequest.beratKelompok,
         stok: validrequest.stok,
         stokMinimal: validrequest.stokMinimal,
         ingatkanStokMenipis: validrequest.ingatkanStokMenipis,
-        penggunaId: placeholderPengguna
+        penggunaId: userPengakses.pengguna.id
       })
 
       session.flash('alertSukses', 'Kelompok baru berhasil disimpan!')
@@ -343,7 +281,7 @@ export default class KelompoksController {
       })
 
       const fungsi = {
-        rupiahParser: this.rupiahParser,
+        rupiahParser: rupiahParser,
       }
 
       const urlPencatat = (await Drive.exists('profilePict/' + kelompok.pengguna.foto)) ? (await Drive.getUrl('profilePict/' + kelompok.pengguna.foto)) : ''
@@ -459,12 +397,14 @@ export default class KelompoksController {
   public async destroy({
     params,
     response,
-    session
+    session,
+    auth
   }: HttpContextContract) {
-    let placeholderUser = 1 // ini harusnya ngambil dari current active session, ID_USER bukan ID_PENGGUNA
 
     try {
-      const userPengakses = await User.findOrFail(placeholderUser)
+      if(!auth.user) throw 'auth ngga valid'
+
+      const userPengakses = await User.findOrFail(auth.user.id)
       await userPengakses.load('pengguna', (query) => {
         query.preload('jabatan')
       })
@@ -751,17 +691,18 @@ export default class KelompoksController {
   public async ubahStok({
     response,
     params,
-    request
+    request,
+    auth
   }: HttpContextContract) {
     const stokbaru = request.input('stokBaru')
     const alasan = request.input('alasan')
-    let placeholderUser = 1 // ini harusnya ngambil dari current active session, ID_USER bukan ID_PENGGUNA
 
     try {
       if (!stokbaru || !alasan || isNaN(stokbaru) || stokbaru < 0) throw 'Permintaan tidak valid!'
 
+      if(!auth.user) throw 'auth ngga valid'
 
-      const userPengakses = await User.findOrFail(placeholderUser)
+      const userPengakses = await User.findOrFail(auth.user.id)
       await userPengakses.load('pengguna', (query) => {
         query.preload('jabatan')
       })
@@ -802,4 +743,59 @@ export default class KelompoksController {
   }
 
 
+}
+
+
+function kapitalHurufPertama(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+function kapitalKalimat(text: string) {
+  let pure = text.split(' ')
+  let newText = ''
+  for (let i = 0; i < pure.length; i++) {
+    newText += kapitalHurufPertama(pure[i])
+    if (i !== pure.length - 1) {
+      newText += ' '
+    }
+  }
+  return newText
+}
+
+function rupiahParser(angka: number) {
+  if (typeof angka == 'number') {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(angka)
+  }
+}
+
+function generateKodeKelompok(kadar: string, bentuk: string) {
+  let kodebentuk = {
+    Cincin: 'CC',
+    Kalung: 'KL',
+    Anting: 'AT',
+    Liontin: 'LT',
+    Tindik: 'TD',
+    Gelang: 'GL'
+  }
+
+  let kodekadar = {
+    Muda: {
+      nomer: 1,
+      huruf: 'MD'
+    },
+    Tanggung: {
+      nomer: 2,
+      huruf: 'TG'
+    },
+    Tua: {
+      nomer: 3,
+      huruf: 'TU'
+    }
+  }
+
+  return kodebentuk[bentuk] + kodekadar[kadar].nomer + kodekadar[kadar].huruf + DateTime.local().toMillis()
 }

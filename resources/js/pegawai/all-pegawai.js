@@ -181,87 +181,6 @@ $(function () {
   // ========================================= detail ==========================================================
   if (basePage == "detail") {
 
-    const btUbahStatus = document.getElementById('btUbahStatus')
-    const defineModal = [{
-        title: 'Aktifkan pegawai?',
-        text: "Dengan mengaktifkan pegawai, pegawai tersebut akan kembali mendapat akses ke sistem ini",
-        targetStatus: 1,
-        confirmButton: 'Ya, aktifkan!',
-        confirmButtonColor: '#41BE88'
-      },
-      {
-        title: 'Nonaktifkan pegawai?',
-        text: "Dengan menonaktifkan pegawai, pegawai tersebut akan kehilangan akses ke sistem ini",
-        targetStatus: 0,
-        confirmButton: 'Ya, nonaktifkan!',
-        confirmButtonColor: '#Dc3741'
-      },
-    ]
-
-    if (btUbahStatus) {
-      btUbahStatus.addEventListener('click', (e) => {
-        const status = (e.target.dataset.statusSekarang == 0) ? 0 : 1
-
-        Swal.fire({
-          title: defineModal[status].title,
-          text: defineModal[status].text,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: defineModal[status].confirmButtonColor,
-          confirmButtonText: defineModal[status].confirmButton,
-          cancelButtonText: 'Batal',
-          scrollbarPadding: false,
-          didOpen: () => {
-            Swal.getCancelButton().focus()
-          },
-          preConfirm: () => {
-
-            Swal.showLoading(Swal.getConfirmButton())
-            return new Promise(function (resolve, reject) {
-              setTimeout(function () {
-                Swal.hideLoading()
-                reject('Tidak ada respon dari server')
-              }, 5000)
-
-              $.ajaxSetup({
-                headers: {
-                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-              });
-
-              $.ajax({
-                type: "PUT",
-                url: location.pathname + '/status',
-                data: {
-                  target: defineModal[status].targetStatus
-                },
-                dataType: "json",
-                success: function () {
-                  resolve()
-                },
-                error: function (xhr) {
-                  reject(xhr.responseJSON.error)
-                }
-              });
-            }).catch(function (error) {
-              Swal.hideLoading()
-              Swal.showValidationMessage('Error: ' + error)
-            })
-          }
-        }).then((result) => {
-          if (result.isConfirmed) {
-            Swal.fire(
-              'Sukses!',
-              'Pegawai berhasil ' + ((status == 0) ? 'diaktifkan.' : 'dinonaktifkan.'),
-              'success'
-            ).then(() => {
-              location.href = location.pathname
-            })
-          }
-        })
-      })
-    }
-
     const btAkun = document.getElementById('btAkun')
     if(btAkun){
       btAkun.addEventListener('click', () => {
@@ -278,7 +197,7 @@ $(function () {
       btHapus.addEventListener('click', ()=>{
         Swal.fire({
           title: 'Yakin untuk menghapus?',
-          text: 'Anda akan menghapus model "'+namaPegawai+'", dan pegawai yang dihapus tidak dapat dikembalikan.',
+          text: 'Anda akan menghapus pegawai "'+namaPegawai+'", dan pegawai yang dihapus tidak dapat dikembalikan.',
           icon: 'info',
           iconColor: global.SwalCustomColor.icon.error,
           showCancelButton: true,

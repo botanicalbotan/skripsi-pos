@@ -33,13 +33,11 @@
           <ul tabindex="0" class="p-2 shadow-lg menu border dropdown-content bg-base-100 rounded-box w-60">
             {{--  ntar cek kalo pemilik ato bukan, ilangin kalo bukan  --}}
             <li>
-              <a id="ubahData">Ubah Data Pegawai</a>
+              <a href="/app/pegawai/{{ pegawai.id }}/edit">Ubah Data Pegawai</a>
             </li>
 
             @if(tambahan.isAdmin)
-            <li>
-              <a id="btUbahStatus" data-statusSekarang = "{{ pegawai.apakahPegawaiAktif }}">{{ (pegawai.apakahPegawaiAktif)? 'Nonaktifkan Pegawai': 'Aktifkan Pegawai' }}</a>
-              </li>
+      
             <li>
               <a id="btHapus" class="true-text-error">Hapus Pegawai</a>
               <form id="formHapusPegawai" action="/app/pegawai/{{ pegawai.id }}" method="POST">
@@ -262,7 +260,7 @@
               <div class="flex rounded-box ring-2 ring-base-300 w-52 h-52 p-2 bg-white">
                 <div class="w-full h-full bg-placeholder-user-200 bg-contain">
                   {{--  gambar cuma buat wadah dan udah ada backgroundnya, jadi kalo gaada biarin kosong aja dan jangan kasi alternative text  --}}
-                  <img src="{{ tambahan.urlFoto }}" id="fotoPegawai" onerror="this.style.display = 'none'">
+                  <img src="{{ (tambahan.adaFoto)? '/app/cumaData/foto/pegawai/' + pegawai.id : '' }}" id="fotoPegawai" onerror="this.style.display = 'none'">
                 </div>
               </div>
             </div>

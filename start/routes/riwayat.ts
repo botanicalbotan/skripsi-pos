@@ -34,4 +34,4 @@ Route.group(() => {
 
   }).prefix('riwayat')
 
-}).prefix('app')
+}).prefix('app').middleware(['auth'])

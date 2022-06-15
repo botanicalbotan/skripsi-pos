@@ -32,4 +32,4 @@ Route.group(() => {
 
   }).prefix('pengaturan')
 
-}).prefix('app')
+}).prefix('app').middleware(['auth'])

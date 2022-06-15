@@ -210,7 +210,7 @@ $(function () {
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: global.SwalCustomColor.button.confirm,
-        confirmButtonText: 'Ya, ubah!',
+        confirmButtonText: 'Ya, simpan!',
         cancelButtonText: 'Batal',
         scrollbarPadding: false,
         focusCancel: true,

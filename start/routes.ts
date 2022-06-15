@@ -25,23 +25,42 @@ import './routes/test-doang'
 import './routes/email-test'
 import './routes/pengaturan'
 
-Route.get('/', async ({
-  view
-}) => {
-  return view.render('welcome')
-})
 
-Route.get('/login', async ({}) => {
-  return 'Ini ntar jadi rute buat login'
-})
+ // ================================ LOGIN ROUTE ===============================================
+Route.group(()=> {
+  Route.get('/login', 'LoginController.pageLogin')
+  Route.post('/login', 'LoginController.login')
+  // loginnya disini, logoutnya di auth
 
+  Route.get('/tanpa-akun', 'LoginController.pageTanpaAkun')
+  Route.get('/lupa-password', 'LoginController.pageLupaPassword')
+
+  // ada navbar nya
+  Route.get('/tanpa-akun-plus', async ({
+    view
+  }) => {
+    return view.render('tanpa-akun-plus')
+  })
+}).middleware(['guestOnly'])
+
+Route.post('/logout', 'LoginController.logout').middleware(['auth'])
+
+
+ // ================================ START APPS ROUTE ===============================================
 Route.group(() => {
-  // ================================ START APPS ROUTE ===============================================
 
   Route.get('/', async ({
     view
   }) => {
     return view.render('index')
+  })
+
+  Route.get('/cek-auth', async ({
+    auth
+  }) => {
+    // await auth.use('web').authenticate()
+
+    return auth.user
   })
 
   // ================================ PEMBUKUAN KAS ===============================================
@@ -84,7 +103,7 @@ Route.group(() => {
   Route.group(() => {
     Route.get('/', 'laporan/LaporansController.index')
     Route.get('/generate', 'laporan/LaporansController.generateLaporan')
-    
+
   }).prefix('laporan')
 
   // ================================ PEGAWAI ===============================================
@@ -97,16 +116,21 @@ Route.group(() => {
 
     Route.resource('/penggajian', 'akun/PenggajianPegawaisController').only(['index', 'show', 'destroy'])
 
-    Route.put('/:id/status', 'akun/PegawaisController.ubahStatus')
-    Route.get('/:id/akun', 'akun/PegawaisController.showDataAkun')
-    Route.post('/:id/akun/check', 'akun/PegawaisController.checkCredit')
-    Route.put('/:id/akun/ubahUsername', 'akun/PegawaisController.ubahUsername')
-    Route.put('/:id/akun/ubahPassword', 'akun/PegawaisController.ubahPassword')
+    Route.get('/:id/akun', 'akun/PegawaisController.showDataAkun').middleware(['izinEditPegawaiWeb'])
+    Route.post('/:id/akun/check', 'akun/PegawaisController.checkCredit') // ada built in middleware
+    Route.put('/:id/akun/ubahUsername', 'akun/PegawaisController.ubahUsername') // ada built in middleware
+    Route.put('/:id/akun/ubahPassword', 'akun/PegawaisController.ubahPassword') // ada built in middleware
     Route.put('/:id/akun/ubahEmail', 'akun/PegawaisController.ubahEmail')
     Route.post('/:id/akun/verivyEmail', 'akun/PegawaisController.verivyEmail')
-    // Route.get('/:id/akun', 'akun/PegawaisController.dataAkun')
   }).prefix('/pegawai')
-  Route.resource('/pegawai', 'akun/PegawaisController')
+
+  Route.resource('/pegawai', 'akun/PegawaisController').middleware({
+    create: ['isPemilikWeb'],
+    store: ['isPemilikWeb'],
+    edit: ['izinEditPegawaiWeb'],
+    update: ['izinEditPegawaiWeb'],
+    destroy: ['isPemilikWeb']
+  })
 
   // ================================ NOTIFIKASI ===============================================
   Route.group(() => {
@@ -169,7 +193,7 @@ Route.group(() => {
   }) => {
     return request.all()
   })
-}).prefix('/app')
+}).prefix('/app').middleware(['auth'])
 
 
 Route.get('/landing', async ({

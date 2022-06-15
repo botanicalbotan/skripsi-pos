@@ -3,35 +3,41 @@ import Swal from "sweetalert2";
 const setStatusAktif = document.getElementById('setStatusAktif')
 const setStatusKeluar = document.getElementById('setStatusKeluar')
 
-const tanggalLahir = document.getElementById('tanggalLahir')
 const wadahTanggalAktif = document.getElementById('wadahTanggalAktif')
 const tanggalMulaiAktif = document.getElementById('tanggalMulaiAktif')
+const wadahTanggalGajian = document.getElementById('wadahTanggalGajian')
+const tanggalGajianSelanjutnya = document.getElementById('tanggalGajianSelanjutnya')
 
-tanggalLahir.max = new Date().toISOString().split("T")[0]
 tanggalMulaiAktif.max = new Date().toISOString().split("T")[0]
-tanggalMulaiAktif.value = new Date().toISOString().split("T")[0]
 
 function setStatus(i = 'aktif') {
   if (i === 'aktif') {
     wadahTanggalAktif.classList.remove('hidden')
     tanggalMulaiAktif.required = true
+    wadahTanggalGajian.classList.remove('hidden')
+    tanggalGajianSelanjutnya.required = true
   } else {
     wadahTanggalAktif.classList.add('hidden')
     tanggalMulaiAktif.required = false
+    wadahTanggalGajian.classList.add('hidden')
+    tanggalGajianSelanjutnya.required = false
   }
 }
 
-setStatusAktif.addEventListener('click', ()=> {
+setStatusAktif.addEventListener('click', () => {
   setStatus('aktif')
 })
 
-setStatusKeluar.addEventListener('click', ()=> {
+setStatusKeluar.addEventListener('click', () => {
   setStatus('keluar')
 })
 
 const statusPegawai = document.querySelector('input[name="status"]:checked').value
 setStatus(statusPegawai)
 
+// =========================================== INI KEBAWAH FOTO ===============================================================
+const indiGambarBerubah = document.getElementById('indiGambarBerubah')
+let status = indiGambarBerubah.value
 const fotoPegawai = document.getElementById('fotoPegawai')
 const fileFotoPegawai = document.getElementById('fileFotoPegawai')
 const fotoPegawaiBase64 = document.getElementById('fotoPegawaiBase64')
@@ -82,6 +88,8 @@ fileFotoPegawai.addEventListener('change', (e) => {
           confirmButton.addEventListener('click', () => {
             Swal.showLoading()
 
+            status = 'ganti'
+            indiGambarBerubah.value = 'ganti'
             fotoPegawai.src = cropper.getCroppedCanvas().toDataURL()
             fotoPegawaiBase64.value = cropper.getCroppedCanvas().toDataURL()
           })
@@ -95,51 +103,45 @@ fileFotoPegawai.addEventListener('change', (e) => {
   }
 })
 
-
-const wadahEmail = document.getElementById('wadahEmail')
-const email = document.getElementById('email')
-
-const jabatan = document.getElementById('jabatan')
-jabatan.addEventListener('change', (e) => {
-  if (e.target.value == 'pemiliktoko') {
-    wadahEmail.classList.remove('hidden')
-    email.required = true
-  } else {
-    wadahEmail.classList.add('hidden')
-    email.required = false
-  }
+const btHapusFoto = document.getElementById('btHapusFoto')
+btHapusFoto.addEventListener('click', () => {
+  status = 'ganti'
 })
 
-// ===================================================== INI FORM AMA SUBMIT ====================================================
-const pegawaiBaru = document.getElementById('pegawaiBaru')
-const btSubmit = document.getElementById('btSubmit')
+// =========================================== INI KEBAWAH FORM AMA SUBMIT =======================================================
+const formUbah = document.getElementById('formUbah')
+const btSimpan = document.getElementById('btSimpan')
+const jabatan = document.getElementById('jabatan')
 
-btSubmit.addEventListener('click', () => {
-  if (jabatan.value == 'kosong' || !['karyawan', 'kepalatoko', 'pemiliktoko'].includes(jabatan.value)) {
-    jabatan.scrollIntoView({
-      block: "center",
-      inline: "nearest"
-    });
-
-    return
+btSimpan.addEventListener('click', () => {
+  if(jabatan){
+    if (jabatan.value == 'kosong' || !['karyawan', 'kepalatoko', 'pemiliktoko'].includes(jabatan.value)) {
+      jabatan.scrollIntoView({
+        block: "center",
+        inline: "nearest"
+      });
+  
+      return
+    }
   }
 
-  if (!pegawaiBaru.reportValidity()) return
+  if (!formUbah.reportValidity()) return
 
   Swal.fire({
-    title: 'Yakin untuk menyimpan?',
+    title: 'Yakin untuk mengubah?',
     text: 'Pastikan data yang anda isikan sudah benar!',
     icon: 'question',
     showCancelButton: true,
     confirmButtonColor: global.SwalCustomColor.button.confirm,
-    confirmButtonText: 'Ya, simpan!',
+    confirmButtonText: 'Ya, ubah!',
     cancelButtonText: 'Batal',
     scrollbarPadding: false,
     focusCancel: true,
   }).then((result) => {
     if (result.isConfirmed) {
-      pegawaiBaru.action = '/app/pegawai'
-      pegawaiBaru.submit()
+      indiGambarBerubah.value = status
+      formUbah.action = window.location.pathname.slice(0, -5) + '?_method=PUT'
+      formUbah.submit()
     }
   })
 })

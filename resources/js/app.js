@@ -187,22 +187,29 @@ const masterJabatanPengguna = document.getElementById('masterJabatanPengguna')
 const masterFotoPengguna = document.getElementById('masterFotoPengguna')
 const masterLihatProfil = document.getElementById('masterLihatProfil')
 const masterKeluar = document.getElementById('masterKeluar')
+const masterFormKeluar = document.getElementById('masterFormKeluar')
 
 $.get("/app/cumaData/myProfile", {},
   function (data, textStatus, jqXHR) {
     masterNamaPengguna.textContent = data.nama
     masterJabatanPengguna.textContent = data.jabatan
-    masterFotoPengguna.src = data.urlFoto
+    masterFotoPengguna.src = (data.adaFoto)? '/app/cumaData/foto/pegawai/' + data.id : ''
     masterLihatProfil.href = '/app/pegawai/' + data.id
 
-    masterWadahProfil.classList.remove('hidden')
   },
   "json"
 ).fail(() => {
-  masterNamaPengguna.textContent = 'Data Error'
+    masterNamaPengguna.textContent = 'Data Error'
     masterJabatanPengguna.textContent = 'Error'
-    masterFotoPengguna.src = 'kosong'
+    masterFotoPengguna.src = ''
     masterLihatProfil.href = ''
 
-    masterWadahProfil.classList.add('hidden')
+}).always(() => {
+  masterWadahProfil.classList.remove('hidden')
+})
+
+masterKeluar.addEventListener('click', ()=>{
+  masterFormKeluar.action = '/logout'
+  masterFormKeluar.method = 'POST'
+  masterFormKeluar.submit()
 })

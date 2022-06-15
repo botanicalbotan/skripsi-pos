@@ -5,6 +5,7 @@ import Bentuk from 'App/Models/barang/Bentuk'
 import Kerusakan from 'App/Models/barang/Kerusakan'
 import { DateTime } from 'luxon'
 import Drive from '@ioc:Adonis/Core/Drive'
+import User from 'App/Models/User'
 
 
 export default class KerusakansController {
@@ -94,7 +95,7 @@ export default class KerusakansController {
     return view.render('barang/kerusakan/form-kerusakan')
   }
 
-  public async store({ request, response, session }: HttpContextContract) {
+  public async store({ request, response, session, auth }: HttpContextContract) {
     const newKerusakanSchema = schema.create({
       nama: schema.string({ trim: true }, [rules.maxLength(50)]),
       bentuk: schema.enum([
@@ -123,14 +124,16 @@ export default class KerusakansController {
     try {
       const bentuk = await Bentuk.findByOrFail('bentuk', validrequest.bentuk)
 
-      let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
+      if(!auth.user) throw 'auth ngga valid'
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
 
       await bentuk.related('kerusakans').create({
         nama: validrequest.nama,
         apakahBisaDiperbaiki: validrequest.perbaikan === 'bisa',
         ongkosNominal: validrequest.perbaikan === 'bisa' ? validrequest.ongkos : 0,
         ongkosDeskripsi: validrequest.perbaikan === 'bisa' ? ongkosteks : 'Dihitung harga rosok',
-        penggunaId: placeholderPengguna
+        penggunaId: userPengakses.pengguna.id
       })
 
       session.flash('alertSukses', 'Kerusakan baru berhasil disimpan!')

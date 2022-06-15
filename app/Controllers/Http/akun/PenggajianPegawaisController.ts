@@ -10,6 +10,7 @@ import RekapHarian from 'App/Models/kas/RekapHarian'
 import CPasaran from 'App/CustomClasses/CPasaran'
 import Pengaturan from 'App/Models/sistem/Pengaturan'
 import TipeNotif from 'App/Models/sistem/TipeNotif'
+import User from 'App/Models/User'
 
 export default class PenggajianPegawaisController {
   rupiahParser(angka: number) {
@@ -153,10 +154,6 @@ export default class PenggajianPegawaisController {
         .orderBy('updated_at', 'desc')
 
 
-      // return tanggalTerakhir
-      const urlPenerima = (await Drive.exists('profilePict/' + penggajian.penerimaGaji.foto))? (Drive.getUrl('profilePict/' + penggajian.penerimaGaji.foto)) : ''
-      const urlPencatat = (await Drive.exists('profilePict/' + penggajian.pencatatGajian?.foto))? (Drive.getUrl('profilePict/' + penggajian.pencatatGajian?.foto)) : ''
-
       // Get today's date and time
       var countDownDate = new Date(penggajian.tanggalSeharusnyaDibayar.toJSDate()).getTime();
       var now = new Date().getTime();
@@ -172,8 +169,8 @@ export default class PenggajianPegawaisController {
       }
       let tambahan = {
         terakhirGajian: (tanggalTerakhir.length > 0)? tanggalTerakhir[0].terakhirGajian : null,
-        urlFotoPenerima: urlPenerima,
-        urlFotoPencatat: urlPencatat,
+        adaFotoPenerima: (await Drive.exists('profilePict/' + penggajian.penerimaGaji.foto)),
+        adaFotoPencatat: (await Drive.exists('profilePict/' + penggajian.pencatatGajian?.foto)),
         jarakHari: jarakHari
       }
       // return penggajian
@@ -291,20 +288,20 @@ export default class PenggajianPegawaisController {
     return response.ok({message: 'Refresh berhasil, ' + counter + ' data ditambahkan', jumlah: counter})
   }
 
-  public async pembayaranTagihan({ response, params }: HttpContextContract) {
+  public async pembayaranTagihan({ response, params, auth }: HttpContextContract) {
 
     // ini buat ngecek constrain doang
-    await PenggajianPegawai
+    try {
+      await PenggajianPegawai
       .query()
       .where('id', params.id)
       .andWhereNull('dibayar_at')
       .andWhereNull('pencatat_gajian_id')
       .andWhere('status', 'menunggu')
       .firstOrFail()
-      .catch((error) => {
-        console.error(error)
-        return response.badRequest('Penggajian yang anda pilih tidak valid.')
-      })
+    } catch (error) {
+      return response.badRequest('Penggajian yang anda pilih tidak valid.')
+    }    
 
     const CP = new CPasaran()
     const pasaranSekarang = CP.pasaranHarIni()
@@ -330,15 +327,17 @@ export default class PenggajianPegawaisController {
       })
     }
 
-    let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
-
-
     try {
+      if(!auth.user) throw 'auth error'
+
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
+
       let penggajian = await PenggajianPegawai.findOrFail(params.id)
       await penggajian.load('penerimaGaji')
       penggajian.status = 'dibayar'
       penggajian.dibayarAt = DateTime.now()
-      penggajian.pencatatGajianId = placeholderPengguna
+      penggajian.pencatatGajianId = userPengakses.pengguna.id
       await penggajian.save()
 
       pengaturan.saldoToko -= penggajian.nominalGaji
@@ -349,7 +348,7 @@ export default class PenggajianPegawaisController {
         apakahDariSistem: true,
         nominal: -Math.abs(penggajian.nominalGaji),
         perihal: 'Pembayaran Gaji Periode ' + penggajian.tanggalSeharusnyaDibayar.toLocaleString({ month:'long', year:'numeric' }) + ' An. ' + penggajian.penerimaGaji.nama,
-        penggunaId: placeholderPengguna
+        penggunaId: userPengakses.pengguna.id
       })
 
       return response.ok({message: 'Tersimpan'})
@@ -361,21 +360,22 @@ export default class PenggajianPegawaisController {
   }
 
 
-  public async pembatalanPembayaran({ params, response }: HttpContextContract) {
+  public async pembatalanPembayaran({ params, response, auth }: HttpContextContract) {
 
     // ntar tambahin constrain lagi yang boleh akses cuma pemilik
 
-    await PenggajianPegawai
+    try {
+      await PenggajianPegawai
       .query()
       .where('id', params.id)
       .whereNotNull('dibayar_at')
       .andWhereNotNull('pencatat_gajian_id')
       .andWhere('status', 'dibayar')
       .firstOrFail()
-      .catch((error) => {
-        console.error(error)
-        return response.badRequest('Penggajian yang anda pilih tidak valid.')
-      })
+  
+    } catch (error) {
+      return response.badRequest('Penggajian yang anda pilih tidak valid.')
+    }    
 
     const CP = new CPasaran()
     const pasaranSekarang = CP.pasaranHarIni()
@@ -401,9 +401,18 @@ export default class PenggajianPegawaisController {
       })
     }
 
-    let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
 
     try {
+      if(!auth.user) throw 'auth ngga valid'
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+
+      if(userPengakses.pengguna.jabatan.nama !== 'Pemilik'){
+        return response.unauthorized('Anda tidak mempunyai hak untuk mengakses fitur ini!')
+      }
+
       const penggajian = await PenggajianPegawai.findOrFail(params.id)
       await penggajian.load('penerimaGaji')
       penggajian.status = 'menunggu'
@@ -419,7 +428,7 @@ export default class PenggajianPegawaisController {
         apakahDariSistem: true,
         nominal: penggajian.nominalGaji,
         perihal: 'Pembatalan dan pengembalian pembayaran gaji periode ' + penggajian.tanggalSeharusnyaDibayar.toLocaleString({ month:'long', year:'numeric' }) + ' An. ' + penggajian.penerimaGaji.nama,
-        penggunaId: placeholderPengguna
+        penggunaId: userPengakses.pengguna.id
       })
 
       return response.ok({message: 'Tersimpan'})

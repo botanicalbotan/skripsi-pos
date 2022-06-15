@@ -11,6 +11,7 @@ import Model from 'App/Models/barang/Model'
 import Pengaturan from 'App/Models/sistem/Pengaturan'
 import CPasaran from 'App/CustomClasses/CPasaran'
 import RekapHarian from 'App/Models/kas/RekapHarian'
+import User from 'App/Models/User'
 var isBase64 = require('is-base64')
 var QRCode = require('qrcode')
 let PDFDocument = require('pdfkit')
@@ -175,7 +176,7 @@ export default class PenjualansController {
 
   public async update({}: HttpContextContract) {}
 
-  public async destroy({ params, response, session }: HttpContextContract) {
+  public async destroy({ params, response, session, auth }: HttpContextContract) {
     try {
       const PJ = await Penjualan.findOrFail(params.id)
 
@@ -203,14 +204,17 @@ export default class PenjualansController {
         })
       }
 
-      let placeholderPengguna = 1  // ini harusnya ngambil dari current active session
+      if(!auth.user) throw 'auth ngga valid'
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
+
 
       await cariRH.related('kas').create({
         apakahKasKeluar: true,
         apakahDariSistem: true,
         perihal: 'Pembatalan penjualan "' + PJ.namaBarang + '" pada tanggal ' + PJ.createdAt.toFormat('dd LLL yyyy'),
         nominal: -Math.abs(PJ.hargaJualAkhir),
-        penggunaId: placeholderPengguna
+        penggunaId: userPengakses.pengguna.id
       })
 
       pengaturan.saldoToko -= Math.abs(PJ.hargaJualAkhir)
@@ -227,7 +231,7 @@ export default class PenjualansController {
     }
   }
 
-  public async simpanTransaksi({ request, session, response }: HttpContextContract) {
+  public async simpanTransaksi({ request, session, response, auth }: HttpContextContract) {
     const newPenjualanSchema = schema.create({
       id: schema.number([
         rules.unsigned(),
@@ -350,6 +354,10 @@ export default class PenjualansController {
     }
 
     try {
+      if(!auth.user) throw 'auth ngga valid'
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
+
       // ========== Hitungan Rumus ==========
       const kodepro = await KodeProduksi.findOrFail(validrequest.kodepro)
       await kodepro.load('kadar')
@@ -393,7 +401,7 @@ export default class PenjualansController {
         kodeTransaksi: kodeTransaksi,
         namaBarang: namaBarang,
         kodeProduksiId: kodepro.id,
-        penggunaId: 1, // ntar diganti jadi current session
+        penggunaId: userPengakses.pengguna.id,
         modelId: validrequest.model,
         beratBarang: beratBarang,
         kondisi: validrequest.kondisi,
@@ -814,25 +822,25 @@ export default class PenjualansController {
 
   // ============================ Fungsi Tambahan=====================================
 
-  function getRandomInt(max: number) {
-    return Math.floor(Math.random() * max)
-  }
+  // function getRandomInt(max: number) {
+  //   return Math.floor(Math.random() * max)
+  // }
 
   function kapitalHurufPertama(text: string) {
     return text.charAt(0).toUpperCase() + text.slice(1)
   }
 
-  function kapitalKalimat(text: string) {
-    let pure = text.split(' ')
-    let newText = ''
-    for (let i = 0; i < pure.length; i++) {
-      newText += this.kapitalHurufPertama(pure[i])
-      if (i !== pure.length - 1) {
-        newText += ' '
-      }
-    }
-    return newText
-  }
+  // function kapitalKalimat(text: string) {
+  //   let pure = text.split(' ')
+  //   let newText = ''
+  //   for (let i = 0; i < pure.length; i++) {
+  //     newText += this.kapitalHurufPertama(pure[i])
+  //     if (i !== pure.length - 1) {
+  //       newText += ' '
+  //     }
+  //   }
+  //   return newText
+  // }
 
   function belakangKoma(angka: number) {
     return angka / Math.pow(10, angka.toString().replace(/\D/gi, '').length)
@@ -850,34 +858,6 @@ export default class PenjualansController {
 
   function pembulatanRupiah(angka: number, bulat:number = 1000){
     return Math.ceil(angka / bulat) * bulat
-  }
-
-  function generateKodePenjualan(kadar: string, bentuk: string){
-    let kodebentuk = {
-      Cincin: 'CC',
-      Kalung: 'KL',
-      Anting: 'AT',
-      Liontin: 'LT',
-      Tindik: 'TD',
-      Gelang: 'GL'
-    }
-
-    let kodekadar = {
-      Muda: 1,
-      Tanggung: 2,
-      Tua: 3
-    }
-
-    // varian ini bisa dipake buat yang butuh random2
-    // let kodekadar = {
-    //   Muda: {nomer: 1, huruf: ['M', 'MU', 'YO', 'NO']},
-    //   Tanggung: {nomer: 2, huruf: ['TA', 'TG', 'MI', 'CE']},
-    //   Tua: {nomer:3, huruf: ['TU', 'NE', 'GR', 'OL']}
-    // }
-
-    let tipetempat = 'PJT1' // aslinya T1 ini kata pertama ruko, tp gaapa ntar diganti
-
-    return tipetempat + '-' + DateTime.local().toMillis() + '-' + kodekadar[kadar] + kodebentuk[bentuk] + '-' + (100 + getRandomInt(800))
   }
 
   function tigaDigit(angka: number){
