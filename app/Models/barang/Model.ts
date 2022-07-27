@@ -61,6 +61,6 @@ export default class Model extends BaseModel {
   @beforeFetch()
   @beforeFind()
   public static withoutSoftDeletes(query: ModelQuery) {
-    query.whereNull('deleted_at')
+    query.whereNull('models.deleted_at')
   }
 }

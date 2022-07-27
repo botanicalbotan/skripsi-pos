@@ -45,6 +45,9 @@ export default class Pengaturan extends BaseModel {
   public defaultWaktuMaksimalPrintNota: number
 
   @column()
+  public defaultWaktuMaksimalPengajuanGadai: number
+
+  @column()
   public defaultIngatkanStokMenipis: boolean
 
   @column()

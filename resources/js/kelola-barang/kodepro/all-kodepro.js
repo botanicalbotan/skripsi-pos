@@ -1,5 +1,14 @@
 import Swal from "sweetalert2"
 
+import { SwalCustomColor, removeElementsByClass } from '../../fungsi.js'
+
+// const removeElementsByClass = function (className) {
+//   const elements = document.getElementsByClassName(className);
+//   while (elements.length > 0) {
+//     elements[0].parentNode.removeChild(elements[0]);
+//   }
+// }
+
 $(function () {
   const basePage = document.getElementById('base-page').dataset.pagename
   // ===================================== list ================================================
@@ -57,7 +66,7 @@ $(function () {
           confirmButtonText: 'Terapkan',
           showCancelButton: true,
           cancelButtonText: 'Batal',
-          confirmButtonColor: global.SwalCustomColor.button.confirm,
+          confirmButtonColor: SwalCustomColor.button.confirm,
           scrollbarPadding: false,
           html: printAturTabelHTML(),
           willOpen: () => {
@@ -179,7 +188,7 @@ $(function () {
       if (kode.value) {
         teksPengecekanKode.classList.remove('hidden')
 
-        $.post("/app/barang/kodepro/cekKodeDuplikat", {
+        $.post("/app/barang/kodepro/cek-kode-duplikat", {
             kode: kode.value
           },
           function (data, textStatus, jqXHR) {
@@ -222,7 +231,7 @@ $(function () {
 
     kadar.addEventListener('change', (e) => {
       if (kadar.value !== 'kosong') {
-        $.get("/app/cumaData/getKadarById", {
+        $.get("/app/cuma-data/get-kadar-by-id", {
             id: kadar.value
           },
           function (data, textStatus, jqXHR) {
@@ -293,7 +302,7 @@ $(function () {
             if (kadar.value && kadar.value !== 'kosong') {
               kadar.classList.remove('select-error', 'bg-error')
               kadar.classList.add('bg-primary', 'select-primary')
-              global.removeElementsByClass('pesanerror')
+              removeElementsByClass('pesanerror')
             }
           })
           eventKadar = true
@@ -310,7 +319,7 @@ $(function () {
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Ya, simpan!',
-        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        confirmButtonColor: SwalCustomColor.button.confirm,
         cancelButtonText: 'Batal',
         scrollbarPadding: false,
         focusCancel: true,
@@ -336,12 +345,12 @@ $(function () {
         title: 'Yakin untuk menghapus?',
         text: 'Anda akan menghapus kode produksi "' + namaRusak.innerText + '", dan kode produksi yang dihapus tidak dapat dikembalikan.',
         icon: 'question',
-        iconColor: global.SwalCustomColor.icon.error,
+        iconColor: SwalCustomColor.icon.error,
         showCancelButton: true,
         confirmButtonText: 'Ya, hapus!',
         cancelButtonText: 'Batal',
         scrollbarPadding: false,
-        confirmButtonColor: global.SwalCustomColor.button.deny,
+        confirmButtonColor: SwalCustomColor.button.deny,
         focusCancel: true,
       }).then((result) => {
         if (result.isConfirmed) {
@@ -385,7 +394,7 @@ $(function () {
             if (kadar.value && kadar.value !== 'kosong') {
               kadar.classList.remove('select-error', 'bg-error')
               kadar.classList.add('bg-primary', 'select-primary')
-              global.removeElementsByClass('pesanerror')
+              removeElementsByClass('pesanerror')
             }
           })
           eventKadar = true
@@ -403,7 +412,7 @@ $(function () {
         // iconColor: '#Dc3741',
         showCancelButton: true,
         confirmButtonText: 'Ya, ubah!',
-        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        confirmButtonColor: SwalCustomColor.button.confirm,
         cancelButtonText: 'Batal',
         scrollbarPadding: false,
         focusCancel: true,
@@ -457,7 +466,7 @@ $(function () {
       if (kode.value) {
         teksPengecekanKode.classList.remove('hidden')
 
-        $.post("/app/barang/kodepro/cekKodeDuplikatEdit", {
+        $.post("/app/barang/kodepro/cek-kode-duplikat-edit", {
             kode: kode.value,
             currentId: CID
           },
@@ -501,7 +510,7 @@ $(function () {
 
     kadar.addEventListener('change', (e) => {
       if (kadar.value !== 'kosong') {
-        $.get("/app/cumaData/getKadarById", {
+        $.get("/app/cuma-data/get-kadar-by-id", {
             id: kadar.value
           },
           function (data, textStatus, jqXHR) {

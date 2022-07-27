@@ -2,6 +2,8 @@
 const Print = require('print-js')
 const { default: Swal } = require('sweetalert2')
 
+import { SwalCustomColor } from '../../fungsi.js'
+
 $(function () {
   const cdMenit = document.getElementById('cdMenit')
   const cdDetik = document.getElementById('cdDetik')
@@ -18,7 +20,7 @@ $(function () {
       if(bolehCetak){
 
         Print({
-          printable: '/app/cumaData/cetakNota?idpj=' + idDariParam,
+          printable: '/app/cuma-data/cetak-nota?idpj=' + idDariParam,
           type: 'pdf',
           showModal: true, // jadiin false kalo gamau ada loading
           modalMessage: 'Menyiapkan dokumen...',
@@ -31,7 +33,7 @@ $(function () {
                 icon: 'error',
                 scrollbarPadding: false,
                 confirmButtonText: 'Tutup',
-                confirmButtonColor: global.SwalCustomColor.button.cancel
+                confirmButtonColor: SwalCustomColor.button.cancel
               })
             }
 
@@ -42,7 +44,7 @@ $(function () {
                 icon: 'error',
                 scrollbarPadding: false,
                 confirmButtonText: 'Tutup',
-                confirmButtonColor: global.SwalCustomColor.button.cancel
+                confirmButtonColor: SwalCustomColor.button.cancel
               })
             }
           }
@@ -53,7 +55,7 @@ $(function () {
   }
 
 
-  $.get("/app/cumaData/maxCetakPenjualan", {
+  $.get("/app/cuma-data/max-cetak-penjualan", {
       tid: idDariParam
     },
     function (data, textStatus, jqXHR) {
@@ -75,21 +77,21 @@ $(function () {
         // If the count down is over, write some text
         if (distance < 0) {
           clearInterval(intervalId);
-          refreshCD(0, 0)
-          bolehCetak = false
-          if(btCetak) btCetak.remove()
-          console.log('EXPIRED')
+          cdMati()
         }
       }, 1000);
     },
     "json"
   ).fail(() => {
+    cdMati()
+  })
+
+  const cdMati = function () {
     refreshCD(0, 0)
     bolehCetak = false
     if(btCetak) btCetak.remove()
     console.log('EXPIRED')
-  })
-
+  }
 
   const refreshCD = function (menit, detik) {
     cdMenit.style.setProperty('--value', menit)

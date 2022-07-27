@@ -1,5 +1,21 @@
 import Swal from "sweetalert2"
 
+// const removeElementsByClass = function (className) {
+//   const elements = document.getElementsByClassName(className);
+//   while (elements.length > 0) {
+//     elements[0].parentNode.removeChild(elements[0]);
+//   }
+// }
+
+// const capsFirstWord = function (text) {
+//   if (!isNaN(text.charAt(0))) {
+//     return text
+//   }
+//   return text.slice(0, 1).toUpperCase() + text.slice(1)
+// }
+
+import { SwalCustomColor, capsFirstWord, removeElementsByClass } from '../../fungsi.js'
+
 $(function () {
   const basePage = document.getElementById('base-page').dataset.pagename
   // ============================================= list =====================================================
@@ -190,7 +206,7 @@ $(function () {
             if (kadar.value && kadar.value !== 'kosong') {
               kadar.classList.remove('select-error', 'bg-error')
               kadar.classList.add('bg-primary', 'select-primary')
-              global.removeElementsByClass('pesanerror')
+              removeElementsByClass('pesanerror')
             }
           })
           eventKadar = true
@@ -214,7 +230,7 @@ $(function () {
             if (bentuk.value && bentuk.value !== 'kosong') {
               bentuk.classList.remove('select-error', 'bg-error')
               bentuk.classList.add('bg-primary', 'select-primary')
-              global.removeElementsByClass('pesanerror')
+              removeElementsByClass('pesanerror')
             }
           })
           eventBentuk = true
@@ -236,7 +252,7 @@ $(function () {
           berat.addEventListener('change', function () {
             if (berat.value != 0 && berat.value) {
               berat.classList.remove('input-error', 'bg-error')
-              global.removeElementsByClass('pesanerror')
+              removeElementsByClass('pesanerror')
             }
           })
           eventBerat = true
@@ -253,7 +269,7 @@ $(function () {
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Ya, simpan!',
-        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        confirmButtonColor: SwalCustomColor.button.confirm,
         cancelButtonText: 'Batal',
         scrollbarPadding: false,
         focusCancel: true,
@@ -302,7 +318,7 @@ $(function () {
             if (kadar.value && kadar.value !== 'kosong') {
               kadar.classList.remove('select-error', 'bg-error')
               kadar.classList.add('bg-primary', 'select-primary')
-              global.removeElementsByClass('pesanerror')
+              removeElementsByClass('pesanerror')
             }
           })
           eventKadar = true
@@ -326,7 +342,7 @@ $(function () {
             if (bentuk.value && bentuk.value !== 'kosong') {
               bentuk.classList.remove('select-error', 'bg-error')
               bentuk.classList.add('bg-primary', 'select-primary')
-              global.removeElementsByClass('pesanerror')
+              removeElementsByClass('pesanerror')
             }
           })
           eventBentuk = true
@@ -348,7 +364,7 @@ $(function () {
           berat.addEventListener('change', function () {
             if (berat.value != 0 && berat.value) {
               berat.classList.remove('input-error', 'bg-error')
-              global.removeElementsByClass('pesanerror')
+              removeElementsByClass('pesanerror')
             }
           })
           eventBerat = true
@@ -365,7 +381,7 @@ $(function () {
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Ya, simpan!',
-        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        confirmButtonColor: SwalCustomColor.button.confirm,
         cancelButtonText: 'Batal',
         scrollbarPadding: false,
         focusCancel: true,
@@ -389,7 +405,7 @@ $(function () {
         html: printChangeStockHTML(jumlahStok),
         showCancelButton: true,
         scrollbarPadding: false,
-        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        confirmButtonColor: SwalCustomColor.button.confirm,
         confirmButtonText: 'Selanjutnya',
         preConfirm: () => {
           const stokBaru = document.getElementById('swal-stokBaru')
@@ -426,7 +442,7 @@ $(function () {
               cancelButtonText: 'Batal',
               scrollbarPadding: false,
               focusCancel: true,
-              confirmButtonColor: global.SwalCustomColor.button.confirm,
+              confirmButtonColor: SwalCustomColor.button.confirm,
               preConfirm: () => {
                 Swal.showLoading()
 
@@ -440,7 +456,7 @@ $(function () {
 
                   $.ajax({
                     type: "PUT",
-                    url: location.pathname.slice(0, -5) + '/ubahStok',
+                    url: location.pathname.slice(0, -5) + '/ubah-stok',
                     data: {
                       stokBaru: gantiStok.value.stokBaru,
                       alasan: gantiStok.value.alasan
@@ -482,11 +498,11 @@ $(function () {
 
                 Swal.fire({
                   title: ((hasilUbah.value.apakahSukses) ? 'Pengubahan Berhasil!' : 'Error'),
-                  text: global.capsFirstWord(hasilUbah.value.msg),
+                  text: capsFirstWord(hasilUbah.value.msg),
                   icon: ((hasilUbah.value.apakahSukses) ? 'success' : 'error'),
                   scrollbarPadding: false,
                   confirmButtonText: 'Tutup',
-                  confirmButtonColor: global.SwalCustomColor.button.cancel
+                  confirmButtonColor: SwalCustomColor.button.cancel
                 })
               }
             })

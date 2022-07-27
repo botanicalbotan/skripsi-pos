@@ -96,7 +96,7 @@ export default class KodeProduksisController {
       lastDataInPage: tempLastData >= kodepros.total ? kodepros.total : tempLastData,
     }
 
-    return view.render('barang/kodepro/list-kodepro', {
+    return await view.render('barang/kodepro/list-kodepro', {
       kodepros,
       tambahan
     })
@@ -113,7 +113,7 @@ export default class KodeProduksisController {
 
     let pengaturan = await Pengaturan.findOrFail(1)
 
-    return view.render('barang/kodepro/form-kodepro', {
+    return await view.render('barang/kodepro/form-kodepro', {
       kadars,
       hargaMal: pengaturan.hargaMal
     })
@@ -261,7 +261,7 @@ export default class KodeProduksisController {
         rupiahParser: rupiahParser
       }
 
-      return view.render('barang/kodepro/view-kodepro', {
+      return await view.render('barang/kodepro/view-kodepro', {
         kodepro,
         tambahan,
         fungsi,
@@ -291,7 +291,7 @@ export default class KodeProduksisController {
 
       let pengaturan = await Pengaturan.findOrFail(1)
 
-      return view.render('barang/kodepro/form-edit-kodepro', {
+      return await view.render('barang/kodepro/form-edit-kodepro', {
         kodepro,
         kadars,
         hargaMal: pengaturan.hargaMal

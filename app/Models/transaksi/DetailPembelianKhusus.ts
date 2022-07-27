@@ -29,9 +29,9 @@ export default class DetailPembelianKhusus extends BaseModel {
 
 
   // FK dan relasi
-  @column()
-  public pembelianId: number
+  // @column()
+  // public pembelianId: number
 
-  @belongsTo(() => Pembelian)
-  public pembelian: BelongsTo<typeof Pembelian>
+  // @belongsTo(() => Pembelian)
+  // public pembelian: BelongsTo<typeof Pembelian>
 }

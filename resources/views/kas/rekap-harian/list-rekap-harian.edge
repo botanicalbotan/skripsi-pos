@@ -4,6 +4,9 @@
 
 @endsection
 
+{{-- buat ngeset judul --}}
+@set('judul', 'Rekap Harian | Postoma')
+
 @section('content')
 <div class="w-full p-8 base-page" data-pagename = "list" id="base-page">
   <h2 class="text-4xl font-semibold">Rekap Harian</h2>
@@ -64,7 +67,7 @@
             @each(rekap in rekaps)
             <tr class="hover">
               <td>
-                <a href="/app/kas/rekapHarian/{{ rekap.id }}">
+                <a href="/app/kas/rekap-harian/{{ rekap.id }}">
                   <div class="font-semibold">
                     {{ new Date(rekap.tanggalRekap).toLocaleDateString('id-ID', { day: 'numeric', month:'long', year:'numeric' }) }}
                   </div>

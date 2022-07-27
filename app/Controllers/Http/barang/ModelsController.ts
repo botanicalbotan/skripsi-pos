@@ -87,11 +87,11 @@ export default class ModelsController {
       lastDataInPage: tempLastData >= models.total ? models.total : tempLastData,
     }
 
-    return view.render('barang/model/list-model', { models, tambahan })
+    return await view.render('barang/model/list-model', { models, tambahan })
   }
 
   public async create ({ view }: HttpContextContract) {
-    return view.render('barang/model/form-model')
+    return await view.render('barang/model/form-model')
   }
 
   public async store ({ request, response, session, auth }: HttpContextContract) {
@@ -150,7 +150,7 @@ export default class ModelsController {
         urlFotoPencatat: urlPencatat
       }
 
-      return view.render('barang/model/view-model', { model, tambahan })
+      return await view.render('barang/model/view-model', { model, tambahan })
     } catch (error) {
       session.flash('alertError', 'Model yang anda akses tidak valid atau terhapus.')
       return response.redirect().toPath('/app/barang/model/')
@@ -164,7 +164,7 @@ export default class ModelsController {
 
       await model.load('bentuk')
 
-      return view.render('barang/model/form-edit-model', { model })
+      return await view.render('barang/model/form-edit-model', { model })
     } catch (error) {
       return response.redirect().toPath('/app/barang/model/')
     }
@@ -254,7 +254,7 @@ function kapitalKalimat(text: string) {
   let pure = text.split(' ')
   let newText = ''
   for (let i = 0; i < pure.length; i++) {
-    newText += this.kapitalHurufPertama(pure[i])
+    newText += kapitalHurufPertama(pure[i])
     if (i !== pure.length - 1) {
       newText += ' '
     }

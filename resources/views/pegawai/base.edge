@@ -1,4 +1,9 @@
 @layout('layouts/master')
+
+{{-- buat ngeset judul --}}
+@set('judul', 'Daftar Pegawai - '+ ((tambahan.filterShow == 1)? 'Semua':'Aktif') +' | Postoma')
+
+
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="list" id="base-page">
   <h2 class="text-4xl font-semibold">Daftar Pegawai - {{ (tambahan.filterShow == 1)? 'Semua':'Aktif' }}</h2>
@@ -11,7 +16,7 @@
     <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
       <div class="flex-1">
         <div
-          class="relative flex w-full flex-wrap items-stretch border-b-2 text-secondary focus-within:border-primary focus-within:text-primary">
+          class="max-w-md relative flex w-full flex-wrap items-stretch border-b-2 text-secondary focus-within:border-primary focus-within:text-primary">
           <span class="z-10 h-full flex leading-snug absolute text-center items-center justify-center w-8 pl-3 py-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 items-center" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
@@ -87,7 +92,7 @@
                   <div class="avatar">
                     <div class="w-12 h-12 mask mask-squircle bg-placeholder-user-100 bg-contain">
                       @if(user.foto && user.foto !== '')
-                        <img src="{{ '/app/cumaData/foto/pegawai/' + user.id }}" onerror="this.style.display='none'">
+                        <img src="{{ '/app/cuma-data/foto/pegawai/' + user.id }}" onerror="this.style.display='none'">
                       @endif
                     </div>
                   </div>

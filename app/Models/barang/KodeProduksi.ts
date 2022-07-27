@@ -13,6 +13,7 @@ import {
 import Kadar from 'App/Models/Barang/Kadar'
 import Penjualan from 'App/Models/transaksi/Penjualan'
 import Pengguna from 'App/Models/akun/Pengguna'
+import Pembelian from '../transaksi/Pembelian'
 
 type KodeProduksiQuery = ModelQueryBuilderContract<typeof KodeProduksi>
 
@@ -80,6 +81,9 @@ export default class KodeProduksi extends BaseModel {
   @hasMany(() => Penjualan)
   public penjualans: HasMany<typeof Penjualan>
 
+  @hasMany(() => Pembelian)
+  public pembelians: HasMany<typeof Pembelian>
+
   @column()
   public penggunaId: number
 
@@ -92,6 +96,6 @@ export default class KodeProduksi extends BaseModel {
   @beforeFetch()
   @beforeFind()
   public static withoutSoftDeletes(query: KodeProduksiQuery){
-    query.whereNull('deleted_at')
+    query.whereNull('kode_produksis.deleted_at')
   }
 }

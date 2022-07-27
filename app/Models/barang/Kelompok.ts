@@ -92,7 +92,7 @@ export default class Kelompok extends BaseModel {
   @beforeFetch()
   @beforeFind()
   public static withoutSoftDeletes(query: KelompokQuery) {
-    query.whereNull('deleted_at')
+    query.whereNull('kelompoks.deleted_at')
   }
 
 

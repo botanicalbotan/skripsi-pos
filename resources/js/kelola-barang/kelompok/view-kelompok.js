@@ -5,15 +5,19 @@ import {
 import Swal from 'sweetalert2';
 Chart.register(...registerables);
 
-const rupiahParser = function (number) {
-  if (typeof number == 'number') {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
-    }).format(number)
-  }
-}
+// const rupiahParser = function (number) {
+//   if (typeof number == 'number') {
+//     return new Intl.NumberFormat('id-ID', {
+//       style: 'currency',
+//       currency: 'IDR',
+//       minimumFractionDigits: 0
+//     }).format(number)
+//   } else {
+//     return 'error'
+//   }
+// }
+
+import { SwalCustomColor, rupiahParser } from '../../fungsi.js'
 
 $(function () {
   // DOM
@@ -34,7 +38,7 @@ $(function () {
   const wadahLoadingStatistik = document.getElementById('wadahLoadingStatistik')
   const wadahSebaranData = document.getElementById('sebaranData');
 
-  $.get("/app/cumaData/peringkatKelompok/" + ($('.base-page').data('idk') || 'kosong'), {},
+  $.get("/app/cuma-data/peringkat-kelompok/" + ($('.base-page').data('idk') || 'kosong'), {},
     function (data, textStatus, jqXHR) {
       // kalau mau ini bisa dibikin promise, mulai dari getnya. trus bisa dikasi preventif kalau error ngapain
       if (data.peringkatTotal) {
@@ -80,7 +84,7 @@ $(function () {
   let pointer = 0
 
   function loadStatistik(mode = 0) {
-    $.get("/app/cumaData/sebaranData/" + ($('.base-page').data('idk') || 'kosong'), {
+    $.get("/app/cuma-data/sebaran-data/" + ($('.base-page').data('idk') || 'kosong'), {
         mode: mode
       },
       function (data, textStatus, jqXHR) {
@@ -143,7 +147,7 @@ $(function () {
         text: 'Ada masalah pada server saat akan memuat statistik',
         icon: 'error',
         scrollbarPadding: false,
-        confirmButtonColor: global.SwalCustomColor.button.cancel,
+        confirmButtonColor: SwalCustomColor.button.cancel,
         confirmButtonText: 'Tutup'
       })
     })
@@ -177,7 +181,7 @@ $(function () {
   const potonganBaru = document.getElementById('potonganBaru')
 
   selectCekHarga.addEventListener('change', () => {
-    $.get("/app/cumaData/kodeproById", {
+    $.get("/app/cuma-data/kodepro-by-id", {
         id: selectCekHarga.value
       },
       function (data, textStatus, jqXHR) {

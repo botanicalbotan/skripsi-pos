@@ -1,5 +1,7 @@
 import Swal from "sweetalert2";
 
+import { SwalCustomColor } from '../fungsi.js'
+
 const setStatusAktif = document.getElementById('setStatusAktif')
 const setStatusKeluar = document.getElementById('setStatusKeluar')
 
@@ -63,7 +65,7 @@ fileFotoPegawai.addEventListener('change', (e) => {
         showCancelButton: true,
         allowOutsideClick: false,
         scrollbarPadding: false,
-        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        confirmButtonColor: SwalCustomColor.button.confirm,
         willOpen: () => {
           const image = Swal.getPopup().querySelector('#cropperWadah')
           const cropper = new Cropper(image, {
@@ -131,7 +133,7 @@ btSubmit.addEventListener('click', () => {
     text: 'Pastikan data yang anda isikan sudah benar!',
     icon: 'question',
     showCancelButton: true,
-    confirmButtonColor: global.SwalCustomColor.button.confirm,
+    confirmButtonColor: SwalCustomColor.button.confirm,
     confirmButtonText: 'Ya, simpan!',
     cancelButtonText: 'Batal',
     scrollbarPadding: false,

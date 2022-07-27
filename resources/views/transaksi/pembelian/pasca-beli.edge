@@ -1,0 +1,169 @@
+@layout('layouts/master')
+
+{{-- buat ngeset judul --}}
+@set('judul', 'Pembelian Selesai | Postoma')
+
+
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="pasca" id="base-page">
+  <h2 class="text-4xl font-semibold">Pembelian Selesai</h2>
+  <h4 class="text-lg text-secondary opacity-60">Transaksi penjualan berhasil disimpan pada sistem!</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+    <input type="number" id="id" class="hidden" value="{{ pembelian.id }}">
+
+    <div class="flex">
+      <div class="flex-1">
+        <h4 class="text-2xl font-semibold" id="namaKas">Rekap Transaksi</h4>
+        {{--  <p class="opacity-75">Pada {{ kas.createdAt.setLocale('id-ID').toFormat('DDD T') }}</p>  --}}
+      </div>
+    </div>
+
+    {{--  informasi, khusus page ini doang, jangan dicopy  --}}
+    <div class="mt-8 flex lg:space-x-8 space-y-8 lg:space-y-0 flex-col lg:flex-row">
+      <div class="flex-1 space-y-6">
+
+        <div class="flex flex-col space-y-2 sm:space-y-0">
+          <div class="text-lg font-semibold">Detail Item</div>
+
+          <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
+            <div class="flex-1 opacity-75">Nama Barang</div>
+            <div class="flex-none sm:w-2/3 sm:text-right font-semibold">{{ pembelian.namaBarang }}</div>
+          </div>
+
+          <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
+            <div class="flex-1 opacity-75">Berat Barang</div>
+            <div class="flex-none sm:w-2/3 sm:text-right">{{ pembelian.beratBarang }} gram</div>
+          </div>
+
+          <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
+            <div class="flex-1 opacity-75">Bentuk & Kadar</div>
+            <div class="flex-none sm:w-2/3 sm:text-right">{{ pembelian.model.bentuk.bentuk }} {{ pembelian.kodeProduksi.kadar.nama }}</div>
+          </div>
+
+          <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
+            <div class="flex-1 opacity-75">Model Perhiasan</div>
+            <div class="flex-none sm:w-2/3 sm:text-right">{{ pembelian.model.nama }}</div>
+          </div>
+            
+
+        </div>
+
+
+        <div class="flex flex-col space-y-2 sm:space-y-0">
+          <div class="text-lg font-semibold">Detail Transaksional</div>
+
+          <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
+            <div class="flex-1 opacity-75">Kondisi Barang</div>
+            <div class="flex-none sm:w-2/3 sm:text-right font-semibold">{{ fungsi.kapitalHurufPertama(pembelian.kondisiFisik) }}</div>
+          </div>
+
+          <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
+            @if(pembelian.pembelianNotaLeo)
+            <div class="flex-1 opacity-75">Harga per Gram Nota</div>
+            <div class="flex-none sm:w-2/3 sm:text-right">{{ fungsi.rupiahParser(pembelian.hargaBeliPerGramSeharusnya) }}</div>
+            @else
+            <div class="flex-1 opacity-75">Harga per Gram</div>
+            <div class="flex-none sm:w-2/3 sm:text-right">{{ fungsi.rupiahParser(pembelian.hargaBeliPerGramAkhir) }}</div>
+            @endif
+          </div>  
+
+          <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
+            <div class="flex-1 opacity-75">Ongkos Kerusakan</div>
+            <div class="flex-none sm:w-2/3 sm:text-right text-error">{{ fungsi.rupiahParser(tambahan.totalKerusakan) }}</div>
+          </div>
+
+          <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
+            <div class="flex-1 opacity-75">Ongkos Potongan</div>
+            <div class="flex-none sm:w-2/3 sm:text-right text-error">{{ fungsi.rupiahParser(tambahan.totalPotongan) }}</div>
+          </div>
+
+          <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
+            <div class="flex-1 opacity-75">Penalti Keterlambatan</div>
+            <div class="flex-none sm:w-2/3 sm:text-right text-error">{{ fungsi.rupiahParser(tambahan.totalPenalti) }}</div>
+          </div>
+
+          <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
+            <div class="flex-1 opacity-75">Keterangan</div>
+            <div class="flex-none sm:w-2/3 sm:text-right">{{ (pembelian.keteranganTransaksi)? pembelian.keteranganTransaksi : 'tidak ada' }}</div>
+          </div> 
+
+        </div>
+
+        <div class="flex flex-col">
+          <div class="text-lg font-semibold">Total Harga Beli</div>
+          <div class="text-2xl">{{ fungsi.rupiahParser(pembelian.hargaBeliAkhir) }}</div>
+          <div class=" italic">{{ tambahan.hargaBeliTerbilang }}</div>
+        </div>
+
+        <div>
+          <a href="/app/transaksi/pembelian/{{ pembelian.id }}" class="btn btn-outline btn-sm">Lihat Detail Pembelian</a>
+        </div>
+
+      </div>
+      <div class="divider lg:divider-vertical opacity-10"></div>
+      <div class="flex-none w-full lg:w-1/3 px-4">
+
+        <div class="space-y-6 flex flex-col items-center ">
+          <div class=" font-semibold text-lg text-center">
+            Pengajuan Gadai
+          </div>
+            
+          @if(pembelian.apakahDigadaikan)
+            <div class="grid grid-flow-col gap-5 text-center auto-cols-max">
+              <div class="flex flex-col">
+                <span class="countdown font-mono text-5xl">
+                  <span id="cdMenit" style="--value: {{ tambahan.menit }};"></span>
+                </span>
+                menit
+              </div>
+              <div class="flex flex-col">
+                <span class="countdown font-mono text-5xl">
+                  <span id="cdDetik" style="--value: {{ tambahan.detik }};"></span>
+                </span>
+                detik
+              </div>
+            </div>
+
+            <div class="text-center">
+              Transaksi pembelian ini <span class="font-semibold text-accent-focus">MEMENUHI SYARAT</span> dan memiliki akses untuk dijadikan sebagai gadai hingga waktu hitung mundur habis.
+            </div>
+
+            @if(pembelian.digadaiAt)
+              <div class="text-center text-accent-focus">
+                Pembelian ini sudah digadaikan.
+              </div>
+            @else
+
+              @if(!tambahan.apakahExpired)
+                <button type="button" id="btGadai" class="btn btn-block btn-primary text-white">Ajukan Gadai</button>
+              @else
+                <div class="text-center text-error">
+                  Waktu pengajuan gadai telah habis.
+                </div>
+              @endif
+              
+            @endif     
+
+          @else
+            <div class="text-center">
+              Transaksi pembelian ini <span class="font-semibold text-error">TIDAK MEMENUHI SYARAT</span> untuk diajukan sebagai gadai.
+            </div>
+          @endif
+
+        </div>
+
+        
+
+      </div>
+    </div>
+
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/pasca-beli.js')}}"></script>
+@endsection

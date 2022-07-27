@@ -1,10 +1,10 @@
 @layout('layouts/master')
 
 @section('more-style')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.css"
-  integrity="sha512-+VDbDxc9zesADd49pfvz7CgsOl2xREI/7gnzcdyA9XjuTxLXrdpuz21VVIqc5HPfZji2CypSbxx1lgD7BgBK5g=="
-  crossorigin="anonymous" referrerpolicy="no-referrer" />
 @endsection
+
+{{-- buat ngeset judul --}}
+@set('judul', 'Menu Transaksi - Pengaturan | Postoma')
 
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="atur-transaksi" id="base-page">
@@ -13,6 +13,8 @@
 
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
     @include('partials/wadah-alert')
+
+    <input type="number" class="hidden" id="eleBolehEdit" value="{{ (session.get('isPemilik'))? 1 : 0 }}">
 
     {{--  informasi  --}}
     <div class="min-h-96 flex lg:space-x-8 space-y-6 lg:space-y-0 flex-col lg:flex-row">
@@ -24,6 +26,7 @@
           <li><a href="/app/pengaturan/general">General</a></li>
           <li><a href="/app/pengaturan/kadar">Kadar Perhiasan</a></li>
           <li class="bordered"><a href="/app/pengaturan/transaksi">Transaksi</a></li>
+          <li><a href="/app/pengaturan/saldo">Saldo Toko</a></li>
           <li><a href="/app/pengaturan/barang">Kelola Barang</a></li>
           <li><a href="/app/pengaturan/pegawai">Pegawai</a></li>
         </ul>
@@ -43,9 +46,9 @@
             <ul class="mt-4">
 
               <li class="border-b">
-                <a href="#" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahIzinCetakNota" class="flex py-3 px-2 group hover:bg-base-300">
                   <div class="flex-1">
-                    <h3 class="font-semibold">Izin cetak nota transaksi</h3>
+                    <h3 class="font-semibold">Izin cetak nota penjualan</h3>
                     <span class="opacity-75">{{ (pengaturan.defaultBolehPrintNota)? 'Aktif' : 'Nonaktif' }}</span>
                   </div>
                   <span class="flex-none flex items-center">
@@ -59,9 +62,9 @@
               </li>
     
               <li class="border-b">
-                <a href="#" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahWaktuMaksimalCetakNota" class="flex py-3 px-2 group hover:bg-base-300">
                   <div class="flex-1">
-                    <h3 class="font-semibold">Waktu maksimal cetak nota</h3>
+                    <h3 class="font-semibold">Waktu maksimum pencetakan nota penjualan</h3>
                     <span class="opacity-75">{{ pengaturan.defaultWaktuMaksimalPrintNota }} menit</span>
                   </div>
                   <span class="flex-none flex items-center">
@@ -87,9 +90,9 @@
             <ul class="mt-4">
 
               <li class="border-b">
-                <a href="#" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahPenaltiKeterlambatanMin" class="flex py-3 px-2 group hover:bg-base-300">
                   <div class="flex-1">
-                    <h3 class="font-semibold">Penalti keterlambatan janji tukar tambah minimal</h3>
+                    <h3 class="font-semibold">Penalti minimum keterlambatan tukar tambah dengan janji</h3>
                     <span class="opacity-75">{{ fungsi.rupiahParser(pengaturan.penaltiTelatJanjiMin) }}</span>
                   </div>
                   <span class="flex-none flex items-center">
@@ -103,10 +106,37 @@
               </li>
     
               <li class="border-b">
-                <a href="#" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahPenaltiKeterlambatanMax" class="flex py-3 px-2 group hover:bg-base-300">
                   <div class="flex-1">
-                    <h3 class="font-semibold">Penalti keterlambatan janji tukar tambah maksimal</h3>
+                    <h3 class="font-semibold">Penalti maksimum keterlambatan tukar tambah dengan janji</h3>
                     <span class="opacity-75">{{ fungsi.rupiahParser(pengaturan.penaltiTelatJanjiMax) }}</span>
+                  </div>
+                  <span class="flex-none flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </a>
+              </li>
+
+    
+            </ul>
+          </div>
+
+          {{--  Penjualan  --}}
+          <div>
+            <h4 class="text-2xl mb-4">Gadai</h4>
+            <p>Menu ini berfungsi untuk mengubah aturan transaksi gadai.</p>
+
+            <ul class="mt-4">
+
+              <li class="border-b">
+                <a href="#" id="ubahWaktuMaksimalPengajuanGadai" class="flex py-3 px-2 group hover:bg-base-300">
+                  <div class="flex-1">
+                    <h3 class="font-semibold">Waktu maksimum pengajuan gadai</h3>
+                    <span class="opacity-75">{{ pengaturan.defaultWaktuMaksimalPengajuanGadai }} menit</span>
                   </div>
                   <span class="flex-none flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -131,7 +161,7 @@
             <ul class="mt-4">
 
               <li class="border-b">
-                <a href="#" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahHargaMal" class="flex py-3 px-2 group hover:bg-base-300">
                   <div class="flex-1">
                     <h3 class="font-semibold">Harga mal emas murni per gram</h3>
                     <span class="opacity-75">{{ fungsi.rupiahParser(pengaturan.hargaMal) }}</span>
@@ -162,11 +192,6 @@
 @endsection
 
 @section('script')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js"
-  integrity="sha512-ZK6m9vADamSl5fxBPtXw6ho6A4TuX89HUbcfvxa2v2NYNT/7l8yFGJ3JlXyMN4hlNbz0il4k6DvqbIW5CCwqkw=="
-  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-
 <script src="{{asset('assets/app.js')}}"></script>
 <script src="{{asset('assets/atur-transaksi.js')}}"></script>
 @endsection

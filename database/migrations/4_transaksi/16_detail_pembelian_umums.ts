@@ -6,7 +6,7 @@ export default class DetailPembelianUmums extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
-      table.integer('pembelian_id').unsigned().references('pembelians.id').notNullable()
+      // table.integer('pembelian_id').unsigned().references('pembelians.id').notNullable()
       table.string('potongan_deskripsi', 30).notNullable()
       table.integer('potongan_nominal_total').notNullable()
       table.float('berat_nota').notNullable()
@@ -14,11 +14,11 @@ export default class DetailPembelianUmums extends BaseSchema {
       table.integer('harga_jual_nota').notNullable()
       table.float('berat_selisih').notNullable()
       table.string('nama_pemilik', 50)
-      table.enum('gender_pemilik', [
-        'L',
-        'P'
-      ]).nullable()
-      table.integer('rentang_usia_id').unsigned().references('rentang_usias.id')
+      // table.enum('gender_pemilik', [
+      //   'L',
+      //   'P'
+      // ]).nullable()
+      // table.integer('rentang_usia_id').unsigned().references('rentang_usias.id')
       table.dateTime('deleted_at').nullable()
 
 

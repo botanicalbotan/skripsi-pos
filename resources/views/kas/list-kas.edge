@@ -4,6 +4,9 @@
 
 @endsection
 
+{{--  judul  --}}
+@set('judul', 'Pembukuan Kas - Hari Ini | Postoma')
+
 @section('content')
 <div class="w-full p-8 base-page" data-pagename = "list" id="base-page">
   {{--  aslinya menu kelompok  --}}
@@ -21,7 +24,7 @@
       </div>
       <div class="stat-desc">Total Kas Masuk</div>
       <div class="stat-value text-accent-focus font-semibold text-2xl">{{ fungsi.rupiahParser(tambahan.totalKasMasuk) }}</div>
-      <div class="stat-title">Disini buat ngebandingin?</div>
+      {{--  <div class="stat-title">Disini buat ngebandingin?</div>  --}}
     </div>
     <div class="stat shadow">
       <div class="stat-figure text-error">
@@ -31,7 +34,7 @@
       </div>
       <div class="stat-desc">Total Kas Keluar</div>
       <div class="stat-value text-error font-semibold text-2xl">{{ fungsi.rupiahParser(tambahan.totalKasKeluar) }}</div>
-      <div class="stat-title">Disini buat ngebandingin?</div>
+      {{--  <div class="stat-title">Disini buat ngebandingin?</div>  --}}
     </div>
     <div class="stat shadow">
       <div class="stat-figure text-info">
@@ -42,7 +45,7 @@
       </div>
       <div class="stat-desc">Total Saldo Toko</div>
       <div class="stat-value text-info font-semibold text-2xl">{{ fungsi.rupiahParser(tambahan.totalSaldoToko) }}</div>
-      <a href="#" class="stat-title hover:opacity-100">Koreksi Total Saldo</a>
+      {{--  <a href="#" class="stat-title hover:opacity-100">Koreksi Total Saldo</a>  --}}
     </div>
   </div>
 
@@ -270,7 +273,7 @@
         </span>
       </li>
       <li>
-        <a href="/app/kas/rekapHarian">
+        <a href="/app/kas/rekap-harian">
           Pembukuan Kas Seluruh Hari
         </a>
       </li>

@@ -10,24 +10,24 @@ export default class LoginController {
     view
   }: HttpContextContract) {
 
-    return view.render('login')
+    return await view.render('zguest/login')
   }
 
   public async pageTanpaAkun({
     view
   }: HttpContextContract) {
 
-    return view.render('tanpa-akun')
+    return await view.render('zguest/tanpa-akun')
   }
 
-  public async pageLupaPassword({
+  public async pageTanpaAkunPlus({
     view
   }: HttpContextContract) {
 
-    return view.render('lupa-password')
+    return view.render('zguest/tanpa-akun-plus')
   }
 
-  // =============================== Logic ===============================================
+  // =============================== LOGIN & LOGOUT ===============================
   public async login({
     request,
     auth,
@@ -42,8 +42,11 @@ export default class LoginController {
 
       const user = await User
         .query()
-        .where('username', username)
-        .andWhereNull('deleted_at')
+        .join('penggunas', 'penggunas.user_id', 'users.id')
+        .where('users.username', username)
+        .andWhere('penggunas.apakah_pegawai_aktif', true)
+        .andWhereNull('users.deleted_at')
+        .andWhereNull('penggunas.deleted_at')
         .firstOrFail()
 
       // Verify password
@@ -53,6 +56,13 @@ export default class LoginController {
 
       // buat session
       await auth.use('web').login(user)
+      
+      await user.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+      session.put('isPemilik', (user.pengguna.jabatan.nama === 'Pemilik'))
+      session.put('isKepala', (user.pengguna.jabatan.nama === 'Pemilik' || user.pengguna.jabatan.nama === 'Kepala Toko'))
+
       return response.redirect().toPath('/app')
 
     } catch (error) {
@@ -69,7 +79,10 @@ export default class LoginController {
 
     // logout dari auth
     await auth.use('web').logout()
+    session.clear()
     session.flash('alertSukses', 'Anda berhasil logout. Silahkan login untuk mengakses sistem kembali.')
     return response.redirect('/login')
   }
+
+
 }

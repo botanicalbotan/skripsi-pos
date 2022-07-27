@@ -13,8 +13,8 @@ module.exports = {
       'hidden',
       'block',
       'input-bordered',
-      'ring',
-      'ring-error',
+      'textarea-error',
+      'bg-opacity-10',
       'pl-12',
       'input-success',
       'text-success',
@@ -24,7 +24,9 @@ module.exports = {
       'animate-reverse-spin',
       'select-error',
       'select-primary',
-      'w-16'
+      'w-16',
+      'input-warning',
+      'bg-warning'
     ]
   },
   // purge: {

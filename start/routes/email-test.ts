@@ -9,13 +9,13 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.group(() => {
   Route.group(() => {
 
-    Route.get('/', async ({ view }) => {
+    Route.get('/', async ({ }) => {
       return 'ewe'
     })
 
     Route.get('/sekali', 'EmailTestsController.kirimSekali')
     Route.get('/banyak', 'EmailTestsController.kirimBanyak')
-    Route.get('/banyakPakePool', 'EmailTestsController.kirimBanyakPakePool')
+    Route.get('/banyak-pake-pool', 'EmailTestsController.kirimBanyakPakePool')
     
 
   }).prefix('kirim-email')

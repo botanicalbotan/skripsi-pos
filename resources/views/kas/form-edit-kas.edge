@@ -4,34 +4,18 @@
 
 @endsection
 
+
+{{--  judul  --}}
+@set('judul', 'Ubah Data Pembukuan Kas | Postoma')
+
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="edit" id="base-page">
   <h2 class="text-4xl font-semibold">Ubah Data Pembukuan Kas</h2>
   <h4 class="text-lg text-secondary opacity-60">Formulir untuk mengubah data pembukuan kas keluar dan kas masuk pada sistem.
   </h4>
 
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
-
-    @if(flashMessages.has('errorServerThingy'))
-    <div class="alert alert-error mb-8" x-data x-ref="alertError">
-      <div class="flex-1">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
-        </svg>
-        <label>{{ flashMessages.get('errorServerThingy') }}</label>
-      </div>
-      <div class="flex-none">
-        <button class="btn btn-ghost btn-square btn-sm opacity-50 hover:opacity-100 hover:bg-transparent"
-          @click="$refs.alertError.remove()">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clip-rule="evenodd" />
-          </svg>
-        </button>
-      </div>
-    </div>
-    @endif
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 md:w-min">
+    @include('partials/wadah-alert')
 
     <form action="/app/kas" method="POST" id="formKas">
       {{csrfField()}}

@@ -84,7 +84,7 @@ export default class RekapHariansController {
       .orderBy('tanggal_rekap', 'desc')
       .paginate(page, limit)
 
-    rekaps.baseUrl('/app/kas/rekapHarian')
+    rekaps.baseUrl('/app/kas/rekap-harian')
 
     rekaps.queryString({
       ob: sanitizedOrder
@@ -128,7 +128,7 @@ export default class RekapHariansController {
       kapitalHurufPertama: this.kapitalHurufPertama
     }
 
-    return view.render('kas/rekap-harian/list-rekap-harian', {
+    return await view.render('kas/rekap-harian/list-rekap-harian', {
       rekaps,
       tambahan,
       fungsi
@@ -205,7 +205,7 @@ export default class RekapHariansController {
         hitungKasKeluar: totalKasKeluar[0].count + 1
       }
 
-      return view.render('kas/rekap-harian/view-rekap-harian', {
+      return await view.render('kas/rekap-harian/view-rekap-harian', {
         rekap,
         rekapPenjualan,
         rekapPembelian,
@@ -215,7 +215,7 @@ export default class RekapHariansController {
 
     } catch (error) {
       session.flash('alertError', 'Rekap harian yang anda pilih tidak valid!')
-      return response.redirect('/app/kas/rekapHarian')
+      return response.redirect('/app/kas/rekap-harian')
     }
   }
 

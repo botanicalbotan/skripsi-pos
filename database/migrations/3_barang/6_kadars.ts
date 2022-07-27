@@ -20,6 +20,8 @@ export default class Kadars extends BaseSchema {
       table.integer('persentase_mal_rosok').notNullable().unsigned()
       table.integer('margin_persen_untung_uripan_min').notNullable()
       table.integer('margin_persen_untung_uripan_max').notNullable()
+      table.integer('margin_persen_untung_uripan_tt_min').notNullable()
+      table.integer('margin_persen_untung_uripan_tt_max').notNullable()
       table.integer('margin_persen_untung_rosok_min').notNullable()
       table.integer('margin_persen_untung_rosok_max').notNullable()
       table.integer('margin_persen_untung_rosok_tt_min').notNullable()

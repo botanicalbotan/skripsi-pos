@@ -13,6 +13,10 @@ export default class AppProvider {
 
   public async ready() {
     // App is ready
+
+    // ini adonisjs5-scheduler, kalo gabisa ganti ke node-cron, trus panggil langsung disini
+    const scheduler = this.app.container.use('Adonis/Addons/Scheduler')
+    scheduler.run()
   }
 
   public async shutdown() {

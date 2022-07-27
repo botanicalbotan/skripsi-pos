@@ -86,7 +86,7 @@ export default class KontenLaporanMaker {
     const pengaturan = await Pengaturan.findOrFail(1)
 
     let cabang = kapitalKalimat(pengaturan.namaToko)
-    let alamat = kapitalKalimat(pengaturan.alamatToko)
+    let alamat = kapitalKalimat(pengaturan.alamatTokoLengkap)
     let pencetak = kapitalKalimat(userPengkases.pengguna.nama) + ` <${userPengkases.pengguna.jabatan.nama}>`
     let tanggalCetak = DateTime.now().toFormat('fff')
 
@@ -175,7 +175,7 @@ export default class KontenLaporanMaker {
     const pengaturan = await Pengaturan.findOrFail(1)
 
     let cabang = kapitalKalimat(pengaturan.namaToko)
-    let alamat = kapitalKalimat(pengaturan.alamatToko)
+    let alamat = kapitalKalimat(pengaturan.alamatTokoLengkap)
     let pencetak = kapitalKalimat(userPengkases.pengguna.nama) + ` <${userPengkases.pengguna.jabatan.nama}>`
     let tanggalCetak = DateTime.now().toFormat('fff')
 
@@ -275,7 +275,7 @@ export default class KontenLaporanMaker {
     const pengaturan = await Pengaturan.findOrFail(1)
 
     let cabang = kapitalKalimat(pengaturan.namaToko)
-    let alamat = kapitalKalimat(pengaturan.alamatToko)
+    let alamat = kapitalKalimat(pengaturan.alamatTokoLengkap)
     let pencetak = kapitalKalimat(userPengkases.pengguna.nama) + ` (${userPengkases.pengguna.jabatan.nama})`
     let tanggalCetak = DateTime.now().toFormat('fff')
 

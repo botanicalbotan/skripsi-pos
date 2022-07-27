@@ -1,7 +1,6 @@
 import type {
   HttpContextContract
 } from '@ioc:Adonis/Core/HttpContext'
-import Database from '@ioc:Adonis/Lucid/Database';
 import {
   schema,
   rules
@@ -9,9 +8,7 @@ import {
 import {
   DateTime
 } from 'luxon';
-import User from 'App/Models/User';
 import Pengaturan from 'App/Models/sistem/Pengaturan';
-import CPasaran from 'App/CustomClasses/CPasaran';
 import KontenLaporanMaker from 'App/CustomClasses/Laporan/KontenLaporanMaker';
 import Drive from '@ioc:Adonis/Core/Drive'
 let PdfPrinter = require('pdfmake');
@@ -21,7 +18,7 @@ export default class LaporansController {
   public async index({
     view
   }: HttpContextContract) {
-    return view.render('laporan/form-laporan')
+    return await view.render('laporan/form-laporan')
   }
 
   public async generateLaporan({
@@ -225,7 +222,7 @@ export default class LaporansController {
             }
           }];
         },
-        background: function (currentPage, pageSize) {
+        background: function (_currentPage, pageSize) {
           // kalau mau ngasi watermark, kalau ngga hapus aja
           if (bgGambar) {
             return [{
@@ -248,6 +245,8 @@ export default class LaporansController {
       response.header('content-type', 'application/pdf')
       pdfDoc.end()
     } catch (error) {
+      console.error(error)
+
       return response.badRequest({
         error: error
       })

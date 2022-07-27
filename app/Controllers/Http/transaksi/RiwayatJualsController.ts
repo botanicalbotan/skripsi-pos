@@ -6,9 +6,6 @@ import {
 } from 'luxon'
 import Database from '@ioc:Adonis/Lucid/Database'
 import CPasaran from 'App/CustomClasses/CPasaran'
-import Penjualan from 'App/Models/transaksi/Penjualan'
-
-
 
 export default class RiwayatJualsController {
   public async listTanggal({
@@ -44,10 +41,11 @@ export default class RiwayatJualsController {
       .orderBy('tanggal', 'desc')
       .paginate(page, limit)
 
-    tanggals.baseUrl('/app/kas/rekapHarian')
+    tanggals.baseUrl('/app/riwatat/penjualan')
 
     tanggals.queryString({
-      ob: sanitizedOrder
+      ob: sanitizedOrder,
+      aob: sanitizedArahOrder
     })
 
     let firstPage =
@@ -91,7 +89,7 @@ export default class RiwayatJualsController {
       pasaranFromTanggal: pasaranFromTanggal
     }
 
-    return view.render('riwayat/penjualan/list-tanggal-jual', {
+    return await view.render('riwayat/penjualan/list-tanggal-jual', {
       tanggals,
       tambahan,
       fungsi
@@ -119,17 +117,25 @@ export default class RiwayatJualsController {
     const sanitizedOrder = order < opsiOrder.length && order >= 0 && order ? order : 0
     const sanitizedArahOrder = arahOrder == 1 ? 1 : 0
     const cari = request.input('cari', '')
-    const filterKadar = request.input('fk', 'Semua')
+    const filterKadar = request.input('fk', 'semua')
+    const preparedKadar = kapitalHurufPertama(filterKadar)
     const limit = 10
 
     let penjualans = await Database
       .from('penjualans')
+      .join('kode_produksis', 'penjualans.kode_produksi_id', 'kode_produksis.id')
+      .join('kadars', 'kode_produksis.kadar_id', 'kadars.id')
+      .join('models', 'penjualans.model_id', 'models.id')
+      .join('bentuks', 'models.bentuk_id', 'bentuks.id')
       .select(
         'penjualans.id as id',
         'penjualans.nama_barang as namaBarang',
         'penjualans.created_at as createdAt',
         'penjualans.harga_jual_akhir as hargaJualAkhir',
         'penjualans.berat_barang as beratBarang',
+        'kadars.nama as kadar',
+        'kadars.warna_nota as warnaNota',
+        'bentuks.bentuk as bentuk'
       )
       .select(
         Database
@@ -164,9 +170,9 @@ export default class RiwayatJualsController {
       .if(cari !== '', (query) => {
         query.where('penjualans.nama_barang', 'like', `%${cari}%`)
       })
-      // .if(filterKadar !== 'Semua' && filterKadar !== '', (query) => {
-      //   query.having('kadar', '=', filterKadar)
-      // })    
+      .if(preparedKadar !== 'Semua' && preparedKadar !== '', (query) => {
+        query.where('kadars.nama', '=', preparedKadar)
+      })    
       .if(sanitizedOrder !== 0, (query) => {
         query.orderBy(opsiOrder[sanitizedOrder], ((sanitizedArahOrder == 1) ? 'desc' : 'asc'))
       })
@@ -238,7 +244,7 @@ export default class RiwayatJualsController {
       lastDataInPage: tempLastData >= penjualans.total ? penjualans.total : tempLastData,
     }
 
-    return view.render('riwayat/penjualan/list-riwayat-jual-sekarang', {
+    return await view.render('riwayat/penjualan/list-riwayat-jual-sekarang', {
       tambahan,
       penjualans,
       fungsi,
@@ -249,7 +255,9 @@ export default class RiwayatJualsController {
   public async listRiwayatByTanggal({
     view,
     params,
-    request
+    request,
+    response,
+    session
   }: HttpContextContract) {
     let tanggal = DateTime.fromISO(params.tanggal)
 
@@ -270,61 +278,41 @@ export default class RiwayatJualsController {
       const sanitizedOrder = order < opsiOrder.length && order >= 0 && order ? order : 0
       const sanitizedArahOrder = arahOrder == 1 ? 1 : 0
       const cari = request.input('cari', '')
-      const filterKadar = request.input('fk', 'Semua')
+      const filterKadar = request.input('fk', 'semua')
+      const preparedKadar = kapitalHurufPertama(filterKadar)
       const limit = 10
 
       let penjualans = await Database
         .from('penjualans')
+        .join('kode_produksis', 'penjualans.kode_produksi_id', 'kode_produksis.id')
+        .join('kadars', 'kode_produksis.kadar_id', 'kadars.id')
+        .join('models', 'penjualans.model_id', 'models.id')
+        .join('bentuks', 'models.bentuk_id', 'bentuks.id')
         .select(
           'penjualans.id as id',
           'penjualans.nama_barang as namaBarang',
           'penjualans.created_at as createdAt',
           'penjualans.harga_jual_akhir as hargaJualAkhir',
           'penjualans.berat_barang as beratBarang',
+          'kadars.nama as kadar',
+          'kadars.warna_nota as warnaNota',
+          'bentuks.bentuk as bentuk'
         )
-        .select(
-          Database
-          .from('kode_produksis')
-          .join('kadars', 'kode_produksis.kadar_id', 'kadars.id')
-          .whereColumn('kode_produksis.id', 'penjualans.kode_produksi_id')
-          .limit(1)
-          .select('kadars.nama')
-          .as('kadar')
-        )
-        .select(
-          Database
-          .from('kode_produksis')
-          .join('kadars', 'kode_produksis.kadar_id', 'kadars.id')
-          .whereColumn('kode_produksis.id', 'penjualans.kode_produksi_id')
-          .limit(1)
-          .select('kadars.warna_nota')
-          .as('warnaNota')
-        )
-        .select(
-          Database
-          .from('kelompoks')
-          .join('bentuks', 'kelompoks.bentuk_id', 'bentuks.id')
-          .whereColumn('kelompoks.id', 'penjualans.kelompok_id')
-          .limit(1)
-          .select('bentuks.bentuk')
-          .as('bentuk')
-        )
-
         .whereNull('penjualans.deleted_at')
         .whereRaw('DATE(penjualans.created_at) = DATE(?)', [tanggal.toISO()])
         .if(cari !== '', (query) => {
           query.where('penjualans.nama_barang', 'like', `%${cari}%`)
         })
-        // .if(filterKadar !== 'Semua' && filterKadar !== '', (query) => {
-        //   query.having('kadar', '=', filterKadar)
-        // })    
+        .if(preparedKadar !== 'Semua' && preparedKadar !== '', (query) => {
+          query.where('kadars.nama', '=', preparedKadar)
+        })    
         .if(sanitizedOrder !== 0, (query) => {
           query.orderBy(opsiOrder[sanitizedOrder], ((sanitizedArahOrder == 1) ? 'desc' : 'asc'))
         })
         .orderBy('penjualans.created_at', 'desc')
         .paginate(page, limit)
 
-      penjualans.baseUrl('/app/riwayat/penjualan/sekarang')
+      penjualans.baseUrl('/app/riwayat/penjualan/' + params.tanggal)
 
       const qsParam = {
         ob: sanitizedOrder,
@@ -390,7 +378,7 @@ export default class RiwayatJualsController {
         lastDataInPage: tempLastData >= penjualans.total ? penjualans.total : tempLastData,
       }
 
-      return view.render('riwayat/penjualan/list-riwayat-jual-pertanggal', {
+      return await view.render('riwayat/penjualan/list-riwayat-jual-pertanggal', {
         tambahan,
         penjualans,
         fungsi,
@@ -400,9 +388,10 @@ export default class RiwayatJualsController {
 
 
     } else {
-      return 'ewe error' // aslinya dibalikin pake response
+      session.flash('alertError', 'Tanggal penjualan yang anda isikan tidak valid!')
+      return response.redirect().toPath('/app/riwayat/penjualan/')
     }
-    // return view.render('riwayat/penjualan/list-riwayat-jual-pertanggal')
+    // return await view.render('riwayat/penjualan/list-riwayat-jual-pertanggal')
   }
 
   public async getKadarMinimal({}: HttpContextContract) {
@@ -422,6 +411,8 @@ function rupiahParser(angka: number) {
       currency: 'IDR',
       minimumFractionDigits: 0,
     }).format(angka)
+  } else {
+    return 'error'
   }
 }
 

@@ -27,9 +27,9 @@ export default class RentangUsia extends BaseModel {
 
 
   // FK dan relasi
-  @hasMany(() => Penjualan)
-  public penjualans: HasMany<typeof Penjualan>
+  // @hasMany(() => Penjualan)
+  // public penjualans: HasMany<typeof Penjualan>
 
-  @hasMany(() => DetailPembelianUmum)
-  public detailPembelianUmums: HasMany<typeof DetailPembelianUmum>
+  // @hasMany(() => DetailPembelianUmum)
+  // public detailPembelianUmums: HasMany<typeof DetailPembelianUmum>
 }

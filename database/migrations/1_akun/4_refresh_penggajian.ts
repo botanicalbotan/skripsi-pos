@@ -1,6 +1,6 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
-export default class PenggajianPegawais extends BaseSchema {
+export default class RefreshPenggajians extends BaseSchema {
   protected tableName = 'refresh_penggajians'
 
   public async up () {

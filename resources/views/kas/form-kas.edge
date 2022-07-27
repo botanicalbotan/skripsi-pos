@@ -4,13 +4,17 @@
 
 @endsection
 
+
+{{--  judul  --}}
+@set('judul', 'Pembukuan Kas Baru | Postoma')
+
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="form" id="base-page">
   <h2 class="text-4xl font-semibold">Pembukuan Kas Baru</h2>
   <h4 class="text-lg text-secondary opacity-60">Formulir untuk mencatat pembukuan kas keluar dan kas masuk baru ke sistem.
   </h4>
 
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 md:w-min">
     @include('partials/wadah-alert')
 
     <form action="/app/kas" method="POST" id="formKas">

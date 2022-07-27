@@ -1,4 +1,7 @@
 import Swal from "sweetalert2"
+
+import { SwalCustomColor } from '../../fungsi.js'
+
 const basePage = document.getElementById('base-page').dataset.pagename
 
 if(basePage == 'edit'){
@@ -41,16 +44,18 @@ if(basePage == 'edit'){
             tandaPenguranganMax.textContent = '%'
             tandaPenguranganMaxPlus.textContent = ''
         }
-        penguranganPotonganMax.value = null
-        penguranganPotonganMin.value = null
     }
 
     potNominal.addEventListener('click', ()=>{
         setJenisPot(0)
+        penguranganPotonganMax.value = null
+        penguranganPotonganMin.value = null
     })
 
     potPersen.addEventListener('click', ()=>{
         setJenisPot(1)
+        penguranganPotonganMax.value = null
+        penguranganPotonganMin.value = null
     })
 
     btEditKadar.addEventListener('click', ()=> {
@@ -63,7 +68,7 @@ if(basePage == 'edit'){
             // iconColor: '#Dc3741',
             showCancelButton: true,
             confirmButtonText: 'Ya, ubah!',
-            confirmButtonColor: global.SwalCustomColor.button.confirm,
+            confirmButtonColor: SwalCustomColor.button.confirm,
             cancelButtonText: 'Batal',
             scrollbarPadding: false,
             focusCancel: true,

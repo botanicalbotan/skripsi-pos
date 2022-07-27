@@ -78,20 +78,17 @@ Encore.addEntry('view-jual', './resources/js/transaksi/penjualan/view-jual.js')
 
 Encore.addEntry('form-beli', './resources/js/transaksi/pembelian/form-beli.js')
 Encore.addEntry('form-beli-qr', './resources/js/transaksi/pembelian/form-beli-qr.js')
+Encore.addEntry('pasca-beli', './resources/js/transaksi/pembelian/pasca-beli.js')
+Encore.addEntry('view-beli', './resources/js/transaksi/pembelian/view-beli.js')
 
-// MULAI DARI SINI
-// Encore.addEntry('base-jual', './resources/js/transaksi/base-jual.js')
-// Encore.addEntry('jual', './resources/js/transaksi/jual.js')
-// Encore.addEntry('jual-selesai', './resources/js/transaksi/jual-selesai.js')
+Encore.addEntry('list-gadai', './resources/js/transaksi/gadai/list-gadai.js')
+Encore.addEntry('form-gadai', './resources/js/transaksi/gadai/form-gadai.js')
+Encore.addEntry('edit-gadai', './resources/js/transaksi/gadai/edit-gadai.js')
+Encore.addEntry('view-gadai', './resources/js/transaksi/gadai/view-gadai.js')
 
-Encore.addEntry('base-beli', './resources/js/transaksi/base-beli.js')
-Encore.addEntry('beli', './resources/js/transaksi/beli.js')
-Encore.addEntry('beli-khusus', './resources/js/transaksi/beli-khusus.js')
-Encore.addEntry('beli-QR', './resources/js/transaksi/beli-QR.js')
-// AMPE SINI NTAR DIHAPUS
-
-
-Encore.addEntry('gadai', './resources/js/transaksi/gadai.js')
+// Pembayaran gadai =====
+Encore.addEntry('form-bayar-gadai', './resources/js/transaksi/gadai/pembayaran/form-bayar-gadai.js')
+Encore.addEntry('view-bayar-gadai', './resources/js/transaksi/gadai/pembayaran/view-bayar-gadai.js')
 
 // Kelola Barang ===================================
 Encore.addEntry('all-kelompok', './resources/js/kelola-barang/kelompok/all-kelompok.js')
@@ -118,6 +115,7 @@ Encore.addEntry('all-laporan', './resources/js/laporan/all-laporan.js')
 Encore.addEntry('atur-general', './resources/js/sistem/pengaturan/atur-general.js')
 Encore.addEntry('atur-kadar', './resources/js/sistem/pengaturan/atur-kadar.js')
 Encore.addEntry('atur-transaksi', './resources/js/sistem/pengaturan/atur-transaksi.js')
+Encore.addEntry('atur-saldo', './resources/js/sistem/pengaturan/atur-saldo.js')
 Encore.addEntry('atur-barang', './resources/js/sistem/pengaturan/atur-barang.js')
 Encore.addEntry('atur-pegawai', './resources/js/sistem/pengaturan/atur-pegawai.js')
 

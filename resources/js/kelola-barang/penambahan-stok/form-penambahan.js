@@ -1,6 +1,17 @@
-// jangan lupa import app.js dulu
-
 import Swal from "sweetalert2"
+import { SwalCustomColor } from "../../fungsi"
+
+const numberOnlyParser = function (stringnumber) {
+  let final = stringnumber.replace(/\D/gi, '')
+  return parseInt(final)
+}
+
+const removeElementsByClass = function (className) {
+  const elements = document.getElementsByClassName(className);
+  while (elements.length > 0) {
+    elements[0].parentNode.removeChild(elements[0]);
+  }
+}
 
 $(function () {
   let tanggalRestok = document.getElementById('restok-tekstanggal')
@@ -73,7 +84,7 @@ $(function () {
       confirmButtonText: 'Tambahkan',
       showCancelButton: true,
       cancelButtonText: 'Batal',
-      confirmButtonColor: '#4b6bfb',
+      confirmButtonColor: SwalCustomColor.button.confirm,
       scrollbarPadding: false,
       html: printAddStockHTML(),
       willOpen: () => {
@@ -82,7 +93,7 @@ $(function () {
         let kelompok = document.getElementById('swal-kelompok')
         Swal.showLoading(Swal.getConfirmButton())
 
-        $.get("/app/cumaData/kadarBentuk", {},
+        $.get("/app/cuma-data/kadar-bentuk", {},
           function (data, textStatus, jqXHR) {
             data.kadar.forEach(element => {
               let opt = document.createElement('option')
@@ -121,12 +132,12 @@ $(function () {
           if (event.type == 'change') {
             if (bentuk.value && bentuk.value != 'kosong' && kadar.value && kadar.value != 'kosong') {
 
-              $.get("/app/cumaData/kelompokDenganInput", {
+              $.get("/app/cuma-data/kelompok-dengan-input", {
                   bentuk: bentuk.value,
                   kadar: kadar.value
                 },
                 function (data, textStatus, jqXHR) {
-                  global.removeElementsByClass('opt-kelompok')
+                  removeElementsByClass('opt-kelompok')
 
                   if (data.length > 0) {
                     data.forEach(element => {
@@ -236,6 +247,8 @@ $(function () {
   let eventCatatan = false
 
   btnTambahStok.addEventListener('click', (e) => {
+    let errorMsg = document.createElement('p')
+    errorMsg.classList.add('text-error', 'pesanerror')
 
     // ini yang propper kalo submit form bukan dari button langsung, cek validitynya dulu
     if (formTambahStok.checkValidity()) {
@@ -247,6 +260,7 @@ $(function () {
         showCancelButton: true,
         confirmButtonText: 'Ya, tambahkan!',
         cancelButtonText: 'Batal',
+        confirmButtonColor: SwalCustomColor.button.confirm,
         scrollbarPadding: false,
         focusCancel: true,
       }).then((result) => {
@@ -257,34 +271,33 @@ $(function () {
 
     } else {
       if (document.querySelector('input[name=stokTipe]:checked').value === 'Kulakan' && stokAsal.value == '') {
-        let errorMsg = document.createElement('p')
-        errorMsg.classList.add('text-error', 'pesanerror')
-        stokAsal.classList.add('ring', 'ring-error')
-        errorMsg.innerText = 'Kolom ini harus terisi!'
+        errorMsg.innerText = 'Masukan ini harus terisi!'
+
+        stokAsal.classList.add('input-error', 'bg-error', 'bg-opacity-10')
+        
         if (document.getElementsByClassName('pesanerror').length == 0) stokAsal.after(errorMsg)
 
         if (!eventAsal) {
           stokAsal.addEventListener('change', function () {
             if (stokAsal.value && stokAsal.value !== '') {
-              stokAsal.classList.remove('ring', 'ring-error')
-              global.removeElementsByClass('pesanerror')
+              stokAsal.classList.remove('input-error', 'bg-error', 'bg-opacity-10')
+              removeElementsByClass('pesanerror')
             }
           })
           eventAsal = true
         }
 
       } else if (stokCatatan.value == '') {
-        let errorMsg = document.createElement('p')
-        errorMsg.classList.add('text-error', 'pesanerror')
-        stokCatatan.classList.add('ring', 'ring-error')
-        errorMsg.innerText = 'Kolom ini harus terisi!'
+        
+        stokCatatan.classList.add('textarea-error', 'bg-error', 'bg-opacity-10')
+        errorMsg.innerText = 'Masukan ini harus terisi!'
         if (document.getElementsByClassName('pesanerror').length == 0) stokCatatan.after(errorMsg)
 
         if (!eventCatatan) {
           stokCatatan.addEventListener('change', function () {
             if (stokCatatan.value && stokCatatan.value !== '') {
-              stokCatatan.classList.remove('ring', 'ring-error')
-              global.removeElementsByClass('pesanerror')
+              stokCatatan.classList.remove('textarea-error', 'bg-error', 'bg-opacity-10')
+              removeElementsByClass('pesanerror')
             }
           })
           eventCatatan = true

@@ -9,84 +9,70 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.group(() => {
   Route.group(() => {
     // ======================================================== PENJUALAN ===========================================================
-    // sementara gini dulu, ttar dipisah lagi soalnya masih butuh
-    /**
-     * - phase 1, 2, 3
-     * - screen selesai
-     * - kemungkinan ga perlu edit
-     */
-
     Route.group(() => {
       Route.get('/form', 'transaksi/PenjualansController.form') // perlu kelompokId terpilih -> kt
-      Route.post('/hitung', 'transaksi/PenjualansController.simpanTransaksi')
+      Route.post('/hitung', 'transaksi/PenjualansController.simpanTransaksi') // aslinya ini STORE, tp biar seragam ama PB
       Route.get('/pasca', 'transaksi/PenjualansController.pascaTransaksi')  // perlu transaksiId -> tid
-
-
-      // Route.get('/riwayat', 'transaksi/PenjualansController.listRiwayat')
-      // Route.get('/riwayat/:penjualanId', 'transaksi/PenjualansController.viewRiwayat')
-
-      // ini ntar dihapus
-      Route.get('/formLama', 'transaksi/PenjualansController.formLama')
-
-
     }).prefix('penjualan')
-    Route.resource('penjualan', 'transaksi/PenjualansController').only(['index', 'destroy', 'show'])
+    Route.resource('penjualan', 'transaksi/PenjualansController').only(['index', 'destroy', 'show']) // index ini prepare
 
     // ======================================================== PEMBELIAN ===========================================================
     Route.group(() => {
 
-      // ini ntar dihapus kalo dah kelar
-      Route.get('/lama', async ({ view }) => {
-        return view.render('transaksi/pembelian/prepare')
-      })
+      Route.group(() => {
+        Route.get('/', 'transaksi/PembelianQRsController.index') // ini formnya QR, perlu 'kode' -> kode, sementara gw matiin dulu
+        Route.post('/', 'transaksi/PembelianQRsController.simpanTransaksi') // ini simpen QR, perlu 'kode' -> kode
+        Route.post('/cari', 'transaksi/PembelianQRsController.cariQR')
+        Route.post('/hitung-harga-belakang', 'transaksi/PembelianQRsController.hitungHargaBelakang') // dari ajax
+      }).prefix('qr')
 
-      Route.post('/QR', 'transaksi/PembeliansController.indexQR')
-      // dilempar balik kalo bukan post
-      Route.get('/QR', async ({ response }) => {
-        return response.redirect().toPath('/app/transaksi/pembelian/')
-      })
+      // Oh, request bikin pembelian jadi Gadai urlnya ngikut gadai!
 
+      // controller pembelian ada 2, biasa ama QR
+      // biasa isinya hampir semuanya, kecuali nyari QR sama store QR (termasuk delete juga)
+      // QR isinya cuma nyari QR dari ajax, hitung rumus QR, sama store transaksi QR
 
-      Route.post('/hitungHargaBelakang', 'transaksi/PembeliansController.hitungHargaBelakang') // dari ajax
-      Route.get('/hitungHargaBelakang', 'transaksi/PembeliansController.hitungHargaBelakang') // dari ajax, ini ntar dihapus, buat test doang
-  
-      // MULAI DARI SINI NTAR DIHAPUS
-      Route.post('/tesBuang', 'transaksi/PembeliansController.tesBuang')
+      // index di pembelian bawah itu form beli biasa
 
-      Route.get('/transaksi', async ({
-        view
-      }) => {
-        // ini cuma simpel, sekedar buat bener2in UI
-        // return view.render('transaksi/pembelian/base-umum')
-        return view.render('transaksi/pembelian/base-khusus')
-      })
+      Route.post('/', 'transaksi/PembeliansController.simpanTransaksi') // aslinya ini STORE, tp biar seragam ama PJ
+      Route.get('/pasca', 'transaksi/PembeliansController.pascaTransaksi') // perlu transaksiId -> tid
+      Route.post('/hitung-harga-belakang', 'transaksi/PembeliansController.hitungHargaBelakang') // dari ajax
+      Route.get('/pengajuan-gadai', 'transaksi/GadaisController.formulirGadai').middleware(['isPemilikWeb']) // perlu transaksiId -> tid
 
-      Route.get('/transaksiumum', async ({
-        view
-      }) => {
-        // ntar apus coy
-        return view.render('transaksi/pembelian/base-umum')
-      })
-
-      Route.get('/transaksiumumQR', async ({
-        view
-      }) => {
-        // ntar apus coy
-        return view.render('transaksi/pembelian/base-umumQRmode')
-      })
-
-      // SAMPE SINI DIHAPUS OK
-
-      // Route.get('/riwayat', 'transaksi/PembeliansController.listRiwayat')
-      // Route.get('/riwayat/:penjualanId', 'transaksi/PembeliansController.viewRiwayat')
     }).prefix('pembelian')
-    Route.resource('pembelian', 'transaksi/PembeliansController').only(['index', 'destroy', 'show'])
+
+    Route.resource('pembelian', 'transaksi/PembeliansController').only(['index', 'destroy', 'show']) // index ini form, beda ama PJ
 
 
-    Route.post('/cariPembelianByQR', 'transaksi/PembeliansController.cariQR')
+    // ======================================================== GADAI ===========================================================
+    
+    Route.group(() => {
+      // gadai ngga bisa dihapus via delete row ato softdelete, tp tetep ada kolom deleted_at buat jaga2 kalo butuh
+      // DESTROY nya gadai ini ngeset status ke dibatalkan
 
+      Route.group(() => {
+        Route.get('/refresh', 'transaksi/GadaisController.refreshGadai')
+        Route.post('/', 'transaksi/GadaisController.store') // perlu transaksiId -> tid
 
-    Route.post('/pembelian/hitungHargaNormal', 'transaksi/PembeliansController.hitungHargaNormal')
+        Route.resource('/:idGadai/pembayaran', 'transaksi/PembayaranGadaisController').except(['edit', 'update'])
+        
+      }).middleware(['isPemilikWeb'])
+
+      Route.get('/:id/nik', 'transaksi/GadaisController.getNIK').middleware(['isPemilikApi'])
+    }).prefix('gadai')
+
+    Route.resource('gadai', 'transaksi/GadaisController')
+      .except(['create', 'store']) // formnya ada di pembelian 'ajukan gadai'
+      .middleware({
+        index: ['isPemilikWeb'],
+        show: ['isPemilikWeb'],
+        update: ['isPemilikWeb'],
+        edit: ['isPemilikWeb'],
+        destroy: ['isPemilikWeb']
+      })
+
+     
+
 
   }).prefix('transaksi')
 

@@ -29,21 +29,21 @@ export default class Penjualans extends BaseSchema {
       table.integer('harga_jual_per_gram').notNullable()
       table.integer('harga_jual_akhir').notNullable()
 
-      // OPTIONAL BELOM DIBUAT
+      // KEPEMILIKAN, OPTIONAL
       table.string('nama_pemilik', 50).nullable()
       table.string('alamat_pemilik', 50).nullable()
 
       // Ada kemungkinan 2 ini dihapus, back to basic jadi nama ama alamat doang, TP JANGAN DIHAPUS DULU
-      table.enum('gender_pemilik', [
-        'L',
-        'P'
-      ]).nullable()
-      table.integer('rentang_usia_id').unsigned().references('rentang_usias.id')
+      // table.enum('gender_pemilik', [
+      //   'L',
+      //   'P'
+      // ]).nullable()
+      // table.integer('rentang_usia_id').unsigned().references('rentang_usias.id')
 
       // CONSTRAIN
       table.dateTime('dibeli_at').nullable() // kalo udah dibeli gabisa dibeli lagi
       table.dateTime('deleted_at').nullable() // kalo udah dihapus gabisa diapa2in
-      table.dateTime('max_print_at').notNullable() // kalo udah dihapus gabisa diapa2in
+      table.dateTime('max_print_at').notNullable()
 
 
       /**

@@ -51,6 +51,7 @@ export default class AuthMiddleware {
      */
 
     // session, kalau lu ngeset data ke session juga, lupain disini
+    session.clear()
     session.flash('alertError', 'Anda harus login terlebih dahulu!')
 
     throw new AuthenticationException(

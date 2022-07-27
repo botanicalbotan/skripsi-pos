@@ -32,7 +32,7 @@ export default class Kerusakan extends BaseModel {
   @column()
   public ongkosNominal: number
 
-  @column.dateTime({ serializeAs: null })
+  @column.dateTime()
   public deletedAt: DateTime | null
 
   @column.dateTime({ autoCreate: true })
@@ -73,6 +73,6 @@ export default class Kerusakan extends BaseModel {
   @beforeFetch()
   @beforeFind()
   public static withoutSoftDeletes(query: KerusakanQuery) {
-    query.whereNull('deleted_at')
+    query.whereNull('kerusakans.deleted_at')
   }
 }

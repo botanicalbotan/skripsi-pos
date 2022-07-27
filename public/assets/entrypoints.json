@@ -97,29 +97,44 @@
         "http://localhost:8080/assets/form-beli-qr.js"
       ]
     },
-    "base-beli": {
+    "pasca-beli": {
       "js": [
-        "http://localhost:8080/assets/base-beli.js"
+        "http://localhost:8080/assets/pasca-beli.js"
       ]
     },
-    "beli": {
+    "view-beli": {
       "js": [
-        "http://localhost:8080/assets/beli.js"
+        "http://localhost:8080/assets/view-beli.js"
       ]
     },
-    "beli-khusus": {
+    "list-gadai": {
       "js": [
-        "http://localhost:8080/assets/beli-khusus.js"
+        "http://localhost:8080/assets/list-gadai.js"
       ]
     },
-    "beli-QR": {
+    "form-gadai": {
       "js": [
-        "http://localhost:8080/assets/beli-QR.js"
+        "http://localhost:8080/assets/form-gadai.js"
       ]
     },
-    "gadai": {
+    "edit-gadai": {
       "js": [
-        "http://localhost:8080/assets/gadai.js"
+        "http://localhost:8080/assets/edit-gadai.js"
+      ]
+    },
+    "view-gadai": {
+      "js": [
+        "http://localhost:8080/assets/view-gadai.js"
+      ]
+    },
+    "form-bayar-gadai": {
+      "js": [
+        "http://localhost:8080/assets/form-bayar-gadai.js"
+      ]
+    },
+    "view-bayar-gadai": {
+      "js": [
+        "http://localhost:8080/assets/view-bayar-gadai.js"
       ]
     },
     "all-kelompok": {
@@ -200,6 +215,11 @@
     "atur-transaksi": {
       "js": [
         "http://localhost:8080/assets/atur-transaksi.js"
+      ]
+    },
+    "atur-saldo": {
+      "js": [
+        "http://localhost:8080/assets/atur-saldo.js"
       ]
     },
     "atur-barang": {

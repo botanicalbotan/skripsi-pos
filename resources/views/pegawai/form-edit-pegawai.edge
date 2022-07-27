@@ -155,7 +155,7 @@
           </div>
 
           {{--  Kelompok data teknis  --}}
-          <div class="space-y-4" x-data="{ pass:'', repass:'', repassclass:''}">
+          <div class="space-y-4">
             <div class="mb-4">
               <h1 class="text-2xl font-semibold">Data Akun</h1>
             </div>
@@ -201,7 +201,7 @@
                 <span x-cloak class="flex-none text-primary"></span>
               </label>
               <input type="date" id="tanggalMulaiAktif"
-                name="tanggalMulaiAktif" class="input input-bordered" value="{{ (pegawai.apakahPegawaiAktif)? pegawai.tanggalMulaiAktif.toFormat('yyyy-MM-dd') : '' }}">
+                name="tanggalMulaiAktif" class="input input-bordered" value="{{ (pegawai.apakahPegawaiAktif && pegawai.tanggalMulaiAktif)? pegawai.tanggalMulaiAktif.toFormat('yyyy-MM-dd') : '' }}">
 
               @if(flashMessages.has('errors.tanggalMulaiAktif'))
                 <p class="text-error">{{ flashMessages.get('errors.tanggalMulaiAktif') }}</p>
@@ -214,7 +214,7 @@
                 <span x-cloak class="flex-none text-primary"></span>
               </label>
               <input type="date" id="tanggalGajianSelanjutnya"
-                name="tanggalGajianSelanjutnya" class="input input-bordered" value="{{ (pegawai.apakahPegawaiAktif)? pegawai.tanggalGajianSelanjutnya.toFormat('yyyy-MM-dd') : '' }}">
+                name="tanggalGajianSelanjutnya" class="input input-bordered" value="{{ (pegawai.apakahPegawaiAktif && pegawai.tanggalGajianSelanjutnya)? pegawai.tanggalGajianSelanjutnya.toFormat('yyyy-MM-dd') : '' }}">
 
               @if(flashMessages.has('errors.tanggalGajianSelanjutnya'))
                 <p class="text-error">{{ flashMessages.get('errors.tanggalGajianSelanjutnya') }}</p>
@@ -269,7 +269,7 @@
             <div
               class="flex rounded-box ring-2 ring-base-300 w-52 h-52 justify-center items-center p-2 group">
               <div class="w-full h-full bg-placeholder-user-200 bg-contain">
-                <img src="{{ (tambahan.adaFoto)? '/app/cumaData/foto/pegawai/' + pegawai.id : ''  }}" id="fotoPegawai" x-ref="fotoPegawai" @load="adaGambar = true" @error="adaGambar = false">
+                <img src="{{ (tambahan.adaFoto)? '/app/cuma-data/foto/pegawai/' + pegawai.id : ''  }}" id="fotoPegawai" x-ref="fotoPegawai" @load="adaGambar = true" @error="adaGambar = false">
               </div>
 
             </div>

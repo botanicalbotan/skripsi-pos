@@ -1,4 +1,9 @@
 @layout('layouts/master')
+
+{{-- buat ngeset judul --}}
+@set('judul', 'Profil ' + pegawai.nama + ' | Postoma')
+
+
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="detail" id="base-page">
   <h2 class="text-4xl font-semibold">Profil Pegawai</h2>
@@ -238,7 +243,7 @@
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Gajian Terakhir</h3>
-                  <span class="flex-1 ">{{ (pegawai.tanggalGajianTerakhir)? pegawai.tanggalGajianTerakhir.setLocale('id-ID').toLocaleString() : 'Pegawai tidak aktif' }}</span>
+                  <span class="flex-1 ">{{ (pegawai.tanggalGajianTerakhir)? pegawai.tanggalGajianTerakhir.setLocale('id-ID').toLocaleString() : 'Belum pernah gajian' }}</span>
                 </div>
               </li>
 
@@ -260,7 +265,7 @@
               <div class="flex rounded-box ring-2 ring-base-300 w-52 h-52 p-2 bg-white">
                 <div class="w-full h-full bg-placeholder-user-200 bg-contain">
                   {{--  gambar cuma buat wadah dan udah ada backgroundnya, jadi kalo gaada biarin kosong aja dan jangan kasi alternative text  --}}
-                  <img src="{{ (tambahan.adaFoto)? '/app/cumaData/foto/pegawai/' + pegawai.id : '' }}" id="fotoPegawai" onerror="this.style.display = 'none'">
+                  <img src="{{ (tambahan.adaFoto)? '/app/cuma-data/foto/pegawai/' + pegawai.id : '' }}" id="fotoPegawai" onerror="this.style.display = 'none'">
                 </div>
               </div>
             </div>

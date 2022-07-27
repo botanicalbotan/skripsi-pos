@@ -6,7 +6,12 @@ export default class StatusGadais extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.string('status', 10).notNullable()
+      table.enum('status', [
+        'berjalan',
+        'selesai',
+        'terlambat',
+        'dibatalkan'
+      ]).notNullable()
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

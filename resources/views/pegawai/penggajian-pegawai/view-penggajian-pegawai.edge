@@ -1,4 +1,9 @@
 @layout('layouts/master')
+
+{{-- buat ngeset judul --}}
+@set('judul', 'Pembayaran Gadi Periode '+ penggajian.tanggalSeharusnyaDibayar.toLocaleString({ month:'long', year:'numeric' }) + 'An. '+ penggajian.penerimaGaji.nama +' | Postoma')
+
+
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="detail" id="base-page">
   <h2 class="text-4xl font-semibold">Data Penggajian</h2>
@@ -20,7 +25,7 @@
           @elseif(penggajian.status === 'dibayar')
           <div class="badge badge-success">Sudah Dibayar</div>
           @else
-          <div class="badge badge-error">Dihapus</div>
+          <div class="badge badge-error">Dibatalkan</div>
           @endif
         </p>
       </div>
@@ -41,11 +46,11 @@
 
             @if(penggajian.status === 'dibayar')
             <li>
-              <a id="btBatalBayar" class="true-text-error">Batalkan Pembayaran</a>
+              <a id="btBatalBayar" class="true-text-error">Batalkan pembayaran</a>
             </li>
             @else
             <li>
-              <a id="btHapusTagihan" class="true-text-error">Hapus Tagihan</a>
+              <a id="btHapusTagihan" class="true-text-error">Hapus tagihan</a>
               <form id="formHapusTagihan" action="/app/pegawai/penggajian/{{ penggajian.id }}" method="POST">
                 {{ csrfField() }}
               </form>
@@ -216,7 +221,7 @@
               <div class="flex rounded-box ring-2 ring-base-300 w-52 h-52 p-2 bg-white">
                 <div class="w-full h-full bg-placeholder-user-200 bg-contain">
                   {{--  gambar cuma buat wadah dan udah ada backgroundnya, jadi kalo gaada biarin kosong aja dan jangan kasi alternative text  --}}
-                  <img src="{{ (tambahan.adaFotoPenerima)? '/app/cumaData/foto/pegawai/'+ penggajian.penerimaGaji.id : '' }}" id="fotoPegawai" onerror="this.style.display = 'none'">
+                  <img src="{{ (tambahan.adaFotoPenerima)? '/app/cuma-data/foto/pegawai/'+ penggajian.penerimaGaji.id : '' }}" id="fotoPegawai" onerror="this.style.display = 'none'">
                 </div>
               </div>
             </div>
@@ -233,7 +238,7 @@
         <div class="flex flex-col md:flex-row flex-1 md:space-x-4 space-y-4 md:space-y-0 items-center">
           <div class="avatar">
             <div class="w-16 h-16 rounded-full bg-placeholder-user-200 bg-contain">
-              <img src="{{ (tambahan.adaFotoPencatat)? '/app/cumaData/foto/pegawai/' + penggajian.pencatatGajian.id : '' }}">
+              <img src="{{ (tambahan.adaFotoPencatat)? '/app/cuma-data/foto/pegawai/' + penggajian.pencatatGajian.id : '' }}">
             </div>
           </div>
           <div class="flex flex-col justify-center">

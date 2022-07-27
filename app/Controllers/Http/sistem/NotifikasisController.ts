@@ -1,37 +1,10 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import Notifikasi from 'App/Models/sistem/Notifikasi'
+import User from 'App/Models/User'
 import { DateTime } from 'luxon'
 
 export default class NotifikasisController {
-  bandingWaktu(ISODateTIme: string) {
-    let waktuNotif = DateTime.fromISO(ISODateTIme)
-    let selisih = waktuNotif.diffNow('minutes').toObject().minutes
-    let menitDiff = (selisih)? Math.abs(Math.round(selisih)): 0
-    let teksDiff = ''
-
-    if (menitDiff > 60) {
-      let jamDiff = Math.floor(menitDiff / 60)
-
-      if (jamDiff > 24) {
-        let hariDiff = Math.floor(jamDiff / 24)
-
-        if (hariDiff > 30) {
-          let bulanDiff = Math.floor(hariDiff / 30)
-
-          teksDiff = bulanDiff + ' bulan'
-        } else {
-          teksDiff = hariDiff + ' hari'
-        }
-      } else {
-        teksDiff = jamDiff + ' jam'
-      }
-    } else {
-      teksDiff = menitDiff + ' menit'
-    }
-
-    return teksDiff + ' yang lalu'
-  }
 
   public async index ({ view, request }: HttpContextContract) {
     let idUserAktif = 1 // ntar diganti jadi sesi aktif
@@ -98,7 +71,7 @@ export default class NotifikasisController {
       }
 
       const fungsi = {
-        waktuDiff: this.bandingWaktu
+        waktuDiff: bandingWaktu
       }
 
     /** simpen kali aja ntar kepake */
@@ -127,31 +100,24 @@ export default class NotifikasisController {
     // }
     // return { listNotif: wadah }
 
-    return view.render('notifikasi/semua-notifikasi', { notifikasis, tambahan, fungsi })
+    return await view.render('notifikasi/semua-notifikasi', { notifikasis, tambahan, fungsi })
 
   }
 
-  public async create ({}: HttpContextContract) {
-  }
-
-  public async store ({}: HttpContextContract) {
-  }
-
-  public async show ({ params, response, session }: HttpContextContract) {
-    let idUserAktif = 1 // ntar diganti jadi sesi aktif
-
-    // ngecek constrain
-    await Database
-      .from('notifikasis')
-      .where('id', params.id)
-      .andWhere('pengguna_id', idUserAktif)
-      .firstOrFail()
-      .catch(() => {
-        session.flash('errorServerThingy', 'Notifikasi yang anda pilih tidak valid!')
-        return response.redirect().back()
-      })
-
+  public async show ({ params, response, session, auth }: HttpContextContract) {
     try {
+      if(!auth.user) throw new Error ('auth ngga valid')
+
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
+
+      // ngecek constrain
+      await Database
+        .from('notifikasis')
+        .where('id', params.id)
+        .andWhere('pengguna_id', userPengakses.pengguna.id)
+        .firstOrFail()
+
       let notif = await Notifikasi.findOrFail(params.id)
       notif.diklikAt = DateTime.now()
       await notif.save()
@@ -162,15 +128,6 @@ export default class NotifikasisController {
       session.flash('errorServerThingy', 'Ada kesalahan pada server!')
       return response.redirect().back()
     }
-  }
-
-  public async edit ({}: HttpContextContract) {
-  }
-
-  public async update ({}: HttpContextContract) {
-  }
-
-  public async destroy ({}: HttpContextContract) {
   }
 
   public async notifTerbaru ({}: HttpContextContract) {
@@ -225,4 +182,34 @@ export default class NotifikasisController {
       return response.ok({message: 'Mantap'})
   }
 
+}
+
+
+function bandingWaktu(ISODateTIme: string) {
+  let waktuNotif = DateTime.fromISO(ISODateTIme)
+  let selisih = waktuNotif.diffNow('minutes').toObject().minutes
+  let menitDiff = (selisih)? Math.abs(Math.round(selisih)): 0
+  let teksDiff = ''
+
+  if (menitDiff > 60) {
+    let jamDiff = Math.floor(menitDiff / 60)
+
+    if (jamDiff > 24) {
+      let hariDiff = Math.floor(jamDiff / 24)
+
+      if (hariDiff > 30) {
+        let bulanDiff = Math.floor(hariDiff / 30)
+
+        teksDiff = bulanDiff + ' bulan'
+      } else {
+        teksDiff = hariDiff + ' hari'
+      }
+    } else {
+      teksDiff = jamDiff + ' jam'
+    }
+  } else {
+    teksDiff = menitDiff + ' menit'
+  }
+
+  return teksDiff + ' yang lalu'
 }

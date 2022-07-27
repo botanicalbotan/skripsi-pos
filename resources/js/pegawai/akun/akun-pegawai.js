@@ -1,5 +1,13 @@
 import Swal from "sweetalert2"
 
+import { SwalCustomColor, capsFirstWord } from '../../fungsi.js'
+
+// const capsFirstWord = function (text) {
+//   if (!isNaN(text.charAt(0))) {
+//     return text
+//   }
+//   return text.slice(0, 1).toUpperCase() + text.slice(1)
+// }
 
 const namaPegawai = document.getElementById('namaPegawai').textContent
 const jabatanPegawai = document.getElementById('jabatanPegawai').textContent
@@ -26,7 +34,7 @@ ubahUsername.addEventListener('click', () => {
     cancelButtonText: 'Batal',
     scrollbarPadding: false,
     focusCancel: true,
-    confirmButtonColor: global.SwalCustomColor.button.confirm,
+    confirmButtonColor: SwalCustomColor.button.confirm,
   }).then((prepare) => {
 
     if (prepare.isConfirmed) {
@@ -37,7 +45,7 @@ ubahUsername.addEventListener('click', () => {
         inputPlaceholder: 'Password anda',
         showCancelButton: true,
         scrollbarPadding: false,
-        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        confirmButtonColor: SwalCustomColor.button.confirm,
         confirmButtonText: 'Selanjutnya',
         inputValidator: (password) => {
           if (!password) {
@@ -84,6 +92,7 @@ ubahUsername.addEventListener('click', () => {
             }
 
           })
+
         }
       }).then((cekPassword) => {
         if (cekPassword.isConfirmed) {
@@ -96,7 +105,7 @@ ubahUsername.addEventListener('click', () => {
             inputPlaceholder: 'Username baru',
             showCancelButton: true,
             scrollbarPadding: false,
-            confirmButtonColor: global.SwalCustomColor.button.confirm,
+            confirmButtonColor: SwalCustomColor.button.confirm,
             confirmButtonText: 'Selanjutnya',
             inputValidator: (value) => {
               if (!value) {
@@ -115,7 +124,7 @@ ubahUsername.addEventListener('click', () => {
                 cancelButtonText: 'Batal',
                 scrollbarPadding: false,
                 focusCancel: true,
-                confirmButtonColor: global.SwalCustomColor.button.confirm,
+                confirmButtonColor: SwalCustomColor.button.confirm,
                 preConfirm: () => {
                   Swal.showLoading()
 
@@ -129,7 +138,7 @@ ubahUsername.addEventListener('click', () => {
 
                     $.ajax({
                       type: "PUT",
-                      url: location.pathname + '/ubahUsername',
+                      url: location.pathname + '/ubah-username',
                       data: {
                         newUN: gantiUsername.value,
                       },
@@ -163,11 +172,11 @@ ubahUsername.addEventListener('click', () => {
                 if (hasilUbah.isConfirmed) {
                   Swal.fire({
                     title: ((hasilUbah.value.apakahSukses) ? 'Pengubahan Berhasil!' : 'Error'),
-                    text: global.capsFirstWord(hasilUbah.value.msg),
+                    text: capsFirstWord(hasilUbah.value.msg),
                     icon: ((hasilUbah.value.apakahSukses) ? 'success' : 'error'),
                     scrollbarPadding: false,
                     confirmButtonText: 'Tutup',
-                    confirmButtonColor: global.SwalCustomColor.button.cancel
+                    confirmButtonColor: SwalCustomColor.button.cancel
                   }).then(() => {
                     location.href = location.pathname
                   })
@@ -199,7 +208,7 @@ ubahPassword.addEventListener('click', () => {
     cancelButtonText: 'Batal',
     scrollbarPadding: false,
     focusCancel: true,
-    confirmButtonColor: global.SwalCustomColor.button.confirm,
+    confirmButtonColor: SwalCustomColor.button.confirm,
   }).then((prepare) => {
     if (prepare.isConfirmed) {
       Swal.fire({
@@ -209,7 +218,7 @@ ubahPassword.addEventListener('click', () => {
         inputPlaceholder: 'Password anda',
         showCancelButton: true,
         scrollbarPadding: false,
-        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        confirmButtonColor: SwalCustomColor.button.confirm,
         confirmButtonText: 'Selanjutnya',
         inputValidator: (password) => {
           if (!password) {
@@ -266,7 +275,7 @@ ubahPassword.addEventListener('click', () => {
             html: printNewPasswordHTML(),
             showCancelButton: true,
             scrollbarPadding: false,
-            confirmButtonColor: global.SwalCustomColor.button.confirm,
+            confirmButtonColor: SwalCustomColor.button.confirm,
             confirmButtonText: 'Selanjutnya',
             preConfirm: () => {
               const pass = document.getElementById('swal-pass')
@@ -298,40 +307,42 @@ ubahPassword.addEventListener('click', () => {
                 cancelButtonText: 'Batal',
                 scrollbarPadding: false,
                 focusCancel: true,
-                confirmButtonColor: global.SwalCustomColor.button.confirm,
+                confirmButtonColor: SwalCustomColor.button.confirm,
                 preConfirm: () => {
                   Swal.showLoading()
 
-                  return new Promise(function (resolve, reject) {
-                    setTimeout(function () {
-                      reject({
-                        tipe: 'lokal',
-                        msg: 'Tidak ada respon dari server'
-                      })
-                    }, 5000)
-
-                    $.ajax({
-                      type: "PUT",
-                      url: location.pathname + '/ubahPassword',
-                      data: {
-                        passbaru: gantiPassword.value.pass,
-                        passlama: cekPassword.value.pass
-                      },
-                      dataType: 'json',
-                      success: function () {
-                        resolve({
-                          apakahSukses: true,
-                          msg: 'Password ' + nyebut + ' berhasil diubah!'
-                        })
-                      },
-                      error: function (xhr) {
+                  try {
+                    return new Promise(function (resolve, reject) {
+                      setTimeout(function () {
                         reject({
                           tipe: 'lokal',
-                          msg: (typeof xhr.responseJSON.error === 'string') ? xhr.responseJSON.error : 'Ada error pada server!'
+                          msg: 'Tidak ada respon dari server'
                         })
-                      }
-                    });
-                  }).catch(function (error) {
+                      }, 5000)
+
+                      $.ajax({
+                        type: "PUT",
+                        url: location.pathname + '/ubah-password',
+                        data: {
+                          passbaru: gantiPassword.value.pass,
+                          passlama: cekPassword.value.pass
+                        },
+                        dataType: 'json',
+                        success: function () {
+                          resolve({
+                            apakahSukses: true,
+                            msg: 'Password ' + nyebut + ' berhasil diubah!'
+                          })
+                        },
+                        error: function (xhr_1) {
+                          reject({
+                            tipe: 'lokal',
+                            msg: (typeof xhr_1.responseJSON.error === 'string') ? xhr_1.responseJSON.error : 'Ada error pada server!'
+                          })
+                        }
+                      })
+                    })
+                  } catch (error) {
                     if (error.tipe && error.tipe === 'lokal') {
                       return error
                     } else {
@@ -340,18 +351,18 @@ ubahPassword.addEventListener('click', () => {
                         msg: 'Ada kesalahan pada sistem. Silahkan coba lagi.'
                       }
                     }
-                  })
+                  }
 
                 }
               }).then((hasilUbah) => {
                 if (hasilUbah.isConfirmed) {
                   Swal.fire({
                     title: ((hasilUbah.value.apakahSukses) ? 'Pengubahan Berhasil!' : 'Error'),
-                    text: global.capsFirstWord(hasilUbah.value.msg),
+                    text: capsFirstWord(hasilUbah.value.msg),
                     icon: ((hasilUbah.value.apakahSukses) ? 'success' : 'error'),
                     scrollbarPadding: false,
                     confirmButtonText: 'Tutup',
-                    confirmButtonColor: global.SwalCustomColor.button.cancel
+                    confirmButtonColor: SwalCustomColor.button.cancel
                   }).then(() => {
                     location.href = location.pathname
                   })

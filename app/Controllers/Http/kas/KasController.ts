@@ -11,10 +11,9 @@ import {
   schema,
   rules
 } from '@ioc:Adonis/Core/Validator'
-import RekapHarian from 'App/Models/kas/RekapHarian'
-import CPasaran from 'App/CustomClasses/CPasaran'
 import Drive from '@ioc:Adonis/Core/Drive'
 import User from 'App/Models/User'
+import { prepareRekap } from 'App/CustomClasses/CustomRekapHarian'
 
 export default class KasController {
 
@@ -151,7 +150,7 @@ export default class KasController {
 
     // return { tambahan, kass, tes: this.rupiahParser(tambahan.totalKasKeluar) }
 
-    return view.render('kas/list-kas', {
+    return await view.render('kas/list-kas', {
       tambahan,
       kass,
       fungsi,
@@ -163,7 +162,7 @@ export default class KasController {
   public async create({
     view
   }: HttpContextContract) {
-    return view.render('kas/form-kas')
+    return await view.render('kas/form-kas')
   }
 
   public async store({
@@ -188,41 +187,12 @@ export default class KasController {
       schema: newKasSchema
     })
 
-    /** Mulai dari sini wajib banget */
-    const CP = new CPasaran()
-    const pasaranSekarang = CP.pasaranHarIni()
-
     let pengaturan = await Pengaturan.findOrFail(1) // ntar diganti jadi ngecek toko aktif di session
     await pengaturan.load('pasarans')
 
-    let apakahPasaran = false
-    for (const element of pengaturan.pasarans) {
-      if (element.hari === pasaranSekarang) {
-        apakahPasaran = true
-        break
-      }
-    }
+    // buat ngecek rekap harian udah gw taro di custom class ini
+    let cariRH = await prepareRekap()
 
-    let cariRH = await RekapHarian.findBy('tanggal_rekap', DateTime.local().set({
-      hour: 0,
-      minute: 0,
-      second: 0,
-      millisecond: 0
-    }).toSQL())
-
-    if (!cariRH) {
-      cariRH = await RekapHarian.create({
-        pasaran: pasaranSekarang,
-        apakahHariPasaran: apakahPasaran,
-        tanggalRekap: DateTime.local().set({
-          hour: 0,
-          minute: 0,
-          second: 0,
-          millisecond: 0
-        })
-      })
-    }
-    /** Sampe sini. Kepake buat ngecek udah ada rekap harian apa blom */
 
     let cek = (validrequest.tipeKas === 'keluar')
 
@@ -280,7 +250,7 @@ export default class KasController {
         urlFotoPencatat: urlPencatat
       }
 
-      return view.render('kas/view-kas', {
+      return await view.render('kas/view-kas', {
         kas,
         fungsi,
         tambahan
@@ -306,7 +276,7 @@ export default class KasController {
         return response.redirect().back()
       }
 
-      return view.render('kas/form-edit-kas', {
+      return await view.render('kas/form-edit-kas', {
         kas
       })
 
@@ -360,7 +330,7 @@ export default class KasController {
 
       kas.apakahKasKeluar = cek
       kas.perihal = kapitalHurufPertama(validrequest.perihal),
-        kas.nominal = nominalBaru
+      kas.nominal = nominalBaru
       kas.penggunaId = userPengakses.pengguna.id
       await kas.save()
 
@@ -415,27 +385,12 @@ export default class KasController {
   // NTAR DIHAPUS 
 
   public async buatBanyak({ auth }: HttpContextContract) {
-    /** Mulai dari sini wajib banget */
-    const CP = new CPasaran()
-    const pasaranSekarang = CP.pasaranHarIni()
 
     let pengaturan = await Pengaturan.findOrFail(1) // ntar diganti jadi ngecek toko aktif di session
     await pengaturan.load('pasarans')
 
-    let apakahPasaran = false
-    for (const element of pengaturan.pasarans) {
-      if (element.hari === pasaranSekarang) {
-        apakahPasaran = true
-        break
-      }
-    }
-
-    let cariRH = await RekapHarian.findBy('tanggal_rekap', DateTime.local().set({
-      hour: 0,
-      minute: 0,
-      second: 0,
-      millisecond: 0
-    }).toSQL())
+    // buat ngecek rekap harian udah gw taro di custom class ini
+    let cariRH = await prepareRekap()
 
     let berhasil= 0
     let error= 0
@@ -457,19 +412,6 @@ export default class KasController {
           pengaturan.saldoToko += gachaNominal
         }
         await pengaturan.save()
-
-        if (!cariRH) {
-          cariRH = await RekapHarian.create({
-            pasaran: pasaranSekarang,
-            apakahHariPasaran: apakahPasaran,
-            tanggalRekap: DateTime.local().set({
-              hour: 0,
-              minute: 0,
-              second: 0,
-              millisecond: 0
-            })
-          })
-        }
 
         await cariRH.related('kas').create({
           apakahKasKeluar: (gacha == 0),

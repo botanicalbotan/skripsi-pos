@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="csrf-token" content="{{ csrfToken }}">
+  <title>{{ (judul)? judul : 'Postoma' }}</title>
+  <link rel="stylesheet" type="text/css" href="{{ asset('assets/app.css') }}">
+  <script defer src="{{ asset('assets/alpine.js') }}"></script>
+
+  @!section('more-style')
+</head>
+
+<body>
+
+  <section class="h-screen">
+    <div class="h-full text-gray-800 flex flex-col">
+      <div class="flex-1 flex items-center justify-center p-6 ">
+        {{--  ini konten  --}}
+        @!section('content')
+      </div>
+
+
+      <footer class="flex-none footer footer-center p-4 bg-neutral text-neutral-content">
+        <div>
+          <p>Copyright © 2022 - All right reserved by Toko Mas Leo</p>
+        </div>
+      </footer>
+    </div>
+
+
+  </section>
+
+  @!section('script')
+</body>
+
+</html>

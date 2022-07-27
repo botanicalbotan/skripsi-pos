@@ -1,0 +1,106 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+@section('content')
+<div class="w-full p-8 base-page" id="base-page">
+  <h2 class="text-4xl font-semibold">Pembayaran Gadai Baru</h2>
+  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mencatat pembayaran gadai terpilih.</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 md:w-min">
+    @include('partials/wadah-alert')
+
+    <form id="formPembayaran" method="POST">
+      {{csrfField()}}
+
+      <div class="w-full md:w-96 space-y-10">
+        <div>
+          <h4 class="text-2xl sm:flex sm:items-center">
+            <a href="/app/transaksi/gadai/{{ gadai.id }}" class="mr-2 link link-hover">Gadai
+              {{ fungsi.rupiahParser(gadai.nominalGadai) }}
+              An. {{ gadai.namaPenggadai }}</a>
+          </h4>
+          <p>
+            @if(gadai.statusGadai.status === 'berjalan')
+            <div class="badge badge-info">Berjalan</div>
+            @elseif(gadai.statusGadai.status === 'selesai')
+            <div class="badge badge-success">Selesai</div>
+            @elseif(gadai.statusGadai.status === 'terlambat')
+            <div class="badge badge-error">Terlambat</div>
+            @else
+            <div class="badge badge-error">Dibatalkan</div>
+            @endif
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Data Pembayaran</h1>
+          </div>
+
+          <div class="form-control max-w-xs" x-data>
+            <label for="nominal">Kekurangan Pembayaran</label>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                Rp.
+              </span>
+              <input type="number" placeholder="0" min="0" id="kekurangan"
+                 class="px-3 py-3 relative input input-bordered w-full pl-12" readonly value="{{ Math.abs(tambahan.kekurangan) }}">
+            </div>
+          </div>
+
+          <div class="form-control max-w-xs" x-data>
+            <label for="nominal">Nominal<span class="text-error"> *</span></label>
+            <div class="relative flex w-full flex-wrap items-stretch">
+              <span
+                class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
+                Rp.
+              </span>
+              <input type="number" oninput="validity.valid||(value='');" placeholder="0" min="0" max="{{ Math.abs(tambahan.kekurangan) }}" name="nominal"
+                id="nominal" class="px-3 py-3 bg-opacity-10 relative input input-bordered w-full pl-12" required>
+            </div>
+            @if(flashMessages.has('errors.nominal'))
+            <p class="text-error">{{ flashMessages.get('errors.nominal') }}</p>
+            @endif
+          </div>
+
+          <div class="form-control">
+            <label for="keterangan">Keterangan<span class="text-error"> *</span></label>
+            <textarea name="keterangan" id="keterangan" class="textarea textarea-bordered h-24"
+              placeholder="Contoh: Pembayaran 2 bulan, dlsb" required maxlength="100"></textarea>
+            @if(flashMessages.has('errors.keterangan'))
+            <p class="text-error">{{ flashMessages.get('errors.keterangan') }}</p>
+            @endif
+          </div>
+        </div>
+
+
+        <div class="text-secondary italic ">
+          Pastikan anda mengisi seluruh masukan bertanda bintang (*)
+        </div>
+
+        <div class="mt-8 flex space-x-4 max-w-xs">
+          <div class="flex-1">
+            <button type="button" id="btSubmit" class="btn btn-primary btn-block text-white">Simpan</button>
+          </div>
+          <div class="flex-1">
+            <a href="/app/transaksi/gadai/{{ gadai.id }}/pembayaran" class="btn btn-secondary btn-block text-white">Batal</a>
+          </div>
+        </div>
+
+      </div>
+    </form>
+
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/form-bayar-gadai.js')}}"></script>
+
+@endsection

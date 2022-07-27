@@ -1,10 +1,10 @@
 @layout('layouts/master')
 
 @section('more-style')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.css"
-  integrity="sha512-+VDbDxc9zesADd49pfvz7CgsOl2xREI/7gnzcdyA9XjuTxLXrdpuz21VVIqc5HPfZji2CypSbxx1lgD7BgBK5g=="
-  crossorigin="anonymous" referrerpolicy="no-referrer" />
 @endsection
+
+{{-- buat ngeset judul --}}
+@set('judul', 'Menu Kelola Barang - Pengaturan | Postoma')
 
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="atur-barang" id="base-page">
@@ -13,6 +13,8 @@
 
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
     @include('partials/wadah-alert')
+
+    <input type="number" class="hidden" id="eleBolehEdit" value="{{ (session.get('isPemilik'))? 1 : 0 }}">
 
     {{--  informasi  --}}
     <div class="min-h-96 flex lg:space-x-8 space-y-6 lg:space-y-0 flex-col lg:flex-row">
@@ -24,6 +26,7 @@
           <li><a href="/app/pengaturan/general">General</a></li>
           <li><a href="/app/pengaturan/kadar">Kadar Perhiasan</a></li>
           <li><a href="/app/pengaturan/transaksi">Transaksi</a></li>
+          <li><a href="/app/pengaturan/saldo">Saldo Toko</a></li>
           <li class="bordered"><a href="/app/pengaturan/barang">Kelola Barang</a></li>
           <li><a href="/app/pengaturan/pegawai">Pegawai</a></li>
         </ul>
@@ -43,9 +46,9 @@
             <ul class="mt-4">
 
               <li class="border-b">
-                <a href="#" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahStokMinimumKelompok" class="flex py-3 px-2 group hover:bg-base-300">
                   <div class="flex-1">
-                    <h3 class="font-semibold">Stok minimal kelompok</h3>
+                    <h3 class="font-semibold">Stok minimum kelompok perhiasan</h3>
                     <span class="opacity-75">{{ pengaturan.defaultStokMinimalKelompok }}</span>
                   </div>
                   <span class="flex-none flex items-center">
@@ -59,7 +62,7 @@
               </li>
 
               <li class="border-b">
-                <a href="#" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahPeringatanStokMenipis" class="flex py-3 px-2 group hover:bg-base-300">
                   <div class="flex-1">
                     <h3 class="font-semibold">Peringatan stok menipis</h3>
                     <span class="opacity-75">{{ (pengaturan.defaultIngatkanStokMenipis)? 'Aktif' : 'Nonaktif' }}</span>
@@ -91,11 +94,6 @@
 @endsection
 
 @section('script')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js"
-  integrity="sha512-ZK6m9vADamSl5fxBPtXw6ho6A4TuX89HUbcfvxa2v2NYNT/7l8yFGJ3JlXyMN4hlNbz0il4k6DvqbIW5CCwqkw=="
-  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-
 <script src="{{asset('assets/app.js')}}"></script>
 <script src="{{asset('assets/atur-barang.js')}}"></script>
 @endsection

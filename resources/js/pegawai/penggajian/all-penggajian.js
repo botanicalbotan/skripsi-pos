@@ -1,5 +1,8 @@
 import Swal from "sweetalert2"
 
+import {
+  SwalCustomColor
+} from '../../fungsi.js'
 
 
 $(function () {
@@ -69,7 +72,7 @@ $(function () {
           showCancelButton: true,
           cancelButtonText: 'Batal',
           scrollbarPadding: false,
-          confirmButtonColor: global.SwalCustomColor.button.confirm,
+          confirmButtonColor: SwalCustomColor.button.confirm,
           html: printAturTabelHTML(),
           willOpen: () => {
             Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
@@ -168,7 +171,7 @@ $(function () {
       return htmlAddStock
     }
 
-    // refresh
+    // ------------------- refresh -----------------------
     const btPerbaruiData = document.getElementById('btPerbaruiData')
 
     btPerbaruiData.addEventListener('click', (e) => {
@@ -181,23 +184,27 @@ $(function () {
         didOpen: () => {
           Swal.showLoading()
 
-          $.get("/app/pegawai/penggajian/refresh", {},
-            function (data, textStatus, jqXH54R) {
-              const time = setTimeout(() => {
+          setTimeout(() => {
+            $.get("/app/pegawai/penggajian/refresh", {},
+              function (data, textStatus, jqXH54R) {
+
                 triggerSwalPenggajianSukses(data.jumlah)
                 Swal.hideLoading()
-              }, 1000)
-            },
-            "json"
-          ).catch((xhr) => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Terdapat error dari server!',
-              scrollbarPadding: false,
-              text: xhr.statusText,
-              confirmButtonText: 'Tutup'
+
+              },
+              "json"
+            ).catch((xhr) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Terdapat error dari server!',
+                scrollbarPadding: false,
+                text: xhr.statusText,
+                confirmButtonText: 'Tutup'
+              })
             })
-          })
+          }, 1000)
+
+
         }
       })
     })
@@ -236,7 +243,7 @@ $(function () {
           allowOutsideClick: false,
           allowEscapeKey: false,
           scrollbarPadding: false,
-          confirmButtonColor: global.SwalCustomColor.button.confirm,
+          confirmButtonColor: SwalCustomColor.button.confirm,
           confirmButtonText: 'Ya, bayar!',
           cancelButtonText: 'Batal',
           focusCancel: true,
@@ -265,7 +272,7 @@ $(function () {
               })
 
 
-            }).catch((error) =>{
+            }).catch((error) => {
               Swal.hideLoading()
               Swal.showValidationMessage('Error: ' + error)
             })
@@ -286,19 +293,19 @@ $(function () {
 
     const btBatalBayar = document.getElementById('btBatalBayar')
 
-    if(btBatalBayar){
+    if (btBatalBayar) {
       btBatalBayar.addEventListener('click', () => {
         Swal.fire({
           title: 'Yakin untuk membatalkan pembayaran?',
-          html: 'Anda akan membatalkan pembayaran tagihan <b>"'+ judul.textContent +'"</b>. Pembatalan akan dicatat sebagai kas masuk, dan status tagihan kembali berubah menjadi <b>"menunggu pembayaran"</b>',
+          html: 'Anda akan membatalkan pembayaran tagihan <b>"' + judul.textContent + '"</b>. Pembatalan akan dicatat sebagai kas masuk, dan status tagihan kembali berubah menjadi <b>"menunggu pembayaran"</b>',
           icon: 'question',
-          iconColor: global.SwalCustomColor.icon.error,
+          iconColor: SwalCustomColor.icon.error,
           showCancelButton: true,
-          confirmButtonText: 'Ya, batal bayar!',
+          confirmButtonText: 'Ya, batalkan tagihan!',
           cancelButtonText: 'Batal',
           scrollbarPadding: false,
           focusCancel: true,
-          confirmButtonColor: global.SwalCustomColor.button.deny,
+          confirmButtonColor: SwalCustomColor.button.deny,
           preConfirm: () => {
 
             Swal.showLoading(Swal.getConfirmButton())
@@ -324,7 +331,7 @@ $(function () {
               })
 
 
-            }).catch((error) =>{
+            }).catch((error) => {
               Swal.hideLoading()
               Swal.showValidationMessage('Error: ' + error)
             })
@@ -347,23 +354,23 @@ $(function () {
     const btHapusTagihan = document.getElementById('btHapusTagihan')
     const formHapusTagihan = document.getElementById('formHapusTagihan')
 
-    if(btHapusTagihan){
+    if (btHapusTagihan) {
       btHapusTagihan.addEventListener('click', () => {
         formHapusTagihan.action = window.location.pathname + '?_method=DELETE'
 
         Swal.fire({
           title: 'Yakin untuk menghapus?',
-          text: 'Anda akan menghapus tagihan "'+judul.textContent+'", dan tagihan yang dihapus tidak dapat dibayar kembali.',
+          text: 'Anda akan menghapus tagihan "' + judul.textContent + '", dan tagihan yang dihapus tidak dapat dibayar kembali.',
           icon: 'info',
-          iconColor: global.SwalCustomColor.icon.error,
+          iconColor: SwalCustomColor.icon.error,
           showCancelButton: true,
           confirmButtonText: 'Ya, hapus!',
           scrollbarPadding: false,
           cancelButtonText: 'Batal',
-          confirmButtonColor: global.SwalCustomColor.button.deny,
+          confirmButtonColor: SwalCustomColor.button.deny,
           focusCancel: true
-        }).then((result)=>{
-          if(result.isConfirmed) formHapusTagihan.submit()
+        }).then((result) => {
+          if (result.isConfirmed) formHapusTagihan.submit()
         })
       })
     }

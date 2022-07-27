@@ -12,7 +12,15 @@ var isBase64 = require('is-base64')
 
 export default class PegawaisController {
 
-  public async index ({ view, request }: HttpContextContract) {
+  public async index ({ view, request, auth, response }: HttpContextContract) {
+    if(!auth.user){
+      return response.redirect().toPath('/app')
+    }
+    const userPengakses = await User.findOrFail(auth.user.id)
+    await userPengakses.load('pengguna', (query) =>{
+      query.preload('jabatan')
+    })
+
     const opsiOrder = [
       'penggunas.nama',
       'jabatans.nama',
@@ -34,13 +42,15 @@ export default class PegawaisController {
     const pegawais = await Database.from('penggunas')
       .join('jabatans','penggunas.jabatan_id', '=', 'jabatans.id')
       .whereNull('penggunas.deleted_at')
-      .whereNot('jabatans.nama', 'Pemilik')
       .select('penggunas.id as id', 'penggunas.nama as nama', 'penggunas.gender as gender', 'jabatans.nama as jabatan', 'penggunas.apakah_pegawai_aktif as apakahAktif', 'penggunas.gaji_bulanan as gajiBulanan', 'penggunas.foto as foto', 'penggunas.tanggal_gajian_selanjutnya as gajiSelanjutnya')
       .if(cari !== '', (query) => {
         query.where('penggunas.nama', 'like', `%${cari}%`)
       })
       .if(sanitizedOrder != 5, (query) => {
         query.orderBy('penggunas.apakah_pegawai_aktif', 'desc')
+      })
+      .if(userPengakses.pengguna.jabatan.nama !== 'Pemilik', (query) => {
+        query.whereNot('jabatans.nama', 'Pemilik') // selain pemilik gabisa liat pemilik
       })
       .if(sanitizedFilterShow == 0, (query) => {
         query
@@ -99,12 +109,12 @@ export default class PegawaisController {
       // lifehackUrlSementara: '/uploads/profilePict/'
     }
 
-    return view.render('pegawai/base', { pegawais, tambahan })
+    return await view.render('pegawai/base', { pegawais, tambahan })
   }
 
   public async create ({ view }: HttpContextContract) {
     const pengaturan = await Pengaturan.findOrFail(1)
-    return view.render('pegawai/form-pegawai', { gaji: pengaturan.defaultGajiKaryawan })
+    return await view.render('pegawai/form-pegawai', { gaji: pengaturan.defaultGajiKaryawan })
   }
 
   public async store ({ request, response, session }: HttpContextContract) {
@@ -259,7 +269,7 @@ export default class PegawaisController {
         rupiahParser: rupiahParser
       }
 
-      return view.render('pegawai/view-pegawai', {
+      return await view.render('pegawai/view-pegawai', {
         pegawai,
         tambahan,
         fungsi
@@ -280,7 +290,7 @@ export default class PegawaisController {
       await pegawai.load('user')
       await pegawai.load('jabatan')
 
-      return view.render('pegawai/akun/view-akun-pegawai', {
+      return await view.render('pegawai/akun/view-akun-pegawai', {
         pegawai: {
           nama: pegawai.nama,
           jabatan: pegawai.jabatan.nama,
@@ -321,9 +331,10 @@ export default class PegawaisController {
       }
 
       // lanjut disini
-      return view.render('pegawai/form-edit-pegawai', { pegawai, tambahan })
+      return await view.render('pegawai/form-edit-pegawai', { pegawai, tambahan })
 
     } catch (error) {
+      console.error(error)
       session.flash('alertError', 'Anda tidak memiliki hak untuk mengakses laman tersebut!')
       return response.redirect().toPath('/app/pegawai')
     }
@@ -475,7 +486,7 @@ export default class PegawaisController {
     }
   }
 
-  public async checkCredit ({ params, request, response, auth }: HttpContextContract) {
+  public async checkCreditUbahAkun ({ params, request, response, auth }: HttpContextContract) {
     const pass = request.input('pass')
 
     try {

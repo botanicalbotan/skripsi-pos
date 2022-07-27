@@ -87,12 +87,12 @@ export default class KerusakansController {
       lastDataInPage: tempLastData >= kerusakans.total ? kerusakans.total : tempLastData,
     }
 
-    return view.render('barang/kerusakan/list-kerusakan', { kerusakans, tambahan })
-    // return view.render('barang/kerusakan/back-up-list-kerusakan')
+    return await view.render('barang/kerusakan/list-kerusakan', { kerusakans, tambahan })
+    // return await view.render('barang/kerusakan/back-up-list-kerusakan')
   }
 
   public async create({ view }: HttpContextContract) {
-    return view.render('barang/kerusakan/form-kerusakan')
+    return await view.render('barang/kerusakan/form-kerusakan')
   }
 
   public async store({ request, response, session, auth }: HttpContextContract) {
@@ -158,7 +158,7 @@ export default class KerusakansController {
         urlFotoPencatat: urlPencatat
       }
 
-      return view.render('barang/kerusakan/view-kerusakan', { kerusakan, tambahan })
+      return await view.render('barang/kerusakan/view-kerusakan', { kerusakan, tambahan })
     } catch (error) {
       session.flash('alertError', 'Kerusakan yang anda akses tidak valid atau terhapus.')
       return response.redirect().toPath('/app/barang/kerusakan/')
@@ -170,7 +170,7 @@ export default class KerusakansController {
       const kerusakan = await Kerusakan.findOrFail(params.id)
       await kerusakan.load('bentuk')
 
-      return view.render('barang/kerusakan/form-edit-kerusakan', { kerusakan })
+      return await view.render('barang/kerusakan/form-edit-kerusakan', { kerusakan })
     } catch (error) {
       return response.redirect().toPath('/app/barang/kerusakan/')
     }
@@ -243,14 +243,9 @@ export default class KerusakansController {
   // ================================== Non CRUD =============================================================
   public async getKerusakanByBentuk({ request }: HttpContextContract) {
     let bentukId = request.input('bentuk', '')
-    let tingkat = request.input('tingkat', '0')
-    let sanitizedTingkat = (['0', '1'].includes(tingkat))? tingkat : '0'
 
     let kerusakan = await Database
       .from('kerusakans')
-      .if(sanitizedTingkat == 0, (query) =>{
-        query.where('apakah_bisa_diperbaiki', true)
-      })
       .where('bentuk_id', bentukId)
       .whereNull('deleted_at')
       .orderBy('nama', 'asc')

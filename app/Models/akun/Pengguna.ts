@@ -27,6 +27,7 @@ import Kelompok from 'App/Models/barang/Kelompok'
 import Kerusakan from 'App/Models/barang/Kerusakan'
 import Model from 'App/Models/barang/Model'
 import KoreksiStok from 'App/Models/barang/KoreksiStok'
+import PembayaranGadai from '../transaksi/PembayaranGadai'
 
 type PenggunaQuery = ModelQueryBuilderContract < typeof Pengguna >
 
@@ -146,6 +147,9 @@ type PenggunaQuery = ModelQueryBuilderContract < typeof Pengguna >
       @hasMany(() => Gadai)
     public gadais: HasMany < typeof Gadai >
 
+      @hasMany(() => PembayaranGadai)
+    public pembayaranGadais: HasMany < typeof PembayaranGadai >
+
       @hasMany(() => Pembelian)
     public pembelians: HasMany < typeof Pembelian >
 
@@ -167,10 +171,10 @@ type PenggunaQuery = ModelQueryBuilderContract < typeof Pengguna >
 
       // ini decoratorss
       @beforeFetch()
-    @beforeFind()
-    public static withoutSoftDeletes(query: PenggunaQuery) {
-      query.whereNull('deleted_at')
-    }
+      @beforeFind()
+      public static withoutSoftDeletes(query: PenggunaQuery) {
+        query.whereNull('penggunas.deleted_at')
+      }
 
 
   }

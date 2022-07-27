@@ -1,3 +1,0 @@
-ntar copas semua view pembelian, v1 v2 ato v3
-sama jsnya juga
-tinggal dibedain waktu cek harga sama final hitung harga + simpen db

@@ -7,15 +7,24 @@ import {
   belongsTo,
   BelongsTo,
   manyToMany,
-  ManyToMany
+  ManyToMany,
+  beforeFetch,
+  beforeFind,
+  ModelQueryBuilderContract,
+  scope
 } from '@ioc:Adonis/Lucid/Orm'
-import DetailPembelianKhusus from 'App/Models/transaksi/DetailPembelianKhusus'
-import Kadar from 'App/Models/barang/Kadar'
+// import DetailPembelianKhusus from 'App/Models/transaksi/DetailPembelianKhusus'
+// import Kadar from 'App/Models/barang/Kadar'
 import Model from 'App/Models/barang/Model'
-import DetailPembelianUmum from 'App/Models/transaksi/DetailPembelianUmum'
+// import DetailPembelianUmum from 'App/Models/transaksi/DetailPembelianUmum'
 import Kerusakan from 'App/Models/barang/Kerusakan'
 import Pengguna from 'App/Models/akun/Pengguna'
 import KodeProduksi from '../barang/KodeProduksi'
+import PembelianNotaLeo from './PembelianNotaLeo'
+import Gadai from './Gadai'
+
+type PembeliansQuery = ModelQueryBuilderContract<typeof Pembelian>
+
 
 export default class Pembelian extends BaseModel {
   // ================================ AUTO GENERATED ===================================
@@ -31,13 +40,15 @@ export default class Pembelian extends BaseModel {
   @column()
   public kondisiFisik: string
 
+  @column()
+  public keteranganTransaksi: string
 
   // ================================ KONPONEN FORM ===================================
   @column()
-  public asalToko: string
+  public beratBarang: number
 
   @column()
-  public beratBarang: number
+  public asalToko: string
 
   @column()
   public keterangan: string
@@ -45,16 +56,44 @@ export default class Pembelian extends BaseModel {
 
   // ================================ TRANSACTIONAL ===================================
   @column()
-  public apakahPembelianNormal: boolean
+  public apakahTukarTambah: boolean
 
   @column()
-  public hargaBeliAkhir: number
+  public apakahDitawar: boolean
+
+  @column()
+  public hargaBeliPerGramSeharusnya: number
+
+  @column()
+  public hargaBeliPerGramAkhir: number // kalo ditawar bakal nyimpen tawarannya
+
+  @column()
+  public hargaBeliSeharusnya: number
+
+  @column()
+  public hargaBeliAkhir: number // kalo ditawar bakal nyimpen tawarannya
+
+  @column()
+  public ongkosKerusakanTotal: number
 
   // ================================ CONSTRAIN ===================================
   
   @column.dateTime()
   public deletedAt: DateTime | null
 
+
+  // ========================== GADAI, PERMINTAAN DOSEN ============================
+  @column.dateTime()
+  public maxGadaiAt: DateTime
+
+  @column()
+  public apakahDigadaikan: boolean
+
+  @column.dateTime()
+  public digadaiAt: DateTime | null
+
+  @hasOne(() => Gadai)
+  public gadai: HasOne<typeof Gadai>
   
 
   @column.dateTime({ autoCreate: true })
@@ -66,11 +105,6 @@ export default class Pembelian extends BaseModel {
 
 
   // ========================== FK PENTING =====================================
-  // @column()
-  // public kadarId: number
-
-  // @belongsTo(() => Kadar)
-  // public kadar: BelongsTo<typeof Kadar>
 
   @column()
   public kodeProduksiId: number
@@ -90,13 +124,8 @@ export default class Pembelian extends BaseModel {
   @belongsTo(() => Pengguna)
   public pengguna: BelongsTo<typeof Pengguna>
 
-  // kalo bener sini mau ditambahin bentuk sendiri, panggil lewat sini
-
-  @hasOne(() => DetailPembelianUmum)
-  public detailPembelianUmum: HasOne<typeof DetailPembelianUmum>
-
-  @hasOne(() => DetailPembelianKhusus)
-  public detailPembelianKhusus: HasOne<typeof DetailPembelianKhusus>
+  @hasOne(() => PembelianNotaLeo)
+  public pembelianNotaLeo: HasOne<typeof PembelianNotaLeo>
 
   @manyToMany(() => Kerusakan, {
     pivotTable: 'pembelian_kerusakans',
@@ -111,4 +140,22 @@ export default class Pembelian extends BaseModel {
     ]
   })
   public kerusakans: ManyToMany<typeof Kerusakan>
+
+
+  // disini decorators
+  @beforeFetch()
+  @beforeFind()
+  public static withoutSoftDeletes(query: PembeliansQuery){
+    query.whereNull('pembelians.deleted_at')
+  }
+
+
+  // ================================ SCOPE ==============================================
+  public static formGadai = scope((query) => {
+    query
+      .where('apakah_digadaikan', true)
+      .whereNull('deleted_at')
+      // tanggalnya di cek manual
+  })
+
 }

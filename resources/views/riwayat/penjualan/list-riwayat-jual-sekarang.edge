@@ -4,6 +4,9 @@
 
 @endsection
 
+{{-- buat ngeset judul --}}
+@set('judul', 'Riwayat Penjualan Hari Ini | Postoma')
+
 @section('content')
 <div class="w-full p-8 base-page" data-pagename = "list" id="base-page">
   {{--  aslinya menu kelompok  --}}
@@ -21,7 +24,7 @@
       </div>
       <div class="stat-desc">Jumlah Penjualan Hari Ini</div>
       <div class="stat-value text-accent-focus font-semibold text-2xl">{{ rekap.jumlahPJ | 0 }}</div>
-      <div class="stat-title">Disini buat ngebandingin?</div>
+      {{--  <div class="stat-title">Disini buat ngebandingin?</div>  --}}
     </div>
     <div class="stat shadow">
       <div class="stat-figure text-error">
@@ -31,7 +34,7 @@
       </div>
       <div class="stat-desc">Total Gram Terjual Hari Ini</div>
       <div class="stat-value text-error font-semibold text-2xl">{{ rekap.totalBerat | 0 }} Gram</div>
-      <div class="stat-title">Disini buat ngebandingin?</div>
+      {{--  <div class="stat-title">Disini buat ngebandingin?</div>  --}}
     </div>
     <div class="stat shadow">
       <div class="stat-figure text-info">
@@ -42,7 +45,7 @@
       </div>
       <div class="stat-desc">Total Nominal Uang Masuk</div>
       <div class="stat-value text-info font-semibold text-2xl">{{ fungsi.rupiahParser(rekap.totalHarga | 0) }}</div>
-      <div class="stat-title">Disini buat ngebandingin?</div>
+      {{--  <div class="stat-title">Disini buat ngebandingin?</div>  --}}
     </div>
   </div>
 

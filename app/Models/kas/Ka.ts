@@ -61,6 +61,6 @@ export default class Ka extends BaseModel {
   @beforeFetch()
   @beforeFind()
   public static withoutSoftDeletes(query: KaQuery){
-    query.whereNull('deleted_at')
+    query.whereNull('kas.deleted_at')
   }
 }

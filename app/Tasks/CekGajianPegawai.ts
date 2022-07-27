@@ -15,10 +15,10 @@ export default class CekGajianPegawai extends BaseTask {
     // return '0 0 * ? * *'
 
     // tiap menit
-    return '* * * * *'
+    // return '* * * * *'
 
     // tiap 12 jam, pake yang ini ntar
-    // return '0 */12 * * *'
+    return '0 */12 * * *'
   }
   /**
    * Set enable use .lock file for block run retry task
@@ -39,7 +39,8 @@ export default class CekGajianPegawai extends BaseTask {
       .whereNull('deleted_at')
       .whereNotNull('tanggal_mulai_aktif')
       .whereNotNull('tanggal_gajian_selanjutnya')
-      .andWhere('tanggal_gajian_selanjutnya', '<=', DateTime.now().toISO())
+      // .andWhere('tanggal_gajian_selanjutnya', '<=', DateTime.now().toISO())
+      .whereRaw('DATE(tanggal_gajian_selanjutnya) <= DATE(NOW())')
       .orderBy('tanggal_gajian_selanjutnya', 'asc')
 
     let counter = 0
@@ -104,6 +105,6 @@ export default class CekGajianPegawai extends BaseTask {
       .insert({ direfresh_at: DateTime.now().toSQL() })
 
     // counter ini nanti buat bikin notifikasi
-    Logger.info(counter + ' data telah ditambahkan')
+    Logger.info(counter + ' penggajian pegawai telah ditambahkan')
   }
 }

@@ -5,9 +5,17 @@ import {
   beforeSave, 
   BaseModel,
   hasOne,
-  HasOne
+  HasOne,
+  hasMany,
+  HasMany,
+  beforeFetch,
+  beforeFind,
+  ModelQueryBuilderContract
 } from '@ioc:Adonis/Lucid/Orm'
 import Pengguna from 'App/Models/akun/Pengguna'
+import PasswordResetToken from './akun/PasswordResetToken'
+
+type UserQuery = ModelQueryBuilderContract < typeof User >
 
 export default class User extends BaseModel {
 
@@ -42,14 +50,7 @@ export default class User extends BaseModel {
   public updatedAt: DateTime
   
 
-  @beforeSave()
-  public static async hashPassword (user: User) {
-    if (user.$dirty.password) {
-      user.password = await Hash.make(user.password)
-    }
-  }
-
-
+  
 
   // FK dan relasi
   @hasOne(() => Pengguna, {
@@ -57,4 +58,24 @@ export default class User extends BaseModel {
     foreignKey: 'userId'
   })
   public pengguna: HasOne<typeof Pengguna>
+  
+
+  @hasMany(() => PasswordResetToken)
+  public passwordResetTokens: HasMany < typeof PasswordResetToken >
+
+
+  // ini decoratorss
+  @beforeFetch()
+  @beforeFind()
+  public static withoutSoftDeletes(query: UserQuery) {
+    query.whereNull('users.deleted_at')
+  }
+
+  @beforeSave()
+  public static async hashPassword (user: User) {
+    if (user.$dirty.password) {
+      user.password = await Hash.make(user.password)
+    }
+  }
+
 }

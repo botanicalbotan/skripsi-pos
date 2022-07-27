@@ -9,8 +9,7 @@ import Penjualan from 'App/Models/transaksi/Penjualan'
 import Terbilang from 'App/CustomClasses/Terbilang'
 import Model from 'App/Models/barang/Model'
 import Pengaturan from 'App/Models/sistem/Pengaturan'
-import CPasaran from 'App/CustomClasses/CPasaran'
-import RekapHarian from 'App/Models/kas/RekapHarian'
+import { prepareRekap } from 'App/CustomClasses/CustomRekapHarian'
 import User from 'App/Models/User'
 var isBase64 = require('is-base64')
 var QRCode = require('qrcode')
@@ -53,7 +52,7 @@ export default class PenjualansController {
       apakahSembunyi: sanitizedSembunyiStok == 0
     }
 
-    return view.render('transaksi/penjualan/prepare-jual', { kelompoks, tambahan })
+    return await view.render('transaksi/penjualan/prepare-jual', { kelompoks, tambahan })
   }
 
   public async form({ view, request, response, session }: HttpContextContract) {
@@ -85,149 +84,10 @@ export default class PenjualansController {
         })
         .firstOrFail()
 
-      return view.render('transaksi/penjualan/form-jual', { kelompok })
+      return await view.render('transaksi/penjualan/form-jual', { kelompok })
     } catch (error) {
       session.flash('alertError', 'Kelompok yang ada pilih tidak valid!')
       return response.redirect().toPath('/app/transaksi/penjualan')
-    }
-  }
-
-  public async formLama({ view, request, response, session }: HttpContextContract) {
-    // kelompokTerpilih
-    const kunci = request.input('kt')
-
-    // kemungkinan kalau dah kompleks bakal pake transaction
-
-    try {
-      const kelompok = await Kelompok.query()
-        .withScopes((scopes) => {
-          scopes.adaStokTidakDihapus()
-        })
-        .where('id', kunci)
-        .preload('kadar', (kadarQuery) => {
-          kadarQuery.preload('kodeProduksis', (kodeproQuery)=>{
-            kodeproQuery
-            .select('id', 'kode')
-            .whereNull('deleted_at')
-          })
-        })
-        .preload('bentuk', (bentukQuery) => {
-          bentukQuery
-          .preload('models', (modelQuery) => {
-            modelQuery
-            .select('id', 'nama')
-            .whereNull('deleted_at')
-          })
-        })
-        .firstOrFail()
-
-      return view.render('transaksi/penjualan/form-lama', { kelompok })
-    } catch (error) {
-      session.flash('alertError', 'Kelompok yang ada pilih tidak valid!')
-      return response.redirect().toPath('/app/transaksi/penjualan')
-    }
-  }
-
-  public async create({}: HttpContextContract) {}
-
-  public async store({}: HttpContextContract) {}
-
-  public async show({ params, response, view, session }: HttpContextContract) {
-    try {
-      const PJ = await Penjualan.findOrFail(params.id)
-      await PJ.load('pengguna', (query) => {
-        query.preload('jabatan')
-      })
-      await PJ.load('itemJuals')
-      await PJ.load('model', (query) => {
-        query.preload('bentuk')
-      })
-      await PJ.load('kodeProduksi', (query) =>{
-        query.preload('kadar')
-      })
-      await PJ.load('itemJuals')
-      // await PJ.load('rentangUsia')
-      // sama load2 yang lain kalo udah kesambung
-
-      const urlFotoPencatat = (await Drive.exists('profilePict/' + PJ.pengguna.foto))? (await Drive.getUrl('profilePict/' + PJ.pengguna.foto)) : ''
-      const urlFotoBarang = (await Drive.exists('transaksi/penjualan/' + PJ.fotoBarang))? (await Drive.getUrl('transaksi/penjualan/' + PJ.fotoBarang)) : ''
-
-      const fungsi = {
-        rupiahParser: rupiahParser,
-        kapitalHurufPertama: kapitalHurufPertama
-      }
-
-      const tambahan = {
-        urlFotoPencatat: urlFotoPencatat,
-        urlFotoBarang: urlFotoBarang,
-        adaFotoBarang: (urlFotoBarang !== 'kosong' && urlFotoBarang)
-      }
-
-      return view.render('transaksi/penjualan/view-jual', { PJ, fungsi, tambahan })
-
-    } catch (error) {
-      console.error(error)
-      session.flash('alertError', 'Penjualan yang anda pilih tidak valid!')
-      return response.redirect().toPath('/app/riwayat/penjualan')
-    }
-  }
-
-  public async edit({}: HttpContextContract) {}
-
-  public async update({}: HttpContextContract) {}
-
-  public async destroy({ params, response, session, auth }: HttpContextContract) {
-    try {
-      const PJ = await Penjualan.findOrFail(params.id)
-
-      const CP = new CPasaran()
-      const pasaranSekarang = CP.pasaranHarIni()
-
-      let pengaturan = await Pengaturan.findOrFail(1) // ntar diganti jadi ngecek toko aktif di session
-      await pengaturan.load('pasarans')
-
-      let apakahPasaran = false
-      for (const element of pengaturan.pasarans) {
-        if(element.hari === pasaranSekarang){
-          apakahPasaran = true
-          break
-        }
-      }
-
-      let cariRH = await RekapHarian.findBy('tanggal_rekap', DateTime.local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toSQL())
-
-      if(!cariRH){
-        cariRH = await RekapHarian.create({
-          pasaran: pasaranSekarang,
-          apakahHariPasaran: apakahPasaran,
-          tanggalRekap: DateTime.local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-        })
-      }
-
-      if(!auth.user) throw 'auth ngga valid'
-      const userPengakses = await User.findOrFail(auth.user.id)
-      await userPengakses.load('pengguna')
-
-
-      await cariRH.related('kas').create({
-        apakahKasKeluar: true,
-        apakahDariSistem: true,
-        perihal: 'Pembatalan penjualan "' + PJ.namaBarang + '" pada tanggal ' + PJ.createdAt.toFormat('dd LLL yyyy'),
-        nominal: -Math.abs(PJ.hargaJualAkhir),
-        penggunaId: userPengakses.pengguna.id
-      })
-
-      pengaturan.saldoToko -= Math.abs(PJ.hargaJualAkhir)
-      await pengaturan.save()
-
-      PJ.deletedAt = DateTime.now()
-      await PJ.save()
-
-      session.flash('alertSukses', 'Transaksi penjualan "'+ PJ.namaBarang +'" berhasil dihapus!')
-      return response.redirect().toPath('/app/riwayat/penjualan')
-    } catch (error) {
-      session.flash('alertError', 'Ada masalah saat menghapus data penjualan. Silahkan coba lagi setelah beberapa saat.')
-      return response.redirect().toPath('/app/riwayat/penjualan')
     }
   }
 
@@ -294,12 +154,9 @@ export default class PenjualansController {
         ),
       fotoBarangBase64: schema.string(),
       ajukanTT: schema.string.optional(),
-      namaPembeli: schema.string.optional({ trim: true }, [rules.maxLength(50)]), // masih ga perlu, ntar tanya lagi
-      genderPembeli: schema.enum.optional(['L', 'P']), // masih ga perlu, ntar tanya lagi
-      usiaPembeli: schema.number.optional([
-        rules.range(1, 3),
-        rules.exists({ table: 'rentang_usias', column: 'id' }),
-      ]), // masih ga perlu, ntar tanya lagi
+
+      namaPemilik: schema.string.optional({ trim: true }, [rules.maxLength(50)]),
+      alamatPemilik: schema.string.optional({ trim: true }, [rules.maxLength(50)])
     })
 
     const validrequest = await request.validate({ schema: newPenjualanSchema })
@@ -328,7 +185,6 @@ export default class PenjualansController {
 
     // ========== Foto ==========
     let namaFileFoto = ''
-    // typescript ngga mau kalau ambigu, buat ngeyakinin mereka kalo ini string, kudu eksplisit
     let fileFoto = validrequest.fotoBarangBase64 || ''
 
     try {
@@ -357,6 +213,8 @@ export default class PenjualansController {
       if(!auth.user) throw 'auth ngga valid'
       const userPengakses = await User.findOrFail(auth.user.id)
       await userPengakses.load('pengguna')
+
+      const pengaturan = await Pengaturan.findOrFail(1)
 
       // ========== Hitungan Rumus ==========
       const kodepro = await KodeProduksi.findOrFail(validrequest.kodepro)
@@ -412,7 +270,9 @@ export default class PenjualansController {
         apakahPotonganPersen: kodepro.kadar.apakahPotonganPersen,
         hargaJualPerGram: hargaPerGram,
         hargaJualAkhir: hargaJual,
-        maxPrintAt: DateTime.now().plus({ minutes: 30 }), // dikasi waktu 30 menit buat ngeprint, bisa diganti ntar,
+        maxPrintAt: DateTime.now().plus({ minutes: pengaturan.defaultWaktuMaksimalPrintNota }), // dikasi waktu 30 menit buat ngeprint, bisa diganti ntar,
+        namaPemilik: (validrequest.namaPemilik)? validrequest.namaPemilik : null,
+        alamatPemilik: (validrequest.alamatPemilik)? validrequest.alamatPemilik : null
       })
 
       kelompok.stok -= 1
@@ -440,7 +300,7 @@ export default class PenjualansController {
 
       await addItem()
 
-      const pengaturan = await Pengaturan.findOrFail(1)
+      
       pengaturan.saldoToko += hargaJual
       await pengaturan.save()
 
@@ -452,6 +312,80 @@ export default class PenjualansController {
       await Drive.delete(namaFileFoto)
       session.flash('alertError', 'Ada masalah saat menyimpan transaksi. Mohon ulangi beberapa saat lagi.')
       return response.redirect().withQs().back()
+    }
+  }
+
+  public async show({ params, response, view, session }: HttpContextContract) {
+    try {
+      const PJ = await Penjualan.findOrFail(params.id)
+      await PJ.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+      await PJ.load('itemJuals')
+      await PJ.load('model', (query) => {
+        query.preload('bentuk')
+      })
+      await PJ.load('kodeProduksi', (query) =>{
+        query.preload('kadar')
+      })
+
+      const urlFotoPencatat = (await Drive.exists('profilePict/' + PJ.pengguna.foto))? (await Drive.getUrl('profilePict/' + PJ.pengguna.foto)) : ''
+      const urlFotoBarang = (await Drive.exists('transaksi/penjualan/' + PJ.fotoBarang))? (await Drive.getUrl('transaksi/penjualan/' + PJ.fotoBarang)) : ''
+
+      const fungsi = {
+        rupiahParser: rupiahParser,
+        kapitalHurufPertama: kapitalHurufPertama
+      }
+
+      const tambahan = {
+        urlFotoPencatat: urlFotoPencatat,
+        urlFotoBarang: urlFotoBarang,
+        adaFotoBarang: (urlFotoBarang !== 'kosong' && urlFotoBarang)
+      }
+
+      return await view.render('transaksi/penjualan/view-jual', { PJ, fungsi, tambahan })
+
+    } catch (error) {
+      session.flash('alertError', 'Penjualan yang anda pilih tidak valid!')
+      return response.redirect().toPath('/app/riwayat/penjualan')
+    }
+  }
+
+  public async destroy({ params, response, session, auth }: HttpContextContract) {
+    try {
+      const PJ = await Penjualan.findOrFail(params.id)
+
+      let pengaturan = await Pengaturan.findOrFail(1) // ntar diganti jadi ngecek toko aktif di session
+      await pengaturan.load('pasarans')
+
+      // buat ngecek rekap harian udah gw taro di custom class ini
+      let cariRH = await prepareRekap()
+
+
+      if(!auth.user) throw 'auth ngga valid'
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
+
+
+      await cariRH.related('kas').create({
+        apakahKasKeluar: true,
+        apakahDariSistem: true,
+        perihal: 'Pembatalan penjualan "' + PJ.namaBarang + '" pada tanggal ' + PJ.createdAt.toFormat('dd LLL yyyy'),
+        nominal: -Math.abs(PJ.hargaJualAkhir),
+        penggunaId: userPengakses.pengguna.id
+      })
+
+      pengaturan.saldoToko -= Math.abs(PJ.hargaJualAkhir)
+      await pengaturan.save()
+
+      PJ.deletedAt = DateTime.now()
+      await PJ.save()
+
+      session.flash('alertSukses', 'Transaksi penjualan "'+ PJ.namaBarang +'" berhasil dihapus!')
+      return response.redirect().toPath('/app/riwayat/penjualan')
+    } catch (error) {
+      session.flash('alertError', 'Ada masalah saat menghapus data penjualan. Silahkan coba lagi setelah beberapa saat.')
+      return response.redirect().toPath('/app/riwayat/penjualan')
     }
   }
 
@@ -471,7 +405,6 @@ export default class PenjualansController {
     }
 
     const terparser = new Terbilang()
-    const url = (await Drive.exists('transaksi/penjualan/' + PJ.fotoBarang))? (await Drive.getUrl('transaksi/penjualan/' + PJ.fotoBarang)) : ''
 
     let now = new Date().getTime()
     let max = new Date(PJ.maxPrintAt.toJSDate()).getTime()
@@ -482,14 +415,13 @@ export default class PenjualansController {
     let seconds = (distance > 0 )? Math.floor((distance % (1000 * 60)) / 1000) : 0
 
     const tambahan = {
-      hargaJualTerbilang: kapitalHurufPertama(terparser.ubahKeTeks(PJ?.hargaJualAkhir || 0)) + ' rupiah',
-      urlFoto: url,
+      hargaJualTerbilang: kapitalHurufPertama(terparser.ubahKeTeks(PJ.hargaJualAkhir || 0)) + ' rupiah',
       apakahExpired: distance <= 0 ,
       menit: minutes,
       detik: seconds
     }
 
-    return view.render('transaksi/penjualan/pasca-jual', { PJ, fungsi, tambahan })
+    return await view.render('transaksi/penjualan/pasca-jual', { PJ, fungsi, tambahan })
 
     } catch (error) {
       session.flash('alertError', 'Penjualan yang anda pilih tidak valid!')
@@ -517,14 +449,6 @@ export default class PenjualansController {
 
   }
 
-
-  // ini ntar dihapus
-  public async testAngkaTerbilang({ request }: HttpContextContract) {
-    let angka = request.input('angka', 0)
-    let parser = new Terbilang()
-    return parser.ubahKeTeks(angka)
-  }
-
   public async cetakNota({ request, response }: HttpContextContract) {
     const idpj = request.input('idpj', '')
 
@@ -535,6 +459,7 @@ export default class PenjualansController {
       await penjualan.load('kelompok', (query) => {
         query.preload('kadar')
       })
+      await penjualan.load('pengguna') // ini manggil karyawan
 
       const warnaPrimer = penjualan.kelompok.kadar.warnaNota
       const warnaNetral = 'black'
@@ -619,6 +544,8 @@ export default class PenjualansController {
 
       let hRow2 = pMargins + 80
 
+      const namaPemilik = (penjualan.namaPemilik)? penjualan.namaPemilik : ''
+      const alamatPemilik = (penjualan.alamatPemilik)? penjualan.alamatPemilik : ''
       let potongan = (penjualan.apakahPotonganPersen)? penjualan.potongan + '%' : rupiahParser(penjualan.potongan) + '/ Gr'
       let potonganFinal = (penjualan.apakahStokBaru)? potongan + ' (NEW)' : potongan
 
@@ -639,13 +566,13 @@ export default class PenjualansController {
         doc.fontSize(13)
         .text('Nama: ', pMargins + 5, hRow2,  { continued:true }) // mau dikasi max width sama max character?
         .font('Times-Bold')
-        .text('Muhammad Arif')
+        .text(namaPemilik)
 
         doc.fontSize(13)
           .font('Times-Roman')
-          .text('Alamat: ', (pWidth / 2), hRow2,  { continued:true }) // mau dikasi max width sama max character?
+          .text('Alamat: ', (pWidth / 2) - 35, hRow2,  { continued:true }) // mau dikasi max width sama max character?
           .font('Times-Bold')
-          .text('Klego, Rt2/Rw1, Klego, Boyolali')
+          .text(alamatPemilik)
       }
 
       doc.moveTo(pMargins, hRow2 + 15)
@@ -801,7 +728,7 @@ export default class PenjualansController {
         doc.fontSize(13)
         .font('Times-Roman')
         .fill(warnaNetral)
-        .text('20 Januari 2021,',maxWRow3 + 15, hRow4 - 20)
+        .text(`${ penjualan.createdAt.toFormat('ff') },`,maxWRow3 + 15, hRow4 - 20)
         .moveDown(1.5)
         .font('Times-Bold')
         .text('TKL1 BUDI')

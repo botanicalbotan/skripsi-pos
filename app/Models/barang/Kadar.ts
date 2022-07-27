@@ -56,6 +56,12 @@ export default class Kadar extends BaseModel {
   public marginPersenUntungUripanMax: number
 
   @column()
+  public marginPersenUntungUripanTtMin: number
+
+  @column()
+  public marginPersenUntungUripanTtMax: number
+
+  @column()
   public marginPersenUntungRosokMin: number
 
   @column()

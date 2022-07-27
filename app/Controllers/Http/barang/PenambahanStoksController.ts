@@ -98,11 +98,11 @@ export default class PenambahanStoksController {
       }
     }
 
-    return view.render('barang/penambahan-stok/list-penambahan', { penambahans, tambahan, fungsi })
+    return await view.render('barang/penambahan-stok/list-penambahan', { penambahans, tambahan, fungsi })
   }
 
   public async create ({ view }: HttpContextContract) {
-    return view.render('barang/penambahan-stok/form-penambahan')
+    return await view.render('barang/penambahan-stok/form-penambahan')
   }
 
   public async store ({ request, session, response }: HttpContextContract) {
@@ -141,11 +141,8 @@ export default class PenambahanStoksController {
         try {
           let kelompok = await Kelompok.findOrFail(element)
           kelompok.stok += validrequest.stokTambahan[i]
-          // console.log(
-          //   'harusnya ketambahan ' + validrequest.stokTambahan[i] + ' jadi ' + kelompok.stok
-          // )
 
-          penambahanBaru.related('kelompoks').attach({
+          await penambahanBaru.related('kelompoks').attach({
             [kelompok.id]: {
               perubahan_stok: validrequest.stokTambahan[i],
               stok_akhir: kelompok.stok,
@@ -209,7 +206,7 @@ export default class PenambahanStoksController {
       }
 
 
-      return view.render('barang/penambahan-stok/view-penambahan', { penambahan, tambahan })
+      return await view.render('barang/penambahan-stok/view-penambahan', { penambahan, tambahan })
     } catch (error) {
       return response.redirect().toPath('/app/barang/kodepro/')
     }

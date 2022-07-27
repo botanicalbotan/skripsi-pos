@@ -1,6 +1,8 @@
 const Print = require('print-js')
 const { default: Swal } = require('sweetalert2')
 
+import { SwalCustomColor } from '../fungsi.js'
+
 const tanggalLaporan = document.getElementById('tanggalLaporan')
 const wadahTanggals = document.getElementById('wadahTanggals')
 const tanggalAwal = document.getElementById('tanggalAwal')
@@ -8,9 +10,11 @@ const tanggalAkhir = document.getElementById('tanggalAkhir')
 
 tanggalLaporan.addEventListener('change', () => {
   if (tanggalLaporan.value == 'pilih') {
+    wadahTanggals.classList.add('flex')
     wadahTanggals.classList.remove('hidden')
   } else {
     wadahTanggals.classList.add('hidden')
+    wadahTanggals.classList.remove('flex')
   }
 
   tanggalAwal.value = ''
@@ -129,22 +133,9 @@ semuaBarang.addEventListener('change', () => {
 
 // =========================================================== Ini Cek ma Persiapan Submit ==================================================
 
-global.cekCB = function () {
-  const cb = document.querySelectorAll('.checkbox')
-
-  cb.forEach(element => {
-    if (element.checked) {
-      console.log('nyala: ' + element.name)
-    }
-  });
-}
-
 const btReset = document.getElementById('btReset')
 const btSubmit = document.getElementById('btSubmit')
 const labelError = document.getElementById('labelError')
-
-const divMain = document.getElementById('divMain')
-const divPDF = document.getElementById('divPDF')
 
 btReset.addEventListener('click', () => {
   const cb = document.querySelectorAll('.checkbox')
@@ -161,7 +152,13 @@ btSubmit.addEventListener('click', () => {
   const cblen = document.querySelectorAll('.checkbox:checked').length
   labelError.classList.add('hidden')
 
-  if(true){ // cblen > 0
+  if(tanggalLaporan.value === 'pilih' && (!tanggalAwal.value || !tanggalAkhir.value)){
+    labelError.textContent = 'Anda harus memilih tanggal awal dan tanggal akhir laporan!'
+    labelError.classList.remove('hidden')
+    return
+  }
+
+  if(cblen > 0){ // cblen > 0
     // sementara sung print dulu, tp ntar tampilin ke div bawahnya
 
     let formElement = document.getElementById('formLaporan')
@@ -175,37 +172,30 @@ btSubmit.addEventListener('click', () => {
       onError: (error) =>{
         console.log(error)
         if(error === 'Forbidden'){
-          Swal.fire({
-            title: 'Permintaan Ditolak',
-            text: 'Anda tidak memiliki izin untuk mencetak dokumen ini!',
-            icon: 'error',
-            scrollbarPadding: false,
-            confirmButtonText: 'Tutup',
-            confirmButtonColor: global.SwalCustomColor.button.cancel
-          })
+          swalError('Anda tidak memiliki izin untuk mencetak dokumen ini!', 'Permintaan Ditolak')
         }
 
         if(error === 'Bad Request'){
-          Swal.fire({
-            title: 'Permintaan Tidak Valid',
-            text: 'Record penjualan tidak valid atau ada masalah saat menyiapkan nota!',
-            icon: 'error',
-            scrollbarPadding: false,
-            confirmButtonText: 'Tutup',
-            confirmButtonColor: global.SwalCustomColor.button.cancel
-          })
+          swalError('Record penjualan tidak valid atau ada masalah saat menyiapkan nota!', 'Permintaan Tidak Valid')
         }
       }
     })
 
-
-    // $.get('/app/laporan/generate', {},
-    //   function (data, textStatus, jqXHR) {
-    //     console.log(typeof data)
-    //   },
-    // );
-
   } else{
+    swalError('Anda harus memilih setidaknya satu opsi laporan!')
+    labelError.textContent = 'Anda harus memilih minimal satu dari opsi laporan untuk dapat membuat laporan!'
     labelError.classList.remove('hidden')
   }
 })
+
+
+function swalError(error = '', judul = '') {
+  Swal.fire({
+    icon: 'error',
+    title: (judul) ? judul : 'Error',
+    scrollbarPadding: false,
+    text: (error) ? error : 'Ada masalah pada server!',
+    confirmButtonText: 'Tutup',
+    confirmButtonColor: SwalCustomColor.button.cancel
+  })
+}

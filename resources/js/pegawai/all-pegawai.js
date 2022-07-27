@@ -1,5 +1,7 @@
 import Swal from "sweetalert2";
 
+import { SwalCustomColor } from '../fungsi.js'
+
 // doc ready, ntar dihapus / diganti
 $(function () {
   const basePage = document.getElementById('base-page').dataset.pagename
@@ -199,12 +201,12 @@ $(function () {
           title: 'Yakin untuk menghapus?',
           text: 'Anda akan menghapus pegawai "'+namaPegawai+'", dan pegawai yang dihapus tidak dapat dikembalikan.',
           icon: 'info',
-          iconColor: global.SwalCustomColor.icon.error,
+          iconColor: SwalCustomColor.icon.error,
           showCancelButton: true,
           confirmButtonText: 'Ya, hapus!',
           cancelButtonText: 'Batal',
           scrollbarPadding: false,
-          confirmButtonColor: global.SwalCustomColor.button.deny,
+          confirmButtonColor: SwalCustomColor.button.deny,
           focusCancel: true,
         }).then((result)=>{
           if(result.isConfirmed){

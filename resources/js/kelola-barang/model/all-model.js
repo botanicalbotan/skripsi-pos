@@ -1,5 +1,14 @@
 import Swal from "sweetalert2";
 
+import { SwalCustomColor, removeElementsByClass } from '../../fungsi.js'
+
+// const removeElementsByClass = function (className) {
+//   const elements = document.getElementsByClassName(className);
+//   while (elements.length > 0) {
+//     elements[0].parentNode.removeChild(elements[0]);
+//   }
+// }
+
 $(function () {
   const basePage = document.getElementById('base-page').dataset.pagename
   // ========================================= list ==========================================================
@@ -58,7 +67,7 @@ $(function () {
           showCancelButton: true,
           cancelButtonText: 'Batal',
           scrollbarPadding: false,
-          confirmButtonColor: global.SwalCustomColor.button.confirm,
+          confirmButtonColor: SwalCustomColor.button.confirm,
           html: printAturTabelHTML(),
           willOpen: () => {
             Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
@@ -148,12 +157,12 @@ $(function () {
           title: 'Yakin untuk menghapus?',
           text: 'Anda akan menghapus model "'+namaModel.innerText+'", dan model yang dihapus tidak dapat dikembalikan.',
           icon: 'info',
-          iconColor: global.SwalCustomColor.icon.error,
+          iconColor: SwalCustomColor.icon.error,
           showCancelButton: true,
           confirmButtonText: 'Ya, hapus!',
           cancelButtonText: 'Batal',
           scrollbarPadding: false,
-          confirmButtonColor: global.SwalCustomColor.button.deny,
+          confirmButtonColor: SwalCustomColor.button.deny,
           focusCancel: true,
         }).then((result)=>{
           if(result.isConfirmed){
@@ -193,7 +202,7 @@ $(function () {
             if (bentuk.value && bentuk.value !== 'kosong') {
               bentuk.classList.remove('select-error', 'bg-error')
               bentuk.classList.add('bg-primary', 'select-primary')
-              global.removeElementsByClass('pesanerror')
+              removeElementsByClass('pesanerror')
             }
           })
           eventModel = true
@@ -209,7 +218,7 @@ $(function () {
         text: 'Pastikan data yang anda isikan sudah benar!',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        confirmButtonColor: SwalCustomColor.button.confirm,
         confirmButtonText: 'Ya, simpan!',
         cancelButtonText: 'Batal',
         scrollbarPadding: false,
@@ -258,7 +267,7 @@ $(function () {
             if (bentuk.value && bentuk.value !== 'kosong') {
               bentuk.classList.remove('select-error', 'bg-error')
               bentuk.classList.add('bg-primary', 'select-primary')
-              global.removeElementsByClass('pesanerror')
+              removeElementsByClass('pesanerror')
             }
           })
           eventModel = true
@@ -274,7 +283,7 @@ $(function () {
         text: 'Pastikan data yang anda isikan sudah benar!',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: global.SwalCustomColor.button.confirm,
+        confirmButtonColor: SwalCustomColor.button.confirm,
         confirmButtonText: 'Ya, ubah!',
         cancelButtonText: 'Batal',
         scrollbarPadding: false,

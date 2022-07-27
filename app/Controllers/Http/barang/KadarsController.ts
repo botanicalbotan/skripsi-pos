@@ -14,7 +14,7 @@ export default class KadarsController {
         rupiahParser: rupiahParser
       }
 
-      return view.render('pengaturan/kadar/view-kadar', { kadar, fungsi })
+      return await view.render('pengaturan/kadar/view-kadar', { kadar, fungsi })
     } catch (error) {
       return response.redirect().toPath('/app/')
     }
@@ -26,7 +26,7 @@ export default class KadarsController {
     try {
       const kadar = await Kadar.findOrFail(params.id)
 
-      return view.render('pengaturan/kadar/form-edit-kadar', { kadar })
+      return await view.render('pengaturan/kadar/form-edit-kadar', { kadar })
     } catch (error) {
       return response.redirect().toPath('/app/')
     }
@@ -61,30 +61,48 @@ export default class KadarsController {
         rules.range(0, 100)
       ]),
       marginPersenUntungUripanMin: schema.number([
-        rules.unsigned(),
-        rules.range(0, 100)
+        // rules.unsigned(),
+        // rules.range(0, 100)
+        rules.range(-100, 100)
       ]),
       marginPersenUntungUripanMax: schema.number([
-        rules.unsigned(),
-        rules.range(0, 100)
+        // rules.unsigned(),
+        // rules.range(0, 100)
+        rules.range(-100, 100)
+      ]),
+      marginPersenUntungUripanTTMin: schema.number([
+        // rules.unsigned(),
+        // rules.range(0, 100)
+        rules.range(-100, 100)
+      ]),
+      marginPersenUntungUripanTTMax: schema.number([
+        // rules.unsigned(),
+        // rules.range(0, 100)
+        rules.range(-100, 100)
       ]),
       marginPersenUntungRosokMin: schema.number([
-        rules.unsigned(),
-        rules.range(0, 100)
+        // rules.unsigned(),
+        // rules.range(0, 100)
+        rules.range(-100, 100)
       ]),
       marginPersenUntungRosokMax: schema.number([
-        rules.unsigned(),
-        rules.range(0, 100)
+        // rules.unsigned(),
+        // rules.range(0, 100)
+        rules.range(-100, 100)
       ]),
       marginPersenUntungRosokTTMin: schema.number([
-        rules.unsigned(),
-        rules.range(0, 100)
+        // rules.unsigned(),
+        // rules.range(0, 100)
+        rules.range(-100, 100)
       ]),
       marginPersenUntungRosokTTMax: schema.number([
-        rules.unsigned(),
-        rules.range(0, 100),
+        // rules.unsigned(),
+        // rules.range(0, 100),
+        rules.range(-100, 100)
       ]),
     })
+
+    // yang diatas tuh gw komen biar bisa minus
 
     const validrequest = await request.validate({ schema: editKadarSchema })
 
@@ -119,6 +137,8 @@ export default class KadarsController {
       kadar.persentaseMalRosok = validrequest.persentaseKadarRosok
       kadar.marginPersenUntungUripanMin = validrequest.marginPersenUntungUripanMin
       kadar.marginPersenUntungUripanMax = validrequest.marginPersenUntungUripanMax
+      kadar.marginPersenUntungUripanTtMin = validrequest.marginPersenUntungUripanTTMin
+      kadar.marginPersenUntungUripanTtMax = validrequest.marginPersenUntungUripanTTMax
       kadar.marginPersenUntungRosokMin = validrequest.marginPersenUntungRosokMin
       kadar.marginPersenUntungRosokMax = validrequest.marginPersenUntungRosokMax
       kadar.marginPersenUntungRosokTtMin = validrequest.marginPersenUntungRosokTTMin
@@ -155,6 +175,14 @@ export default class KadarsController {
       return response.badRequest('ID kadar tidak valid')
     }
     
+  }
+
+  public async getKadarMinimal({}: HttpContextContract) {
+    const kadars = await Database
+      .from('kadars')
+      .select('id', 'nama')
+
+    return kadars
   }
 
 }

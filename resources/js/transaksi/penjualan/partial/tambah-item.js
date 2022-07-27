@@ -1,5 +1,14 @@
 import Swal from "sweetalert2"
 
+import { SwalCustomColor , capsFirstWord} from '../../../fungsi.js'
+
+// const capsFirstWord = function (text) {
+//   if (!isNaN(text.charAt(0))) {
+//     return text
+//   }
+//   return text.slice(0, 1).toUpperCase() + text.slice(1)
+// }
+
 export function tambahItem() {
   Swal.fire({
     title: 'Tambah Item',
@@ -7,7 +16,7 @@ export function tambahItem() {
     showCancelButton: true,
     cancelButtonText: 'Batal',
     scrollbarPadding: false,
-    confirmButtonColor: global.SwalCustomColor.button.confirm,
+    confirmButtonColor: SwalCustomColor.button.confirm,
     focusCancel: true,
     html: itemHTML(),
     preConfirm: () => {
@@ -53,7 +62,7 @@ let appendItem = function (item) {
 
   const td1span = document.createElement('span')
   td1span.classList.add('teksItem')
-  td1span.textContent = ((itemBaru.jenis === 'mainan') ? 'Mainan ' : 'Batu ') + global.capsFirstWord(itemBaru.keterangan)
+  td1span.textContent = ((itemBaru.jenis === 'mainan') ? 'Mainan ' : 'Batu ') + capsFirstWord(itemBaru.keterangan)
 
   const input1 = document.createElement('input')
   input1.type = "hidden"
@@ -96,6 +105,7 @@ let appendItem = function (item) {
 
   butt.append(svg)
   td3.append(butt)
+  
   tr.append(td1, td2, td3)
   wadahItem.append(tr)
 

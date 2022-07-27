@@ -1,0 +1,66 @@
+@layout('layouts/guest-master')
+
+@section('more-style')
+
+@endsection
+
+{{--  set judul  --}}
+@set('judul', 'Login | Postoma')
+
+@section('content')
+<div
+  class="w-full md:max-w-screen-lg flex xl:justify-center lg:justify-between justify-center items-center flex-wrap h-full g-6"
+  data-pagename="login" id="base-page">
+  <div class="grow-0 shrink-1 md:shrink-0 basis-auto xl:w-6/12 lg:w-6/12 md:w-9/12 mb-12 md:mb-0">
+    <img src="{{ asset('assets/images/pendukung-page/gambar-login.webp') }}" class="w-full"
+      alt="Sample image" />
+  </div>
+  <div class="xl:ml-20 xl:w-5/12 lg:w-5/12 md:w-8/12 mb-12 md:mb-0">
+    <form method="POST">
+      @include('partials/wadah-alert')
+
+      {{ csrfField() }}
+
+      <!-- Email input -->
+      <div class="mb-6">
+        <input type="text"
+          class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+          name="username" placeholder="Username" required />
+      </div>
+
+      <!-- Password input -->
+      <div class="mb-6">
+        <input type="password"
+          class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+          name="password" placeholder="Password" autocomplete="none" required />
+      </div>
+
+      <div class="flex justify-between items-center mb-6">
+        <div class="form-group form-check">
+          <input type="checkbox"
+            class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+            name="remember" id="remember" />
+          <label class="form-check-label inline-block text-gray-800" for="remember">Ingat saya</label>
+        </div>
+        <a href="/lupa-password" class="text-gray-800">Lupa password?</a>
+      </div>
+
+      <div class="text-center lg:text-left">
+        <button type="submit"
+          class="px-7 py-3 btn btn-primary text-white rounded">
+          Masuk
+        </button>
+        <p class="text-sm font-semibold mt-2 pt-1 mb-0">
+          Tidak punya akun?
+          <a href="/tanpa-akun" class=" text-error">Klik
+            disini</a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/guest.js')}}"></script>
+@endsection

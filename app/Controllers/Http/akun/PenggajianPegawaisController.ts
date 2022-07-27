@@ -6,23 +6,12 @@ import { DateTime } from 'luxon'
 import Pengguna from 'App/Models/akun/Pengguna'
 import PenggajianPegawai from 'App/Models/akun/PenggajianPegawai'
 import Drive from '@ioc:Adonis/Core/Drive'
-import RekapHarian from 'App/Models/kas/RekapHarian'
-import CPasaran from 'App/CustomClasses/CPasaran'
 import Pengaturan from 'App/Models/sistem/Pengaturan'
 import TipeNotif from 'App/Models/sistem/TipeNotif'
 import User from 'App/Models/User'
+import { prepareRekap } from 'App/CustomClasses/CustomRekapHarian'
 
 export default class PenggajianPegawaisController {
-  rupiahParser(angka: number) {
-    if (typeof angka == 'number') {
-      return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-      }).format(angka)
-    }
-  }
-
   public async index({
     view,
     request
@@ -122,11 +111,11 @@ export default class PenggajianPegawaisController {
       lastPage: lastPage,
       firstDataInPage: 1 + ((penggajians.currentPage - 1) * limit),
       lastDataInPage: (tempLastData >= penggajians.total) ? penggajians.total : tempLastData,
-      direfreshAt: tanggalRefresh.direfreshAt
+      direfreshAt: (tanggalRefresh && tanggalRefresh.direfreshAt)? tanggalRefresh.direfreshAt : null
       // lifehackUrlSementara: '/uploads/profilePict/',
     }
 
-    return view.render('pegawai/penggajian-pegawai/list-penggajian-pegawai', {
+    return await view.render('pegawai/penggajian-pegawai/list-penggajian-pegawai', {
       penggajians,
       tambahan
     })
@@ -165,7 +154,7 @@ export default class PenggajianPegawaisController {
       var jarakHari = Math.floor(distance / (1000 * 60 * 60 * 24));
 
       let fungsi = {
-        rupiahParser: this.rupiahParser
+        rupiahParser: rupiahParser
       }
       let tambahan = {
         terakhirGajian: (tanggalTerakhir.length > 0)? tanggalTerakhir[0].terakhirGajian : null,
@@ -173,12 +162,10 @@ export default class PenggajianPegawaisController {
         adaFotoPencatat: (await Drive.exists('profilePict/' + penggajian.pencatatGajian?.foto)),
         jarakHari: jarakHari
       }
-      // return penggajian
-      return view.render('pegawai/penggajian-pegawai/view-penggajian-pegawai', { penggajian, fungsi, tambahan })
-      // return view.render('index-test', { penggajian })
+
+      return await view.render('pegawai/penggajian-pegawai/view-penggajian-pegawai', { penggajian, fungsi, tambahan })
 
     } catch (error) {
-      // ntar tambahin flag flashmessage biar bisa diakses di listnya
       console.error(error)
       session.flash('alertError', 'Ada masalah saat mengakses data penggajian pegawai. Silahkan coba lagi setelah beberapa saat.')
       return response.redirect().toPath('/app/pegawai/penggajian')
@@ -221,7 +208,8 @@ export default class PenggajianPegawaisController {
       .whereNull('deleted_at')
       .whereNotNull('tanggal_mulai_aktif')
       .whereNotNull('tanggal_gajian_selanjutnya')
-      .andWhere('tanggal_gajian_selanjutnya', '<=', DateTime.now().toISO())
+      // .andWhere('tanggal_gajian_selanjutnya', '<=', DateTime.now().toISO())
+      .whereRaw('DATE(tanggal_gajian_selanjutnya) <= DATE(NOW())')
       .orderBy('tanggal_gajian_selanjutnya', 'asc')
 
     let counter = 0
@@ -289,8 +277,6 @@ export default class PenggajianPegawaisController {
   }
 
   public async pembayaranTagihan({ response, params, auth }: HttpContextContract) {
-
-    // ini buat ngecek constrain doang
     try {
       await PenggajianPegawai
       .query()
@@ -303,29 +289,11 @@ export default class PenggajianPegawaisController {
       return response.badRequest('Penggajian yang anda pilih tidak valid.')
     }    
 
-    const CP = new CPasaran()
-    const pasaranSekarang = CP.pasaranHarIni()
-
     let pengaturan = await Pengaturan.findOrFail(1) // ntar diganti jadi ngecek toko aktif di session
     await pengaturan.load('pasarans')
 
-    let apakahPasaran = false
-    for (const element of pengaturan.pasarans) {
-      if(element.hari === pasaranSekarang){
-        apakahPasaran = true
-        break
-      }
-    }
-
-    let cariRH = await RekapHarian.findBy('tanggal_rekap', DateTime.local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toSQL())
-
-    if(!cariRH){
-      cariRH = await RekapHarian.create({
-        pasaran: pasaranSekarang,
-        apakahHariPasaran: apakahPasaran,
-        tanggalRekap: DateTime.local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-      })
-    }
+    // buat ngecek rekap harian udah gw taro di custom class ini
+    let cariRH = await prepareRekap()
 
     try {
       if(!auth.user) throw 'auth error'
@@ -347,7 +315,7 @@ export default class PenggajianPegawaisController {
         apakahKasKeluar: true,
         apakahDariSistem: true,
         nominal: -Math.abs(penggajian.nominalGaji),
-        perihal: 'Pembayaran Gaji Periode ' + penggajian.tanggalSeharusnyaDibayar.toLocaleString({ month:'long', year:'numeric' }) + ' An. ' + penggajian.penerimaGaji.nama,
+        perihal: 'Pembayaran gaji periode ' + penggajian.tanggalSeharusnyaDibayar.toLocaleString({ month:'long', year:'numeric' }) + ' An. ' + penggajian.penerimaGaji.nama,
         penggunaId: userPengakses.pengguna.id
       })
 
@@ -361,7 +329,6 @@ export default class PenggajianPegawaisController {
 
 
   public async pembatalanPembayaran({ params, response, auth }: HttpContextContract) {
-
     // ntar tambahin constrain lagi yang boleh akses cuma pemilik
 
     try {
@@ -377,30 +344,11 @@ export default class PenggajianPegawaisController {
       return response.badRequest('Penggajian yang anda pilih tidak valid.')
     }    
 
-    const CP = new CPasaran()
-    const pasaranSekarang = CP.pasaranHarIni()
-
     let pengaturan = await Pengaturan.findOrFail(1) // ntar diganti jadi ngecek toko aktif di session
     await pengaturan.load('pasarans')
 
-    let apakahPasaran = false
-    for (const element of pengaturan.pasarans) {
-      if(element.hari === pasaranSekarang){
-        apakahPasaran = true
-        break
-      }
-    }
-
-    let cariRH = await RekapHarian.findBy('tanggal_rekap', DateTime.local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toSQL())
-
-    if(!cariRH){
-      cariRH = await RekapHarian.create({
-        pasaran: pasaranSekarang,
-        apakahHariPasaran: apakahPasaran,
-        tanggalRekap: DateTime.local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-      })
-    }
-
+    // buat ngecek rekap harian udah gw taro di custom class ini
+    let cariRH = await prepareRekap()
 
     try {
       if(!auth.user) throw 'auth ngga valid'
@@ -437,5 +385,18 @@ export default class PenggajianPegawaisController {
       return response.badRequest('Terjadi error pada pencatatan, mohon ulangi kembali')
     }
 
+  }
+}
+
+
+function rupiahParser(angka: number) {
+  if (typeof angka == 'number') {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(angka)
+  } else {
+    return 'error'
   }
 }

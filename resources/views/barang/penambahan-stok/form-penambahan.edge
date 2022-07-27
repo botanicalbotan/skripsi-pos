@@ -1,7 +1,10 @@
 @layout('layouts/master')
+
+@set('judul', 'Tambah Stok Kelompok Perhiasan | Postoma')
+
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="restok" id="base-page">
-  <h2 class="text-4xl font-semibold">Restok Kelompok Perhiasan</h2>
+  <h2 class="text-4xl font-semibold">Tambah Stok Kelompok Perhiasan</h2>
   <h4 class="text-lg text-secondary opacity-60">Penambahan stok kelompok perhiasan dari cucian atau kulakan.</h4>
 
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
@@ -29,8 +32,8 @@
       {{ csrfField() }}
 
       {{--  tabel  --}}
-      <div class="my-8 border min-h-60 rounded">
-        <div class="overflow-x-auto"> {{-- aslinya ada overflow-x-auto disini --}}
+      <div class="my-8 border rounded">
+        <div class="overflow-x-auto min-h-60  relative"> {{-- aslinya ada overflow-x-auto disini --}}
 
           <table class="table w-full">
             <thead>
@@ -48,7 +51,7 @@
             </tbody>
           </table>
 
-          <div id="teks-tabel-kosong" class="text-center mt-6">Silahkan pilih perhiasan yang ingin anda tambah stoknya
+          <div id="teks-tabel-kosong" class="text-center absolute right-0 left-0 mt-6">Silahkan pilih kelompok perhiasan yang ingin anda tambah stoknya
           </div>
         </div>
       </div>
@@ -95,7 +98,7 @@
           <label for="stokCatatan">
             <span class="">Catatan<span class="text-error"> *</span></span>
           </label>
-          <textarea type="text" id="stokCatatan" name="stokCatatan" class="textarea textarea-bordered h-24"
+          <textarea type="text" id="stokCatatan" name="stokCatatan" class="textarea textarea-bordered h-24 bg-opacity-20"
             placeholder="Contoh: Kondisi normal, kelebihan 1 anting, kekurangan 2 cincin, dll" required></textarea>
           @if(flashMessages.has('errors.stokCatatan'))
             <p class="text-error">{{ flashMessages.get('errors.stokCatatan') }}</p>

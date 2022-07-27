@@ -6,9 +6,12 @@
   crossorigin="anonymous" referrerpolicy="no-referrer" />
 @endsection
 
+{{-- buat ngeset judul --}}
+@set('judul', 'Formulir Penjualan | Postoma')
+
 @section('content')
 <div class="w-full p-8" id="base-page">
-  <h2 class="text-4xl font-semibold">Transaksi Penjualan</h2>
+  <h2 class="text-4xl font-semibold">Formulir Penjualan</h2>
   <h4 class="text-lg text-secondary opacity-60">Buat penjualan baru dan simpan ke dalam sistem.</h4>
 
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
@@ -33,7 +36,7 @@
       <input type="number" name="id" id="id" class="hidden hidden-but-real" hidden value="{{ kelompok.id }}">
       <input type="number" id="berat" class="hidden hidden-but-real" hidden value="{{ kelompok.beratKelompok }}">
         {{ csrfField() }}
-      <div class="my-8 flex flex-col sm:flex-row space-y-6 md:space-y-0 md:space-x-6 lg:space-x-8" x-data="{ radioStok: 0, beratDesimal: 0 }">
+      <div class="my-8 flex flex-col sm:flex-row space-y-6 md:space-y-0 md:space-x-6 lg:space-x-8" x-data="{ radioStok: 0 }">
 
         <div class="w-full sm:w-3/5 space-y-10">
           {{--  Kelompok Kode Produksi  --}}
@@ -144,8 +147,8 @@
                       {{ kelompok.beratKelompok +'.' }}
                     </span>
                     {{-- input aslinya kehidden, tp kalo ada error dilempar kesini  --}}
-                    <input type="number" x-model="beratDesimal" placeholder="0" id="beratDesimal" name="beratDesimal" min="0"
-                      class="uang px-3 py-3 relative input input-primary bg-primary bg-opacity-10 w-full pl-8"
+                    <input type="number" placeholder="0" id="beratDesimal" name="beratDesimal" min="0" value="0"
+                      class="uang px-3 py-3 relative input input-primary bg-primary bg-opacity-10 w-full pl-9"
                       oninput="validity.valid||(value='');" @focus="$el.value=($el.value == 0)? '':$el.value"
                       @focusout="$el.value = ($el.value =='')? 0:$el.value" />
                     <span
@@ -203,8 +206,8 @@
                 Item</button>
             </div>
           </div>
-          <div class="my-8 border min-h-60 rounded-box">
-            <div class="overflow-x-auto rounded-box"> {{-- aslinya ada overflow-x-auto disini --}}
+          <div class="my-8 border rounded-box">
+            <div class="overflow-x-auto rounded-box min-h-60 relative"> {{-- aslinya ada overflow-x-auto disini --}}
               <table class="table w-full">
                 <thead>
                   <tr>
@@ -218,7 +221,7 @@
 
                 </tbody>
               </table>
-              <div id="teks-tabel-item-kosong" class="text-center mt-6">Tidak ada mata dan mainan.</div>
+              <div id="teks-tabel-item-kosong" class="text-center absolute right-0 left-0 mt-6">Tidak ada mata dan mainan.</div>
             </div>
           </div>
           @if(flashMessages.has('errors.jenisItem'))
@@ -312,6 +315,14 @@
             <div class="mb-4">
               <h1 class="text-2xl font-semibold">Profil Pemilik</h1>
             </div>
+
+            <div class="form-control max-w-xs">
+              <label class="label cursor-pointer justify-start space-x-4">
+                <input type="checkbox" name="kosongkanPemilik" id="kosongkanPemilik" class="checkbox">
+                <span class="">Kosongkan identitas pemilik</span>
+              </label>
+            </div>
+
             <div class="form-control max-w-xs">
               <label for="namaPemilik">
                 <span class="">Nama Pemilik</span>
@@ -329,7 +340,7 @@
                 <span class="">Alamat Pemilik</span>
               </label>
               <textarea type="text" id="alamatPemilik" name="alamatPemilik" class="textarea textarea-bordered h-24"
-                placeholder="Contoh: Kacangan, Boyolali" maxlength="50"></textarea>
+                placeholder="Contoh: Kacangan, Boyolali" maxlength="45"></textarea>
 
               @if(flashMessages.has('errors.alamatPemilik'))
                 <p class="text-error">{{ flashMessages.get('errors.alamatPemilik') }}</p>
@@ -366,20 +377,19 @@
                     </li>
                     <li class="flex">
                       <span class="flex-1">Berat:</span>
-                      <span class="flex-none"><span
-                          x-text="{{kelompok.beratKelompok}} + belakangKoma(beratDesimal)" id="teksBerat">0</span> gram</span>
+                      <span class="flex-none"><span id="teksBerat">{{kelompok.beratKelompok}}</span> gram</span>
                     </li>
                     <li class="flex">
                       <span class="flex-1">Jenis Stok:</span>
-                      <span class="flex-none" x-text="(radioStok)? 'Stok Baru': 'Stok Lama'"></span>
+                      <span class="flex-none" x-text="(radioStok)? 'Stok Baru': 'Stok Lama'">Stok Lama</span>
                     </li>
                     <li class="flex">
                       <span class="flex-1">Harga Emas:</span>
-                      <span class="flex-none" id="teksHE"><span class="text-secondary">pilih kode...</span></span>
+                      <span class="flex-none" id="teksHE">Rp 0</span>
                     </li>
                     <li class="flex">
                       <span class="flex-1">Potongan:</span>
-                      <span class="flex-none" id="teksPot"><span class="text-secondary">pilih kode...</span></span>
+                      <span class="flex-none" id="teksPot">Rp 0</span>
                     </li>
 
                   </ul>

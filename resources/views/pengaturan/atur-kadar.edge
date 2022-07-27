@@ -1,10 +1,10 @@
 @layout('layouts/master')
 
 @section('more-style')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.css"
-  integrity="sha512-+VDbDxc9zesADd49pfvz7CgsOl2xREI/7gnzcdyA9XjuTxLXrdpuz21VVIqc5HPfZji2CypSbxx1lgD7BgBK5g=="
-  crossorigin="anonymous" referrerpolicy="no-referrer" />
 @endsection
+
+{{-- buat ngeset judul --}}
+@set('judul', 'Menu Kadar Perhiasan - Pengaturan | Postoma')
 
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="atur-kadar" id="base-page">
@@ -24,6 +24,7 @@
           <li><a href="/app/pengaturan/general">General</a></li>
           <li class="bordered"><a href="/app/pengaturan/kadar">Kadar Perhiasan</a></li>
           <li><a href="/app/pengaturan/transaksi">Transaksi</a></li>
+          <li><a href="/app/pengaturan/saldo">Saldo Toko</a></li>
           <li><a href="/app/pengaturan/barang">Kelola Barang</a></li>
           <li><a href="/app/pengaturan/pegawai">Pegawai</a></li>
         </ul>
@@ -45,7 +46,7 @@
             <div class="mt-4 space-y-8">
 
                 @each(kadar in kadars)
-                <div class=" p-4 border border-l-8 border-secondary" style="border-color: {{ kadar.warnaNota }}">
+                <div class=" p-4 border border-l-8 border-secondary" style="border-color: {{ kadar.warnaNota }}; ">
                     <div class="space-y-4">
                       <div class="flex">
                         <div class="flex-1">
@@ -65,15 +66,10 @@
                     </div>
                   </div>
                 @endeach
-
-              
-
               
 
             </div>
           </div>
-
-
 
         </div>
 
@@ -86,11 +82,6 @@
 @endsection
 
 @section('script')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js"
-  integrity="sha512-ZK6m9vADamSl5fxBPtXw6ho6A4TuX89HUbcfvxa2v2NYNT/7l8yFGJ3JlXyMN4hlNbz0il4k6DvqbIW5CCwqkw=="
-  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-
 <script src="{{asset('assets/app.js')}}"></script>
 <script src="{{asset('assets/atur-kadar.js')}}"></script>
 @endsection

@@ -1,27 +1,65 @@
-import {
-  HttpContextContract
-} from '@ioc:Adonis/Core/HttpContext'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Pengguna from 'App/Models/akun/Pengguna'
 import Drive from '@ioc:Adonis/Core/Drive'
 import { DateTime } from 'luxon'
 import Pengaturan from 'App/Models/sistem/Pengaturan'
 import Kadar from 'App/Models/barang/Kadar'
 import Database from '@ioc:Adonis/Lucid/Database'
+import Penjualan from 'App/Models/transaksi/Penjualan'
+import Gadai from 'App/Models/transaksi/Gadai'
+import User from 'App/Models/User'
+import Hash from '@ioc:Adonis/Core/Hash'
 var isBase64 = require('is-base64')
+import { schema, rules } from '@ioc:Adonis/Core/Validator'
 
 export default class PengaturansController {
+  public async checkCreditPengubah({ request, response, auth }: HttpContextContract) {
+    const pass = request.input('pass')
+
+    try {
+      if (!auth.user) throw 'ngga valid'
+
+      if (!pass) throw 'Password tidak boleh kosong!'
+
+      const userPengakses = await User.findOrFail(auth.user.id) // USER bukan PENGUNA
+      await userPengakses.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+
+      if (userPengakses.pengguna.jabatan.nama !== 'Pemilik') {
+        // bisa dijadiin middleware
+        throw 'Anda tidak memiliki hak untuk melakukan perubahan!'
+      }
+
+      if (await Hash.verify(userPengakses.password, pass)) {
+        return response.ok({ message: 'Ok' })
+      } else {
+        throw 'Password yang anda isikan tidak tepat!'
+      }
+    } catch (error) {
+      console.error(error)
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  // ========================================= GENERAL ================================================
   public async pageGeneral({ view }: HttpContextContract) {
     // Ini udah make middleware
-    const pengaturan  = await Pengaturan.findOrFail(1)
+    const pengaturan = await Pengaturan.findOrFail(1)
+
     let tambahan = {
-      adaLogo : await Drive.exists('logoToko/' + pengaturan.logoToko)
+      adaLogo: await Drive.exists('logoToko/' + pengaturan.logoToko),
     }
-    return view.render('pengaturan/atur-general', { pengaturan, tambahan })
+    return await view.render('pengaturan/atur-general', { pengaturan, tambahan })
   }
 
   public async gantiLogo({ request, response }: HttpContextContract) {
     let input = request.input('fileFoto')
-    let fileFoto :string = input || ''
+    let fileFoto: string = input || ''
     let namaFileFoto = ''
 
     try {
@@ -42,10 +80,10 @@ export default class PengaturansController {
       pengaturan.logoToko = namaFileFoto
       await pengaturan.save()
 
-      return response.ok({message: 'Ok'})
+      return response.ok({ message: 'Ok' })
     } catch (error) {
       console.log(error)
-      return response.badRequest({error: 'File foto tidak valid!'})
+      return response.badRequest({ error: 'File foto tidak valid!' })
     }
   }
 
@@ -56,98 +94,439 @@ export default class PengaturansController {
       pengaturan.logoToko = null
       await pengaturan.save()
 
-      return response.ok({message: 'Ok'})
+      return response.ok({ message: 'Ok' })
     } catch (error) {
-      return response.badRequest({error: 'Permintaan tidak valid!'})
+      return response.badRequest({ error: 'Permintaan tidak valid!' })
     }
   }
 
+  public async ubahNamaToko({ request, response }: HttpContextContract) {
+    const newNamaSchema = schema.create({
+      newNama: schema.string({ trim: true }, [rules.maxLength(50)]),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newNamaSchema })
+
+      const pengaturan = await Pengaturan.findOrFail(1)
+      pengaturan.namaToko = validrequest.newNama
+      await pengaturan.save()
+
+      return response.ok({ message: 'Nama toko berhasil diubah' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  public async ubahAlamatToko({ request, response }: HttpContextContract) {
+    const newAlamatSchema = schema.create({
+      newAlamat: schema.string({ trim: true }, [rules.maxLength(100)]),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newAlamatSchema })
+
+      const pengaturan = await Pengaturan.findOrFail(1)
+      pengaturan.alamatTokoLengkap = validrequest.newAlamat
+      await pengaturan.save()
+
+      return response.ok({ message: 'Alamat toko berhasil diubah' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  public async ubahAlamatSingkatToko({ request, response }: HttpContextContract) {
+    const newAlamatSingkatSchema = schema.create({
+      newAlamatSingkat: schema.string({ trim: true }, [rules.maxLength(50)]),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newAlamatSingkatSchema })
+
+      const pengaturan = await Pengaturan.findOrFail(1)
+      pengaturan.alamatTokoSingkat = validrequest.newAlamatSingkat
+      await pengaturan.save()
+
+      return response.ok({ message: 'Alamat singkat toko berhasil diubah' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  // =======================================- KADAR ===================================================
   public async pageKadar({ view }: HttpContextContract) {
     // Ini udah make middleware
-    
-    const kadars = await Kadar
-      .query()
-      .orderBy('id', 'asc')
 
-    return view.render('pengaturan/atur-kadar', { kadars })
+    const kadars = await Kadar.query().orderBy('id', 'asc')
+
+    return await view.render('pengaturan/atur-kadar', { kadars })
   }
 
-
+  // ======================================= TRANSAKSI ================================================
   public async pageTransaksi({ view }: HttpContextContract) {
     // Ini udah make middleware
-    const pengaturan  = await Pengaturan.findOrFail(1)
+    const pengaturan = await Pengaturan.findOrFail(1)
 
     const fungsi = {
-      rupiahParser: rupiahParser
+      rupiahParser: rupiahParser,
     }
 
-    return view.render('pengaturan/atur-transaksi', { pengaturan, fungsi })
+    return await view.render('pengaturan/atur-transaksi', { pengaturan, fungsi })
   }
 
+  public async getDataTransaksi({ response }: HttpContextContract) {
+    try {
+      const toko = await Database.from('pengaturans')
+        .select(
+          'default_boleh_print_nota as izinCetakNota',
+          'default_waktu_maksimal_print_nota as waktuMaksimalCetakNota',
+          'penalti_telat_janji_min as penaltiTelatJanjiTTMin',
+          'penalti_telat_janji_max as penaltiTelatJanjiTTMax',
+          'default_waktu_maksimal_pengajuan_gadai as waktuMaksimalPengajuanGadai',
+          'harga_mal as hargaMal'
+        )
+        .where('id', 1)
+        .first()
+
+      return { toko }
+    } catch (error) {
+      return response.badRequest({ error: 'Ada error di toko' })
+    }
+  }
+
+  public async ubahIzinCetakNota({ response }: HttpContextContract) {}
+
+  public async ubahWaktuMaksimalCetakNota({ request, response }: HttpContextContract) {
+    const newWaktuCetakSchema = schema.create({
+      newWaktuCetak: schema.number([
+        rules.unsigned(),
+        rules.range(0, 60), // kalau ngubah ini, jangan lupa ngubah yang di js pengaturan transaksi
+      ]),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newWaktuCetakSchema })
+
+      const pengaturan = await Pengaturan.findOrFail(1)
+      pengaturan.defaultWaktuMaksimalPrintNota = validrequest.newWaktuCetak
+      await pengaturan.save()
+
+      return response.ok({ message: 'Waktu maksimum cetak nota penjualan berhasil diubah' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  public async ubahPenaltiTelatTTMin({ request, response }: HttpContextContract) {
+    const newPenaltiMinSchema = schema.create({
+      newPenaltiMin: schema.number([
+        rules.unsigned(),
+      ]),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newPenaltiMinSchema })
+
+      const pengaturan = await Pengaturan.findOrFail(1)
+      pengaturan.penaltiTelatJanjiMin = validrequest.newPenaltiMin
+      await pengaturan.save()
+
+      return response.ok({ message: 'Penalti minimum keterlambatan tukar tambah dengan janji berhasil diubah' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  public async ubahPenaltiTelatTTMax({ request, response }: HttpContextContract) {
+    const newPenaltiMaxSchema = schema.create({
+      newPenaltiMax: schema.number([
+        rules.unsigned(),
+      ]),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newPenaltiMaxSchema })
+
+      const pengaturan = await Pengaturan.findOrFail(1)
+      pengaturan.penaltiTelatJanjiMax = validrequest.newPenaltiMax
+      await pengaturan.save()
+
+      return response.ok({ message: 'Penalti maksimum keterlambatan tukar tambah dengan janji berhasil diubah' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  public async ubahWaktuMaksimalPengajuanGadai({ request, response }: HttpContextContract) {
+    const newWaktuGadaiSchema = schema.create({
+      newWaktuAju: schema.number([
+        rules.unsigned(),
+        rules.range(0, 60), // kalau ngubah ini, jangan lupa ngubah yang di js pengaturan transaksi
+      ]),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newWaktuGadaiSchema })
+
+      const pengaturan = await Pengaturan.findOrFail(1)
+      pengaturan.defaultWaktuMaksimalPengajuanGadai = validrequest.newWaktuAju
+      await pengaturan.save()
+
+      return response.ok({ message: 'Waktu maksimum cetak nota penjualan berhasil diubah' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  public async ubahHargaMal({ request, response }: HttpContextContract) {
+    const newHargaMalSchema = schema.create({
+      newHargaMal: schema.number([
+        rules.unsigned(),
+      ]),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newHargaMalSchema })
+
+      const pengaturan = await Pengaturan.findOrFail(1)
+      pengaturan.hargaMal = validrequest.newHargaMal
+      await pengaturan.save()
+
+      return response.ok({ message: 'Harga mal berhasil diubah' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  // ======================================== SALDO ===================================================
+  public async pageSaldo({ view }: HttpContextContract) {
+    // Ini udah make middleware
+    const pengaturan = await Pengaturan.findOrFail(1)
+
+    return await view.render('pengaturan/atur-saldo', { pengaturan })
+  }
+
+  // =========================================== BARANG ================================================
   public async pageBarang({ view }: HttpContextContract) {
     // Ini udah make middleware
-    const pengaturan  = await Pengaturan.findOrFail(1)
+    const pengaturan = await Pengaturan.findOrFail(1)
 
-    return view.render('pengaturan/atur-barang', { pengaturan })
+    return await view.render('pengaturan/atur-barang', { pengaturan })
   }
 
+  public async getDataBarang({ response }: HttpContextContract) {
+    try {
+      const toko = await Database.from('pengaturans')
+        .select(
+          'default_stok_minimal_kelompok as stokMinimumKelompok',
+          'default_ingatkan_stok_menipis as peringatanStokMenipis',
+        )
+        .where('id', 1)
+        .first()
+
+      return { toko }
+    } catch (error) {
+      return response.badRequest({ error: 'Ada error di toko' })
+    }
+  }
+
+  public async ubahMinimalStokKelompok({ request, response }: HttpContextContract) {
+    const newMinimalStokSchema = schema.create({
+      newStokMin: schema.number([
+        rules.unsigned(),
+      ]),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newMinimalStokSchema })
+
+      const pengaturan = await Pengaturan.findOrFail(1)
+      pengaturan.defaultStokMinimalKelompok = validrequest.newStokMin
+      await pengaturan.save()
+
+      return response.ok({ message: 'Stok minimum kelompok perhiasan berhasil diubah' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  public async ubahPeringatanStokMenipis({ response }: HttpContextContract) {}
+
+  // ========================================== PEGAWAI ================================================
   public async pagePegawai({ view }: HttpContextContract) {
     // Ini udah make middleware
-    const pengaturan  = await Pengaturan.findOrFail(1)
+    const pengaturan = await Pengaturan.findOrFail(1)
 
     const fungsi = {
-      rupiahParser: rupiahParser
+      rupiahParser: rupiahParser,
     }
 
-    return view.render('pengaturan/atur-pegawai', { pengaturan, fungsi })
+    return await view.render('pengaturan/atur-pegawai', { pengaturan, fungsi })
   }
 
+  public async getDataPegawai({ response }: HttpContextContract) {
+    try {
+      const toko = await Database.from('pengaturans')
+        .select(
+          'default_gaji_karyawan as gajiMinimumPegawai',
+        )
+        .where('id', 1)
+        .first()
+
+      return { toko }
+    } catch (error) {
+      return response.badRequest({ error: 'Ada error di toko' })
+    }
+  }
+
+  public async ubahMinimalGajiPegawai({ request, response }: HttpContextContract) {
+    const newMinimalGajiSchema = schema.create({
+      newGajiMin: schema.number([
+        rules.unsigned(),
+      ]),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newMinimalGajiSchema })
+
+      const pengaturan = await Pengaturan.findOrFail(1)
+      pengaturan.defaultGajiKaryawan = validrequest.newGajiMin
+      await pengaturan.save()
+
+      return response.ok({ message: 'Harga mal berhasil diubah' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  // ========================================= SELAINNYA ================================================
   public async getMyToko({ response }: HttpContextContract) {
     try {
-      const toko = await Database
-        .from('pengaturans')
+      const toko = await Database.from('pengaturans')
         .select('nama_toko as namaToko')
+        .select('alamat_toko_singkat as alamatTokoSingkat')
         .select('alamat_toko_lengkap as alamatTokoLengkap')
         .where('id', 1)
         .first()
 
       return { toko }
     } catch (error) {
-      return response.badRequest({error: 'Ada error di toko'})
+      return response.badRequest({ error: 'Ada error di toko' })
     }
   }
 
-  public async ambilFoto({
-    params,
-    response
-  }: HttpContextContract) {
+  public async ambilFoto({ params, response }: HttpContextContract) {
     try {
       if (params.tipe === 'pegawai') {
         const pegawai = await Pengguna.findOrFail(params.id)
-        if (await Drive.exists('profilePict/' + pegawai.foto)) { // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
+        if (await Drive.exists('profilePict/' + pegawai.foto)) {
+          // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
           const fotoBarang = await Drive.getStream('profilePict/' + pegawai.foto) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
           response.stream(fotoBarang)
           response.header('content-type', 'image/png')
         } else {
-          throw 'kosong 1'
+          throw 'kosong pegawai'
         }
-      } else if(params.tipe === 'penjualan'){
-        throw 'sementara kosong 2'
-      } else if(params.tipe === 'logo-toko'){
+      } else if (params.tipe === 'penjualan') {
+        const penjualan = await Penjualan.findOrFail(params.id)
+        if (await Drive.exists('transaksi/penjualan/' + penjualan.fotoBarang)) {
+          // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
+          const fotoLogo = await Drive.getStream('transaksi/penjualan/' + penjualan.fotoBarang) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
+          response.stream(fotoLogo)
+          response.header('content-type', 'image/png')
+        } else {
+          throw 'kosong penjualan'
+        }
+      } else if (params.tipe === 'logo-toko') {
         const pengaturan = await Pengaturan.findOrFail(1)
-        if (await Drive.exists('logoToko/' + pengaturan.logoToko)) { // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
+        if (await Drive.exists('logoToko/' + pengaturan.logoToko)) {
+          // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
           const fotoLogo = await Drive.getStream('logoToko/' + pengaturan.logoToko) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
           response.stream(fotoLogo)
           response.header('content-type', 'image/png')
         } else {
-          throw 'kosong 1'
+          throw 'kosong logo'
         }
-      } else{
-        throw 'kosong 2'
+      } else {
+        throw 'kosong gabener'
       }
-      
     } catch (error) {
-      return response.notFound('File not found.')
+      // return response.notFound('File not found.')
+
+      return {} // biar ngga ngasi error di image
+    }
+  }
+
+  public async ambilFotoSecret({ params, response }: HttpContextContract) {
+    try {
+      if (params.tipe === 'gadai') {
+        const gadai = await Gadai.findOrFail(params.id)
+        if (await Drive.exists('transaksi/gadai/katepe/' + gadai.fotoKtpPenggadai)) {
+          // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
+          const fotoBarang = await Drive.getStream(
+            'transaksi/gadai/katepe/' + gadai.fotoKtpPenggadai
+          ) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
+          response.stream(fotoBarang)
+          response.header('content-type', 'image/png')
+        } else {
+          throw 'kosong pegawai'
+        }
+      } else {
+        throw 'kosong gabener'
+      }
+    } catch (error) {
+      return {} // biar ngga ngasi error di image
     }
   }
 }

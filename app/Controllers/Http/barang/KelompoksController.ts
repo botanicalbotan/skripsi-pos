@@ -155,7 +155,7 @@ export default class KelompoksController {
       stokHabis: stokHabis[0].jumlah,
     }
 
-    return view.render('barang/base', {
+    return await await view.render('barang/base', {
       kelompoks,
       tambahan,
       statistik
@@ -185,7 +185,7 @@ export default class KelompoksController {
         'bentuk'
       )
 
-    return view.render('barang/kelompok/form-kelompok', {
+    return await view.render('barang/kelompok/form-kelompok', {
       defaultPengaturan,
       kadars,
       bentuks
@@ -290,7 +290,7 @@ export default class KelompoksController {
         urlFotoPencatat: urlPencatat
       }
 
-      return view.render('barang/kelompok/view-kelompok', {
+      return await view.render('barang/kelompok/view-kelompok', {
         kelompok,
         fungsi,
         tambahan
@@ -323,7 +323,7 @@ export default class KelompoksController {
           'bentuk'
         )
 
-      return view.render('barang/kelompok/form-edit-kelompok', {
+      return await view.render('barang/kelompok/form-edit-kelompok', {
         kelompok,
         kadars,
         bentuks

@@ -1,5 +1,7 @@
 import Swal from "sweetalert2"
 
+import { SwalCustomColor } from '../fungsi.js'
+
 $(function () {
   const basePage = document.getElementById('base-page').dataset.pagename
   // ========================================= list ==========================================================
@@ -38,7 +40,7 @@ $(function () {
           showCancelButton: true,
           cancelButtonText: 'Batal',
           scrollbarPadding: false,
-          confirmButtonColor: global.SwalCustomColor.button.confirm,
+          confirmButtonColor: SwalCustomColor.button.confirm,
           html: printAturTabelHTML(),
           willOpen: () => {
             Swal.getHtmlContainer().querySelector('#swal-ob').value = ob

@@ -1,0 +1,422 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+{{-- buat ngeset judul --}}
+@set('judul', 'Formulir Pembelian QR | Postoma')
+
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="pembelian-umum" id="base-page">
+  <h2 class="text-4xl font-semibold">Formulir Pembelian QR</h2>
+  <h4 class="text-lg text-secondary opacity-60">Buat pembelian baru dari scan QR dan simpan ke dalam sistem.</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+
+    <div class="card rounded-none w-full border shadow-sm mb-10">
+      <div class="card-body">
+        {{--  <div class=" card-title text-center">
+          Data Penjualan Terpindai
+        </div>  --}}
+
+        <div class="font-semibold mb-4 text-lg hover:underline cursor-pointer" onclick="window.open('/app/transaksi/penjualan/{{ penjualan.id }}', '_blank')" style="color:{{ penjualan.kodeProduksi.kadar.warnaNota }}">
+          {{ penjualan.namaBarang }}
+        </div>
+
+        <div class="flex space-y-4 xl:space-y-0 xl:space-x-6 flex-col xl:flex-row">
+          
+          <div class="flex items-start justify-center">
+            <div class=" w-full sm:w-1/2  md:h-28 md:w-40 rounded border">
+              <div class="w-full h-full bg-base-300 bg-contain">
+                @if(!tambahan.adaFotoPJ)
+                <div class="w-full h-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-secondary" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                @endif
+                
+                <img id="fotoPJ" src="{{ (tambahan.adaFotoPJ)? '/app/cuma-data/foto/penjualan/' + penjualan.id : '' }}" class="w-full object-contain rounded cursor-pointer">
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-1 flex flex-col md:flex-row">
+
+            <div class="flex-1">
+
+              <div>
+                <div class="flex sm:space-x-2 w-full flex-col sm:flex-row">
+                  <div class="flex-1">Model:</div>
+                  <div class="flex-none sm:w-1/2 sm:text-right lg:w-2/3 xl:w-1/2">{{ penjualan.model.nama }}</div>
+                </div>
+
+                <div class="flex sm:space-x-2 w-full flex-col sm:flex-row">
+                  <div class="flex-1">Berat pada nota:</div>
+                  <div class="flex-none sm:w-1/2 sm:text-right lg:w-2/3 xl:w-1/2">{{ penjualan.beratBarang }} gram</div>
+                </div>
+
+                <div class="flex sm:space-x-2 w-full flex-col sm:flex-row">
+                  <div class="flex-1">Potongan:</div>
+                  <div class="flex-none sm:w-1/2 sm:text-right lg:w-2/3 xl:w-1/2">{{ (penjualan.apakahPotonganPersen)? penjualan.potongan + '% harga jual' : fungsi.rupiahParser(penjualan.potongan) }}</div>
+                </div>
+
+                <div class="flex sm:space-x-2 w-full flex-col sm:flex-row">
+                  <div class="flex-1">Tanggal jual:</div>
+                  <div class="flex-none sm:w-1/2 sm:text-right lg:w-2/3 xl:w-1/2">{{ penjualan.createdAt.toFormat('DD') }}</div>
+                </div>
+              </div>
+
+              <div class="mt-2 gap-2 flex flex-wrap -m-1">
+                {{--  ini wadah badge  --}}
+                @each(item in tags)
+                <div class="badge">{{ item }}</div>
+                @endeach
+                
+              </div>
+            </div>
+
+            <div class="flex-none divider md:divider-vertical opacity-10"></div>
+
+            <div class="flex-none flex flex-col justify-center px-2 items-center">
+              <div>Total Harga Jual</div>
+              <div class="font-semibold text-2xl lg:text-xl">{{ fungsi.rupiahParser(penjualan.hargaJualAkhir) }}</div>
+            </div>
+
+          </div>
+        </div>
+        
+        
+        <div class="flex justify-end card-actions">
+          <button type="button" class="btn btn-sm btn-outline btn-error">Item Salah</button>
+        </div>
+      </div>
+    </div>
+
+    @include('partials/wadah-alert')
+
+    <form method="POST" id="formPembelianQR">
+      {{ csrfField() }}
+
+      <input type="text" class="bisaDikunci hidden" name="kode" id="kode" value="{{ penjualan.kodeTransaksi }}">
+      <input type="number" class="bisaDikunci hidden" name="bentuk" id="bentuk" value="{{ penjualan.model.bentuk.id }}">
+      <input type="number" class="bisaDikunci hidden" id="beratMax" value="{{ penjualan.beratBarang }}">
+
+      <div class="mt-6 flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6 lg:space-x-8 " x-data>
+        <div class="w-full md:w-3/5 space-y-10" x-data="{ bukanGadai: true }">
+
+          {{--  Berat Riil Perhiasan  --}}
+          <div class="space-y-4">
+            <div>
+              <h1 class="text-2xl font-semibold">Berat Riil Perhiasan</h1>
+            </div>
+
+            <div class="max-w-sm">
+              <div class="form-control w-1/2">
+                <label for="beratBarang">
+                  <span class="">Berat Barang<span class="text-error"> *</span></span>
+                </label>
+                <div class="relative flex w-full flex-wrap items-stretch">
+                  <input type="number" placeholder="0" id="beratBarang" min="0" name="beratBarang" max="{{ penjualan.beratBarang }}" value="{{ penjualan.beratBarang }}"
+                    class="bisaDikunci bg-opacity-10 px-3 py-3 relative input input-bordered w-full" step="0.01" oninput="validity.valid||(value=max);"
+                    required />
+                  <span
+                    class="z-10 h-full leading-snug absolute text-sm text-center right-0 items-center justify-center w-auto pr-4 py-3">
+                    gram
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div id="infoBerat" class="text-error"></div>
+          </div>
+
+          {{--  Kelompok batu & mainan  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Batu & Mainan</h1>
+            </div>
+
+            <div>Cek dan bandingkan jumlah batu & mainan dengan yang tercatat di nota.</div>
+
+            <ul class="px-2 list-inside list-disc">
+              @each(item in penjualan.itemJuals)
+                <li>
+                  <span class="">{{ fungsi.kapitalHurufPertama(item.jenis) }} {{ fungsi.kapitalHurufPertama(item.keterangan) }} ({{ item.jumlah }})</span>
+                </li>
+              @endeach
+            </ul>
+          </div>
+
+           {{--  Kelompok keterangan  --}}
+           <div class="space-y-4">
+            <div class="mb-4" id="bagian-detail">
+              <h1 class="text-2xl font-semibold">Keterangan</h1>
+            </div>
+
+            <div class="form-control max-w-md">
+              <label for="keteranganCatatan">
+                <span class="">Keterangan dan Catatan</span>
+              </label>
+              <textarea type="text" id="keteranganCatatan" name="keteranganCatatan"
+                class="bisaDikunci textarea textarea-bordered h-24"
+                placeholder="Contoh: Panjang 45cm, batu warna warni, dlsb"></textarea>
+            </div>
+
+          </div>
+
+
+          {{--  Kelompok gadai  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Pengajuan Gadai</h1>
+            </div>
+
+            <div>Barang yang diajukan sebagai gadai tidak dapat ditukar tambahkan.</div>
+
+            <div class="form-control max-w-md">
+              <label class="label cursor-pointer justify-start space-x-4">
+                <input type="checkbox" name="ajukanGadai" id="ajukanGadai" class="bisaDikunci checkbox"
+                  @change="if($el.checked){bukanGadai = false; $refs.ajukanTT.checked = false} else { bukanGadai = true }">
+                <span class="">Ajukan sebagai gadai</span>
+              </label>
+            </div>
+          </div>
+
+          {{--  Kelompok tukar tambah  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Tukar Tambah</h1>
+            </div>
+
+            <div>Barang yang dijual sebagai tukar tambah akan diterima dengan harga lain.</div>
+
+            <div class="form-control max-w-md" x-show="bukanGadai">
+              <label class="label cursor-pointer justify-start space-x-4">
+                <input type="checkbox" x-ref="ajukanTT" name="ajukanTT" id="ajukanTT" class="bisaDikunci checkbox">
+                <span class="">Ajukan sebagai tukar tambah</span>
+              </label>
+            </div>
+
+            <div class="form-control max-w-md">
+              <label class="label cursor-pointer justify-start space-x-4">
+                <input type="checkbox" name="adaJanjiTT" id="adaJanjiTT" class="checkbox" disabled {{ (penjualan.apakahJanjiTukarTambah)? 'checked' : '' }}>
+                <div>
+                  <span class="block">Ada perjanjian tukar tambah pada nota</span>
+                  @if(tambahan.lamaTerlambat > 0)
+                  <span class="text-error">Terlambat {{ tambahan.lamaTerlambat }} hari</span>
+                  @endif
+                </div>
+              </label>
+            </div>
+
+            <div class="form-control max-w-md">
+              <label class="label cursor-pointer justify-start space-x-4">
+                <input type="checkbox" name="barangDipakai" id="barangDipakai" class="bisaDikunci checkbox">
+                <span class="">Barang sudah dipakai / dikenakan</span>
+              </label>
+            </div>
+
+            <div class="form-control max-w-md">
+              <label class="label cursor-pointer justify-start space-x-4">
+                <input type="checkbox" name="pelangganTetap" id="pelangganTetap" class="bisaDikunci checkbox">
+                <span class="">Penjual adalah pelanggan tetap toko</span>
+              </label>
+            </div>
+
+          </div>
+
+
+          {{--  Kelompok kerusakan sebenarnya  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Kerusakan</h1>
+            </div>
+            {{--  tabel  --}}
+            <div class="flex space-x-4">
+              <div class="flex-1">
+                <div>
+                  <span class="max-w-xs">Isikan kerusakan yang sesuai dengan kondisi perhiasan sebenarnya.</span>
+                </div>
+              </div>
+              <div class="flex-none flex items-end">
+                <button type="button" class="bisaDikunci btn btn-outline btn-sm" id="btRusak">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  Kerusakan</button>
+              </div>
+            </div>
+            <div class="my-8 border rounded-box">
+              <div class="overflow-x-auto min-h-60 relative rounded-box"> {{-- aslinya ada overflow-x-auto disini --}}
+                <table class="table w-full">
+                  <thead>
+                    <tr>
+                      <th>Kerusakan</th>
+                      <th>Ongkos per Rusak</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="wadah-rusak">
+                    {{--  tabelnya ntar di append ke sini  --}}
+
+                  </tbody>
+                </table>
+                <div id="teks-tabel-kosong" class="text-center absolute right-0 left-0 mt-6">Tidak ada kerusakan.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="flex-1 lg:pt-10">
+
+          {{--  card hitung  --}}
+          <div class="card bg-base-200 w-full border mb-10" id="cardHitung">
+            <div class="card-body">
+              <div class="card-title text-center">
+                Hitung Harga Beli
+              </div>
+              <div>
+                Proses seluruh masukan untuk menghitung harga beli perhiasan. Harus dilakukan minimal sekali sebelum
+                menyimpan data transaksi ke dalam sistem.
+              </div>
+              <div class="text-secondary italic mt-2">
+                Pastikan anda mengisi seluruh masukan bertanda bintang (*)
+              </div>
+              <div class="card-actions">
+                <button type="button" id="btHitung" class="btn btn-block text-white">Hitung Harga</button>
+              </div>
+            </div>
+          </div>
+
+          {{--  card hasil hitung  --}}
+          <div class="w-full bg-base-200 card border mb-10  hidden" id="cardHasilHitung">
+            <div class="card-body">
+
+              <div class="text-center card-title">
+                Hasil Perhitungan
+              </div>
+
+              <div class="w-full h-full space-y-8">
+
+                <div class="space-y-4">
+
+                  <div>
+                    <h2 class="font-semibold">Rekap Input</h2>
+
+                    <div>
+                      <div class="flex">
+                        <span class="flex-1">Kadar:</span>
+                        <span class="flex-none" id="sampingKadar">{{ penjualan.kodeProduksi.kadar.nama }}</span>
+                      </div>
+                      <div class="flex">
+                        <span class="flex-1">Bentuk:</span>
+                        <span class="flex-none" id="sampingBentuk">{{ penjualan.model.bentuk.bentuk }}</span>
+                      </div>
+                      <div class="flex">
+                        <span class="flex-1">Kode:</span>
+                        <span class="flex-none" id="sampingKode">{{ penjualan.kodeProduksi.kode }}</span>
+                      </div>
+
+                      <div id="sampingWadahInfoNota">
+                        {{-- wadah buat kalo ada info nota --}}
+                      </div>
+
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2 class="font-semibold">Kerusakan</h2>
+
+                    <div id="sampingWadahRusak">
+                      tidak ada
+                    </div>
+
+                  </div>
+
+                  <div>
+                    <h2 class="font-semibold">Keterangan Transaksi</h2>
+                    <div id="sampingKeteranganTransaksi">
+                      -
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2 class="font-semibold">Rincian Perhitungan</h2>
+
+                    <div>
+                      <div class="flex">
+                        <span class="flex-1">Kondisi barang:</span>
+                        <span class="flex-none font-semibold" id="sampingKondisiBarang"></span>
+                      </div>
+
+                      <div class="flex">
+                        <span class="flex-1">Berat barang:</span>
+                        <span class="flex-none" id="sampingBeratBarang">x gram</span>
+                      </div>
+
+                      <div class="flex">
+                        <span class="flex-1">Harga per gram:</span>
+                        <span class="flex-none" id="sampingHargaPerGram">Rp. 400.000/g</span>
+                      </div>
+
+                      <div id="sampingWadahPerhitungan">
+
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+
+
+                <div class="flex flex-col w-full items-center">
+                  <h2 class="font-semibold text-center">Harga Beli Akhir</h2>
+                  <h1 class="font-bold text-3xl text-center" id="sampingHargaBeliAkhir">Rp. 2.000.000</h1>
+
+                  <input type="checkbox" class="bisaDikunci hidden" name="apakahDitawar" id="apakahDitawar">
+                  <input type="number" class="bisaDikunci hidden" name="dealTawaran" id="dealTawaran">
+                </div>
+
+                <div class="space-y-4">
+                  <button type="button" id="btTawar" class="btn btn-block btn-outline">Ajukan Tawaran</button>
+                  <button type="button" id="btSimpan" class="btn btn-block btn-primary text-white">Simpan
+                    Transaksi</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          {{--  card kunci  --}}
+          <div class="card bg-base-200 w-full border hidden" id="cardBukaKunci">
+            <div class="card-body">
+              <div class=" card-title text-center">
+                Formulir Dikunci!
+              </div>
+              <div>
+                Saat anda menghitung harga beli, formulir akan dikunci dan datanya tidak akan bisa diubah. Anda dapat
+                mengakses form kembali dengan membuka kunci formulir.
+              </div>
+              <div class="card-actions">
+                <button type="button" id="btBukaKunci" class="btn btn-block">Buka kunci formulir</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/form-beli-qr.js')}}"></script>
+@endsection

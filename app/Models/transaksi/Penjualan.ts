@@ -10,7 +10,7 @@ import {
   beforeFind,
   ModelQueryBuilderContract
 } from '@ioc:Adonis/Lucid/Orm'
-import RentangUsia from 'App/Models/transaksi/RentangUsia'
+// import RentangUsia from 'App/Models/transaksi/RentangUsia'
 import Kelompok from 'App/Models/barang/Kelompok'
 import Model from 'App/Models/barang/Model'
 import Pengguna from 'App/Models/akun/Pengguna'
@@ -69,8 +69,8 @@ export default class Penjualan extends BaseModel {
 
 
   // Gender ama rentang usia ada kemungkiann bakal dihapus, tp jangan dulu!
-  @column()
-  public genderPemilik: string | null
+  // @column()
+  // public genderPemilik: string | null
 
 
   @column.dateTime()
@@ -109,11 +109,11 @@ export default class Penjualan extends BaseModel {
   @belongsTo(() => Model)
   public model: BelongsTo<typeof Model>
 
-  @column()
-  public rentangUsiaId: number | null
+  // @column()
+  // public rentangUsiaId: number | null
 
-  @belongsTo(() => RentangUsia)
-  public rentangUsia: BelongsTo<typeof RentangUsia>
+  // @belongsTo(() => RentangUsia)
+  // public rentangUsia: BelongsTo<typeof RentangUsia>
 
   @column()
   public penggunaId: number
@@ -129,6 +129,6 @@ export default class Penjualan extends BaseModel {
   @beforeFetch()
   @beforeFind()
   public static withoutSoftDeletes(query: PenjualanQuery){
-    query.whereNull('deleted_at')
+    query.whereNull('penjualans.deleted_at')
   }
 }

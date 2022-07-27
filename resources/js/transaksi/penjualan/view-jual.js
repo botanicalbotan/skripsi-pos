@@ -1,5 +1,7 @@
 import Swal from "sweetalert2"
 
+import { SwalCustomColor } from '../../fungsi.js'
+
 $(function () {
     const BASEURL = window.location.pathname
     const namaBarang = document.getElementById('namaBarang')
@@ -13,13 +15,13 @@ $(function () {
           title: 'Yakin untuk menghapus?',
           text: 'Anda akan menghapus penjualan "'+ namaBarang.innerText +'", dan penjualan yang dihapus tidak dapat dikembalikan.',
           icon: 'question',
-          iconColor: global.SwalCustomColor.icon.error,
+          iconColor: SwalCustomColor.icon.error,
           showCancelButton: true,
           confirmButtonText: 'Ya, hapus!',
           cancelButtonText: 'Batal',
           scrollbarPadding: false,
           focusCancel: true,
-          confirmButtonColor: global.SwalCustomColor.button.deny,
+          confirmButtonColor: SwalCustomColor.button.deny,
         }).then((result)=>{
           if(result.isConfirmed){
             formHapusPJ.action = BASEURL + '?_method=DELETE'

@@ -1,6 +1,8 @@
 import Swal from "sweetalert2"
 const Item = require('./partial/tambah-item')
 
+import { SwalCustomColor, rupiahParser, removeElementsByClass, belakangKoma } from '../../fungsi.js'
+
 $(function () {
   // ===================================================== SUPER =========================================================
   let sudahFoto = false
@@ -30,14 +32,14 @@ $(function () {
   const teksHE = document.getElementById('teksHE')
   const teksPot = document.getElementById('teksPot')
   let refreshSamping = function () {
-    teksHE.textContent = global.rupiahParser(hargas[pointerStok])
-    teksPot.textContent = (apakahPotonganPersen) ? potongans[pointerStok] + '% penjualan' : global.rupiahParser(potongans[pointerStok]) + ' /g'
+    teksHE.textContent = rupiahParser(hargas[pointerStok])
+    teksPot.textContent = (apakahPotonganPersen) ? potongans[pointerStok] + '% penjualan' : rupiahParser(potongans[pointerStok]) + ' /g'
   }
 
   const kodepro = document.getElementById('kodepro')
   kodepro.addEventListener('change', () => {
 
-    $.get("/app/cumaData/kodeproById", {
+    $.get("/app/cuma-data/kodepro-by-id", {
         id: kodepro.value
       },
       function (data, textStatus, jqXHR) {
@@ -65,6 +67,7 @@ $(function () {
 
   const teksHarga = document.getElementById('teksHarga')
   const beratDesimal = document.getElementById('beratDesimal')
+  const teksBerat = document.getElementById('teksBerat')
 
   // aslinya kudu diitung diserver, tp datanya udah ada semua. JANGAN DICONTOH buat pembelian
   const hitungHarga = function () {
@@ -72,12 +75,13 @@ $(function () {
     const pembulatan = 1000
 
     const jenis = document.querySelector('input[name=jenisStok]:checked').value
-    const totalBerat = global.belakangKoma(beratDesimal.value) + beratKelompok
+    const totalBerat = belakangKoma(beratDesimal.value) + beratKelompok
+    teksBerat.textContent = totalBerat
     const hargaTerpilih = (jenis === 'baru') ? hargas[1] : hargas[0]
 
     const hitung = hargaTerpilih * totalBerat
     const bulat = Math.ceil(hitung / pembulatan) * pembulatan
-    teksHarga.textContent = global.rupiahParser(bulat)
+    teksHarga.textContent = rupiahParser(bulat)
   }
 
   const jenisStoks = document.querySelectorAll('input[name="jenisStok"]')
@@ -86,6 +90,7 @@ $(function () {
   });
 
   beratDesimal.addEventListener('change', hitungHarga)
+  
 
   // ==================================================== FORM & SUBMIT ==========================================================
   const btSubmit = document.getElementById('btSubmit')
@@ -95,7 +100,6 @@ $(function () {
 
   const fotoBarang = document.getElementById('fotoBarang') // img
   const fotoBarangBase64 = document.getElementById('fotoBarangBase64') // input form
-  const svgPHFoto = document.getElementById('svgPHFoto')
   const wadahFoto = document.getElementById('wadahFoto')
 
   let eventModel = false
@@ -103,10 +107,8 @@ $(function () {
 
   function resetFoto () {
     wadahFoto.classList.remove('bg-error', 'bg-opacity-10')
-    svgPHFoto.classList.remove('text-error')
     wadahFoto.classList.add('bg-base-300')
-    svgPHFoto.classList.add('text-secondary')
-    global.removeElementsByClass('pesanerror')
+    removeElementsByClass('pesanerror')
   }
 
   btSubmit.addEventListener('click', () => {
@@ -131,7 +133,7 @@ $(function () {
           if (kodepro.value && kodepro.value !== 'kosong') {
             kodepro.classList.remove('select-error', 'bg-error')
             kodepro.classList.add('bg-primary', 'select-primary')
-            global.removeElementsByClass('pesanerror')
+            removeElementsByClass('pesanerror')
           }
         })
         eventKodepro = true
@@ -157,7 +159,7 @@ $(function () {
           if (model.value && model.value !== 'kosong') {
             model.classList.remove('select-error', 'bg-error')
             model.classList.add('bg-primary', 'select-primary')
-            global.removeElementsByClass('pesanerror')
+            removeElementsByClass('pesanerror')
           }
         })
         eventModel = true
@@ -170,8 +172,6 @@ $(function () {
     if(!sudahFoto || !fotoBarangBase64.value || fotoBarang.naturalHeight == 0){
       wadahFoto.classList.remove('bg-base-300')
       wadahFoto.classList.add('bg-error', 'bg-opacity-10')
-      svgPHFoto.classList.remove('text-secondary')
-      svgPHFoto.classList.add('text-error')
 
       errorMsg.innerText = 'Anda harus mengambil foto perhiasan!'
       if (document.getElementsByClassName('pesanerror').length == 0) fotoBarangBase64.after(errorMsg)
@@ -194,7 +194,7 @@ $(function () {
       showCancelButton: true,
       confirmButtonText: 'Ya, proses!',
       scrollbarPadding: false,
-      confirmButtonColor: global.SwalCustomColor.button.confirm,
+      confirmButtonColor: SwalCustomColor.button.confirm,
       cancelButtonText: 'Batal',
       focusCancel: true,
     }).then((result) => {
@@ -238,7 +238,7 @@ $(function () {
       cancelButtonText: 'Batal',
       confirmButtonText: 'Ambil Foto',
       scrollbarPadding: false,
-      confirmButtonColor: global.SwalCustomColor.button.confirm,
+      confirmButtonColor: SwalCustomColor.button.confirm,
       title: 'Ambil Foto',
       html: printHTML(),
       willOpen: () => {
@@ -335,7 +335,7 @@ $(function () {
       denyButtonText: 'Ulangi',
       confirmButtonText: 'Gunakan',
       scrollbarPadding: false,
-      confirmButtonColor: global.SwalCustomColor.button.confirm,
+      confirmButtonColor: SwalCustomColor.button.confirm,
       title: 'Gunakan Foto Ini?',
       imageUrl: gambar,
       imageWidth: 400,
@@ -362,7 +362,7 @@ $(function () {
           `,
       showCancelButton: true,
       scrollbarPadding: false,
-      confirmButtonColor: global.SwalCustomColor.button.confirm,
+      confirmButtonColor: SwalCustomColor.button.confirm,
       willOpen: () => {
         const image = Swal.getPopup().querySelector('#cropperWadah')
         const cropper = new Cropper(image, {
