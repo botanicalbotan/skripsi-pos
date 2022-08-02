@@ -10,11 +10,11 @@ import Route from '@ioc:Adonis/Core/Route'
 // ================================ LOGIN ROUTE ===============================================
 Route.group(() => {
   // loginnya disini, logoutnya di auth
-  Route.get('/login', 'LoginController.pageLogin')
-  Route.post('/login', 'LoginController.login')
+  Route.get('/login', 'AuthController.pageLogin')
+  Route.post('/login', 'AuthController.login')
 
-  Route.get('/tanpa-akun', 'LoginController.pageTanpaAkun')
-  Route.get('/tanpa-akun-plus', 'LoginController.pageTanpaAkunPlus') // ada navbar buat tes, ntar dihapus
+  Route.get('/tanpa-akun', 'AuthController.pageTanpaAkun')
+  Route.get('/tanpa-akun-plus', 'AuthController.pageTanpaAkunPlus') // ada navbar buat tes, ntar dihapus
 
   Route.group(() => {
     Route.get('/', 'akun/PasswordResetTokensController.index')
@@ -29,4 +29,4 @@ Route.group(() => {
 }).middleware(['guestOnly'])
 
 // ini buat logout khusus harus udah login dulu walopun di 'GUEST'
-Route.post('/logout', 'LoginController.logout').middleware(['auth'])
+Route.post('/logout', 'AuthController.logout').middleware(['auth'])

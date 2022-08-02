@@ -46,20 +46,6 @@ export default class KodeProduksi extends BaseModel {
   public potonganBaru: number
 
 
-  // @column()
-  // public persentaseMalUripan: number
-
-  // @column()
-  // public persentaseMalRosok: number
-
-  // @column()
-  // public ongkosBeliTanpaNota: number
-
-  // @column()
-  // public ongkosMalRosokPerGram: number
-
-
-
   @column.dateTime()
   public deletedAt: DateTime | null
 

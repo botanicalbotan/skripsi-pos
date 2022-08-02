@@ -6,7 +6,9 @@ import {
   HasMany
 } from '@ioc:Adonis/Lucid/Orm'
 import Penjualan from './Penjualan'
-import DetailPembelianUmum from './DetailPembelianUmum'
+
+// ini udah hampir yakin dihapus, tp masih mungkin buat di keep
+// misal tetep pengen ngeimplementasiin spread data buat dashboard ama rekap harian (versi apgred)
 
 export default class RentangUsia extends BaseModel {
   @column({ isPrimary: true })

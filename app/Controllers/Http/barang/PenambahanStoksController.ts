@@ -212,15 +212,6 @@ export default class PenambahanStoksController {
     }
   }
 
-  public async edit ({}: HttpContextContract) {
-  }
-
-  public async update ({}: HttpContextContract) {
-  }
-
-  public async destroy ({}: HttpContextContract) {
-  }
-
   public async getKelompokDenganInput({ request }: HttpContextContract) {
     let bentuk = request.input('bentuk')
     let kadar = request.input('kadar')

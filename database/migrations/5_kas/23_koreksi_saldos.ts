@@ -6,9 +6,9 @@ export default class KoreksiSaldos extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
-      table.integer('saldo_awal').notNullable()
+      table.string('alasan', 100).notNullable()
+      table.integer('perubahan_saldo').notNullable()
       table.integer('saldo_akhir').notNullable()
-      table.integer('selisih_saldo').notNullable()
       table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

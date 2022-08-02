@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
-import { 
-  BaseModel, 
+import {
+  BaseModel,
   column,
   BelongsTo,
   belongsTo,
@@ -8,7 +8,7 @@ import {
   HasMany,
   beforeFetch,
   beforeFind,
-  ModelQueryBuilderContract
+  ModelQueryBuilderContract,
 } from '@ioc:Adonis/Lucid/Orm'
 import Pembelian from 'App/Models/transaksi/Pembelian'
 import StatusGadai from 'App/Models/transaksi/StatusGadai'
@@ -53,14 +53,12 @@ export default class Gadai extends BaseModel {
   public updatedAt: DateTime
 
   // ================================ CONSTRAIN ===================================
-  
+
   @column.dateTime()
   public deletedAt: DateTime | null
 
   @column.dateTime()
   public dilunasiAt: DateTime | null
-
-
 
   // FK dan relasi
   @column()
@@ -76,14 +74,13 @@ export default class Gadai extends BaseModel {
   public statusGadai: BelongsTo<typeof StatusGadai>
 
   @hasMany(() => PembayaranGadai)
-  public pembayaranGadais: HasMany < typeof PembayaranGadai >
+  public pembayaranGadais: HasMany<typeof PembayaranGadai>
 
   @column()
   public penggunaId: number
 
   @belongsTo(() => Pengguna)
   public pengguna: BelongsTo<typeof Pengguna>
-
 
   @beforeFetch()
   @beforeFind()

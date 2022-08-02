@@ -11,7 +11,7 @@ import {
   ModelQueryBuilderContract,
   beforeFetch,
   beforeFind,
-  scope
+  scope,
 } from '@ioc:Adonis/Lucid/Orm'
 import Kadar from 'App/Models/barang/Kadar'
 import Bentuk from 'App/Models/barang/Bentuk'
@@ -53,7 +53,6 @@ export default class Kelompok extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-
   // FK dan relasi
   @column()
   public kadarId: number
@@ -76,7 +75,7 @@ export default class Kelompok extends BaseModel {
     pivotForeignKey: 'kelompok_id',
     relatedKey: 'id',
     pivotRelatedForeignKey: 'penambahan_stok_id',
-    pivotColumns: ['perubahan_stok', 'stok_akhir']
+    pivotColumns: ['perubahan_stok', 'stok_akhir'],
   })
   public penambahanStoks: ManyToMany<typeof PenambahanStok>
 
@@ -95,9 +94,8 @@ export default class Kelompok extends BaseModel {
     query.whereNull('kelompoks.deleted_at')
   }
 
-
   // ========================================== Ini scope ====================================================
-  public static adaStokTidakDihapus = scope((query)=>{
+  public static adaStokTidakDihapus = scope((query) => {
     query.where('stok', '>', 0).andWhereNull('deleted_at')
   })
 }

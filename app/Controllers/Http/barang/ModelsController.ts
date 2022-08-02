@@ -8,11 +8,6 @@ import Drive from '@ioc:Adonis/Core/Drive'
 import User from 'App/Models/User'
 
 export default class ModelsController {
-
-  
-
-  // Fungsi Routing
-
   public async index ({ view, request }: HttpContextContract) {
     const opsiOrder = [
       'models.nama',

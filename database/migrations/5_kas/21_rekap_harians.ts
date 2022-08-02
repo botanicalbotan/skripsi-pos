@@ -11,9 +11,12 @@ export default class RekapHarians extends BaseSchema {
 
       // bisa dipindah jadi tabel baru, ntar ubah strkturnya
       table.boolean('apakah_ada_error').notNullable().defaultTo(0)
-      table.boolean('apakah_sudah_banding_saldo').notNullable().defaultTo(0)
       table.string('pasaran', 10).notNullable()
 
+      // perlu banget buat ngebandingin sama kondisi IRL
+      table.boolean('apakah_sudah_banding_saldo').notNullable().defaultTo(0)
+      table.integer('saldo_toko_terakhir').notNullable()
+      table.integer('saldo_toko_real').notNullable()
 
       // calon dihapus dari sini
 

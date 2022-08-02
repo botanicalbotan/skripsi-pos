@@ -281,7 +281,14 @@ export default class BasicSeeder extends BaseSeeder {
       nama: 'Penggajian',
       kode: 'pg',
       sintaksJudul: 'Ada {jumlah} tagihan pembayaran gaji hari ini!',
-      sintaksSubjudul: 'Klik disini untuk mereview tagihan penggajian.'
+      sintaksSubjudul: 'Klik disini untuk mereview tagihan penggajian'
+    })
+
+    await TipeNotif.create({
+      nama: 'Gadai',
+      kode: 'gd',
+      sintaksJudul: 'Ada {jumlah} gadai yang terlambat hari ini!',
+      sintaksSubjudul: 'Klik disini untuk mereview tagihan gadai'
     })
   }
 }

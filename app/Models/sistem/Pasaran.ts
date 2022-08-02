@@ -17,14 +17,6 @@ export default class Pasaran extends BaseModel {
   @column.date()
   public referensiTanggal: DateTime
 
-  // @column.dateTime({ autoCreate: true })
-  // public createdAt: DateTime
-
-  // @column.dateTime({ autoCreate: true, autoUpdate: true })
-  // public updatedAt: DateTime
-
-
-
   // FK dan relasi
   @manyToMany(() => Pengaturan, {
     pivotTable: 'pengaturan_pasarans',

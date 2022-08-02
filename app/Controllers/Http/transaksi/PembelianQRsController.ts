@@ -542,8 +542,6 @@ export default class PembelianQRsController {
     }
   }
 
-  public async destroy({}: HttpContextContract) {}
-
   public async hitungHargaBelakang({ request, response }: HttpContextContract) {
     const newPembelianQRSchema = schema.create({
       kode: schema.string({ trim: true }, [

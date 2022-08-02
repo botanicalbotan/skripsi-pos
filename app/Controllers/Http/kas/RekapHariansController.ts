@@ -5,20 +5,6 @@ import Database from '@ioc:Adonis/Lucid/Database'
 import RekapHarian from 'App/Models/kas/RekapHarian'
 
 export default class RekapHariansController {
-  kapitalHurufPertama(text: string) {
-    return text.charAt(0).toUpperCase() + text.slice(1)
-  }
-
-  rupiahParser(angka: number) {
-    if (typeof angka == 'number') {
-      return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-      }).format(angka)
-    }
-  }
-
   public async index({
     view,
     request
@@ -124,8 +110,8 @@ export default class RekapHariansController {
     }
 
     const fungsi = {
-      rupiahParser: this.rupiahParser,
-      kapitalHurufPertama: this.kapitalHurufPertama
+      rupiahParser: rupiahParser,
+      kapitalHurufPertama: kapitalHurufPertama
     }
 
     return await view.render('kas/rekap-harian/list-rekap-harian', {
@@ -134,10 +120,6 @@ export default class RekapHariansController {
       fungsi
     })
   }
-
-  public async create({}: HttpContextContract) {}
-
-  public async store({}: HttpContextContract) {}
 
   public async show({
     params,
@@ -194,8 +176,8 @@ export default class RekapHariansController {
       }
 
       const fungsi = {
-        rupiahParser: this.rupiahParser,
-        kapitalHurufPertama: this.kapitalHurufPertama
+        rupiahParser: rupiahParser,
+        kapitalHurufPertama: kapitalHurufPertama
       }
 
       const tambahan = {
@@ -219,9 +201,21 @@ export default class RekapHariansController {
     }
   }
 
-  public async edit({}: HttpContextContract) {}
+}
 
-  public async update({}: HttpContextContract) {}
 
-  public async destroy({}: HttpContextContract) {}
+function kapitalHurufPertama(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+function rupiahParser(angka: number) {
+  if (typeof angka == 'number') {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(angka)
+  } else {
+    return 'error'
+  }
 }

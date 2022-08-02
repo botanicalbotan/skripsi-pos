@@ -28,9 +28,7 @@ import './routes/guest'
 
  // ================================ START APPS ROUTE ===============================================
 Route.group(() => {
-  Route.get('/', async ({
-    view
-  }) => {
+  Route.get('/', async ({ view }) => {
     return view.render('index')
   })
 
@@ -124,7 +122,7 @@ Route.group(() => {
     Route.get('/my-profile', 'akun/PegawaisController.getMyProfile')
     Route.get('/my-toko', 'sistem/PengaturansController.getMyToko')
     Route.get('/kadar-bentuk', 'barang/KelompoksController.getKadarBentuk')
-    Route.get('/kadar-simpel', 'transaksi/RiwayatJualsController.getKadarMinimal')
+    Route.get('/kadar-simpel', 'barang/KadarsController.getKadarMinimal')
     Route.get('/get-kadar-by-id', 'barang/KadarsController.getKadarById')
     Route.get('/kodepro-by-id', 'barang/KodeProduksisController.getKodeproById')
     Route.get('/kodepros-by-id', 'barang/KodeProduksisController.getKodeprosByKadarId')

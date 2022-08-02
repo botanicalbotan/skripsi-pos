@@ -13,10 +13,8 @@ import {
   ModelQueryBuilderContract,
   scope
 } from '@ioc:Adonis/Lucid/Orm'
-// import DetailPembelianKhusus from 'App/Models/transaksi/DetailPembelianKhusus'
 // import Kadar from 'App/Models/barang/Kadar'
 import Model from 'App/Models/barang/Model'
-// import DetailPembelianUmum from 'App/Models/transaksi/DetailPembelianUmum'
 import Kerusakan from 'App/Models/barang/Kerusakan'
 import Pengguna from 'App/Models/akun/Pengguna'
 import KodeProduksi from '../barang/KodeProduksi'

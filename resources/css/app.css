@@ -46,6 +46,10 @@
   @apply text-white !important;
 }
 
+.true-p-2{
+  @apply p-2 !important;
+}
+
 /* ini dikasi simplebar yang manual mati btw, tinggal yang kelas no-select */
 div.drawer-side>ul li>a {
   -webkit-user-select: none;

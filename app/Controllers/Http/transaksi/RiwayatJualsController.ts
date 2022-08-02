@@ -393,14 +393,6 @@ export default class RiwayatJualsController {
     }
     // return await view.render('riwayat/penjualan/list-riwayat-jual-pertanggal')
   }
-
-  public async getKadarMinimal({}: HttpContextContract) {
-    const kadars = await Database
-      .from('kadars')
-      .select('id', 'nama')
-
-    return kadars
-  }
 }
 
 

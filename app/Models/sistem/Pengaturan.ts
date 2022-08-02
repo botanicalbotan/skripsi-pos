@@ -26,9 +26,6 @@ export default class Pengaturan extends BaseModel {
   @column()
   public toleransiSusutBerat: number
 
-  // @column()
-  // public toleransiPersentaseTawaran: number
-
   @column()
   public saldoToko: number
 

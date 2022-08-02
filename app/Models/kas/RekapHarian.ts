@@ -23,10 +23,18 @@ export default class RekapHarian extends BaseModel {
   public pasaran: string
 
   @column()
+  public apakahAdaError: boolean // ntar ganti error jadi anomali
+
+  // ini penting banget buat banding stok sama IRL  
+  @column()
   public apakahSudahBandingSaldo: boolean
 
   @column()
-  public apakahAdaError: boolean // ntar ganti error jadi anomali
+  public saldoTokoTerakhir: number
+
+  @column()
+  public saldoTokoReal: number
+
 
   /** Mulai dari sini */
 

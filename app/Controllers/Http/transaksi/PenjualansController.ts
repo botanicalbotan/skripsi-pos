@@ -749,25 +749,9 @@ export default class PenjualansController {
 
   // ============================ Fungsi Tambahan=====================================
 
-  // function getRandomInt(max: number) {
-  //   return Math.floor(Math.random() * max)
-  // }
-
   function kapitalHurufPertama(text: string) {
     return text.charAt(0).toUpperCase() + text.slice(1)
   }
-
-  // function kapitalKalimat(text: string) {
-  //   let pure = text.split(' ')
-  //   let newText = ''
-  //   for (let i = 0; i < pure.length; i++) {
-  //     newText += this.kapitalHurufPertama(pure[i])
-  //     if (i !== pure.length - 1) {
-  //       newText += ' '
-  //     }
-  //   }
-  //   return newText
-  // }
 
   function belakangKoma(angka: number) {
     return angka / Math.pow(10, angka.toString().replace(/\D/gi, '').length)
@@ -780,6 +764,8 @@ export default class PenjualansController {
         currency: 'IDR',
         minimumFractionDigits: 0,
       }).format(angka)
+    } else {
+      return 'error'
     }
   }
 

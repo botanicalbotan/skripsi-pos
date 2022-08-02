@@ -1,15 +1,11 @@
-import {
-  BaseTask
-} from 'adonis5-scheduler/build'
+import { BaseTask } from 'adonis5-scheduler/build'
 import Pengguna from 'App/Models/akun/Pengguna'
 import Database from '@ioc:Adonis/Lucid/Database'
 import TipeNotif from 'App/Models/sistem/TipeNotif'
-import {
-  DateTime
-} from 'luxon'
+import { DateTime } from 'luxon'
 import Logger from '@ioc:Adonis/Core/Logger'
 
-export default class CekGajianPegawai extends BaseTask {
+export default class TaskCekGajianPegawai extends BaseTask {
   public static get schedule() {
     // tiap jam
     // return '0 0 * ? * *'
@@ -32,9 +28,7 @@ export default class CekGajianPegawai extends BaseTask {
     // kalau udah fix bisa dihapus, buat ngeconsole log doang
     Logger.info('Ngecek gajian pegawai di datetime: ' + DateTime.local().toISO())
 
-
-    let penggunaGajian = await Database
-      .from('penggunas')
+    let penggunaGajian = await Database.from('penggunas')
       .select('id')
       .whereNull('deleted_at')
       .whereNotNull('tanggal_mulai_aktif')
@@ -53,18 +47,19 @@ export default class CekGajianPegawai extends BaseTask {
           await pengguna.related('penerimaGajis').create({
             status: 'menunggu',
             nominalGaji: pengguna.gajiBulanan,
-            tanggalSeharusnyaDibayar: (pengguna.tanggalGajianSelanjutnya) ? pengguna.tanggalGajianSelanjutnya : DateTime.now()
+            tanggalSeharusnyaDibayar: pengguna.tanggalGajianSelanjutnya
+              ? pengguna.tanggalGajianSelanjutnya
+              : DateTime.now(),
           })
 
           pengguna.tanggalGajianSelanjutnya = DateTime.now().plus({
-            months: 1
+            months: 1,
           })
           pengguna.tanggalGajianTerakhir = DateTime.now()
           pengguna.kaliGajian += 1
 
           await pengguna.save()
           counter++
-
         } catch (error) {
           console.error(error)
         }
@@ -73,12 +68,11 @@ export default class CekGajianPegawai extends BaseTask {
 
     await puter()
 
-    if(counter > 0){
+    if (counter > 0) {
       let notifGaji = await TipeNotif.findByOrFail('nama', 'Penggajian')
       let sintaksJudul = notifGaji.sintaksJudul.replace('{jumlah}', counter.toString())
 
-      let penggunaPenting = await Database
-        .from('penggunas')
+      let penggunaPenting = await Database.from('penggunas')
         .join('jabatans', 'penggunas.jabatan_id', 'jabatans.id')
         .where('jabatans.nama', 'Kepala Toko')
         .orWhere('jabatans.nama', 'Pemilik')
@@ -90,7 +84,7 @@ export default class CekGajianPegawai extends BaseTask {
           await notifGaji.related('notifikasis').create({
             isiNotif: sintaksJudul,
             penggunaId: element.id,
-            urlTujuan: '/app/pegawai/penggajian'
+            urlTujuan: '/app/pegawai/penggajian',
           })
         }
       }
@@ -99,8 +93,7 @@ export default class CekGajianPegawai extends BaseTask {
       puterNotif()
     }
 
-    await Database
-      .insertQuery()
+    await Database.insertQuery()
       .table('refresh_penggajians')
       .insert({ direfresh_at: DateTime.now().toSQL() })
 

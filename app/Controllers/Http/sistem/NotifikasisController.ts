@@ -5,30 +5,26 @@ import User from 'App/Models/User'
 import { DateTime } from 'luxon'
 
 export default class NotifikasisController {
+  public async index({ view, request, auth, response, session }: HttpContextContract) {
+    try {
+      if (!auth.user) throw 'auth ngga valid'
 
-  public async index ({ view, request }: HttpContextContract) {
-    let idUserAktif = 1 // ntar diganti jadi sesi aktif
-    const page = request.input('page', 1)
-    const filterShow = request.input('fs', 0)
-    const sanitizedFilterShow = filterShow == 1? 1:0
-    const limit = 10
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
 
-    const notifikasis = await Database
-      .from('notifikasis')
-      .select(
-        'isi_notif as isiNotif',
-        'id',
-        'diklik_at as diklikAt',
-        'created_at as createdAt'
-      )
-      .where('pengguna_id', idUserAktif)
-      .if(sanitizedFilterShow == 1, (query) => {
-        query
-          .whereNull('diklik_at')
-      })
-      .orderBy('created_at', 'desc')
-      .paginate(page, limit)
+      const page = request.input('page', 1)
+      const filterShow = request.input('fs', 0)
+      const sanitizedFilterShow = filterShow == 1 ? 1 : 0
+      const limit = 10
 
+      const notifikasis = await Database.from('notifikasis')
+        .select('isi_notif as isiNotif', 'id', 'diklik_at as diklikAt', 'created_at as createdAt')
+        .where('pengguna_id', userPengakses.pengguna.id)
+        .if(sanitizedFilterShow == 1, (query) => {
+          query.whereNull('diklik_at')
+        })
+        .orderBy('created_at', 'desc')
+        .paginate(page, limit)
 
       notifikasis.baseUrl('/app/notifikasi')
 
@@ -60,60 +56,36 @@ export default class NotifikasisController {
         }
       }
       // sampe sini
-      const tempLastData = 10 + ((notifikasis.currentPage - 1) * limit)
+      const tempLastData = 10 + (notifikasis.currentPage - 1) * limit
 
       const tambahan = {
         filterShow: sanitizedFilterShow,
         firstPage: firstPage,
         lastPage: lastPage,
-        firstDataInPage: 1 + ((notifikasis.currentPage - 1) * limit),
-        lastDataInPage: (tempLastData >= notifikasis.total)? notifikasis.total: tempLastData,
+        firstDataInPage: 1 + (notifikasis.currentPage - 1) * limit,
+        lastDataInPage: tempLastData >= notifikasis.total ? notifikasis.total : tempLastData,
       }
 
       const fungsi = {
-        waktuDiff: bandingWaktu
+        waktuDiff: bandingWaktu,
       }
 
-    /** simpen kali aja ntar kepake */
-
-    // let wadah :{ tanggal: DateTime , notifs: {}[] }[] = []
-    // let iterasi = 0
-    // let tanggalTok = await Database
-    //   .rawQuery('select DATE(created_at) as tanggal from notifikasis WHERE pengguna_id = ?', [
-    //     idUserAktif
-    //   ])
-
-    // for (const iterator of tanggalTok[0]) {
-    //   wadah.push({
-    //     tanggal: iterator.tanggal,
-    //     notifs: await puterNotifPerTanggal(iterator.tanggal)
-    //   })
-    //   iterasi++
-    // }
-
-    // async function puterNotifPerTanggal(tanggal: string) {
-    //   let notifs = await Database
-    //     .from('notifikasis')
-    //     .where('pengguna_id', idUserAktif)
-    //     .andWhereRaw('DATE(created_at) = DATE(?)', [tanggal])
-    //   return notifs
-    // }
-    // return { listNotif: wadah }
-
-    return await view.render('notifikasi/semua-notifikasi', { notifikasis, tambahan, fungsi })
-
+      return await view.render('notifikasi/semua-notifikasi', { notifikasis, tambahan, fungsi })
+    } catch (error) {
+      session.flash('alertError', 'Ada kesalahan pada notifikasi sistem!')
+      return response.redirect().toPath('/app')
+    }
   }
 
-  public async show ({ params, response, session, auth }: HttpContextContract) {
+  public async show({ params, response, session, auth }: HttpContextContract) {
     try {
-      if(!auth.user) throw new Error ('auth ngga valid')
+      if (!auth.user) throw new Error('auth ngga valid')
 
       const userPengakses = await User.findOrFail(auth.user.id)
       await userPengakses.load('pengguna')
 
       // ngecek constrain
-      await Database
-        .from('notifikasis')
+      await Database.from('notifikasis')
         .where('id', params.id)
         .andWhere('pengguna_id', userPengakses.pengguna.id)
         .firstOrFail()
@@ -123,72 +95,91 @@ export default class NotifikasisController {
       await notif.save()
 
       return response.redirect().toPath(notif.urlTujuan)
-
     } catch (error) {
-      session.flash('errorServerThingy', 'Ada kesalahan pada server!')
-      return response.redirect().back()
+      session.flash('alertError', 'Ada kesalahan pada notifikasi sistem!')
+      return response.redirect().toPath('/app')
     }
   }
 
-  public async notifTerbaru ({}: HttpContextContract) {
-    let idUserAktif = 1 // ini ntar diganti sesi aktif
+  public async notifTerbaru({ auth }: HttpContextContract) {
     let jumlahNotif = 5 // bisa dibuat parameter
 
-    let notif = await Database
-      .from('notifikasis')
-      .join('tipe_notifs', 'notifikasis.tipe_notif_id', 'tipe_notifs.id')
-      .select('notifikasis.isi_notif', 'notifikasis.created_at', 'notifikasis.id', 'tipe_notifs.nama', 'tipe_notifs.kode', 'tipe_notifs.sintaks_subjudul as penjelas')
-      .where('notifikasis.pengguna_id', idUserAktif)
-      .limit(jumlahNotif)
-      .orderBy('notifikasis.created_at', 'desc')
+    try {
+      if (!auth.user) throw 'auth ngga valid'
 
-    return { notifikasi:notif, url: '/app/notifikasi/' }
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
+
+      let notif = await Database.from('notifikasis')
+        .join('tipe_notifs', 'notifikasis.tipe_notif_id', 'tipe_notifs.id')
+        .select(
+          'notifikasis.isi_notif',
+          'notifikasis.created_at',
+          'notifikasis.id',
+          'tipe_notifs.nama',
+          'tipe_notifs.kode',
+          'tipe_notifs.sintaks_subjudul as penjelas'
+        )
+        .where('notifikasis.pengguna_id', userPengakses.pengguna.id)
+        .limit(jumlahNotif)
+        .orderBy('notifikasis.created_at', 'desc')
+
+      return { notifikasi: notif, url: '/app/notifikasi/' }
+    } catch (error) {
+      return { notifikasi: [], url: '/app/notifikasi/' }
+    }
   }
 
-  public async jumlahNotifBaru ({}: HttpContextContract) {
-    let idUserAktif = 1 // ini ntar diganti sesi aktif
-    let jumlahBaru = await Database
-      .from('notifikasis')
-      .where('pengguna_id', idUserAktif)
-      .andWhereNull('dilihat_at')
-      .andWhereNull('diklik_at')
-      .count('*', 'jumlah')
+  public async jumlahNotifBaru({ auth }: HttpContextContract) {
+    try {
+      if (!auth.user) throw 'auth ngga valid'
 
-    return { adaBaru: (jumlahBaru[0].jumlah > 0), jumlah: jumlahBaru[0].jumlah }
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
+
+      let jumlahBaru = await Database.from('notifikasis')
+        .where('pengguna_id', userPengakses.pengguna.id)
+        .andWhereNull('dilihat_at')
+        .andWhereNull('diklik_at')
+        .count('*', 'jumlah')
+
+      return { adaBaru: jumlahBaru[0].jumlah > 0, jumlah: jumlahBaru[0].jumlah }
+    } catch (error) {
+      return { adaBaru: false, jumlah: 0 }
+    }
   }
 
-  public async setLihatNotif ({ response, request }: HttpContextContract) {
+  public async setLihatNotif({ response, request, auth }: HttpContextContract) {
     let latestIdRead = request.input('idTerakhir', 'kosong')
-    let idUserAktif = 1 // ini ntar diganti sesi aktif
 
-    await Notifikasi
-      .findOrFail(latestIdRead)
-      .catch(() => {
-        return response.notFound('ID notifikasi terakhir tidak valid')
-      })
+    try {
+      if (!auth.user) throw 'auth ngga valid'
 
-    await Database
-      .from('notifikasis')
-      .where('pengguna_id', idUserAktif)
-      .andWhere('id', '<=', latestIdRead)
-      .andWhereNull('dilihat_at')
-      .update({
-        dilihat_at: DateTime.now().toISO()
-      })
-      .catch(() => {
-        return response.internalServerError('Ada kesalahan di database notifikasi')
-      })
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
 
-      return response.ok({message: 'Mantap'})
+      // check constrain
+      await Notifikasi.findOrFail(latestIdRead)
+
+      await Database.from('notifikasis')
+        .where('pengguna_id', userPengakses.pengguna.id)
+        .andWhere('id', '<=', latestIdRead)
+        .andWhereNull('dilihat_at')
+        .update({
+          dilihat_at: DateTime.now().toISO(),
+        })
+
+      return response.ok({ message: 'Mantap' })
+    } catch (error) {
+      return response.badRequest('Ada kesalahan pada notifikasi sistem!')
+    }
   }
-
 }
-
 
 function bandingWaktu(ISODateTIme: string) {
   let waktuNotif = DateTime.fromISO(ISODateTIme)
   let selisih = waktuNotif.diffNow('minutes').toObject().minutes
-  let menitDiff = (selisih)? Math.abs(Math.round(selisih)): 0
+  let menitDiff = selisih ? Math.abs(Math.round(selisih)) : 0
   let teksDiff = ''
 
   if (menitDiff > 60) {

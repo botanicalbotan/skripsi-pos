@@ -80,7 +80,7 @@
             @endif
           </div>
 
-          <div class="form-control max-w-xs" x-show="radio == 1" x-cloak>
+          <div class="form-control max-w-xs" x-show="radio == 1" {{ (kerusakan.apakahBisaDiperbaiki)? '':'x-cloak' }}>
             <label for="ongkos">Ongkos Perbaikan per Satuan Kerusakan<span class="text-error"> *</span></label>
             <div class="relative flex w-full flex-wrap items-stretch">
               <span

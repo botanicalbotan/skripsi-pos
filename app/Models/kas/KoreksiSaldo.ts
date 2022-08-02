@@ -12,13 +12,13 @@ export default class KoreksiSaldo extends BaseModel {
   public id: number
 
   @column()
-  public saldoAwal: number
+  public alasan: string
+
+  @column()
+  public perubahanSaldo: number
 
   @column()
   public saldoAkhir: number
-
-  @column()
-  public selisihSaldo: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
