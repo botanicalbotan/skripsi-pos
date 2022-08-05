@@ -17,13 +17,6 @@ export default class StatusGadai extends BaseModel {
   @column()
   public status: string
 
-  // @column.dateTime({ autoCreate: true })
-  // public createdAt: DateTime
-
-  // @column.dateTime({ autoCreate: true, autoUpdate: true })
-  // public updatedAt: DateTime
-
-
   // FK dan relasi
   @hasMany(() => Gadai)
   public gadais: HasMany<typeof Gadai>

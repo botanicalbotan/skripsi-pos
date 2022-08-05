@@ -1,15 +1,11 @@
 // Ini cuma bikin ISI KONTEN yang bakal dipake buat bikin PDF di core controllernya
 
-import Pengaturan from "App/Models/sistem/Pengaturan"
-import {
-  DateTime
-} from 'luxon';
-import CPasaran from 'App/CustomClasses/CPasaran';
-import Database from '@ioc:Adonis/Lucid/Database';
-import User from "App/Models/User";
-import BabKas from "./Bab/BabKas";
-import BabBarang from "./Bab/BabBarang";
-import BabTransaksi from "./Bab/BabTransaksi";
+import Pengaturan from 'App/Models/sistem/Pengaturan'
+import { DateTime } from 'luxon'
+import User from 'App/Models/User'
+import BabKas from './Bab/BabKas'
+import BabBarang from './Bab/BabBarang'
+import BabTransaksi from './Bab/BabTransaksi'
 
 export default class KontenLaporanMaker {
   async generateStyle() {
@@ -17,66 +13,71 @@ export default class KontenLaporanMaker {
       header: {
         fontSize: 18,
         bold: true,
-        margin: [0, 0, 0, 10]
+        margin: [0, 0, 0, 10],
       },
       tableHeader: {
         // bold: true,
         // fontSize: 11,
         color: 'black',
-        fillColor: '#eeeeee'
+        fillColor: '#eeeeee',
       },
       tabelBasic: {
-        margin: [0, 10, 0, 15]
+        margin: [0, 10, 0, 15],
       },
       tabelKopBab: {
-        margin: [0, 0, 0, 25]
+        margin: [0, 0, 0, 25],
       },
       judul: {
         bold: true,
         fontSize: 16,
         color: 'black',
-        margin: [0, 0, 0, 30]
+        margin: [0, 0, 0, 30],
       },
       paragrafNormal: {
         lineHeight: 1.5,
-        fontSize: 11
+        fontSize: 11,
       },
       subBab: {
         fontSize: 12,
-        margin: [0, 5, 0, 10]
+        margin: [0, 5, 0, 10],
       },
       kasMasuk: {
-        color: 'green'
+        color: 'green',
       },
       kasKeluar: {
-        color: 'red'
+        color: 'red',
       },
       olJudul: {
         fontSize: 11,
-        margin: [0, 5, 0, 10]
+        margin: [0, 5, 0, 10],
       },
       olKonten: {
         fontSize: 11,
-        margin: [0, 0, 0, 10]
+        margin: [0, 0, 0, 10],
       },
       olWadah: {
         fontSize: 11,
-        margin: [0, 10, 0, 15]
+        margin: [0, 10, 0, 15],
       },
       olTabel: {
-        margin: [0, 0, 0, 15]
-      }
+        margin: [0, 0, 0, 15],
+      },
     }
   }
 
   // ================================================ GENERATE BAB KAS ==========================================================
 
-  async generateBabKas(checklistKas: {
-    semua: boolean,
-    rekap: boolean,
-    daftar: boolean
-  }, tanggalLaporan: string, tanggalMulai: DateTime, tanggalAkhir: DateTime, adaNext: boolean = false) {
-
+  async generateBabKas(
+    checklistKas: {
+      semua: boolean
+      rekap: boolean
+      daftar: boolean
+    },
+    tanggalLaporan: string,
+    tanggalMulai: DateTime,
+    tanggalAkhir: DateTime,
+    adaNext: boolean = false
+  ) {
     let placeholderUser = 1 // ini harusnya ngambil dari current active session
     const userPengkases = await User.findOrFail(placeholderUser)
     await userPengkases.load('pengguna', (query) => {
@@ -87,7 +88,8 @@ export default class KontenLaporanMaker {
 
     let cabang = kapitalKalimat(pengaturan.namaToko)
     let alamat = kapitalKalimat(pengaturan.alamatTokoLengkap)
-    let pencetak = kapitalKalimat(userPengkases.pengguna.nama) + ` <${userPengkases.pengguna.jabatan.nama}>`
+    let pencetak =
+      kapitalKalimat(userPengkases.pengguna.nama) + ` <${userPengkases.pengguna.jabatan.nama}>`
     let tanggalCetak = DateTime.now().toFormat('fff')
 
     let tanggalString = ''
@@ -98,9 +100,8 @@ export default class KontenLaporanMaker {
       tanggalString = tanggalMulai.toFormat('D')
     }
 
-
     // 1. ------------------------ Persiapan Subbab (konten asli) ----------------------
-    let subbab: Array < any > = []
+    let subbab: Array<any> = []
     const babKas = new BabKas()
 
     if (checklistKas.semua) {
@@ -120,17 +121,14 @@ export default class KontenLaporanMaker {
     if (adaNext) {
       subbab.push({
         pageBreak: 'after',
-        text: ''
+        text: '',
       })
     }
 
     // 2. ------------------------ Wadah Bab ------------------------------------
-    let bab = [{
-        stack: [
-          'LAPORAN PEMBUKUAN KAS HARIAN',
-          'TOKO MAS LEO',
-          'TANGGAL ' + tanggalString
-        ],
+    let bab = [
+      {
+        stack: ['LAPORAN PEMBUKUAN KAS HARIAN', 'TOKO MAS LEO', 'TANGGAL ' + tanggalString],
         style: 'judul',
         alignment: 'center',
         // pageBreak: 'after'
@@ -145,12 +143,12 @@ export default class KontenLaporanMaker {
           ],
         },
 
-        layout: 'noBorders'
+        layout: 'noBorders',
       },
       {
         type: 'upper-alpha',
         ol: subbab,
-      }
+      },
     ]
 
     // 3. ------------------------ Return Selesai ----------------------------
@@ -158,14 +156,19 @@ export default class KontenLaporanMaker {
   }
 
   // ================================================ GENERATE BAB TRANSAKSI ==========================================================
-  async generateBabTransaksi(checklistTransaksi: {
-    semua: boolean,
-    rekap: boolean,
-    daftarJual: boolean,
-    daftarBeli: boolean,
-    daftarGadai: boolean,
-  }, tanggalLaporan: string, tanggalMulai: DateTime, tanggalAkhir: DateTime, adaNext: boolean = false) {
-
+  async generateBabTransaksi(
+    checklistTransaksi: {
+      semua: boolean
+      rekap: boolean
+      daftarJual: boolean
+      daftarBeli: boolean
+      daftarGadai: boolean
+    },
+    tanggalLaporan: string,
+    tanggalMulai: DateTime,
+    tanggalAkhir: DateTime,
+    adaNext: boolean = false
+  ) {
     let placeholderUser = 1 // ini harusnya ngambil dari current active session
     const userPengkases = await User.findOrFail(placeholderUser)
     await userPengkases.load('pengguna', (query) => {
@@ -176,7 +179,8 @@ export default class KontenLaporanMaker {
 
     let cabang = kapitalKalimat(pengaturan.namaToko)
     let alamat = kapitalKalimat(pengaturan.alamatTokoLengkap)
-    let pencetak = kapitalKalimat(userPengkases.pengguna.nama) + ` <${userPengkases.pengguna.jabatan.nama}>`
+    let pencetak =
+      kapitalKalimat(userPengkases.pengguna.nama) + ` <${userPengkases.pengguna.jabatan.nama}>`
     let tanggalCetak = DateTime.now().toFormat('fff')
 
     let tanggalString = ''
@@ -187,27 +191,38 @@ export default class KontenLaporanMaker {
       tanggalString = tanggalMulai.toFormat('D')
     }
 
-
     // 1. ------------------------ Persiapan Subbab (konten asli) ----------------------
-    let subbab: Array < any > = []
+    let subbab: Array<any> = []
     const babTransaksi = new BabTransaksi()
 
     if (checklistTransaksi.semua) {
-      subbab.push(await babTransaksi.generateSubRekapTransaksi(tanggalLaporan, tanggalMulai, tanggalAkhir))
-      subbab.push(await babTransaksi.generateSubDaftarPenjualan(tanggalLaporan, tanggalMulai, tanggalAkhir))
-      subbab.push(await babTransaksi.generateSubDaftarPembelian(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      subbab.push(
+        await babTransaksi.generateSubRekapTransaksi(tanggalLaporan, tanggalMulai, tanggalAkhir)
+      )
+      subbab.push(
+        await babTransaksi.generateSubDaftarPenjualan(tanggalLaporan, tanggalMulai, tanggalAkhir)
+      )
+      subbab.push(
+        await babTransaksi.generateSubDaftarPembelian(tanggalLaporan, tanggalMulai, tanggalAkhir)
+      )
       // subbab.push(await babTransaksi.generateSubDaftarGadai(tanggalLaporan, tanggalMulai, tanggalAkhir))
     } else {
       if (checklistTransaksi.rekap) {
-        subbab.push(await babTransaksi.generateSubRekapTransaksi(tanggalLaporan, tanggalMulai, tanggalAkhir))
+        subbab.push(
+          await babTransaksi.generateSubRekapTransaksi(tanggalLaporan, tanggalMulai, tanggalAkhir)
+        )
       }
 
       if (checklistTransaksi.daftarJual) {
-        subbab.push(await babTransaksi.generateSubDaftarPenjualan(tanggalLaporan, tanggalMulai, tanggalAkhir))
+        subbab.push(
+          await babTransaksi.generateSubDaftarPenjualan(tanggalLaporan, tanggalMulai, tanggalAkhir)
+        )
       }
 
       if (checklistTransaksi.daftarBeli) {
-        subbab.push(await babTransaksi.generateSubDaftarPembelian(tanggalLaporan, tanggalMulai, tanggalAkhir))
+        subbab.push(
+          await babTransaksi.generateSubDaftarPembelian(tanggalLaporan, tanggalMulai, tanggalAkhir)
+        )
       }
 
       // if (checklistTransaksi.daftarGadai) {
@@ -219,17 +234,14 @@ export default class KontenLaporanMaker {
     if (adaNext) {
       subbab.push({
         pageBreak: 'after',
-        text: ''
+        text: '',
       })
     }
 
     // 2. ------------------------ Wadah Bab ------------------------------------
-    let bab = [{
-        stack: [
-          'LAPORAN PEMBUKUAN TRANSAKSI HARIAN',
-          'TOKO MAS LEO',
-          'TANGGAL ' + tanggalString
-        ],
+    let bab = [
+      {
+        stack: ['LAPORAN PEMBUKUAN TRANSAKSI HARIAN', 'TOKO MAS LEO', 'TANGGAL ' + tanggalString],
         style: 'judul',
         alignment: 'center',
         // pageBreak: 'after',
@@ -243,12 +255,12 @@ export default class KontenLaporanMaker {
             ['Alamat Toko', ':', alamat, null, 'Pencetak', ':', pencetak],
           ],
         },
-        layout: 'noBorders'
+        layout: 'noBorders',
       },
       {
         type: 'upper-alpha',
         ol: subbab,
-      }
+      },
     ]
 
     // 3. ------------------------ Return Selesai ----------------------------
@@ -256,16 +268,21 @@ export default class KontenLaporanMaker {
   }
 
   // ================================================ GENERATE BAB BARANG ==========================================================
-  async generateBabBarang(checklistBarang: {
-    semua: boolean,
-    daftarPenambahan: boolean,
-    daftarKoreksi: boolean,
-    daftarKelompokLaku: boolean,
-    daftarKodeproLaku: boolean,
-    daftarKelompokMenipis: boolean,
-    daftarModelLaku: boolean,
-  }, tanggalLaporan: string, tanggalMulai: DateTime, tanggalAkhir: DateTime, adaNext: boolean = false) {
-
+  async generateBabBarang(
+    checklistBarang: {
+      semua: boolean
+      daftarPenambahan: boolean
+      daftarKoreksi: boolean
+      daftarKelompokLaku: boolean
+      daftarKodeproLaku: boolean
+      daftarKelompokMenipis: boolean
+      daftarModelLaku: boolean
+    },
+    tanggalLaporan: string,
+    tanggalMulai: DateTime,
+    tanggalAkhir: DateTime,
+    adaNext: boolean = false
+  ) {
     let placeholderUser = 1 // ini harusnya ngambil dari current active session
     const userPengkases = await User.findOrFail(placeholderUser)
     await userPengkases.load('pengguna', (query) => {
@@ -276,7 +293,8 @@ export default class KontenLaporanMaker {
 
     let cabang = kapitalKalimat(pengaturan.namaToko)
     let alamat = kapitalKalimat(pengaturan.alamatTokoLengkap)
-    let pencetak = kapitalKalimat(userPengkases.pengguna.nama) + ` (${userPengkases.pengguna.jabatan.nama})`
+    let pencetak =
+      kapitalKalimat(userPengkases.pengguna.nama) + ` (${userPengkases.pengguna.jabatan.nama})`
     let tanggalCetak = DateTime.now().toFormat('fff')
 
     let tanggalString = ''
@@ -287,60 +305,74 @@ export default class KontenLaporanMaker {
       tanggalString = tanggalMulai.toFormat('D')
     }
 
-
     // 1. ------------------------ Persiapan Subbab (konten asli) ----------------------
-    let subbab: Array < any > = []
+    let subbab: Array<any> = []
     const babBarang = new BabBarang()
 
     if (checklistBarang.semua) {
-      subbab.push(await babBarang.generateSubDaftarPenambahan(tanggalLaporan, tanggalMulai, tanggalAkhir))
-      subbab.push(await babBarang.generateSubDaftarKoreksi(tanggalLaporan, tanggalMulai, tanggalAkhir))
-      subbab.push(await babBarang.generateSubDaftarKelompokLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
-      subbab.push(await babBarang.generateSubDaftarKodeproLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      subbab.push(
+        await babBarang.generateSubDaftarPenambahan(tanggalLaporan, tanggalMulai, tanggalAkhir)
+      )
+      subbab.push(
+        await babBarang.generateSubDaftarKoreksi(tanggalLaporan, tanggalMulai, tanggalAkhir)
+      )
+      subbab.push(
+        await babBarang.generateSubDaftarKelompokLaku(tanggalLaporan, tanggalMulai, tanggalAkhir)
+      )
+      subbab.push(
+        await babBarang.generateSubDaftarKodeproLaku(tanggalLaporan, tanggalMulai, tanggalAkhir)
+      )
       subbab.push(await babBarang.generateSubDaftarKelompokMenipis())
-      subbab.push(await babBarang.generateSubDaftarModelLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
-    } else{
-      if(checklistBarang.daftarPenambahan){
-        subbab.push(await babBarang.generateSubDaftarPenambahan(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      subbab.push(
+        await babBarang.generateSubDaftarModelLaku(tanggalLaporan, tanggalMulai, tanggalAkhir)
+      )
+    } else {
+      if (checklistBarang.daftarPenambahan) {
+        subbab.push(
+          await babBarang.generateSubDaftarPenambahan(tanggalLaporan, tanggalMulai, tanggalAkhir)
+        )
       }
 
-      if(checklistBarang.daftarKoreksi){
-        subbab.push(await babBarang.generateSubDaftarKoreksi(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      if (checklistBarang.daftarKoreksi) {
+        subbab.push(
+          await babBarang.generateSubDaftarKoreksi(tanggalLaporan, tanggalMulai, tanggalAkhir)
+        )
       }
 
-
-      if(checklistBarang.daftarKelompokLaku){
-        subbab.push(await babBarang.generateSubDaftarKelompokLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      if (checklistBarang.daftarKelompokLaku) {
+        subbab.push(
+          await babBarang.generateSubDaftarKelompokLaku(tanggalLaporan, tanggalMulai, tanggalAkhir)
+        )
       }
 
-      if(checklistBarang.daftarKodeproLaku){
-        subbab.push(await babBarang.generateSubDaftarKodeproLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      if (checklistBarang.daftarKodeproLaku) {
+        subbab.push(
+          await babBarang.generateSubDaftarKodeproLaku(tanggalLaporan, tanggalMulai, tanggalAkhir)
+        )
       }
 
-      if(checklistBarang.daftarKelompokMenipis){
+      if (checklistBarang.daftarKelompokMenipis) {
         subbab.push(await babBarang.generateSubDaftarKelompokMenipis())
       }
 
-      if(checklistBarang.daftarModelLaku){
-        subbab.push(await babBarang.generateSubDaftarModelLaku(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      if (checklistBarang.daftarModelLaku) {
+        subbab.push(
+          await babBarang.generateSubDaftarModelLaku(tanggalLaporan, tanggalMulai, tanggalAkhir)
+        )
       }
     }
 
-    
     if (adaNext) {
       subbab.push({
         pageBreak: 'after',
-        text: ''
+        text: '',
       })
     }
 
     // 2. ------------------------ Wadah Bab ------------------------------------
-    let bab = [{
-        stack: [
-          'LAPORAN PEMBUKUAN BARANG HARIAN',
-          'TOKO MAS LEO',
-          'TANGGAL ' + tanggalString
-        ],
+    let bab = [
+      {
+        stack: ['LAPORAN PEMBUKUAN BARANG HARIAN', 'TOKO MAS LEO', 'TANGGAL ' + tanggalString],
         style: 'judul',
         alignment: 'center',
       },
@@ -353,19 +385,18 @@ export default class KontenLaporanMaker {
             ['Alamat Toko', ':', alamat, null, 'Pencetak', ':', pencetak],
           ],
         },
-        layout: 'noBorders'
+        layout: 'noBorders',
       },
       {
         type: 'upper-alpha',
         ol: subbab,
-      }
+      },
     ]
 
     // 3. ------------------------ Return Selesai ----------------------------
     return bab
   }
 }
-
 
 // ========================================= METHOD UMUM =====================================================
 

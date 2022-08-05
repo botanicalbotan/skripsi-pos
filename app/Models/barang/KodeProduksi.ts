@@ -10,7 +10,7 @@ import {
   beforeFind,
   beforeFetch
 } from '@ioc:Adonis/Lucid/Orm'
-import Kadar from 'App/Models/Barang/Kadar'
+import Kadar from 'App/Models/barang/Kadar'
 import Penjualan from 'App/Models/transaksi/Penjualan'
 import Pengguna from 'App/Models/akun/Pengguna'
 import Pembelian from '../transaksi/Pembelian'
