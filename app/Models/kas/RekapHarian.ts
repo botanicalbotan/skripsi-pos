@@ -1,11 +1,14 @@
 import { DateTime } from 'luxon'
 import {
   BaseModel,
+  BelongsTo,
+  belongsTo,
   column,
   hasMany,
   HasMany
 } from '@ioc:Adonis/Lucid/Orm'
 import Ka from 'App/Models/kas/Ka'
+import Pengguna from '../akun/Pengguna'
 
 export default class RekapHarian extends BaseModel {
   @column({ isPrimary: true })
@@ -22,9 +25,6 @@ export default class RekapHarian extends BaseModel {
   @column()
   public pasaran: string
 
-  @column()
-  public apakahAdaError: boolean // ntar ganti error jadi anomali
-
   // ini penting banget buat banding stok sama IRL  
   @column()
   public apakahSudahBandingSaldo: boolean
@@ -34,6 +34,17 @@ export default class RekapHarian extends BaseModel {
 
   @column()
   public saldoTokoReal: number
+
+  @column.dateTime()
+  public dibandingAt: DateTime | null
+
+  @column()
+  public pencatatBandingId: number | null
+
+  @belongsTo(() => Pengguna, {
+    foreignKey: 'pencatatBandingId'
+  })
+  public pencatatBanding: BelongsTo<typeof Pengguna>
 
 
   /** Mulai dari sini */

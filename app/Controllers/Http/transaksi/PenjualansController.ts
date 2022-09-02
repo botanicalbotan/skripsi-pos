@@ -329,18 +329,14 @@ export default class PenjualansController {
         query.preload('kadar')
       })
 
-      const urlFotoPencatat = (await Drive.exists('profilePict/' + PJ.pengguna.foto))? (await Drive.getUrl('profilePict/' + PJ.pengguna.foto)) : ''
-      const urlFotoBarang = (await Drive.exists('transaksi/penjualan/' + PJ.fotoBarang))? (await Drive.getUrl('transaksi/penjualan/' + PJ.fotoBarang)) : ''
-
       const fungsi = {
         rupiahParser: rupiahParser,
         kapitalHurufPertama: kapitalHurufPertama
       }
 
       const tambahan = {
-        urlFotoPencatat: urlFotoPencatat,
-        urlFotoBarang: urlFotoBarang,
-        adaFotoBarang: (urlFotoBarang !== 'kosong' && urlFotoBarang)
+        adaFotoBarang: (await Drive.exists('transaksi/penjualan/' + PJ.fotoBarang)),
+        adaFotoPencatat: (await Drive.exists('profilePict/' + PJ.pengguna.foto))
       }
 
       return await view.render('transaksi/penjualan/view-jual', { PJ, fungsi, tambahan })
@@ -356,7 +352,6 @@ export default class PenjualansController {
       const PJ = await Penjualan.findOrFail(params.id)
 
       let pengaturan = await Pengaturan.findOrFail(1) // ntar diganti jadi ngecek toko aktif di session
-      await pengaturan.load('pasarans')
 
       // buat ngecek rekap harian udah gw taro di custom class ini
       let cariRH = await prepareRekap()
@@ -370,7 +365,7 @@ export default class PenjualansController {
       await cariRH.related('kas').create({
         apakahKasKeluar: true,
         apakahDariSistem: true,
-        perihal: 'Pembatalan penjualan "' + PJ.namaBarang + '" pada tanggal ' + PJ.createdAt.toFormat('dd LLL yyyy'),
+        perihal: 'Pembatalan penjualan "' + PJ.namaBarang + '" yang tercatat pada tanggal ' + PJ.createdAt.toFormat('dd LLL yyyy'),
         nominal: -Math.abs(PJ.hargaJualAkhir),
         penggunaId: userPengakses.pengguna.id
       })
@@ -385,7 +380,7 @@ export default class PenjualansController {
       return response.redirect().toPath('/app/riwayat/penjualan')
     } catch (error) {
       session.flash('alertError', 'Ada masalah saat menghapus data penjualan. Silahkan coba lagi setelah beberapa saat.')
-      return response.redirect().toPath('/app/riwayat/penjualan')
+      return response.redirect().back()
     }
   }
 
@@ -743,7 +738,32 @@ export default class PenjualansController {
     }
   }
 
-  
+  public async gantiDurasi({ request, response, params }: HttpContextContract) {
+    const newDurasiSchema = schema.create({
+      durasiBaru: schema.date()
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newDurasiSchema })
+
+      const penjualan = await Penjualan.findOrFail(params.id)
+      if(validrequest.durasiBaru < penjualan.maxPrintAt) throw `Waktu maksimal cetak nota baru harus lebih dari ${penjualan.maxPrintAt.toFormat('f')}`
+
+      penjualan.maxPrintAt = validrequest.durasiBaru
+      await penjualan.save()
+
+      return response.ok({ message: 'Durasi cetak nota transaksi berhasil diperbarui!'})
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+
 }
 
 

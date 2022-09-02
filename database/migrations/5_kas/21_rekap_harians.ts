@@ -6,17 +6,17 @@ export default class RekapHarians extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
+      table.string('pasaran', 10).notNullable()
       table.boolean('apakah_hari_pasaran').notNullable()
       table.date('tanggal_rekap').unique().notNullable()
 
-      // bisa dipindah jadi tabel baru, ntar ubah strkturnya
-      table.boolean('apakah_ada_error').notNullable().defaultTo(0)
-      table.string('pasaran', 10).notNullable()
 
       // perlu banget buat ngebandingin sama kondisi IRL
       table.boolean('apakah_sudah_banding_saldo').notNullable().defaultTo(0)
       table.integer('saldo_toko_terakhir').notNullable()
       table.integer('saldo_toko_real').notNullable()
+      table.dateTime('dibanding_at').nullable()
+      table.integer('pencatat_banding_id').unsigned().references('penggunas.id').nullable()
 
       // calon dihapus dari sini
 

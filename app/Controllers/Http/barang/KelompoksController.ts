@@ -39,7 +39,8 @@ export default class KelompoksController {
         'kadars.nama as kadar',
         'bentuks.bentuk as bentuk',
         'kelompoks.stok as stok',
-        'kelompoks.stok_minimal as stokMinimal'
+        'kelompoks.stok_minimal as stokMinimal',
+        'kadars.warna_nota as warnaNota'
       )
       .select(
         Database.from('penjualans')
@@ -142,7 +143,7 @@ export default class KelompoksController {
       stokHabis: stokHabis[0].jumlah,
     }
 
-    return await await view.render('barang/base', {
+    return await view.render('barang/list-kelompok', {
       kelompoks,
       tambahan,
       statistik,
@@ -402,14 +403,14 @@ export default class KelompoksController {
 
     // yang di select ntar bisa diganti sesuai kebutuhan
     let rankTotal = await Database.rawQuery(
-      "SELECT kelompoks.id, tabelRanking.jumlah, tabelRanking.ranking FROM kelompoks, (SELECT row_number() OVER (ORDER BY jumlah desc) AS 'ranking', kelompok_id, COUNT(*) as 'jumlah' FROM penjualans GROUP BY kelompok_id ORDER BY `jumlah` DESC) as tabelRanking WHERE kelompoks.id = tabelRanking.kelompok_id && kelompoks.id = :kelompokId LIMIT 1",
+      "SELECT kelompoks.id, tabelRanking.jumlah, tabelRanking.ranking FROM kelompoks, (SELECT row_number() OVER (ORDER BY jumlah desc) AS 'ranking', kelompok_id, COUNT(*) as 'jumlah' FROM penjualans WHERE penjualans.deleted_at IS NULL GROUP BY kelompok_id ORDER BY `jumlah` DESC) as tabelRanking WHERE kelompoks.id = tabelRanking.kelompok_id && kelompoks.id = :kelompokId LIMIT 1",
       {
         kelompokId: params.id,
       }
     )
 
     let rankTahunIni = await Database.rawQuery(
-      "SELECT kelompoks.id, tabelRanking.jumlah, tabelRanking.ranking FROM kelompoks, (SELECT row_number() OVER (ORDER BY jumlah desc) AS 'ranking', kelompok_id, COUNT(*) as 'jumlah' FROM penjualans WHERE DATE(created_at)>= :tanggalAwal && DATE(created_at)<= :tanggalAkhir GROUP BY kelompok_id ORDER BY `jumlah` DESC) as tabelRanking WHERE kelompoks.id = tabelRanking.kelompok_id && kelompoks.id = :kelompokId LIMIT 1",
+      "SELECT kelompoks.id, tabelRanking.jumlah, tabelRanking.ranking FROM kelompoks, (SELECT row_number() OVER (ORDER BY jumlah desc) AS 'ranking', kelompok_id, COUNT(*) as 'jumlah' FROM penjualans WHERE penjualans.deleted_at IS NULL && DATE(created_at)>= :tanggalAwal && DATE(created_at)<= :tanggalAkhir GROUP BY kelompok_id ORDER BY `jumlah` DESC) as tabelRanking WHERE kelompoks.id = tabelRanking.kelompok_id && kelompoks.id = :kelompokId LIMIT 1",
       {
         kelompokId: params.id,
         tanggalAwal: DateTime.now().startOf('year').toISODate(),
@@ -418,7 +419,7 @@ export default class KelompoksController {
     )
 
     let rankBulanIni = await Database.rawQuery(
-      "SELECT kelompoks.id, tabelRanking.jumlah, tabelRanking.ranking FROM kelompoks, (SELECT row_number() OVER (ORDER BY jumlah desc) AS 'ranking', kelompok_id, COUNT(*) as 'jumlah' FROM penjualans WHERE DATE(created_at)>= :tanggalAwal && DATE(created_at)<= :tanggalAkhir GROUP BY kelompok_id ORDER BY `jumlah` DESC) as tabelRanking WHERE kelompoks.id = tabelRanking.kelompok_id && kelompoks.id = :kelompokId LIMIT 1",
+      "SELECT kelompoks.id, tabelRanking.jumlah, tabelRanking.ranking FROM kelompoks, (SELECT row_number() OVER (ORDER BY jumlah desc) AS 'ranking', kelompok_id, COUNT(*) as 'jumlah' FROM penjualans WHERE penjualans.deleted_at IS NULL && DATE(created_at)>= :tanggalAwal && DATE(created_at)<= :tanggalAkhir GROUP BY kelompok_id ORDER BY `jumlah` DESC) as tabelRanking WHERE kelompoks.id = tabelRanking.kelompok_id && kelompoks.id = :kelompokId LIMIT 1",
       {
         kelompokId: params.id,
         tanggalAwal: DateTime.now().startOf('month').toISODate(),
@@ -461,7 +462,7 @@ export default class KelompoksController {
     try {
       if (mode == 0) {
         let penjualanMingguIni = await Database.rawQuery(
-          'SELECT kelompok_id, created_at as tanggal, WEEKDAY(created_at) as hariMingguan, COUNT(*) as jumlah FROM penjualans WHERE DATE(created_at) >= :tanggalAwal && DATE(created_at) <= :tanggalAkhir && kelompok_id = :kelompokId GROUP BY hariMingguan',
+          'SELECT kelompok_id, created_at as tanggal, WEEKDAY(created_at) as hariMingguan, COUNT(*) as jumlah FROM penjualans WHERE deleted_at IS NULL && DATE(created_at) >= :tanggalAwal && DATE(created_at) <= :tanggalAkhir && kelompok_id = :kelompokId GROUP BY hariMingguan',
           {
             kelompokId: params.id,
             tanggalAwal: DateTime.local().startOf('week').toISODate(),
@@ -498,7 +499,7 @@ export default class KelompoksController {
         let end = DateTime.local().endOf('month')
 
         let penjualanPerMinggu = await Database.rawQuery(
-          'SELECT CONCAT(YEAR(created_at), "/", WEEK(created_at, 2)) as grouping, WEEK(created_at,2) as mingguKe, COUNT(*) as jumlah FROM penjualans WHERE WEEK(created_at,2) >= WEEK(:tanggalAwal,2) && WEEK(created_at,2) <= WEEK(:tanggalAkhir,2) && kelompok_id = :kelompokId GROUP BY CONCAT(YEAR(created_at), "/", WEEK(created_at,2))',
+          'SELECT CONCAT(YEAR(created_at), "/", WEEK(created_at, 2)) as grouping, WEEK(created_at,2) as mingguKe, COUNT(*) as jumlah FROM penjualans WHERE deleted_at IS NULL && WEEK(created_at,2) >= WEEK(:tanggalAwal,2) && WEEK(created_at,2) <= WEEK(:tanggalAkhir,2) && kelompok_id = :kelompokId GROUP BY CONCAT(YEAR(created_at), "/", WEEK(created_at,2))',
           {
             kelompokId: params.id,
             tanggalAwal: start.toISODate(),
@@ -537,7 +538,7 @@ export default class KelompoksController {
 
       if (mode == 2) {
         let penjualanTahunIni = await Database.rawQuery(
-          'SELECT kelompok_id, MONTH(created_at) as bulan, COUNT(*) as jumlah FROM penjualans WHERE DATE(created_at) >= :tanggalAwal && DATE(created_at) <= :tanggalAkhir && kelompok_id = :kelompokId GROUP BY bulan',
+          'SELECT kelompok_id, MONTH(created_at) as bulan, COUNT(*) as jumlah FROM penjualans WHERE deleted_at IS NULL && DATE(created_at) >= :tanggalAwal && DATE(created_at) <= :tanggalAkhir && kelompok_id = :kelompokId GROUP BY bulan',
           {
             kelompokId: params.id,
             tanggalAwal: DateTime.local().startOf('year').toISODate(),
@@ -708,6 +709,7 @@ function rupiahParser(angka: number) {
       minimumFractionDigits: 0,
     }).format(angka)
   }
+  else return 'error'
 }
 
 function generateKodeKelompok(kadar: string, bentuk: string) {

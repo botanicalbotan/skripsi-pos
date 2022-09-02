@@ -4,7 +4,7 @@
 @endsection
 
 {{-- buat ngeset judul --}}
-@set('judul', 'Menu Pegawai - Pengaturan | Postoma')
+@set('judul', 'Menu Saldo Toko - Pengaturan | Postoma')
 
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="atur-pegawai" id="base-page">
@@ -13,6 +13,9 @@
 
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
     @include('partials/wadah-alert')
+
+    <input type="number" class="hidden" id="eleBolehEdit" value="{{ (session.get('isPemilik'))? 1 : 0 }}">
+    <input type="number" class="hidden" id="saldoSistem" value="{{ pengaturan.saldoToko }}">
 
     {{--  informasi  --}}
     <div class="min-h-96 flex lg:space-x-8 space-y-6 lg:space-y-0 flex-col lg:flex-row">
@@ -29,42 +32,98 @@
           <li><a href="/app/pengaturan/pegawai">Pegawai</a></li>
         </ul>
       </div>
-      <div class="flex-1 space-y-4">
+      <div class="flex-1">
         <div>
           <span class="text-2xl font-semibold">Menu Saldo Toko</span>
         </div>
 
+        <div class="mt-4 mb-8 flex items-center justify-center py-8 px-6 bg-info">
+          <div class="flex flex-col items-center text-white w-full">
+            <div class="font-semibold">Saldo saat ini</div>
+            <div class="text-3xl sm:text-4xl">{{ fungsi.rupiahParser(pengaturan.saldoToko) }}</div>
+            <div class="mt-4 w-full flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:space-x-4  justify-center">
+              <button id="btBandingSaldo" class="btn btn-sm btn-outline text-white border-white">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-2">
+                  <path fill-rule="evenodd"
+                    d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                    clip-rule="evenodd" />
+                </svg>
+                <span>Banding Saldo</span>
+              </button>
 
-        <div class="space-y-10">
-          {{--  Penjualan  --}}
-          <div>
-            <h4 class="text-2xl mb-4">Ubah Saldo Toko</h4>
-            <p>Menu ini berfungsi untuk mengubah catatan saldo toko.</p>
+              @if(session.get('isPemilik'))
+              <button id="btUbahSaldo" class="btn btn-sm btn-outline text-white border-white">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-2">
+                  <path
+                    d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
+                </svg>
+                <span>Ubah Saldo</span>
+              </button>
+              @endif
 
-            <ul class="mt-4">
-
-              {{--  <li class="border-b">
-                <a href="#" class="flex py-3 px-2 group hover:bg-base-300">
-                  <div class="flex-1">
-                    <h3 class="font-semibold">Gaji minimal pegawai</h3>
-                    <span class="opacity-75">{{ fungsi.rupiahParser(pengaturan.defaultGajiKaryawan) }}</span>
-                  </div>
-                  <span class="flex-none flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd"
-                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                        clip-rule="evenodd" />
-                    </svg>
-                  </span>
-                </a>
-              </li>  --}}
-
-
-    
-            </ul>
+            </div>
           </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="space-y-10">
 
 
+            {{--  banding saldo  --}}
+            <div class="space-y-4">
+              <h4 class="text-2xl">Banding Saldo Toko</h4>
+              <p>Menu ini berfungsi untuk mengecek selisih saldo toko pada sistem dengan saldo toko yang sebenarnya di
+                setiap harinya. Akan muncul tanda khusus pada daftar <a class="font-semibold link link-hover"
+                  href="/app/kas/rekap-harian">Rekap Harian</a> jika saldo toko lupa dibandingkan. Berikut rekap banding saldo hari ini:</p>
+
+              @if(rekap.apakahSudahBandingSaldo && rekap.dibandingAt && rekap.pencatatBanding)
+              <div class="px-4 py-2 border-2 space-y-2 min-h-16">
+                <div class="font-semibold">Hasil banding saldo hari ini ({{ rekap.createdAt.toFormat('D') }})</div>
+                <div>
+                  <div class="flex flex-col sm:flex-row sm:space-x-2">
+                    <div>Waktu pengecekan:</div>
+                    <div>{{ rekap.dibandingAt.toFormat('ff') }}</div>
+                  </div>
+                  <div class="flex flex-col sm:flex-row sm:space-x-2">
+                    <div>Selisih saldo:</div>
+                    <div class="text-error">{{ fungsi.rupiahParser(rekap.saldoTokoReal - rekap.saldoTokoTerakhir) }}</div>
+                  </div>
+                  <div class="flex flex-col sm:flex-row sm:space-x-2">
+                    <div>Dicek oleh:</div>
+                    <a href="/app/pegawai/{{ rekap.pencatatBanding.id }}"
+                      class="flex-1 link link-hover">{{ rekap.pencatatBanding.nama }}
+                      ({{ rekap.pencatatBanding.jabatan.nama }})
+                    </a>
+                  </div>
+                  <a href="/app/kas/rekap-harian/{{ rekap.tanggalRekap.toISODate() }}#banding" class="link link-primary">Selengkapnya</a>
+                </div>
+              </div>
+              @else
+              <div class="text-error">Hari ini belum banding saldo. Silahkan lakukan banding saldo terlebih dahulu!
+              </div>
+              @endif
+
+            </div>
+
+            {{--  ubah saldo  --}}
+            <div class="pb-4">
+              <h4 class="text-2xl mb-4">Ubah Saldo Toko</h4>
+              <p>Menu ini berfungsi untuk mengubah nominal saldo toko yang tercatat pada sistem. Akan muncul tanda
+                khusus pada daftar <a class="font-semibold link link-hover" href="/app/kas/rekap-harian">Rekap
+                  Harian</a> jika terjadi pengubahan saldo toko.</p>
+              <p>Anda dapat melihat daftar catatan pengubahan saldo toko yang telah lampau pada menu berikut.</p>
+
+              <a href="#" class="mt-4 text-white btn btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                  <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
+                </svg>Catatan Pengubahan Saldo
+              </a>
+
+            </div>
+
+
+          </div>
         </div>
 
       </div>

@@ -46,7 +46,10 @@ export default class Pembelian extends BaseModel {
   public beratBarang: number
 
   @column()
-  public asalToko: string
+  public asalToko: string | null
+
+  @column()
+  public alamatAsalToko: string | null
 
   @column()
   public keterangan: string

@@ -13,8 +13,15 @@ Route.group(() => {
       Route.get('/form', 'transaksi/PenjualansController.form') // perlu kelompokId terpilih -> kt
       Route.post('/hitung', 'transaksi/PenjualansController.simpanTransaksi') // aslinya ini STORE, tp biar seragam ama PB
       Route.get('/pasca', 'transaksi/PenjualansController.pascaTransaksi')  // perlu transaksiId -> tid
+
+      Route.put('/:id/gantiDurasi', 'transaksi/PenjualansController.gantiDurasi').middleware(['isPemilikApi'])
+
     }).prefix('penjualan')
-    Route.resource('penjualan', 'transaksi/PenjualansController').only(['index', 'destroy', 'show']) // index ini prepare
+
+    // indexnya ini prepare form
+    Route.resource('penjualan', 'transaksi/PenjualansController').only(['index', 'destroy', 'show']).middleware({
+      'destroy': ['isPemilikWeb']
+    })
 
     // ======================================================== PEMBELIAN ===========================================================
     Route.group(() => {
@@ -37,11 +44,17 @@ Route.group(() => {
       Route.post('/', 'transaksi/PembeliansController.simpanTransaksi') // aslinya ini STORE, tp biar seragam ama PJ
       Route.get('/pasca', 'transaksi/PembeliansController.pascaTransaksi') // perlu transaksiId -> tid
       Route.post('/hitung-harga-belakang', 'transaksi/PembeliansController.hitungHargaBelakang') // dari ajax
-      Route.get('/pengajuan-gadai', 'transaksi/GadaisController.formulirGadai').middleware(['isPemilikWeb']) // perlu transaksiId -> tid
+      
+      Route.put('/:id/gantiDurasi', 'transaksi/PembeliansController.gantiDurasi').middleware(['isPemilikApi'])
+
+      Route.get('/pengajuan-gadai', 'transaksi/GadaisController.formulirGadai').middleware(['isKepalaWeb']) // perlu transaksiId -> tid
 
     }).prefix('pembelian')
 
-    Route.resource('pembelian', 'transaksi/PembeliansController').only(['index', 'destroy', 'show']) // index ini form, beda ama PJ
+     // index ini form, beda ama PJ
+    Route.resource('pembelian', 'transaksi/PembeliansController').only(['index', 'destroy', 'show']).middleware({
+      'destroy': ['isPemilikWeb']
+    })
 
 
     // ======================================================== GADAI ===========================================================
@@ -55,20 +68,23 @@ Route.group(() => {
         Route.post('/', 'transaksi/GadaisController.store') // perlu transaksiId -> tid
 
         Route.resource('/:idGadai/pembayaran', 'transaksi/PembayaranGadaisController').except(['edit', 'update'])
+        .middleware({
+          'destroy': ['isPemilikWeb']
+        })
         
-      }).middleware(['isPemilikWeb'])
+      }).middleware(['isKepalaWeb'])
 
-      Route.get('/:id/nik', 'transaksi/GadaisController.getNIK').middleware(['isPemilikApi'])
+      Route.get('/:id/nik', 'transaksi/GadaisController.getNIK').middleware(['isKepalaApi'])
     }).prefix('gadai')
 
     Route.resource('gadai', 'transaksi/GadaisController')
       .except(['create', 'store']) // formnya ada di pembelian 'ajukan gadai'
       .middleware({
-        index: ['isPemilikWeb'],
-        show: ['isPemilikWeb'],
-        update: ['isPemilikWeb'],
-        edit: ['isPemilikWeb'],
-        destroy: ['isPemilikWeb']
+        'index': ['isKepalaWeb'],
+        'show': ['isKepalaWeb'],
+        'update': ['isKepalaWeb'],
+        'edit': ['isKepalaWeb'],
+        'destroy': ['isPemilikWeb']
       })
 
      

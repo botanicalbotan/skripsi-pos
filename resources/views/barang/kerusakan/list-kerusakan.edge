@@ -19,7 +19,7 @@
     <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
       <div class="flex-1">
         <div
-          class="relative flex w-full flex-wrap items-stretch border-b-2 text-secondary focus-within:border-primary focus-within:text-primary">
+          class="max-w-md relative flex w-full flex-wrap items-stretch border-b-2 text-secondary focus-within:border-primary focus-within:text-primary">
           <span class="z-10 h-full flex leading-snug absolute text-center items-center justify-center w-8 pl-3 py-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 items-center" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
@@ -28,8 +28,8 @@
             </svg>
           </span>
           {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
-          <input type="text" placeholder="Cari Disini" id="pencarian" min="0" name="pencarian"
-            class="uang px-3 py-3 relative input input-ghost w-full pl-10 focus:text-primary-focus"
+          <input type="text" placeholder="Cari disini" id="pencarian" min="0" name="pencarian"
+            class="px-3 py-3 relative input input-ghost w-full pl-10 focus:text-primary-focus"
             value="{{ tambahan.pencarian }}" />
 
           <a href="#" id="hapusPencarian"
@@ -54,6 +54,8 @@
           </button>
 
         </div>
+        
+        @if(session.get('isPemilik'))
         <div class="flex-1 sm:flex-none">
           <a href="/app/barang/kerusakan/create" class="btn btn-primary text-white">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -63,8 +65,8 @@
             </svg>
             <span class="hidden md:inline">Kerusakan Baru</span>
           </a>
-
         </div>
+        @endif
       </div>
     </div>
 

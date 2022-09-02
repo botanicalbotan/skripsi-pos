@@ -1,4 +1,5 @@
-import Swal from "sweetalert2"
+// import Swal from "sweetalert2"
+import Swal from "sweetalert2/dist/sweetalert2"
 
 import {
   SwalCustomColor,
@@ -20,29 +21,28 @@ let BOLEHEDIT = (eleBolehEdit && eleBolehEdit.value && eleBolehEdit.value == 1)
 // ngambil data yang bakal dipake buat ubah data
 let DATA = {}
 
-$.getJSON("/app/pengaturan/api/transaksi", {},
-  function (data, textStatus, jqXHR) {
-    console.log(data)
-    DATA = data.toko
-  }
-);
 
 
-const ubahIzinCetakNota = document.getElementById('ubahIzinCetakNota')
-const ubahWaktuMaksimalCetakNota = document.getElementById('ubahWaktuMaksimalCetakNota')
-const ubahPenaltiKeterlambatanMin = document.getElementById('ubahPenaltiKeterlambatanMin')
-const ubahPenaltiKeterlambatanMax = document.getElementById('ubahPenaltiKeterlambatanMax')
-const ubahWaktuMaksimalPengajuanGadai = document.getElementById('ubahWaktuMaksimalPengajuanGadai')
-const ubahHargaMal = document.getElementById('ubahHargaMal')
+if (BOLEHEDIT) {
+  $.getJSON("/app/pengaturan/api/transaksi", {},
+    function (data, textStatus, jqXHR) {
+      DATA = data.toko
+    }
+  );
 
-ubahIzinCetakNota.addEventListener('click', () => {
-  if (BOLEHEDIT) {
+  const ubahIzinCetakNota = document.getElementById('ubahIzinCetakNota')
+  const ubahWaktuMaksimalCetakNota = document.getElementById('ubahWaktuMaksimalCetakNota')
+  const ubahPenaltiKeterlambatanMin = document.getElementById('ubahPenaltiKeterlambatanMin')
+  const ubahPenaltiKeterlambatanMax = document.getElementById('ubahPenaltiKeterlambatanMax')
+  const ubahWaktuMaksimalPengajuanGadai = document.getElementById('ubahWaktuMaksimalPengajuanGadai')
+  const ubahHargaMal = document.getElementById('ubahHargaMal')
 
-  }
-})
+  ubahIzinCetakNota.addEventListener('click', () => {
 
-ubahWaktuMaksimalCetakNota.addEventListener('click', () => {
-  if (BOLEHEDIT) {
+  })
+
+  ubahWaktuMaksimalCetakNota.addEventListener('click', () => {
+
     swalPrepareUbah.fire({
       title: 'Ubah Waktu Maksimum Pencetakan Nota',
       text: 'Pengubahan data ini akan mengubah batas maksimal waktu (menit) untuk mencetak nota pasca penjualan. Lanjutkan?',
@@ -134,12 +134,12 @@ ubahWaktuMaksimalCetakNota.addEventListener('click', () => {
 
     })
 
-  }
-})
+
+  })
 
 
-ubahPenaltiKeterlambatanMin.addEventListener('click', () => {
-  if (BOLEHEDIT) {
+  ubahPenaltiKeterlambatanMin.addEventListener('click', () => {
+
     swalPrepareUbah.fire({
       title: 'Ubah Penalti Minimum Keterlambatan Tukar Tambah',
       text: 'Pengubahan data ini akan mengubah nominal minimum yang ditagihkan kepada kustomer bila mengajukan tukar tambah diluar waktu perjanjian. Lanjutkan?',
@@ -235,12 +235,11 @@ ubahPenaltiKeterlambatanMin.addEventListener('click', () => {
 
     })
 
-  }
-})
+  })
 
 
-ubahPenaltiKeterlambatanMax.addEventListener('click', () => {
-  if (BOLEHEDIT) {
+  ubahPenaltiKeterlambatanMax.addEventListener('click', () => {
+
     swalPrepareUbah.fire({
       title: 'Ubah Penalti Maksimum Keterlambatan Tukar Tambah',
       text: 'Pengubahan data ini akan mengubah nominal maksimum yang ditagihkan kepada kustomer bila mengajukan tukar tambah diluar waktu perjanjian. Lanjutkan?',
@@ -336,12 +335,11 @@ ubahPenaltiKeterlambatanMax.addEventListener('click', () => {
 
     })
 
-  }
-})
+  })
 
 
-ubahWaktuMaksimalPengajuanGadai.addEventListener('click', () => {
-  if (BOLEHEDIT) {
+  ubahWaktuMaksimalPengajuanGadai.addEventListener('click', () => {
+
     swalPrepareUbah.fire({
       title: 'Ubah Waktu Maksimum Pengajuan Gadai',
       text: 'Pengubahan data ini akan mengubah batas maksimal waktu (menit) untuk mengajukan gadai pasca transaksi pembelian. Lanjutkan?',
@@ -432,12 +430,10 @@ ubahWaktuMaksimalPengajuanGadai.addEventListener('click', () => {
 
     })
 
-  }
-})
+  })
 
 
-ubahHargaMal.addEventListener('click', () => {
-  if (BOLEHEDIT) {
+  ubahHargaMal.addEventListener('click', () => {
     swalPrepareUbah.fire({
       title: 'Ubah Harga Mal',
       text: 'Pengubahan data ini akan mengubah nominal harga emas murni per gram yang diperlukan dalam kalkulasi rumus transaksi pembelian. Lanjutkan?',
@@ -533,5 +529,7 @@ ubahHargaMal.addEventListener('click', () => {
 
     })
 
-  }
-})
+  })
+}
+
+

@@ -191,6 +191,7 @@ export default class GadaisController {
       noHpAktif: schema.string({ trim: true }, [rules.maxLength(15)]),
 
       fotoKTPBase64: schema.string(),
+      fotoPerhiasanBase64: schema.string(),
       tanggalTenggat: schema.date({}, [
         rules.afterOrEqual('today')
       ]),
@@ -199,20 +200,22 @@ export default class GadaisController {
 
     const validrequest = await request.validate({ schema: newGadaiSchema })
 
-    const lastPenjualan = await Database
-      .from('penjualans')
+    const latestGadai = await Database
+      .from('gadais')
       .select('id')
       .orderBy('id', 'desc')
       .limit(1)
 
     let latestId = '001'
 
-    if(lastPenjualan[0]){
-      latestId = tigaDigit(lastPenjualan[0].id + 1)
+    if(latestGadai[0]){
+      latestId = tigaDigit(latestGadai[0].id + 1)
     }
 
+    console.log(latestId)
+
     try {
-      // -------- cek auth user ----------
+      // ------------- cek auth user --------------------
       if(!auth.user) throw 'auth ngga valid'
       
       const userPengakses = await User.findOrFail(auth.user.id)
@@ -229,30 +232,56 @@ export default class GadaisController {
         custom: true
       }
 
-      // --------------- Foto -------------------
-      let namaFileFoto = ''
-      let fileFoto = validrequest.fotoKTPBase64 || ''
+      // --------------- Foto KTP -------------------
+      let namaFileFotoKtp = ''
+      let fileFotoKtp = validrequest.fotoKTPBase64 || ''
 
       try {
-        if (!isBase64(fileFoto, { mimeRequired: true, allowEmpty: false }) || fileFoto === '') {
-          throw new Error('Input foto barang tidak valid!')
+        if (!isBase64(fileFotoKtp, { mimeRequired: true, allowEmpty: false }) || fileFotoKtp === '') {
+          throw new Error('Input foto ktp tidak valid!')
         }
 
-        var block = fileFoto.split(';')
+        var block = fileFotoKtp.split(';')
         var realData = block[1].split(',')[1] // In this case "iVBORw0KGg...."
-        namaFileFoto = 'GD' + DateTime.now().toMillis() + latestId + '.jpg' // bisa diganti yang lebih propper
+        namaFileFotoKtp = 'GD001' + DateTime.now().toMillis() + latestId + '.jpg' // bisa diganti yang lebih propper
 
-        // ntar di resize buffernya pake sharp dulu jadi 300x300
         const buffer = Buffer.from(realData, 'base64')
-        await Drive.put('transaksi/gadai/katepe/' + namaFileFoto, buffer)
+        await Drive.put('transaksi/gadai/katepe/' + namaFileFotoKtp, buffer)
       } catch (error) {
 
         throw {
           custom: true,
           foto: true,
+          perhiasan: false,
+          error: 'Input foto ktp tidak valid!'
+        }
+      }
+
+      // --------------- Foto Barang -------------------
+      let namaFileFotoPerhiasan = ''
+      let fileFotoPerhiasan = validrequest.fotoPerhiasanBase64 || ''
+
+      try {
+        if (!isBase64(fileFotoPerhiasan, { mimeRequired: true, allowEmpty: false }) || fileFotoPerhiasan === '') {
+          throw new Error('Input foto barang tidak valid!')
+        }
+
+        var block = fileFotoPerhiasan.split(';')
+        var realData = block[1].split(',')[1] // In this case "iVBORw0KGg...."
+        namaFileFotoPerhiasan = 'GD002' + DateTime.now().toMillis() + latestId + '.jpg' // bisa diganti yang lebih propper
+
+        const buffer = Buffer.from(realData, 'base64')
+        await Drive.put('transaksi/gadai/barang/' + namaFileFotoPerhiasan, buffer)
+      } catch (error) {
+
+        throw {
+          custom: true,
+          foto: true,
+          perhiasan: true,
           error: 'Input foto barang tidak valid!'
         }
       }
+
 
       const status = await StatusGadai.findByOrFail('status', 'berjalan')
 
@@ -260,11 +289,12 @@ export default class GadaisController {
         tanggalTenggat: validrequest.tanggalTenggat,
         namaPenggadai: validrequest.namaPenggadai,
         nikPenggadai: validrequest.nikPenggadai,
-        fotoKtpPenggadai: namaFileFoto,
+        fotoKtpPenggadai: namaFileFotoKtp,
         alamatPenggadai: validrequest.alamatPenggadai,
         nohpPenggadai: validrequest.noHpAktif,
         nominalGadai: pembelian.hargaBeliAkhir, // keknya buat sekarang nominalnya harus sama ama penjualan
         keterangan: validrequest.keterangan,
+        fotoBarang: namaFileFotoPerhiasan,
         statusGadaiId: status.id,
         penggunaId: userPengakses.pengguna.id,
       })
@@ -278,9 +308,16 @@ export default class GadaisController {
 
       if(error.custom){
         if(error.foto){
-          session.flash('errors', {
-            fotoKTPBase64: error.error
-          })
+          if(error.perhiasan){
+            session.flash('errors', {
+              fotoPerhiasanBase64: error.error
+            })
+          } else {
+            session.flash('errors', {
+              fotoKTPBase64: error.error
+            })
+          }
+          
         } else {
           session.flash('alertError', 'Pembelian yang akan anda gadaikan tidak valid, tidak memenuhi syarat gadai, atau telah digadaikan sebelumnya!')
           return response.redirect().toPath('/app/transaksi/gadai')
@@ -328,6 +365,7 @@ export default class GadaisController {
       }
       let tambahan = {
         jarakHari: jarakHari,
+        adaFotoBarang: (await Drive.exists('transaksi/gadai/barang/' + gadai.fotoBarang)),
         terbayar
       }
 

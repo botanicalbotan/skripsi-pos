@@ -1,5 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database';
-import CPasaran from 'App/CustomClasses/CPasaran';
+import { pasaranDariTanggal } from 'App/CustomClasses/CPasaran';
 import Pengaturan from 'App/Models/sistem/Pengaturan';
 import {
   DateTime
@@ -18,8 +18,6 @@ export default class BabKas {
       tanggalTunggal = true
       tanggalString = tanggalMulai.toFormat('D')
     }
-
-    const pasar = new CPasaran()
 
     // ------------------------ Persiapan Data --------------------------------
     const totalKasMasuk = await Database
@@ -82,7 +80,7 @@ export default class BabKas {
     // ---------------------------- Mulai Print PDF --------------------------------
     let isiTabel = [
       bikinRowRekap('Tanggal', tanggalString),
-      bikinRowRekap('Pasaran', (tanggalTunggal) ? kapitalHurufPertama(pasar.pasaranDariTanggal(tanggalMulai)) : 'Variatif'),
+      bikinRowRekap('Pasaran', (tanggalTunggal) ? kapitalHurufPertama(pasaranDariTanggal(tanggalMulai)) : 'Variatif'),
       bikinRowRekap('Total pemasukan', rupiahParser((totalJual[0].nominal | 0) + (totalKasMasuk[0].nominal | 0)), 'kasMasuk'),
       bikinRowRekap('Jumlah kas masuk', ((totalKasMasuk[0].count | 0) + 1).toString()),
       bikinRowRekap('Total pengeluaran', rupiahParser((totalBeli[0].nominal | 0) + (totalKasKeluar[0].nominal | 0)), 'kasKeluar'),

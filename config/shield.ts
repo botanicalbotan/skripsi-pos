@@ -5,7 +5,7 @@
  * file.
  */
 
-import Env from '@ioc:Adonis/Core/Env'
+// import Env from '@ioc:Adonis/Core/Env'
 import { ShieldConfig } from '@ioc:Adonis/Addons/Shield'
 
 /*
@@ -44,7 +44,16 @@ export const csp: ShieldConfig['csp'] = {
   | }
   |
   */
-  directives: {},
+  directives: {
+    defaultSrc: ["'self'", 'localhost:8080'],
+    // WARNING: di script-src ada unsafe-eval gegara alpinejs ajg, kalo bisa ntar WAJIB GANTI
+    scriptSrc: ["'self'", 'https://cdnjs.cloudflare.com', 'https://api.ipify.org', '@nonce', 'localhost:8080', "'unsafe-eval'"],
+    fontSrc: ["'self'", 'https://fonts.googleapis.com', 'https://fonts.gstatic.com', 'localhost:8080'],
+    styleSrc: ["'self'", 'localhost:8080', 'https://fonts.googleapis.com', '@nonce', 'https://cdnjs.cloudflare.com'],
+    connectSrc: ["'self'", 'localhost:8080', 'ws:'],
+    frameSrc: ["'self'", 'blob:'],
+    imgSrc: ["'self'", 'localhost:8080', 'data:']
+  },
 
   /*
   |--------------------------------------------------------------------------

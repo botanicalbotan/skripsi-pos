@@ -1,4 +1,5 @@
-import Swal from "sweetalert2"
+// import Swal from "sweetalert2"
+import Swal from "sweetalert2/dist/sweetalert2"
 
 
 const BASEURL = window.location.pathname

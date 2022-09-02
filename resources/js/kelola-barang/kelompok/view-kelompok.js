@@ -2,22 +2,11 @@ import {
   Chart,
   registerables
 } from 'chart.js';
-import Swal from 'sweetalert2';
+// import Swal from "sweetalert2"
+import Swal from "sweetalert2/dist/sweetalert2";
 Chart.register(...registerables);
 
-// const rupiahParser = function (number) {
-//   if (typeof number == 'number') {
-//     return new Intl.NumberFormat('id-ID', {
-//       style: 'currency',
-//       currency: 'IDR',
-//       minimumFractionDigits: 0
-//     }).format(number)
-//   } else {
-//     return 'error'
-//   }
-// }
-
-import { SwalCustomColor, rupiahParser } from '../../fungsi.js'
+import { SwalCustomColor, rupiahParser, capsFirstWord } from '../../fungsi.js'
 
 $(function () {
   // DOM
@@ -85,8 +74,8 @@ $(function () {
 
   function loadStatistik(mode = 0) {
     $.get("/app/cuma-data/sebaran-data/" + ($('.base-page').data('idk') || 'kosong'), {
-        mode: mode
-      },
+      mode: mode
+    },
       function (data, textStatus, jqXHR) {
         pointer = mode
 
@@ -104,7 +93,7 @@ $(function () {
             label: 'Penjualan',
             data: datas,
             borderColor: 'rgb(255, 99, 132)',
-          }, ]
+          },]
         };
 
         const chartConfig = {
@@ -182,8 +171,8 @@ $(function () {
 
   selectCekHarga.addEventListener('change', () => {
     $.get("/app/cuma-data/kodepro-by-id", {
-        id: selectCekHarga.value
-      },
+      id: selectCekHarga.value
+    },
       function (data, textStatus, jqXHR) {
         hargaLama.innerText = rupiahParser(data.hargaPerGramLama)
         hargaBaru.innerText = rupiahParser(data.hargaPerGramBaru)
@@ -208,13 +197,171 @@ let printAturStatistikHTML = function (pointer = 0) {
 
                 <div class="form-control">
                     <select id="swal-range" class="select select-bordered w-full max-w-md swal">
-                    <option value="0" ${(pointer == 0)? 'selected': ''}>Penjualan minggu ini</option>
-                    <option value="1" ${(pointer == 1)? 'selected': ''}>Penjualan bulan ini</option>
-                    <option value="2" ${(pointer == 2)? 'selected': ''}>Penjualan tahun ini</option>
+                    <option value="0" ${(pointer == 0) ? 'selected' : ''}>Penjualan minggu ini</option>
+                    <option value="1" ${(pointer == 1) ? 'selected' : ''}>Penjualan bulan ini</option>
+                    <option value="2" ${(pointer == 2) ? 'selected' : ''}>Penjualan tahun ini</option>
                     </select>
                 </div>
 
             </div>
         `
+  return html
+}
+
+
+// disini buat ngedit kelompok
+const btGantiStok = document.getElementById('btGantiStok')
+const stok = document.getElementById('stok')
+
+if (btGantiStok && stok) {
+  let jumlahStok = stok.value
+
+  btGantiStok.addEventListener('click', () => {
+    Swal.fire({
+      title: 'Pengubahan Stok',
+      html: printChangeStockHTML(jumlahStok),
+      showCancelButton: true,
+      scrollbarPadding: false,
+      confirmButtonColor: SwalCustomColor.button.confirm,
+      confirmButtonText: 'Selanjutnya',
+      preConfirm: () => {
+        const stokBaru = document.getElementById('swal-stokBaru')
+        const stokTercatat = document.getElementById('swal-stokTercatat')
+        const alasan = document.getElementById('swal-alasan')
+
+        try {
+          if (!stokBaru.value) throw 'Jumlah stok baru tidak boleh kosong!'
+          if (!stokTercatat.value) throw 'Jumlah stok tercatat tidak boleh kosong!'
+          if (!alasan.value) throw 'Alasan pengubahan tidak boleh kosong!'
+
+          if (stokBaru.value < 0) throw 'Jumlah stok baru tidak valid!'
+
+          return {
+            stokBaru: stokBaru.value,
+            stokTercatat: stokTercatat.value,
+            alasan: alasan.value
+          }
+
+        } catch (error) {
+          Swal.showValidationMessage(error)
+        }
+
+      }
+    }).then((gantiStok) => {
+      if (gantiStok.isConfirmed) {
+
+        Swal.fire({
+          title: 'Konfirmasi Pengubahan Stok',
+          html: `Anda akan mengubah stok kelompok ini dari <span class="font-semibold">${gantiStok.value.stokTercatat}</span> menjadi <span class="font-semibold">${gantiStok.value.stokBaru}</span> dengan alasan "${gantiStok.value.alasan}". Lanjutkan?`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, ubah stok!',
+          cancelButtonText: 'Batal',
+          scrollbarPadding: false,
+          focusCancel: true,
+          confirmButtonColor: SwalCustomColor.button.confirm,
+          preConfirm: () => {
+            Swal.showLoading()
+
+            return new Promise(function (resolve, reject) {
+              setTimeout(function () {
+                reject({
+                  tipe: 'lokal',
+                  msg: 'Tidak ada respon dari server'
+                })
+              }, 5000)
+
+              $.ajax({
+                type: "PUT",
+                url: location.pathname + '/ubah-stok',
+                data: {
+                  stokBaru: gantiStok.value.stokBaru,
+                  alasan: gantiStok.value.alasan
+                },
+                dataType: 'json',
+                success: function (data) {
+                  resolve({
+                    apakahSukses: true,
+                    msg: 'Stok kelompok berhasil diubah!',
+                    stokBaru: gantiStok.value.stokBaru
+                  })
+                },
+                error: function (xhr) {
+                  reject({
+                    tipe: 'lokal',
+                    msg: (typeof xhr.responseJSON.error === 'string') ? xhr.responseJSON.error : 'Ada error pada server!'
+                  })
+                }
+              });
+            }).catch(function (error) {
+              if (error.tipe && error.tipe === 'lokal') {
+                return error
+              } else {
+                return {
+                  apakahSukses: false,
+                  msg: 'Ada kesalahan pada sistem. Silahkan coba lagi.'
+                }
+              }
+            })
+
+          }
+        })
+          .then((hasilUbah) => {
+            if (hasilUbah.isConfirmed) {
+
+              Swal.fire({
+                title: ((hasilUbah.value.apakahSukses) ? 'Pengubahan Berhasil!' : 'Error'),
+                text: capsFirstWord(hasilUbah.value.msg),
+                icon: ((hasilUbah.value.apakahSukses) ? 'success' : 'error'),
+                scrollbarPadding: false,
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: SwalCustomColor.button.cancel
+              }).then(() => {
+                window.location = location.pathname
+              })
+
+              
+            }
+          })
+
+      }
+    })
+  })
+}
+
+let printChangeStockHTML = function (stokLama = 0) {
+
+  const html = `
+          <form>
+            <div class="w-full px-6 space-y-6 flex flex-col text-left">   
+                <div class="form-control">
+                  <label for="swal-stokTercatat">
+                    <span class="">Jumlah Stok Tercatat<span class="text-error"> *</span></span>
+                  </label>
+                  <input type="number" id="swal-stokTercatat" class="input input-bordered"
+                    placeholder="0" value = "${stokLama}" disabled>
+                </div>
+
+                <div class="form-control">
+                  <label for="swal-stokBaru">
+                    <span class="">Jumlah Stok Baru<span class="text-error"> *</span></span>
+                  </label>
+                  <input type="number" oninput="validity.valid||(value='');" id="swal-stokBaru" class="input input-bordered"
+                    placeholder="0" min="0" required>
+                </div>
+
+                <div class="form-control">
+                    <label for="swal-alasan">
+                      <span class="">Alasan Pengubahan Stok</span>
+                    </label>
+                    <textarea type="text" id="swal-alasan" name="swal-alasan" class="textarea textarea-bordered h-24"
+                      placeholder="Contoh: Catatan stok tidak cocok dengan stok sebenarnya" maxlength="100" required></textarea>
+
+                  </div>
+                </div>
+
+            </div>
+          </form>
+      `
   return html
 }

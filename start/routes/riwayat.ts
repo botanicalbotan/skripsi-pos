@@ -28,9 +28,7 @@ Route.group(() => {
 
 
     // ======================================================== GADAI ===========================================================
-    Route.get('/gadai', async ({ view }) => {
-      return view.render('transaksi/gadai')
-    })
+    // riwayat gadai jadi satu ama transaksi di /app/transaksi/gadai
 
   }).prefix('riwayat')
 

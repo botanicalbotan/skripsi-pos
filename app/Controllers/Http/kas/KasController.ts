@@ -105,13 +105,13 @@ export default class KasController {
     const totalJual = await Database
       .from('penjualans')
       .sum('harga_jual_akhir', 'nominal')
-      .whereNull('deleted_at')
+      // .whereNull('deleted_at') // tetep diitung walo transaksi dihapus, tp ada record kas dibalikin
       .whereRaw('DATE(created_at) = DATE(?)', [tanggalSekarang.toISO()])
 
     const totalBeli = await Database
       .from('pembelians')
       .sum('harga_beli_akhir', 'nominal')
-      .whereNull('deleted_at')
+      // .whereNull('deleted_at') // tetep diitung walo transaksi dihapus, tp ada record kas dibalikin
       .whereRaw('DATE(created_at) = DATE(?)', [tanggalSekarang.toISO()])
 
     const rekapPenjualan = {

@@ -46,12 +46,12 @@
             <ul class="mt-4">
 
               <li class="border-b">
-                <a href="#" id="ubahIzinCetakNota" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahIzinCetakNota" class="flex py-3 px-2 group {{ (session.get('isPemilik'))? 'hover:bg-base-300' : ' cursor-default' }}">
                   <div class="flex-1">
                     <h3 class="font-semibold">Izin cetak nota penjualan</h3>
                     <span class="opacity-75">{{ (pengaturan.defaultBolehPrintNota)? 'Aktif' : 'Nonaktif' }}</span>
                   </div>
-                  <span class="flex-none flex items-center">
+                  <span class="flex-none flex items-center {{ (session.get('isPemilik'))? '' : 'text-secondary' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd"
                         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -62,12 +62,12 @@
               </li>
     
               <li class="border-b">
-                <a href="#" id="ubahWaktuMaksimalCetakNota" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahWaktuMaksimalCetakNota" class="flex py-3 px-2 group {{ (session.get('isPemilik'))? 'hover:bg-base-300' : ' cursor-default' }}">
                   <div class="flex-1">
                     <h3 class="font-semibold">Waktu maksimum pencetakan nota penjualan</h3>
                     <span class="opacity-75">{{ pengaturan.defaultWaktuMaksimalPrintNota }} menit</span>
                   </div>
-                  <span class="flex-none flex items-center">
+                  <span class="flex-none flex items-center {{ (session.get('isPemilik'))? '' : 'text-secondary' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd"
                         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -90,12 +90,12 @@
             <ul class="mt-4">
 
               <li class="border-b">
-                <a href="#" id="ubahPenaltiKeterlambatanMin" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahPenaltiKeterlambatanMin" class="flex py-3 px-2 group {{ (session.get('isPemilik'))? 'hover:bg-base-300' : ' cursor-default' }}">
                   <div class="flex-1">
                     <h3 class="font-semibold">Penalti minimum keterlambatan tukar tambah dengan janji</h3>
                     <span class="opacity-75">{{ fungsi.rupiahParser(pengaturan.penaltiTelatJanjiMin) }}</span>
                   </div>
-                  <span class="flex-none flex items-center">
+                  <span class="flex-none flex items-center {{ (session.get('isPemilik'))? '' : 'text-secondary' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd"
                         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -106,12 +106,12 @@
               </li>
     
               <li class="border-b">
-                <a href="#" id="ubahPenaltiKeterlambatanMax" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahPenaltiKeterlambatanMax" class="flex py-3 px-2 group {{ (session.get('isPemilik'))? 'hover:bg-base-300' : ' cursor-default' }}">
                   <div class="flex-1">
                     <h3 class="font-semibold">Penalti maksimum keterlambatan tukar tambah dengan janji</h3>
                     <span class="opacity-75">{{ fungsi.rupiahParser(pengaturan.penaltiTelatJanjiMax) }}</span>
                   </div>
-                  <span class="flex-none flex items-center">
+                  <span class="flex-none flex items-center {{ (session.get('isPemilik'))? '' : 'text-secondary' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd"
                         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -133,12 +133,12 @@
             <ul class="mt-4">
 
               <li class="border-b">
-                <a href="#" id="ubahWaktuMaksimalPengajuanGadai" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahWaktuMaksimalPengajuanGadai" class="flex py-3 px-2 group {{ (session.get('isPemilik'))? 'hover:bg-base-300' : ' cursor-default' }}">
                   <div class="flex-1">
                     <h3 class="font-semibold">Waktu maksimum pengajuan gadai</h3>
                     <span class="opacity-75">{{ pengaturan.defaultWaktuMaksimalPengajuanGadai }} menit</span>
                   </div>
-                  <span class="flex-none flex items-center">
+                  <span class="flex-none flex items-center {{ (session.get('isPemilik'))? '' : 'text-secondary' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd"
                         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -161,12 +161,12 @@
             <ul class="mt-4">
 
               <li class="border-b">
-                <a href="#" id="ubahHargaMal" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahHargaMal" class="flex py-3 px-2 group {{ (session.get('isPemilik'))? 'hover:bg-base-300' : ' cursor-default' }}">
                   <div class="flex-1">
                     <h3 class="font-semibold">Harga mal emas murni per gram</h3>
                     <span class="opacity-75">{{ fungsi.rupiahParser(pengaturan.hargaMal) }}</span>
                   </div>
-                  <span class="flex-none flex items-center">
+                  <span class="flex-none flex items-center {{ (session.get('isPemilik'))? '' : 'text-secondary' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd"
                         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"

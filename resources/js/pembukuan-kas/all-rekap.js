@@ -1,4 +1,5 @@
-import Swal from "sweetalert2"
+// import Swal from "sweetalert2"
+import Swal from "sweetalert2/dist/sweetalert2"
 
 import { SwalCustomColor } from '../fungsi.js'
 
@@ -10,9 +11,9 @@ $(function () {
     const qsParam = new URLSearchParams(window.location.search)
     const btAturTabel = document.getElementById('btAturTabel')
 
-    let ob = 0, aob = 0
+    let ob = 0, aob = 1, fs = 0
     if (qsParam.has('ob')) {
-      if (['0', '1', '2', '3', '4', '5'].includes(qsParam.get('ob'))) {
+      if (['0', '1', '2', '3', '4'].includes(qsParam.get('ob'))) {
         ob = qsParam.get('ob')
       }
     }
@@ -23,10 +24,17 @@ $(function () {
       }
     }
 
+    if (qsParam.has('fs')) {
+      if (['0', '1'].includes(qsParam.get('fs'))) {
+        fs = qsParam.get('fs')
+      }
+    }
+
     function persiapanKirim() {
 
       updateKeyQs('ob', ob)
       updateKeyQs('aob', aob)
+      updateKeyQs('fs', fs)
 
       qsParam.delete('page')
       window.location = BASEURL + '?' + qsParam.toString()
@@ -35,27 +43,29 @@ $(function () {
 
     btAturTabel.addEventListener('click', (e) => {
       Swal.fire({
-          title: 'Atur Tabel',
-          confirmButtonText: 'Terapkan',
-          showCancelButton: true,
-          cancelButtonText: 'Batal',
-          scrollbarPadding: false,
-          confirmButtonColor: SwalCustomColor.button.confirm,
-          html: printAturTabelHTML(),
-          willOpen: () => {
-            Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
-          },
-          preConfirm: () => {
-            return {
-              ob: Swal.getHtmlContainer().querySelector('#swal-ob').value,
-              aob: Swal.getHtmlContainer().querySelector('input[name="swal-arahOb"]:checked').value,
-            }
+        title: 'Atur Tabel',
+        confirmButtonText: 'Terapkan',
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        scrollbarPadding: false,
+        confirmButtonColor: SwalCustomColor.button.confirm,
+        html: printAturTabelHTML(),
+        willOpen: () => {
+          Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
+        },
+        preConfirm: () => {
+          return {
+            ob: Swal.getHtmlContainer().querySelector('#swal-ob').value,
+            aob: Swal.getHtmlContainer().querySelector('input[name="swal-arahOb"]:checked').value,
+            fs: Swal.getHtmlContainer().querySelector('input[name="swal-filterShow"]:checked').value,
           }
-        })
+        }
+      })
         .then((resolve) => {
           if (resolve.isConfirmed) {
             ob = resolve.value.ob
             aob = resolve.value.aob
+            fs = resolve.value.fs
             persiapanKirim()
           }
         })
@@ -80,11 +90,9 @@ $(function () {
                         <select id="swal-ob" class="select select-bordered w-full max-w-md swal mt-2">
                             <option value="0">Tanggal</option>
                             <option value="1">Pasaran</option>
-                            <option value="2">Total Pemasukan</option>
-                            <option value="3">Total Pengeluaran</option>
-                            <option value="4">Anomali</option>
-                            <option value="5">Cek Saldo</option>
-                            <option value="6">Cek Stok</option>
+                            <option value="2">Total ${((fs == 0) ? 'Pemasukan' : 'Penjualan')}</option>
+                            <option value="3">Total ${((fs == 0) ? 'Pengeluaran' : 'Pembelian')}</option>
+                            <option value="4">Saldo Akhir Toko</option>
                         </select>
                         <div class="flex space-x-4 mt-2" x-data="{ radio: ` + ((aob == 1) ? 2 : 1) + ` }">
                             <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
@@ -113,6 +121,26 @@ $(function () {
                             </label>
                         </div>
                     </div>
+
+                    <div class="form-control" x-data="{ radio: ` + ((fs == 1) ? 2 : 1) + ` }">
+                      <label for="">Data Yang Ditampilkan</label>
+                      <div class="flex space-x-4 mt-2">
+                      <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                          :class="(radio == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                          <input type="radio" name="swal-filterShow" ` + ((fs == 0) ? 'checked=checked' : '') + ` class="radio radio-primary hidden"
+                          value="0" @click="radio = 1">
+                          <span class="label-text text-base"
+                          :class="(radio == 1)? 'text-primary': 'text-secondary'">Jual-Beli</span>
+                      </label>
+                      <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
+                          :class="(radio == 2)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
+                          <input type="radio" name="swal-filterShow" ` + ((fs == 1) ? 'checked=checked' : '') + ` class="radio radio-primary hidden" value="1"
+                          @click="radio = 2">
+                          <span class="label-text text-base"
+                          :class="(radio == 2)? 'text-primary': 'text-secondary'">Kredit-Debit</span>
+                      </label>
+                      </div>
+                  </div>
 
                 </div>
               `

@@ -20,6 +20,7 @@ export default class Gadais extends BaseSchema {
       table.dateTime('deleted_at').nullable()
 
 
+      table.string('foto_barang')
       table.dateTime('dilunasi_at').nullable() // kalo udah dibeli gabisa dibeli lagi
 
       /**

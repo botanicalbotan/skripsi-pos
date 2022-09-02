@@ -1,122 +1,71 @@
 import '../css/app.css'
 
-const $ = require('jquery')
+// const $ = require('jquery')
 
-// Ini Konfigurasi Landing Page
+const dataToko = [
+  {
+    nama: 'Toko Mas Leo 1',
+    alamat: 'Timur Pasar Karanggede, Dusun 2, Kebonan, Kec. Karanggede, Kabupaten Boyolali, Jawa Tengah 57381',
+    jamBuka: 'Buka setiap hari dari pukul 08:00 - 15:00 kecuali hari Minggu Pon. '
+  },
+  {
+    nama: 'Toko Mas Leo 2',
+    alamat: 'JL Prawirodigdoyo, Rt. 07/08, Kebonan, Karanggede, Dusun 2, Kebonan, Boyolali, Kabupaten Boyolali, Jawa Tengah 57381',
+    jamBuka: 'Buka setiap hari dari pukul 08:00 - 15:00 kecuali hari Minggu Pon. '
+  },
+  {
+    nama: 'Toko Mas Leo Klego',
+    alamat: 'Jl. Karanggede-gemolong, RT.02/RW.01, Ngembat, Klego, Kec. Klego, Kabupaten Boyolali, Jawa Tengah 57385',
+    jamBuka: 'Buka setiap hari dari pukul 08:00 - 15:00 kecuali hari Minggu pekan terakhir. '
+  },
+]
 
-global.landingSetup = function () {
-  const width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-  if (width > 640) {
-    return {
-      activeTab: 0,
-      tabs: [
-        "Pilihan Variatif",
-        "Transaksi Fleksibel",
-        "Sopan dan Ramah",
-        "Potongan yang rendah"
-      ]
-    };
-  }
-  return {
-    activeTab: 0,
-    tabs: [
-      "Pilihan",
-      "Fleksibel",
-      "Ramah",
-      "Potongan"
-    ]
-  };
+// smooth scrolling
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+      });
+  });
+});
+
+const namaToko = document.getElementById('namaToko')
+const alamatToko = document.getElementById('alamatToko')
+const jamBukaToko = document.getElementById('jamBukaToko')
+
+const toko1 = document.getElementById('toko1')
+const toko2 = document.getElementById('toko2')
+const toko3 = document.getElementById('toko3')
+
+toko1.addEventListener('click', () =>{
+  namaToko.textContent = dataToko[0].nama
+  alamatToko.textContent = dataToko[0].alamat
+  jamBukaToko.textContent = dataToko[0].jamBuka
+})
+
+toko2.addEventListener('click', () =>{
+  namaToko.textContent = dataToko[1].nama
+  alamatToko.textContent = dataToko[1].alamat
+  jamBukaToko.textContent = dataToko[1].jamBuka
+})
+
+toko3.addEventListener('click', () =>{
+  namaToko.textContent = dataToko[2].nama
+  alamatToko.textContent = dataToko[2].alamat
+  jamBukaToko.textContent = dataToko[2].jamBuka
+})
+
+
+window.onscroll = function () {
+  scrollFunction()
 };
 
-global.isSmallScreen = function () {
-  const width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-  if (width > 640) {
-    return false
+function scrollFunction() {
+  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    $('#scrollTopBtn').removeClass('invisible translate-y-8').addClass('visible translate-y-0')
+  } else {
+    $('#scrollTopBtn').removeClass('visible translate-y-0').addClass('invisible translate-y-8');
   }
-  return true
 }
-
-global.isLargeScreen = function () {
-  const width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-  if (width >= 1024) {
-    return true
-  }
-  return false
-}
-
-$(function () {
-  const buttonRight = document.getElementById('landingSlideKanan');
-  const buttonLeft = document.getElementById('landingSlideKiri');
-  const containerBarang = document.getElementById('container-barang');
-  const anakContainerBarang = document.getElementById('anak-container-barang');
-  let baseScroll = 0;
-
-  let pushLeft = function () {
-    const push = anakContainerBarang.firstElementChild.offsetWidth + 32;
-    baseScroll = (baseScroll - 1 < 0) ? anakContainerBarang.childElementCount-1 : --baseScroll
-    containerBarang.scrollTo({
-      left: (baseScroll * push),
-      behavior: 'smooth'
-    })
-  }
-
-  let pushRight = function (){
-    const push = anakContainerBarang.firstElementChild.offsetWidth + 32;
-    baseScroll = (baseScroll + 1 >= anakContainerBarang.childElementCount) ? 0 : ++baseScroll
-    // let n = (Math.ceil(containerBarang.scrollLeft/push) === 0)? 1 : Math.ceil(containerBarang.scrollLeft/push);
-    // let centerChild = containerBarang.clientWidth - anakContainerBarang.firstElementChild.offsetWidth
-    containerBarang.scrollTo({
-      left: (baseScroll * push),
-      behavior: 'smooth'
-    })
-  }
-
-  const autoScroll = window.setInterval(pushRight, 5000)
-
-  buttonRight.onclick = function () {
-    pushRight()
-  };
-
-  buttonLeft.onclick = function () {
-    pushLeft()
-  };
-
-  $('#main').on('scroll', function (event) {
-    var factor = this.scrollLeft / (this.scrollWidth - $(this).width());
-    if (factor < 0.2) {
-      var move = $(this.lastChild);
-      move.remove();
-      $(this).prepend(move);
-      this.scrollLeft += move.width();
-    } else if (factor > 0.8) {
-      var move = $(this.firstChild);
-      move.remove();
-      $(this).append(move);
-      this.scrollLeft -= move.width();
-    }
-  });
-
-  $('#main').contents().filter(function () {
-    return this.nodeType == 3; //Node.TEXT_NODE
-  }).remove();
-
-  $('#scrollTopBtn').on('click', function () {
-    document.documentElement.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    })
-  });
-
-  // When the user scrolls down 20px from the top of the document, show the button
-  window.onscroll = function () {
-    scrollFunction()
-  };
-
-  function scrollFunction() {
-    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-      $('#scrollTopBtn').removeClass('invisible translate-y-8').addClass('visible translate-y-0')
-    } else {
-      $('#scrollTopBtn').removeClass('visible translate-y-0').addClass('invisible translate-y-8');
-    }
-  }
-});

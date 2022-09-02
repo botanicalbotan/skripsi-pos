@@ -109,7 +109,7 @@ export default class PegawaisController {
       // lifehackUrlSementara: '/uploads/profilePict/'
     }
 
-    return await view.render('pegawai/base', { pegawais, tambahan })
+    return await view.render('pegawai/list-pegawai', { pegawais, tambahan })
   }
 
   public async create ({ view }: HttpContextContract) {
@@ -242,27 +242,20 @@ export default class PegawaisController {
       await pegawai.load('user')
       await pegawai.load('jabatan')
 
-      // cek constrain, kalo lulus bisa ngedit2
-      let bisaEdit = false
-      let isAdmin = false
-
       const userPengakses = await User.findOrFail(auth.user.id)
       await userPengakses.load('pengguna', (query) => {
         query.preload('jabatan')
       })
 
-      if(userPengakses.pengguna.id === pegawai.id || userPengakses.pengguna.jabatan.nama === 'Pemilik'){ // ntar bisa dijadiin yang lebih propper
-        bisaEdit = true
-      }
-
-      if(userPengakses.pengguna.jabatan.nama === 'Pemilik'){
-        isAdmin = true
-      }
+      // hitung umur
+      const diffTahun = DateTime.now().diff(pegawai.tanggalLahir, 'years').toObject()
 
       let tambahan = {
         adaFoto: (await Drive.exists('profilePict/' + pegawai.foto)),
-        bisaEdit,
-        isAdmin
+        bisaEdit: (userPengakses.pengguna.id === pegawai.id || userPengakses.pengguna.jabatan.nama === 'Pemilik'),
+        isAdmin: (userPengakses.pengguna.jabatan.nama === 'Pemilik'),
+        isSaya: (userPengakses.pengguna.id === pegawai.id),
+        umur: (diffTahun.years)? Math.floor(diffTahun.years) : 0
       }
 
       let fungsi = {

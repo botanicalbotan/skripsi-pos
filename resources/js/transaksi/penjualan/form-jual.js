@@ -1,4 +1,5 @@
-import Swal from "sweetalert2"
+// import Swal from "sweetalert2" // ini buat develop
+import Swal from "sweetalert2/dist/sweetalert2" // kalau dah fix pindah kesini
 const Item = require('./partial/tambah-item')
 
 import { SwalCustomColor, rupiahParser, removeElementsByClass, belakangKoma } from '../../fungsi.js'
@@ -40,8 +41,8 @@ $(function () {
   kodepro.addEventListener('change', () => {
 
     $.get("/app/cuma-data/kodepro-by-id", {
-        id: kodepro.value
-      },
+      id: kodepro.value
+    },
       function (data, textStatus, jqXHR) {
         hargas[0] = data.hargaPerGramLama
         hargas[1] = data.hargaPerGramBaru
@@ -90,7 +91,8 @@ $(function () {
   });
 
   beratDesimal.addEventListener('change', hitungHarga)
-  
+
+
 
   // ==================================================== FORM & SUBMIT ==========================================================
   const btSubmit = document.getElementById('btSubmit')
@@ -105,7 +107,7 @@ $(function () {
   let eventModel = false
   let eventKodepro = false
 
-  function resetFoto () {
+  function resetFoto() {
     wadahFoto.classList.remove('bg-error', 'bg-opacity-10')
     wadahFoto.classList.add('bg-base-300')
     removeElementsByClass('pesanerror')
@@ -169,7 +171,7 @@ $(function () {
     }
 
     // cek foto
-    if(!sudahFoto || !fotoBarangBase64.value || fotoBarang.naturalHeight == 0){
+    if (!sudahFoto || !fotoBarangBase64.value || fotoBarang.naturalHeight == 0) {
       wadahFoto.classList.remove('bg-base-300')
       wadahFoto.classList.add('bg-error', 'bg-opacity-10')
 
@@ -210,14 +212,36 @@ $(function () {
   const tanggalTT = document.getElementById('tanggalTT')
 
   const besok = new Date(new Date().setDate(new Date().getDate() + 1))
-  tanggalTT.value = besok.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year:'numeric' })
+  tanggalTT.value = besok.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })
 
   ajukanTT.addEventListener('change', () => {
-    if(ajukanTT.checked){
+    if (ajukanTT.checked) {
       wadahTanggalTT.classList.remove('hidden')
-    } else{
+    } else {
       wadahTanggalTT.classList.add('hidden')
     }
+  })
+
+  // ==================================================- Pemilik ===================================================
+  const kosongkanPemilik = document.getElementById('kosongkanPemilik')
+  const namaPemilik = document.getElementById('namaPemilik')
+  const alamatPemilik = document.getElementById('alamatPemilik')
+
+  kosongkanPemilik.addEventListener('change', () => {
+    if (kosongkanPemilik.checked) {
+      namaPemilik.disabled = true
+      namaPemilik.required = false
+      alamatPemilik.disabled = true
+      alamatPemilik.required = false
+    } else {
+      namaPemilik.disabled = false
+      namaPemilik.required = true
+      alamatPemilik.disabled = false
+      alamatPemilik.required = true
+    }
+
+    namaPemilik.value = ''
+    alamatPemilik.value = ''
   })
 
   // ==================================================== KAMERA FULL ==========================================================
@@ -283,13 +307,13 @@ $(function () {
             }
           };
           return navigator.mediaDevices.getUserMedia(constraints).
-          then(gotStream).catch(handleError);
+            then(gotStream).catch(handleError);
         }
 
         function gotStream(stream) {
           window.stream = stream; // make stream available to console
           videoSelect.selectedIndex = [...videoSelect.options].
-          findIndex(option => option.text === stream.getVideoTracks()[0].label);
+            findIndex(option => option.text === stream.getVideoTracks()[0].label);
           videoElement.srcObject = stream;
         }
 
@@ -366,7 +390,7 @@ $(function () {
       willOpen: () => {
         const image = Swal.getPopup().querySelector('#cropperWadah')
         const cropper = new Cropper(image, {
-          aspectRatio: 4/3,
+          aspectRatio: 4 / 3,
           viewMode: 1,
           autoCropArea: 0,
           scalable: false,

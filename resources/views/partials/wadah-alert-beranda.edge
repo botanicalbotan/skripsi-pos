@@ -1,7 +1,7 @@
 @if(flashMessages.has('alertSukses'))
 
-<div class="shadow card mb-8 bg-white">
-  <div class="alert alert-success" x-data x-ref="alertSukses">
+<div class="shadow card mb-8 bg-white" x-data x-ref="alertSukses">
+  <div class="alert alert-success">
     <div class="flex-1 flex items-center flex-col md:flex-row space-y-2 md:space-y-0">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-2 stroke-current" fill="none" viewBox="0 0 24 24"
         stroke="currentColor">
@@ -27,8 +27,8 @@
 
 @if(flashMessages.has('alertError'))
 
-<div class="shadow card mb-8 bg-white">
-  <div class="alert alert-error" x-data x-ref="alertError">
+<div class="shadow card mb-8 bg-white"  x-data x-ref="alertError">
+  <div class="alert alert-error">
     <div class="flex-1 flex items-center flex-col md:flex-row space-y-2 md:space-y-0">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

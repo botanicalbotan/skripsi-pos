@@ -1,4 +1,5 @@
-import Swal from "sweetalert2"
+// import Swal from "sweetalert2"
+import Swal from "sweetalert2/dist/sweetalert2"
 import {
     SwalCustomColor,
     capsFirstWord
@@ -40,7 +41,7 @@ export function swalSelesai(selesai) {
   })
 }
 
-export function swalCekAkun() {
+export function swalCekAkun(tipe = 0) {
   return Swal.fire({
     title: 'Isikan password anda',
     input: 'password',
@@ -68,7 +69,7 @@ export function swalCekAkun() {
 
         $.ajax({
           type: "POST",
-          url: '/app/pengaturan/api/check-akun',
+          url: (tipe == 1)? '/app/pengaturan/api/check-akun-khusus' : '/app/pengaturan/api/check-akun',
           data: {
             pass: password
           },

@@ -43,18 +43,22 @@
         <div class="space-y-10">
 
           {{--  Logo Toko  --}}
-          <div class="space-y-4">
-            <h4 class="text-2xl">Logo Toko</h4>
-            <p>Menu ini berfungsi untuk memperbarui atau menghapus logo toko. Logo toko akan digunakan sebagai penanda
-              identitas toko pada beberapa fungsi aplikasi ini, seperti pencetakan nota dan pencetakan laporan. Untuk
-              mencapai hasil maksimal, gunakan logo dengan background transparan dan berkala 2:1.</p>
+          <div class="space-y-8">
+            <div class="space-y-4">
+              <h4 class="text-2xl">Logo Toko</h4>
+              <p>Menu ini berfungsi untuk memperbarui atau menghapus logo toko. Logo toko akan digunakan sebagai penanda
+                identitas toko pada beberapa fungsi aplikasi ini, seperti pencetakan nota dan pencetakan laporan. Untuk
+                mencapai hasil maksimal, gunakan logo dengan background transparan dan berkala 2:1.</p>
+            </div>
 
-            <div class="form-control">
+            <div class="form-control space-y-8">
               <div class="w-full flex flex-col space-y-4 items-center">
                 <div class="w-64 p-2 border {{ (tambahan.adaLogo)? '' : 'h-32' }}" >
                   <div id="wadahFoto" class="w-full h-full bg-contain {{ (tambahan.adaLogo)? '' : 'bg-base-300' }}">
-                    
-                    @if(!tambahan.adaLogo)
+                    @if(tambahan.adaLogo)
+                    <img src="{{ (tambahan.adaLogo)? '/app/cuma-data/foto/logo-toko/1': '' }}" id="logoToko"
+                    x-ref="logoToko" class="w-full object-contain">
+                    @else
                     <div class="w-full h-full flex items-center justify-center">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-secondary" viewBox="0 0 20 20"
                         fill="currentColor">
@@ -64,8 +68,7 @@
                       </svg>
                     </div>
                     @endif
-                    <img src="{{ (tambahan.adaLogo)? '/app/cuma-data/foto/logo-toko/1': '' }}" id="logoToko"
-                      x-ref="logoToko" class="w-full object-contain">
+
                   </div>
                 </div>
 
@@ -95,7 +98,7 @@
                     </div>
                     @endif
                     
-                    <div id="logoTokoError">
+                    <div id="logoTokoError" class="hidden">
                       {{--  wadah error  --}}
 
                     </div>
@@ -103,10 +106,11 @@
                 @endif
 
               </div>
+              @if(session.get('isPemilik'))
               <div class="flex flex-col items-center">
-                <p class="mt-1 text-sm">Pilih file gambar dengan format JPG, PNG atau GIF dan maksimal ukuran 1 MB</p>
+                <p class="text-sm">Pilih file gambar dengan format JPG, PNG atau GIF dan maksimal ukuran 1 MB</p>
               </div>
-
+              @endif
             </div>
           </div>
 
@@ -118,12 +122,12 @@
             <ul class="mt-4">
 
               <li class="border-b">
-                <a href="#" id="ubahNamaToko" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahNamaToko" class="flex py-3 px-2 group {{ (session.get('isPemilik'))? 'hover:bg-base-300' : ' cursor-default' }}">
                   <div class="flex-1">
                     <h3 class="font-semibold">Nama toko</h3>
                     <span class="opacity-75">{{ pengaturan.namaToko }}</span>
                   </div>
-                  <span class="flex-none flex items-center">
+                  <span class="flex-none flex items-center {{ (session.get('isPemilik'))? '' : 'text-secondary' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd"
                         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -134,12 +138,12 @@
               </li>
     
               <li class="border-b">
-                <a href="#" id="ubahAlamatToko" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahAlamatToko" class="flex py-3 px-2 group {{ (session.get('isPemilik'))? 'hover:bg-base-300' : ' cursor-default' }}">
                   <div class="flex-1">
                     <h3 class="font-semibold">Alamat toko lengkap</h3>
                     <span class="opacity-75">{{ pengaturan.alamatTokoLengkap }}</span>
                   </div>
-                  <span class="flex-none flex items-center">
+                  <span class="flex-none flex items-center {{ (session.get('isPemilik'))? '' : 'text-secondary' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd"
                         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -150,12 +154,12 @@
               </li>
     
               <li class="border-b">
-                <a href="#" id="ubahAlamatTokoSingkat" class="flex py-3 px-2 group hover:bg-base-300">
+                <a href="#" id="ubahAlamatTokoSingkat" class="flex py-3 px-2 group {{ (session.get('isPemilik'))? 'hover:bg-base-300' : ' cursor-default' }}">
                   <div class="flex-1">
                     <h3 class="font-semibold">Alamat toko singkat (untuk nota)</h3>
                     <span class="opacity-75">{{ pengaturan.alamatTokoSingkat }}</span>
                   </div>
-                  <span class="flex-none flex items-center">
+                  <span class="flex-none flex items-center {{ (session.get('isPemilik'))? '' : 'text-secondary' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd"
                         d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"

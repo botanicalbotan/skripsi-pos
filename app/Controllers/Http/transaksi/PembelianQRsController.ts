@@ -484,6 +484,7 @@ export default class PembelianQRsController {
         penggunaId: userPengakses.pengguna.id,
         beratBarang: BERATVALID,
         asalToko: pengaturan.namaToko,
+        alamatAsalToko: pengaturan.alamatTokoLengkap,
         keterangan: validrequest.keteranganCatatan,
         apakahTukarTambah: apakahTT,
         apakahDitawar: apakahDitawar,

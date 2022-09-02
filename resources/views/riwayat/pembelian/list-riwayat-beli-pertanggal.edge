@@ -15,7 +15,7 @@
 
 
   {{--  Buat statistik  --}}
-  <div class="w-full flex space-x-4 mt-8">
+  <div class="w-full flex flex-col md:flex-row md:space-x-4 mt-8">
     <div class="stat shadow">
       <div class="stat-figure text-accent">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -65,7 +65,7 @@
             </svg>
           </span>
           {{--  Kalau mau bisa dikasi separator, cek bookmark lu  --}}
-          <input type="text" placeholder="Cari Disini" id="pencarian" min="0" name="pencarian"
+          <input type="text" placeholder="Cari disini" id="pencarian" min="0" name="pencarian"
             class="uang px-3 py-3 relative input input-ghost w-full pl-10 focus:text-primary-focus"
             value="{{ tambahan.pencarian }}" />
 

@@ -20,6 +20,7 @@ export default class Pembelians extends BaseSchema {
       // KOMPONEN FORM
       table.float('berat_barang').notNullable()
       table.string('asal_toko', 50)
+      table.string('alamat_asal_toko', 100)
       table.string('keterangan', 100)
 
       // TRANSACTIONAL, gaboleh keiket sama current model

@@ -326,7 +326,7 @@ export default class BabBarang {
       )
       .select(
         Database.from('penjualans')
-        .sum('penjualans.id')
+        .sum('penjualans.berat_barang')
         .whereColumn('penjualans.kelompok_id', 'kelompoks.id')
         .andWhereNull('penjualans.deleted_at')
         .if(tanggalTunggal, (query) => {
@@ -545,7 +545,7 @@ export default class BabBarang {
       )
       .select(
         Database.from('penjualans')
-        .sum('penjualans.id')
+        .sum('penjualans.berat_barang')
         .whereColumn('penjualans.kode_produksi_id', 'kode_produksis.id')
         .andWhereNull('penjualans.deleted_at')
         .if(tanggalTunggal, (query) => {
@@ -677,7 +677,7 @@ export default class BabBarang {
       )
       .select(
         Database.from('penjualans')
-        .sum('penjualans.id')
+        .sum('penjualans.berat_barang')
         .whereColumn('penjualans.model_id', 'models.id')
         .andWhereNull('penjualans.deleted_at')
         .if(tanggalTunggal, (query) => {

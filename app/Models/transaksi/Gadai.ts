@@ -46,6 +46,9 @@ export default class Gadai extends BaseModel {
   @column()
   public keterangan: string | null
 
+  @column()
+  public fotoBarang: string
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

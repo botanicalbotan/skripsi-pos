@@ -180,7 +180,66 @@
             </div>
           </div>
 
-          {{--  Kelompok tanggal pembelian  --}}
+          {{--  Kelompok foto perhiasan  --}}
+          <div class="space-y-4">
+            <div class="mb-6">
+              <h1 class="text-2xl font-semibold">Foto Perhiasan<span class="text-error"> *</span></h1>
+            </div>
+            <div class="form-control" x-data="{ adaGambar: false }">
+              <div class="w-full flex flex-col space-y-4 items-center">
+                <div class="w-80 h-60 p-2 border">
+                  <div id="wadahFotoPerhiasan" class="w-full h-full bg-base-300 bg-contain">
+                    <div x-show="adaGambar == false" x-cloak class="w-full h-full flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-secondary" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <img src="" id="fotoPerhiasan" x-ref="fotoPerhiasan" class="w-full object-contain" @error="adaGambar = false"
+                      @load="adaGambar = true">
+                  </div>
+                </div>
+                <div class="space-y-4 flex flex-col items-center">
+                  <div x-show="adaGambar == false" x-cloak>
+                    {{--  kalo gaada foto  --}}
+                    <button type="button" class="btn btn-outline" id="bukaKameraPerhiasan">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      Ambil foto</button>
+                  </div>
+                  <div class="space-x-2 flex items-start" x-show="adaGambar == true" x-cloak>
+                    {{--  kalo ada foto  --}}
+                    <button type="button" class="btn btn-outline" id="bukaUlangKameraPerhiasan">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
+                          clip-rule="evenodd" />
+                      </svg>Ambil ulang</button>
+                    <button type="button" class="btn btn-outline btn-error"
+                      @click="$refs.fotoPerhiasan.src = ''; $refs.foto64.value = ''">Hapus</button>
+                  </div>
+                  <div>
+                    {{--  wadah error  --}}
+                    <textarea name="fotoPerhiasanBase64" x-ref="foto64" id="fotoPerhiasanBase64" class="hidden-but-real hidden"
+                      hidden></textarea>
+                    @if(flashMessages.has('errors.fotoPerhiasanBase64'))
+                    <p class="text-error">{{ flashMessages.get('errors.fotoPerhiasanBase64') }}</p>
+                    @endif
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {{--  kelompok keteranga gadai  --}}
         <div class="space-y-4">
           <div class="mb-4">
             <h1 class="text-2xl font-semibold">Keterangan Gadai</h1>

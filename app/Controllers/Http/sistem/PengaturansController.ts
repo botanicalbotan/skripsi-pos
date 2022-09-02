@@ -11,6 +11,7 @@ import User from 'App/Models/User'
 import Hash from '@ioc:Adonis/Core/Hash'
 var isBase64 = require('is-base64')
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import { prepareRekap } from 'App/CustomClasses/CustomRekapHarian'
 
 export default class PengaturansController {
   public async checkCreditPengubah({ request, response, auth }: HttpContextContract) {
@@ -21,13 +22,44 @@ export default class PengaturansController {
 
       if (!pass) throw 'Password tidak boleh kosong!'
 
-      const userPengakses = await User.findOrFail(auth.user.id) // USER bukan PENGUNA
+      const userPengakses = await User.findOrFail(auth.user.id) // USER bukan PENGGUNA
       await userPengakses.load('pengguna', (query) => {
         query.preload('jabatan')
       })
 
       if (userPengakses.pengguna.jabatan.nama !== 'Pemilik') {
-        // bisa dijadiin middleware
+        throw 'Anda tidak memiliki hak untuk melakukan perubahan!'
+      }
+
+      if (await Hash.verify(userPengakses.password, pass)) {
+        return response.ok({ message: 'Ok' })
+      } else {
+        throw 'Password yang anda isikan tidak tepat!'
+      }
+    } catch (error) {
+      console.error(error)
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  public async checkCreditPengubahKhusus({ request, response, auth }: HttpContextContract) {
+    const pass = request.input('pass')
+
+    try {
+      if (!auth.user) throw 'ngga valid'
+
+      if (!pass) throw 'Password tidak boleh kosong!'
+
+      const userPengakses = await User.findOrFail(auth.user.id) // USER bukan PENGGUNA
+      await userPengakses.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+
+      if (userPengakses.pengguna.jabatan.nama !== 'Pemilik' && userPengakses.pengguna.jabatan.nama !== 'Kepala Toko') {
         throw 'Anda tidak memiliki hak untuk melakukan perubahan!'
       }
 
@@ -343,8 +375,61 @@ export default class PengaturansController {
   public async pageSaldo({ view }: HttpContextContract) {
     // Ini udah make middleware
     const pengaturan = await Pengaturan.findOrFail(1)
+    const rekap = await prepareRekap()
+    await rekap.load('pencatatBanding', (query) =>{
+      query.preload('jabatan')
+    })
 
-    return await view.render('pengaturan/atur-saldo', { pengaturan })
+    const fungsi = {
+      rupiahParser: rupiahParser
+    }
+
+    return await view.render('pengaturan/atur-saldo', { pengaturan, rekap, fungsi })
+  }
+
+  public async bandingSaldoToko({ response, request, auth }: HttpContextContract) {
+    const newBandingSaldoSchema = schema.create({
+      saldoRiil: schema.number([
+        rules.unsigned(),
+      ]),
+    })
+
+    try {
+      if(!auth.user) throw 'Tidak ada izin'
+
+      const validrequest = await request.validate({ schema: newBandingSaldoSchema })
+      const pengaturan = await Pengaturan.findOrFail(1)
+
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
+
+      const rekap = await prepareRekap()
+      rekap.pencatatBandingId = userPengakses.pengguna.id
+      rekap.dibandingAt = DateTime.now()
+      rekap.saldoTokoReal = validrequest.saldoRiil
+      rekap.saldoTokoTerakhir = pengaturan.saldoToko
+      await rekap.save()
+
+      const selisih = validrequest.saldoRiil - pengaturan.saldoToko
+
+      return response.ok({ message: 'Selisih antara saldo toko pada sistem dengan saldo toko sebenarnya adalah: ' + rupiahParser(selisih), selisih: rupiahParser(selisih) })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
+  public async ubahSaldoToko({ response }: HttpContextContract) {}
+
+  public async pageListUbahSaldo({ view }: HttpContextContract) {
+    return view.render('pengaturan/ubah-saldo/list-ubah-saldo')
+  }
+
+  public async pageShowUbahSaldo({ view }: HttpContextContract) {
+    return view.render('pengaturan/ubah-saldo/list-ubah-saldo')
   }
 
   // =========================================== BARANG ================================================
@@ -472,8 +557,8 @@ export default class PengaturansController {
         const pegawai = await Pengguna.findOrFail(params.id)
         if (await Drive.exists('profilePict/' + pegawai.foto)) {
           // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
-          const fotoBarang = await Drive.getStream('profilePict/' + pegawai.foto) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
-          response.stream(fotoBarang)
+          const foto = await Drive.getStream('profilePict/' + pegawai.foto) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
+          response.stream(foto)
           response.header('content-type', 'image/png')
         } else {
           throw 'kosong pegawai'
@@ -482,18 +567,29 @@ export default class PengaturansController {
         const penjualan = await Penjualan.findOrFail(params.id)
         if (await Drive.exists('transaksi/penjualan/' + penjualan.fotoBarang)) {
           // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
-          const fotoLogo = await Drive.getStream('transaksi/penjualan/' + penjualan.fotoBarang) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
-          response.stream(fotoLogo)
+          const foto = await Drive.getStream('transaksi/penjualan/' + penjualan.fotoBarang) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
+          response.stream(foto)
           response.header('content-type', 'image/png')
         } else {
           throw 'kosong penjualan'
         }
-      } else if (params.tipe === 'logo-toko') {
+      }else if (params.tipe === 'gadai') {
+        const gadai = await Gadai.findOrFail(params.id)
+        if (await Drive.exists('transaksi/gadai/barang/' + gadai.fotoBarang) && gadai.fotoBarang) {
+          // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
+          const foto = await Drive.getStream('transaksi/gadai/barang/' + gadai.fotoBarang) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
+          response.stream(foto)
+          response.header('content-type', 'image/png')
+        } else {
+          throw 'kosong gadai'
+        }
+      }
+       else if (params.tipe === 'logo-toko') {
         const pengaturan = await Pengaturan.findOrFail(1)
         if (await Drive.exists('logoToko/' + pengaturan.logoToko)) {
           // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
-          const fotoLogo = await Drive.getStream('logoToko/' + pengaturan.logoToko) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
-          response.stream(fotoLogo)
+          const foto = await Drive.getStream('logoToko/' + pengaturan.logoToko) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
+          response.stream(foto)
           response.header('content-type', 'image/png')
         } else {
           throw 'kosong logo'
@@ -503,7 +599,7 @@ export default class PengaturansController {
       }
     } catch (error) {
       // return response.notFound('File not found.')
-
+      console.log(error)
       return {} // biar ngga ngasi error di image
     }
   }

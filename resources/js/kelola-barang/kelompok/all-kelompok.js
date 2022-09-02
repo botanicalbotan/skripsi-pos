@@ -1,18 +1,6 @@
-import Swal from "sweetalert2"
+// import Swal from "sweetalert2"
+import Swal from "sweetalert2/dist/sweetalert2"
 
-// const removeElementsByClass = function (className) {
-//   const elements = document.getElementsByClassName(className);
-//   while (elements.length > 0) {
-//     elements[0].parentNode.removeChild(elements[0]);
-//   }
-// }
-
-// const capsFirstWord = function (text) {
-//   if (!isNaN(text.charAt(0))) {
-//     return text
-//   }
-//   return text.slice(0, 1).toUpperCase() + text.slice(1)
-// }
 
 import { SwalCustomColor, capsFirstWord, removeElementsByClass } from '../../fungsi.js'
 
@@ -92,23 +80,23 @@ $(function () {
 
     btAturTabel.addEventListener('click', (e) => {
       Swal.fire({
-          title: 'Atur Tabel',
-          confirmButtonText: 'Terapkan',
-          showCancelButton: true,
-          cancelButtonText: 'Batal',
-          confirmButtonColor: '#4b6bfb',
-          scrollbarPadding: false,
-          html: printAturTabelHTML(),
-          willOpen: () => {
-            Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
-          },
-          preConfirm: () => {
-            return {
-              ob: Swal.getHtmlContainer().querySelector('#swal-ob').value,
-              aob: Swal.getHtmlContainer().querySelector('input[name="swal-arahOb"]:checked').value
-            }
+        title: 'Atur Tabel',
+        confirmButtonText: 'Terapkan',
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#4b6bfb',
+        scrollbarPadding: false,
+        html: printAturTabelHTML(),
+        willOpen: () => {
+          Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
+        },
+        preConfirm: () => {
+          return {
+            ob: Swal.getHtmlContainer().querySelector('#swal-ob').value,
+            aob: Swal.getHtmlContainer().querySelector('input[name="swal-arahOb"]:checked').value
           }
-        })
+        }
+      })
         .then((resolve) => {
           if (resolve.isConfirmed) {
             ob = resolve.value.ob
@@ -281,6 +269,34 @@ $(function () {
       })
     })
 
+    // ini ngambil data kadar ==========
+    const infoKadar = document.getElementById('infoKadar')
+    const iKKadar = document.getElementById('iKKadar')
+    const iKTipe = document.getElementById('iKTipe')
+    const iKDesk = document.getElementById('iKDesk')
+
+    kadar.addEventListener('change', (e) => {
+      if (kadar.value !== 'kosong') {
+        $.get("/app/cuma-data/get-kadar-by-id", {
+            id: kadar.value
+          },
+          function (data, textStatus, jqXHR) {
+            if (data.apakah_potongan_persen) {
+              iKTipe.textContent = 'Persentase (%)'
+            } else {
+              iKTipe.textContent = 'Nominal (Rp.)'
+            }
+
+            iKKadar.textContent = data.nama
+            iKDesk.textContent = data.deskripsi
+            infoKadar.classList.remove('hidden')
+          },
+          "json"
+        ).fail((xhr) => {
+          // console.log(xhr)
+        })
+      }
+    })
 
   }
 
@@ -434,78 +450,78 @@ $(function () {
         if (gantiStok.isConfirmed) {
 
           Swal.fire({
-              title: 'Konfirmasi Pengubahan Stok',
-              html: `Anda akan mengubah stok kelompok ini dari <b>${gantiStok.value.stokTercatat}</b> menjadi <b>${gantiStok.value.stokBaru}</b> dengan alasan "${gantiStok.value.alasan}". Lanjutkan?`,
-              icon: 'question',
-              showCancelButton: true,
-              confirmButtonText: 'Ya, ubah stok!',
-              cancelButtonText: 'Batal',
-              scrollbarPadding: false,
-              focusCancel: true,
-              confirmButtonColor: SwalCustomColor.button.confirm,
-              preConfirm: () => {
-                Swal.showLoading()
+            title: 'Konfirmasi Pengubahan Stok',
+            html: `Anda akan mengubah stok kelompok ini dari <span class="font-semibold">${gantiStok.value.stokTercatat}</span> menjadi <span class="font-semibold">${gantiStok.value.stokBaru}</span> dengan alasan "${gantiStok.value.alasan}". Lanjutkan?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, ubah stok!',
+            cancelButtonText: 'Batal',
+            scrollbarPadding: false,
+            focusCancel: true,
+            confirmButtonColor: SwalCustomColor.button.confirm,
+            preConfirm: () => {
+              Swal.showLoading()
 
-                return new Promise(function (resolve, reject) {
-                  setTimeout(function () {
+              return new Promise(function (resolve, reject) {
+                setTimeout(function () {
+                  reject({
+                    tipe: 'lokal',
+                    msg: 'Tidak ada respon dari server'
+                  })
+                }, 5000)
+
+                $.ajax({
+                  type: "PUT",
+                  url: location.pathname.slice(0, -5) + '/ubah-stok',
+                  data: {
+                    stokBaru: gantiStok.value.stokBaru,
+                    alasan: gantiStok.value.alasan
+                  },
+                  dataType: 'json',
+                  success: function (data) {
+                    resolve({
+                      apakahSukses: true,
+                      msg: 'Stok kelompok berhasil diubah!',
+                      stokBaru: gantiStok.value.stokBaru
+                    })
+                  },
+                  error: function (xhr) {
                     reject({
                       tipe: 'lokal',
-                      msg: 'Tidak ada respon dari server'
+                      msg: (typeof xhr.responseJSON.error === 'string') ? xhr.responseJSON.error : 'Ada error pada server!'
                     })
-                  }, 5000)
-
-                  $.ajax({
-                    type: "PUT",
-                    url: location.pathname.slice(0, -5) + '/ubah-stok',
-                    data: {
-                      stokBaru: gantiStok.value.stokBaru,
-                      alasan: gantiStok.value.alasan
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                      resolve({
-                        apakahSukses: true,
-                        msg: 'Stok kelompok berhasil diubah!',
-                        stokBaru: gantiStok.value.stokBaru
-                      })
-                    },
-                    error: function (xhr) {
-                      reject({
-                        tipe: 'lokal',
-                        msg: (typeof xhr.responseJSON.error === 'string') ? xhr.responseJSON.error : 'Ada error pada server!'
-                      })
-                    }
-                  });
-                }).catch(function (error) {
-                  if (error.tipe && error.tipe === 'lokal') {
-                    return error
-                  } else {
-                    return {
-                      apakahSukses: false,
-                      msg: 'Ada kesalahan pada sistem. Silahkan coba lagi.'
-                    }
                   }
-                })
-
-              }
-            })
-            .then((hasilUbah) => {
-              if (hasilUbah.isConfirmed) {
-                if(hasilUbah.value.apakahSukses){
-                  stok.value = hasilUbah.value.stokBaru
-                  jumlahStok = hasilUbah.value.stokBaru
+                });
+              }).catch(function (error) {
+                if (error.tipe && error.tipe === 'lokal') {
+                  return error
+                } else {
+                  return {
+                    apakahSukses: false,
+                    msg: 'Ada kesalahan pada sistem. Silahkan coba lagi.'
+                  }
                 }
+              })
 
-                Swal.fire({
-                  title: ((hasilUbah.value.apakahSukses) ? 'Pengubahan Berhasil!' : 'Error'),
-                  text: capsFirstWord(hasilUbah.value.msg),
-                  icon: ((hasilUbah.value.apakahSukses) ? 'success' : 'error'),
-                  scrollbarPadding: false,
-                  confirmButtonText: 'Tutup',
-                  confirmButtonColor: SwalCustomColor.button.cancel
-                })
+            }
+          })
+          .then((hasilUbah) => {
+            if (hasilUbah.isConfirmed) {
+              if (hasilUbah.value.apakahSukses) {
+                stok.value = hasilUbah.value.stokBaru
+                jumlahStok = hasilUbah.value.stokBaru
               }
-            })
+
+              Swal.fire({
+                title: ((hasilUbah.value.apakahSukses) ? 'Pengubahan Berhasil!' : 'Error'),
+                text: capsFirstWord(hasilUbah.value.msg),
+                icon: ((hasilUbah.value.apakahSukses) ? 'success' : 'error'),
+                scrollbarPadding: false,
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: SwalCustomColor.button.cancel
+              })
+            }
+          })
 
         }
       })

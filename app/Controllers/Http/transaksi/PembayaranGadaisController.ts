@@ -268,7 +268,7 @@ export default class PembayaranGadaisController {
       // ---------- ngabarin kas --------------
       const rekapHarian = await prepareRekap()
       await rekapHarian.related('kas').create({
-        nominal: pembayaran.nominal,
+        nominal: -Math.abs(pembayaran.nominal),
         apakahDariSistem: true,
         apakahKasKeluar: true,
         perihal: `Pembatalan dan pengembalian ${ pembayaran.judulPembayaran.toLowerCase() } An. ${ pembayaran.gadai.namaPenggadai }`,

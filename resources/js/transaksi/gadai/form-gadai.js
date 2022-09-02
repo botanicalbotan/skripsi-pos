@@ -1,9 +1,11 @@
-import Swal from "sweetalert2"
+// import Swal from "sweetalert2"
+import Swal from "sweetalert2/dist/sweetalert2"
 
 import { SwalCustomColor, rupiahParser, capsFirstWord, removeElementsByClass } from '../../fungsi.js'
 
 // ======================================== SUPER ==============================================
-let sudahFoto = false
+let sudahFotoKTP = false
+let sudahFotoPerhiasan = false
 let inputId = document.getElementById('id') // di set balik kesini pas mau ngirim
 let idPembelian = inputId.value
 let hargaBeli = document.getElementById('nominalGadai').value
@@ -15,12 +17,24 @@ const namaPenggadai = document.getElementById('namaPenggadai')
 const fotoKTP = document.getElementById('fotoKTP') // img
 const fotoKTPBase64 = document.getElementById('fotoKTPBase64') // input form
 const wadahFoto = document.getElementById('wadahFoto')
+
+const fotoPerhiasan = document.getElementById('fotoPerhiasan') // img
+const fotoPerhiasanBase64 = document.getElementById('fotoPerhiasanBase64') // input form
+const wadahFotoPerhiasan = document.getElementById('wadahFotoPerhiasan')
+
+
 const btLihatDetail = document.getElementById('btLihatDetail')
 const tanggalTenggat = document.getElementById('tanggalTenggat')
 
-function resetFoto() {
-  wadahFoto.classList.remove('bg-error', 'bg-opacity-10')
-  wadahFoto.classList.add('bg-base-300')
+function resetFoto(isPerhiasan) {
+  if (isPerhiasan) {
+    wadahFotoPerhiasan.classList.remove('bg-error', 'bg-opacity-10')
+    wadahFotoPerhiasan.classList.add('bg-base-300')
+  } else {
+    wadahFoto.classList.remove('bg-error', 'bg-opacity-10')
+    wadahFoto.classList.add('bg-base-300')
+  }
+
   removeElementsByClass('pesanerror')
 }
 
@@ -28,11 +42,11 @@ const formGadai = document.getElementById('formGadai')
 const btSubmit = document.getElementById('btSubmit')
 
 btSubmit.addEventListener('click', () => {
-    let errorMsg = document.createElement('p')
-    errorMsg.classList.add('text-error', 'pesanerror')
+  let errorMsg = document.createElement('p')
+  errorMsg.classList.add('text-error', 'pesanerror')
 
-  // cek foto, masukin di constrain
-  if (!sudahFoto || !fotoKTPBase64.value || fotoKTP.naturalHeight == 0) {
+  // cek foto KTP, masukin di constrain
+  if (!sudahFotoKTP || !fotoKTPBase64.value || fotoKTP.naturalHeight == 0) {
     wadahFoto.classList.remove('bg-base-300')
     wadahFoto.classList.add('bg-error', 'bg-opacity-10')
 
@@ -48,7 +62,22 @@ btSubmit.addEventListener('click', () => {
     return
   }
 
-  if(!formGadai.reportValidity()) return
+  if (!sudahFotoPerhiasan || !fotoPerhiasanBase64.value || fotoPerhiasan.naturalHeight == 0) {
+    wadahFotoPerhiasan.classList.remove('bg-base-300')
+    wadahFotoPerhiasan.classList.add('bg-error', 'bg-opacity-10')
+
+    errorMsg.innerText = 'Anda harus mengambil foto perhiasan yang akan digadaikan!'
+    if (document.getElementsByClassName('pesanerror').length == 0) fotoPerhiasanBase64.after(errorMsg)
+    wadahFotoPerhiasan.scrollIntoView({
+      // behavior: "smooth",
+      block: "center",
+      inline: "nearest"
+    });
+
+    return
+  }
+
+  if (!formGadai.reportValidity()) return
 
   Swal.fire({
     title: 'Konfirmasi Pengajuan',
@@ -65,27 +94,37 @@ btSubmit.addEventListener('click', () => {
       inputId.value = idPembelian
       formGadai.action = '/app/transaksi/gadai/'
       formGadai.method = 'POST'
-        formGadai.submit()
+      formGadai.submit()
     }
   })
 })
 
-btLihatDetail.addEventListener('click', ()=>{
+btLihatDetail.addEventListener('click', () => {
   window.open('/app/transaksi/pembelian/' + idPembelian, '_blank');
 })
 
 // ==================================================== KAMERA FULL ==========================================================
-let btnBukaKamera = document.getElementById('bukaKamera')
+const btnBukaKamera = document.getElementById('bukaKamera')
 btnBukaKamera.addEventListener('click', (e) => {
-  bukaKamera()
+  bukaKamera(false)
 })
 
-let btnBukaUlangKamera = document.getElementById('bukaUlangKamera')
+const btnBukaUlangKamera = document.getElementById('bukaUlangKamera')
 btnBukaUlangKamera.addEventListener('click', (e) => {
-  bukaKamera()
+  bukaKamera(false)
 })
 
-let bukaKamera = function () {
+const btnBukaKameraPerhiasan = document.getElementById('bukaKameraPerhiasan')
+btnBukaKameraPerhiasan.addEventListener('click', () => {
+  bukaKamera(true)
+})
+
+const btnBukaUlangKameraPerhiasan = document.getElementById('bukaUlangKameraPerhiasan')
+btnBukaUlangKameraPerhiasan.addEventListener('click', ()=>{
+  bukaKamera(true)
+})
+
+let bukaKamera = function (isPerhiasan) {
   Swal.fire({
     showConfirmButton: true,
     showCancelButton: true,
@@ -137,13 +176,13 @@ let bukaKamera = function () {
           }
         };
         return navigator.mediaDevices.getUserMedia(constraints).
-        then(gotStream).catch(handleError);
+          then(gotStream).catch(handleError);
       }
 
       function gotStream(stream) {
         window.stream = stream; // make stream available to console
         videoSelect.selectedIndex = [...videoSelect.options].
-        findIndex(option => option.text === stream.getVideoTracks()[0].label);
+          findIndex(option => option.text === stream.getVideoTracks()[0].label);
         videoElement.srcObject = stream;
       }
 
@@ -173,14 +212,14 @@ let bukaKamera = function () {
     }
     if (capture.isConfirmed) {
       if (capture.value) {
-        hasilKamera(capture.value)
+        hasilKamera(capture.value, isPerhiasan)
       }
     }
   })
 }
 
 
-let hasilKamera = function (gambar) {
+let hasilKamera = function (gambar, isPerhiasan) {
   Swal.fire({
     showConfirmButton: true,
     showDenyButton: true,
@@ -196,16 +235,16 @@ let hasilKamera = function (gambar) {
     imageAlt: 'Custom image',
   }).then((hasil) => {
     if (hasil.isConfirmed) {
-      cropGambar(gambar)
+      cropGambar(gambar, isPerhiasan)
     }
     if (hasil.isDenied) {
-      bukaKamera()
+      bukaKamera(isPerhiasan)
     }
   })
 }
 
 //
-let cropGambar = function (imgData) {
+let cropGambar = function (imgData, isPerhiasan) {
 
   Swal.fire({
     title: 'Pratinjau Pemotongan Gambar',
@@ -237,12 +276,20 @@ let cropGambar = function (imgData) {
         Swal.showLoading()
 
         // ngeinput gambar ke image tag, masih belum nemu cara yang bagus
-        let fotoKTP = document.getElementById('fotoKTP')
-        fotoKTP.src = cropper.getCroppedCanvas().toDataURL()
-        fotoKTP.style.display = 'block'
-        document.getElementById('fotoKTPBase64').value = cropper.getCroppedCanvas().toDataURL()
-        sudahFoto = true
-        resetFoto()
+        if (isPerhiasan) {
+          fotoPerhiasan.src = cropper.getCroppedCanvas().toDataURL()
+          fotoPerhiasan.style.display = 'block'
+          fotoPerhiasanBase64.value = cropper.getCroppedCanvas().toDataURL()
+          sudahFotoPerhiasan = true
+        } else {
+          // let fotoKTP = document.getElementById('fotoKTP')
+          fotoKTP.src = cropper.getCroppedCanvas().toDataURL()
+          fotoKTP.style.display = 'block'
+          fotoKTPBase64.value = cropper.getCroppedCanvas().toDataURL()
+          sudahFotoKTP = true
+        }
+
+        resetFoto(isPerhiasan)
       })
 
     },

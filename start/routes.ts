@@ -27,61 +27,114 @@ import './routes/guest'
 
 
  // ================================ START APPS ROUTE ===============================================
+
+ // landing page ngga kena middleware apa2, bisa diakses siapa aja
+Route.get('/', async ({
+  view
+}) => {
+  return view.render('landing')
+})
+
+// ini buat testing, ntar dihapus
+Route.post('/buang', async ({
+  request
+}) => {
+  return request.all()
+})
+
 Route.group(() => {
-  Route.get('/', async ({ view }) => {
-    return view.render('index')
-  })
+  Route.get('/', 'DashboardController.index')
 
   // ================================ PEMBUKUAN KAS ===============================================
   Route.group(() => {
-    Route.resource('rekap-harian', 'kas/RekapHariansController').only(['index', 'show'])
+    Route.group(() => {
+      // Route.resource('rekap-harian', 'kas/RekapHariansController').only(['index', 'show'])
+      Route.get('/rekap-harian/:tanggal', 'kas/RekapHariansController.show')
+      Route.get('/rekap-harian', 'kas/RekapHariansController.index')
+      
+  
+      Route.get('/testing/bikin-banyak', 'kas/KasController.buatBanyak') // WARNING: INI BUAT TEST DOANG, NTAR DIHAPUSSS
+    }).prefix('/kas')
 
-    Route.get('/testing/bikin-banyak', 'kas/KasController.buatBanyak') // WARNING: INI BUAT TEST DOANG, NTAR DIHAPUSSS
-  }).prefix('/kas')
-  Route.resource('/kas', 'kas/KasController')
+    Route.resource('/kas', 'kas/KasController')
+  }).middleware(['isKepalaWeb'])
 
   // Rute buat ngatur barang
   Route.group(() => {
     // ================================ KELOMPOK ===============================================
     Route.get('/', 'barang/KelompoksController.index')
-    Route.put('/kelompok/:id/ubah-stok', 'barang/KelompoksController.ubahStok')
+    Route.put('/kelompok/:id/ubah-stok', 'barang/KelompoksController.ubahStok').middleware(['isKepalaWeb'])
 
-    Route.post('/kelompok/cek-kelompok-duplikat', 'barang/KelompoksController.cekKelompokDuplikat')
-    Route.post('/kelompok/cek-kelompok-duplikat-edit', 'barang/KelompoksController.cekKelompokDuplikatEdit')
-    Route.resource('kelompok', 'barang/KelompoksController').except(['index'])
+    Route.post('/kelompok/cek-kelompok-duplikat', 'barang/KelompoksController.cekKelompokDuplikat').middleware(['isPemilikWeb'])
+    Route.post('/kelompok/cek-kelompok-duplikat-edit', 'barang/KelompoksController.cekKelompokDuplikatEdit').middleware(['isPemilikWeb'])
+    Route.resource('kelompok', 'barang/KelompoksController').except(['index']).middleware({
+      'create': ['isPemilikWeb'],
+      'store': ['isPemilikWeb'],
+      'edit': ['isPemilikWeb'],
+      'update': ['isPemilikWeb'],
+      'destroy': ['isPemilikWeb'],
+    })
 
     // ================================ MODEL ===============================================
-    Route.resource('model', 'barang/ModelsController')
+    Route.resource('model', 'barang/ModelsController').middleware({
+      'create': ['isPemilikWeb'],
+      'store': ['isPemilikWeb'],
+      'edit': ['isPemilikWeb'],
+      'update': ['isPemilikWeb'],
+      'destroy': ['isPemilikWeb'],
+    })
 
     // ================================ KERUSAKAN ===============================================
-    Route.resource('kerusakan', 'barang/KerusakansController')
+    Route.resource('kerusakan', 'barang/KerusakansController').middleware({
+      'create': ['isPemilikWeb'],
+      'store': ['isPemilikWeb'],
+      'edit': ['isPemilikWeb'],
+      'update': ['isPemilikWeb'],
+      'destroy': ['isPemilikWeb'],
+    })
 
     // ================================ KODE PRODUKSI ===============================================
-    Route.post('/kodepro/cek-kode-duplikat', 'barang/KodeProduksisController.cekKode')
-    Route.post('/kodepro/cek-kode-duplikat-edit', 'barang/KodeProduksisController.cekKodeEdit')
-    Route.resource('kodepro', 'barang/KodeProduksisController')
+    Route.post('/kodepro/cek-kode-duplikat', 'barang/KodeProduksisController.cekKode').middleware(['isKepalaWeb'])
+    Route.post('/kodepro/cek-kode-duplikat-edit', 'barang/KodeProduksisController.cekKodeEdit').middleware(['isKepalaWeb'])
+    Route.resource('kodepro', 'barang/KodeProduksisController').middleware({
+      'create': ['isPemilikWeb'],
+      'store': ['isPemilikWeb'],
+      'edit': ['isPemilikWeb'],
+      'update': ['isPemilikWeb'],
+      'destroy': ['isPemilikWeb'],
+    })
 
     // ================================ PENAMBAHAN STOK ===============================================
-    Route.resource('penambahan', 'barang/PenambahanStoksController').except(['edit', 'update', 'destroy'])
+    Route.resource('penambahan', 'barang/PenambahanStoksController').except(['edit', 'update', 'destroy']).middleware({
+      'index': ['isKepalaWeb'],
+      'show': ['isKepalaWeb'],
+      'create': ['isKepalaWeb'],
+      'store': ['isKepalaWeb']
+    })
 
   }).prefix('/barang')
 
   // ================================ Laporan ===============================================
   Route.group(() => {
-    Route.get('/', 'laporan/LaporansController.index')
-    Route.get('/generate', 'laporan/LaporansController.generateLaporan')
+    Route.get('/', 'laporan/LaporansController.index').middleware(['isKepalaWeb'])
+    Route.get('/generate', 'laporan/LaporansController.generateLaporan').middleware(['isKepalaApi'])
 
   }).prefix('laporan')
 
   // ================================ PEGAWAI ===============================================
   Route.group(() => {
     Route.group(() => {
-      Route.get('/refresh', 'akun/PenggajianPegawaisController.refreshPenggajian')
-      Route.post('/:id/pembayaran', 'akun/PenggajianPegawaisController.pembayaranTagihan')
-      Route.post('/:id/batal', 'akun/PenggajianPegawaisController.pembatalanPembayaran')
+      Route.get('/refresh', 'akun/PenggajianPegawaisController.refreshPenggajian').middleware(['isKepalaApi'])
+      Route.post('/:id/pembayaran', 'akun/PenggajianPegawaisController.pembayaranTagihan').middleware(['isKepalaApi'])
+      Route.post('/:id/batal', 'akun/PenggajianPegawaisController.pembatalanPembayaran').middleware(['isPemilikApi'])
     }).prefix('penggajian')
 
     Route.resource('/penggajian', 'akun/PenggajianPegawaisController').only(['index', 'show', 'destroy'])
+    .middleware({
+      'index': ['isKepalaWeb'],
+      'show': ['isKepalaWeb'],
+      'destroy': ['isPemilikWeb']
+    })
 
     Route.get('/:id/akun', 'akun/PegawaisController.showDataAkun').middleware(['izinEditPegawaiWeb'])
     Route.post('/:id/akun/check', 'akun/PegawaisController.checkCreditUbahAkun') // ada built in middleware
@@ -92,11 +145,11 @@ Route.group(() => {
   }).prefix('/pegawai')
 
   Route.resource('/pegawai', 'akun/PegawaisController').middleware({
-    create: ['isPemilikWeb'],
-    store: ['isPemilikWeb'],
-    edit: ['izinEditPegawaiWeb'],
-    update: ['izinEditPegawaiWeb'],
-    destroy: ['isPemilikWeb']
+    'create': ['isPemilikWeb'],
+    'store': ['isPemilikWeb'],
+    'edit': ['isPemilikWeb'],
+    'update': ['isPemilikWeb'],
+    'destroy': ['isPemilikWeb']
   })
 
   // ================================ NOTIFIKASI ===============================================
@@ -115,8 +168,13 @@ Route.group(() => {
     Route.get('/foto/:tipe/:id', 'sistem/PengaturansController.ambilFoto')
 
     // ini udah bisa, tp versi sus
-    Route.get('/foto-secret/:tipe/:id', 'sistem/PengaturansController.ambilFotoSecret').middleware(['isPemilikApi'])
+    Route.get('/foto-secret/:tipe/:id', 'sistem/PengaturansController.ambilFotoSecret').middleware(['isKepalaApi'])
 
+    // dashboard
+    Route.get('/pjpb-seminggu-ini', 'DashboardController.getDataPjPbSeminggu')
+    Route.get('/kelmodkod-laku', 'DashboardController.getDataKelompokModelKodeproLaku')
+    Route.get('/pencatat-pjpb', 'DashboardController.getDataPencatatTerbanyak')
+    Route.get('/sebaran-pb', 'DashboardController.getSebaranPb')
 
     // general
     Route.get('/my-profile', 'akun/PegawaisController.getMyProfile')
@@ -154,18 +212,5 @@ Route.group(() => {
     Route.get('/semua-pasaran', 'sistem/PasaransController.getAllData')
 
   }).prefix('/cuma-data')
-
-  Route.post('/buang', async ({
-    request
-  }) => {
-    return request.all()
-  })
   
 }).prefix('/app').middleware(['auth'])
-
-
-Route.get('/landing', async ({
-  view
-}) => {
-  return view.render('landing_page')
-})

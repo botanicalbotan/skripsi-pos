@@ -1,5 +1,49 @@
 import '../css/app.css'
 
+const semuaGambar = document.querySelectorAll('img')
+semuaGambar.forEach(ele => {
+  ele.addEventListener('error', (e)=>{
+    ele.style.display = 'none'
+    // cara yang bener
+    // ele.onerror = ''
+    // ele.src = '/static/images/nouser-200.png'
+  })
+
+  ele.addEventListener('load', (e)=>{
+    ele.style.display = 'block'
+  })
+});
+
+
+const gambarZoomable = document.querySelectorAll('img.zoomable')
+
+window.addEventListener('load', ()=>{
+  gambarZoomable.forEach(element => {
+    if(element.complete && element.naturalHeight !== 0){
+      zooooom(element)
+    }
+  });
+})
+
+// buat ngezoom
+const modalZoomer = document.getElementById('modal-zoomer')
+const modalImg = document.getElementById('img-zoomer')
+const captionText = document.getElementById('caption-zoomer')
+const closeBtn = document.getElementById('close-zoomer')
+
+function zooooom(img){
+  img.addEventListener('click', () => {
+    modalZoomer.style.display = 'block'
+    modalImg.src = img.src
+    captionText.textContent = img.alt
+  })
+}
+
+closeBtn.addEventListener('click', () => {
+  modalZoomer.style.display = "none"
+})
+
+
 const {
   DateTime,
   Settings
@@ -7,10 +51,8 @@ const {
 Settings.defaultZone = 'Asia/Jakarta'
 Settings.defaultLocale = 'id'
 
-
 const Pasaran = require('./sistem/pasaran/pasaran')
 const Notifikasi = require('./sistem/notifikasi/generateNotif')
-
 
 global.$ = require('jquery');
 
@@ -20,23 +62,20 @@ $.ajaxSetup({
   }
 });
 
+// ini gegara alpinejs ngga support CSP
+// const xBtAlert = document.querySelectorAll('div.alert.xLuarAlert button.xBtTutupAlert')
+// xBtAlert.forEach(element => {
+//   element.addEventListener('click', (e) => {
+//     element.closest('div.alert.xLuarAlert').remove()
+//   })
+// });
+
+
 const capsFirstWord = function (text) {
   if (!isNaN(text.charAt(0))) {
     return text
   }
   return text.slice(0, 1).toUpperCase() + text.slice(1)
-}
-
-const capsSentence = function (text) {
-  const pure = text.split(' ')
-  let newText = ''
-  for (let i = 0; i < pure.length; i++) {
-    newText += capsFirstWord(pure[i])
-    if (i !== pure.length - 1) {
-      newText += ' '
-    }
-  }
-  return newText
 }
 
 const pasaranBerformat = function () {
@@ -66,12 +105,14 @@ global.settingInputNumber = function (e) {
 }
 
 // ini gatau diapain, bisa taro di session ngga dah?
+let indikator = document.getElementById('indikatorGajiPegawai')
 global.indikatorGaji = 0
 
-$.get("/app/cuma-data/jumlah-belum-digaji", {},
+if(indikator){
+  $.get("/app/cuma-data/jumlah-belum-digaji", {},
   function (data, textStatus, jqXHR) {
     if (data.jumlah && data.jumlah > 0) {
-      let indikator = document.getElementById('indikatorGajiPegawai')
+      
       indikatorGaji = data.jumlah
 
       if (data.jumlah > 99) indikatorGaji = '99+'
@@ -82,6 +123,8 @@ $.get("/app/cuma-data/jumlah-belum-digaji", {},
   },
   "json"
 );
+}
+
 
 const indikatorNotif = document.getElementById('indikatorNotif')
 const indikatorGaadaNotif = document.getElementById('indikatorGaadaNotif')
@@ -167,18 +210,6 @@ $.get("/app/cuma-data/my-toko", {},
   dalemAlamatToko.textContent = 'Alamat Toko Error'
 })
 
-
-// global.SwalCustomColor = {
-//   icon: {
-//     error: '#f27474'
-//   },
-//   button: {
-//     confirm: '#4b6bfb',
-//     deny: '#Dc3741',
-//     cancel: '#6E7881'
-//   }
-// }
-
 const masterWadahProfil = document.getElementById('masterWadahProfil')
 const masterNamaPengguna = document.getElementById('masterNamaPengguna')
 const masterJabatanPengguna = document.getElementById('masterJabatanPengguna')
@@ -211,3 +242,4 @@ masterKeluar.addEventListener('click', () => {
   masterFormKeluar.method = 'POST'
   masterFormKeluar.submit()
 })
+

@@ -17,6 +17,8 @@
         <h4 class="text-2xl">{{ kerusakan.nama }}</h4>
         <p class="opacity-75">{{ kerusakan.bentuk.bentuk }}</p>
       </div>
+      
+      @if(session.get('isPemilik'))
       <div class="flex-none">
         <div class="dropdown dropdown-end">
           <div tabindex="0" class="btn btn-primary text-white">
@@ -27,12 +29,12 @@
                 clip-rule="evenodd" />
             </svg>
           </div>
-          <ul tabindex="0" class="p-2 shadow border border-opacity-50 menu dropdown-content bg-base-100 rounded-box w-52">
+          <ul tabindex="0" class="p-2 shadow-lg border menu dropdown-content bg-base-100 rounded-box w-60">
             <li>
-              <a href="/app/barang/kerusakan/{{ kerusakan.id }}/edit">Ubah Detail</a>
+              <a href="/app/barang/kerusakan/{{ kerusakan.id }}/edit">Ubah data</a>
             </li>
             <li>
-              <a id="hapusRusak" class="true-text-error">Hapus Kerusakan</a>
+              <a id="hapusRusak" class="true-text-error">Hapus kerusakan</a>
               <form id="formRusak" action="/app/barang/kerusakan/{{ kerusakan.id }}" method="POST">
                   {{ csrfField() }}
               </form>
@@ -40,6 +42,7 @@
           </ul>
         </div>
       </div>
+      @endif
     </div>
 
     {{--  informasi  --}}
@@ -113,7 +116,7 @@
         <div class="flex flex-col md:flex-row flex-1 md:space-x-4 space-y-4 md:space-y-0 items-center">
           <div class="avatar">
             <div class="w-16 h-16 rounded-full bg-placeholder-user-200 bg-contain">
-              <img src="{{ tambahan.urlFotoPencatat }}" onerror="this.style.display='none'">
+              <img src="{{ tambahan.urlFotoPencatat }}" >
             </div>
           </div>
           <div class="flex flex-col justify-center">

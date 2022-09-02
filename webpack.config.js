@@ -47,7 +47,7 @@ Encore.setPublicPath('/assets')
 */
 Encore.addEntry('app', './resources/js/app.js')
 Encore.addEntry('guest', './resources/js/guest.js')
-Encore.addEntry('welcome-css', '/resources/css/template-welcome.css')
+// Encore.addEntry('welcome-css', '/resources/css/template-welcome.css')
 Encore.addEntry('landing', './resources/js/landing.js')
 Encore.addEntry('beranda', './resources/js/beranda.js')
 
@@ -65,12 +65,9 @@ Encore.addEntry('all-rekap', './resources/js/pembukuan-kas/all-rekap.js')
 Encore.addEntry('all-riwayat-jual', './resources/js/riwayat/all-riwayat-jual.js')
 Encore.addEntry('all-riwayat-beli', './resources/js/riwayat/all-riwayat-beli.js')
 
-// Encore.addEntry('riwayat', './resources/js/riwayat.js') // ini ntar dihapus
-
-
 
 // Transaksi ==============================================
-// Penjualan ===================================
+// Penjualan =======================================
 Encore.addEntry('prepare-jual', './resources/js/transaksi/penjualan/prepare-jual.js')
 Encore.addEntry('form-jual', './resources/js/transaksi/penjualan/form-jual.js')
 Encore.addEntry('pasca-jual', './resources/js/transaksi/penjualan/pasca-jual.js')
@@ -86,7 +83,7 @@ Encore.addEntry('form-gadai', './resources/js/transaksi/gadai/form-gadai.js')
 Encore.addEntry('edit-gadai', './resources/js/transaksi/gadai/edit-gadai.js')
 Encore.addEntry('view-gadai', './resources/js/transaksi/gadai/view-gadai.js')
 
-// Pembayaran gadai =====
+// Pembayaran gadai ================================
 Encore.addEntry('form-bayar-gadai', './resources/js/transaksi/gadai/pembayaran/form-bayar-gadai.js')
 Encore.addEntry('view-bayar-gadai', './resources/js/transaksi/gadai/pembayaran/view-bayar-gadai.js')
 
@@ -110,18 +107,13 @@ Encore.addEntry('all-penggajian', './resources/js/pegawai/penggajian/all-penggaj
 Encore.addEntry('all-laporan', './resources/js/laporan/all-laporan.js')
 
 // Pengaturan ===================================
-// Encore.addEntry('all-pengaturan', './resources/js/sistem/all-pengaturan.js') // ntar dihapus
-// Encore.addEntry('pengaturan', './resources/js/pengaturan.js') // ntar dihapus 
 Encore.addEntry('atur-general', './resources/js/sistem/pengaturan/atur-general.js')
 Encore.addEntry('atur-kadar', './resources/js/sistem/pengaturan/atur-kadar.js')
 Encore.addEntry('atur-transaksi', './resources/js/sistem/pengaturan/atur-transaksi.js')
 Encore.addEntry('atur-saldo', './resources/js/sistem/pengaturan/atur-saldo.js')
+Encore.addEntry('all-ubah-saldo', './resources/js/sistem/pengaturan/all-ubah-saldo.js')
 Encore.addEntry('atur-barang', './resources/js/sistem/pengaturan/atur-barang.js')
 Encore.addEntry('atur-pegawai', './resources/js/sistem/pengaturan/atur-pegawai.js')
-
-
-// Testing purpose
-Encore.addEntry('pagination', './resources/js/testing/pagination.js')
 
 
 /*

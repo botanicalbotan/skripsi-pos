@@ -5,7 +5,7 @@ import {
   DateTime
 } from 'luxon'
 import Database from '@ioc:Adonis/Lucid/Database'
-import CPasaran from 'App/CustomClasses/CPasaran'
+import { pasaranDariTanggalPlus } from 'App/CustomClasses/CPasaran'
 
 export default class RiwayatJualsController {
   public async listTanggal({
@@ -426,9 +426,7 @@ function pasaranFromTanggal(ISODate: string) {
   const tanggal = DateTime.fromISO(ISODate)
 
   if (tanggal.isValid) {
-    const pasaran = new CPasaran()
-
-    return this.kapitalHurufPertama(pasaran.pasaranDariTanggalPlus(tanggal))
+    return this.kapitalHurufPertama(pasaranDariTanggalPlus(tanggal))
   } else {
     return 'tidak valid'
   }

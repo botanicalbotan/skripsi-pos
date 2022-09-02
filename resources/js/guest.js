@@ -1,4 +1,6 @@
-import Swal from 'sweetalert2'
+// // import Swal from "sweetalert2"
+import Swal from "sweetalert2/dist/sweetalert2"
+
 import '../css/app.css'
 
 import {
@@ -23,6 +25,14 @@ $.get("https://api.ipify.org?format=jsonp&callback=?", {},
   },
   "json"
 );
+
+// ini gegara alpinejs ngga support CSP
+// const xBtAlert = document.querySelectorAll('div.alert.xLuarAlert button.xBtTutupAlert')
+// xBtAlert.forEach(element => {
+//   element.addEventListener('click', (e) => {
+//     element.closest('div.alert.xLuarAlert').remove()
+//   })
+// });
 
 
 const basePage = document.getElementById('base-page').dataset.pagename

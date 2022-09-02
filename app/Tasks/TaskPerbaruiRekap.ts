@@ -3,10 +3,10 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Pengaturan from 'App/Models/sistem/Pengaturan'
 import { prepareRekap } from 'App/CustomClasses/CustomRekapHarian'
 
-export default class TaskFinalCheckSaldo extends BaseTask {
+export default class TaskPerbaruiRekap extends BaseTask {
   public static get schedule() {
-    // tiap jam 10 malem
-    return '0 21 * * *'
+    // tiap 6 jam malem
+    return '0 0/6 * * *'
   }
   /**
    * Set enable use .lock file for block run retry task
@@ -17,7 +17,7 @@ export default class TaskFinalCheckSaldo extends BaseTask {
   }
 
   public async handle() {
-    Logger.info('Saldo final sudah di cek')
+    Logger.info('Rekap harian diperbarui.')
 
     const pengaturan = await Pengaturan.findOrFail(1)
 

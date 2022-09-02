@@ -1,4 +1,5 @@
-import Swal from "sweetalert2"
+// import Swal from "sweetalert2"
+import Swal from "sweetalert2/dist/sweetalert2"
 
 import { SwalCustomColor, removeElementsByClass } from '../../fungsi.js'
 

@@ -221,7 +221,7 @@
               <div class="flex rounded-box ring-2 ring-base-300 w-52 h-52 p-2 bg-white">
                 <div class="w-full h-full bg-placeholder-user-200 bg-contain">
                   {{--  gambar cuma buat wadah dan udah ada backgroundnya, jadi kalo gaada biarin kosong aja dan jangan kasi alternative text  --}}
-                  <img src="{{ (tambahan.adaFotoPenerima)? '/app/cuma-data/foto/pegawai/'+ penggajian.penerimaGaji.id : '' }}" id="fotoPegawai" onerror="this.style.display = 'none'">
+                  <img src="{{ (tambahan.adaFotoPenerima)? '/app/cuma-data/foto/pegawai/'+ penggajian.penerimaGaji.id : '' }}" id="fotoPegawai" class="zoomable" alt="Penerima gaji: {{ penggajian.penerimaGaji.nama }}">
                 </div>
               </div>
             </div>

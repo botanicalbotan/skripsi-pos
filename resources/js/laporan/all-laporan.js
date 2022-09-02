@@ -1,5 +1,6 @@
 const Print = require('print-js')
-const { default: Swal } = require('sweetalert2')
+// import Swal from "sweetalert2"
+import Swal from "sweetalert2/dist/sweetalert2"
 
 import { SwalCustomColor } from '../fungsi.js'
 

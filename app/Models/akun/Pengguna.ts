@@ -26,6 +26,7 @@ import Kerusakan from 'App/Models/barang/Kerusakan'
 import Model from 'App/Models/barang/Model'
 import KoreksiStok from 'App/Models/barang/KoreksiStok'
 import PembayaranGadai from '../transaksi/PembayaranGadai'
+import RekapHarian from '../kas/RekapHarian'
 
 type PenggunaQuery = ModelQueryBuilderContract<typeof Pengguna>
 
@@ -126,6 +127,12 @@ export default class Pengguna extends BaseModel {
     localKey: 'id',
   })
   public penerimaGajis: HasMany<typeof PenggajianPegawai>
+
+  @hasMany(() => RekapHarian, {
+    foreignKey: 'pencatatBandingId',
+    localKey: 'id',
+  })
+  public pencatatBandingSaldo: HasMany<typeof RekapHarian>
 
   @hasMany(() => Notifikasi)
   public notifikasis: HasMany<typeof Notifikasi>

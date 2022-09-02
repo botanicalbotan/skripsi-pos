@@ -49,5 +49,7 @@ Server.middleware.registerNamed({
     guestOnly: () => import('App/Middleware/GuestOnly'),
     isPemilikWeb: () => import('App/Middleware/IsPemilikWeb'),
     isPemilikApi: () => import('App/Middleware/IsPemilikApi'),
+    isKepalaWeb: () => import('App/Middleware/IsKepalaWeb'),
+    isKepalaApi: () => import('App/Middleware/IsKepalaApi'),
     izinEditPegawaiWeb: () => import('App/Middleware/IzinEditPegawaiWeb'),
 })

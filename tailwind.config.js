@@ -26,7 +26,9 @@ module.exports = {
       'select-primary',
       'w-16',
       'input-warning',
-      'bg-warning'
+      'bg-warning',
+      'bg-info',
+      'bg-secondary'
     ]
   },
   // purge: {

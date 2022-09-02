@@ -15,7 +15,7 @@
     <div class="flex">
       <div class="flex-1">
         <h4 class="text-2xl font-semibold" id="namaKas">Rekap Transaksi</h4>
-        {{--  <p class="opacity-75">Pada {{ kas.createdAt.setLocale('id-ID').toFormat('DDD T') }}</p>  --}}
+        {{--  <p class="opacity-75">Pada {{ kas.createdAt.setLocale('id-ID').toFormat('DDD T') }}</p> --}}
       </div>
     </div>
 
@@ -38,14 +38,15 @@
 
           <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
             <div class="flex-1 opacity-75">Bentuk & Kadar</div>
-            <div class="flex-none sm:w-2/3 sm:text-right">{{ pembelian.model.bentuk.bentuk }} {{ pembelian.kodeProduksi.kadar.nama }}</div>
+            <div class="flex-none sm:w-2/3 sm:text-right">{{ pembelian.model.bentuk.bentuk }}
+              {{ pembelian.kodeProduksi.kadar.nama }}</div>
           </div>
 
           <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
             <div class="flex-1 opacity-75">Model Perhiasan</div>
             <div class="flex-none sm:w-2/3 sm:text-right">{{ pembelian.model.nama }}</div>
           </div>
-            
+
 
         </div>
 
@@ -55,38 +56,45 @@
 
           <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
             <div class="flex-1 opacity-75">Kondisi Barang</div>
-            <div class="flex-none sm:w-2/3 sm:text-right font-semibold">{{ fungsi.kapitalHurufPertama(pembelian.kondisiFisik) }}</div>
+            <div class="flex-none sm:w-2/3 sm:text-right font-semibold">
+              {{ fungsi.kapitalHurufPertama(pembelian.kondisiFisik) }}</div>
           </div>
 
           <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
             @if(pembelian.pembelianNotaLeo)
             <div class="flex-1 opacity-75">Harga per Gram Nota</div>
-            <div class="flex-none sm:w-2/3 sm:text-right">{{ fungsi.rupiahParser(pembelian.hargaBeliPerGramSeharusnya) }}</div>
+            <div class="flex-none sm:w-2/3 sm:text-right">
+              {{ fungsi.rupiahParser(pembelian.hargaBeliPerGramSeharusnya) }}</div>
             @else
             <div class="flex-1 opacity-75">Harga per Gram</div>
-            <div class="flex-none sm:w-2/3 sm:text-right">{{ fungsi.rupiahParser(pembelian.hargaBeliPerGramAkhir) }}</div>
+            <div class="flex-none sm:w-2/3 sm:text-right">{{ fungsi.rupiahParser(pembelian.hargaBeliPerGramAkhir) }}
+            </div>
             @endif
-          </div>  
+          </div>
 
           <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
             <div class="flex-1 opacity-75">Ongkos Kerusakan</div>
-            <div class="flex-none sm:w-2/3 sm:text-right text-error">{{ fungsi.rupiahParser(tambahan.totalKerusakan) }}</div>
+            <div class="flex-none sm:w-2/3 sm:text-right text-error">{{ fungsi.rupiahParser(tambahan.totalKerusakan) }}
+            </div>
           </div>
 
           <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
             <div class="flex-1 opacity-75">Ongkos Potongan</div>
-            <div class="flex-none sm:w-2/3 sm:text-right text-error">{{ fungsi.rupiahParser(tambahan.totalPotongan) }}</div>
+            <div class="flex-none sm:w-2/3 sm:text-right text-error">{{ fungsi.rupiahParser(tambahan.totalPotongan) }}
+            </div>
           </div>
 
           <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
             <div class="flex-1 opacity-75">Penalti Keterlambatan</div>
-            <div class="flex-none sm:w-2/3 sm:text-right text-error">{{ fungsi.rupiahParser(tambahan.totalPenalti) }}</div>
+            <div class="flex-none sm:w-2/3 sm:text-right text-error">{{ fungsi.rupiahParser(tambahan.totalPenalti) }}
+            </div>
           </div>
 
           <div class="flex sm:space-x-4 w-full flex-col sm:flex-row">
             <div class="flex-1 opacity-75">Keterangan</div>
-            <div class="flex-none sm:w-2/3 sm:text-right">{{ (pembelian.keteranganTransaksi)? pembelian.keteranganTransaksi : 'tidak ada' }}</div>
-          </div> 
+            <div class="flex-none sm:w-2/3 sm:text-right">
+              {{ (pembelian.keteranganTransaksi)? pembelian.keteranganTransaksi : 'tidak ada' }}</div>
+          </div>
 
         </div>
 
@@ -97,7 +105,8 @@
         </div>
 
         <div>
-          <a href="/app/transaksi/pembelian/{{ pembelian.id }}" class="btn btn-outline btn-sm">Lihat Detail Pembelian</a>
+          <a href="/app/transaksi/pembelian/{{ pembelian.id }}" class="btn btn-outline btn-sm">Lihat Detail
+            Pembelian</a>
         </div>
 
       </div>
@@ -108,8 +117,9 @@
           <div class=" font-semibold text-lg text-center">
             Pengajuan Gadai
           </div>
-            
-          @if(pembelian.apakahDigadaikan)
+
+          @if(session.get('isKepala'))
+            @if(pembelian.apakahDigadaikan)
             <div class="grid grid-flow-col gap-5 text-center auto-cols-max">
               <div class="flex flex-col">
                 <span class="countdown font-mono text-5xl">
@@ -126,34 +136,43 @@
             </div>
 
             <div class="text-center">
-              Transaksi pembelian ini <span class="font-semibold text-accent-focus">MEMENUHI SYARAT</span> dan memiliki akses untuk dijadikan sebagai gadai hingga waktu hitung mundur habis.
+              Transaksi pembelian ini <span class="font-semibold text-accent-focus">MEMENUHI SYARAT</span> dan memiliki
+              akses untuk diajukan sebagai gadai hingga waktu hitung mundur habis.
             </div>
 
             @if(pembelian.digadaiAt)
-              <div class="text-center text-accent-focus">
-                Pembelian ini sudah digadaikan.
-              </div>
+            <div class="text-center text-accent-focus">
+              Pembelian ini sudah digadaikan.
+            </div>
             @else
 
-              @if(!tambahan.apakahExpired)
-                <button type="button" id="btGadai" class="btn btn-block btn-primary text-white">Ajukan Gadai</button>
-              @else
-                <div class="text-center text-error">
-                  Waktu pengajuan gadai telah habis.
-                </div>
-              @endif
-              
-            @endif     
-
-          @else
-            <div class="text-center">
-              Transaksi pembelian ini <span class="font-semibold text-error">TIDAK MEMENUHI SYARAT</span> untuk diajukan sebagai gadai.
+            @if(!tambahan.apakahExpired)
+            <button type="button" id="btGadai" class="btn btn-block btn-primary text-white">Ajukan Gadai</button>
+            @else
+            <div class="text-center text-error">
+              Waktu pengajuan gadai telah habis.
             </div>
+            @endif
+
+            @endif
+
+            @else
+            <div class="text-center">
+              Transaksi pembelian ini <span class="font-semibold text-error">TIDAK MEMENUHI SYARAT</span> untuk diajukan
+              sebagai gadai.
+            </div>
+            @endif
+          @else
+          <div class="text-center">
+            Akun anda <span class="font-semibold text-error">TIDAK MEMILIKI AKSES</span> untuk mengajukan gadai.
+          </div>
           @endif
+
+
 
         </div>
 
-        
+
 
       </div>
     </div>

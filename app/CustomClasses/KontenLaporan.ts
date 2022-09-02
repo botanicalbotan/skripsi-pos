@@ -4,7 +4,7 @@ import Pengaturan from "App/Models/sistem/Pengaturan"
 import {
   DateTime
 } from 'luxon';
-import CPasaran from 'App/CustomClasses/CPasaran';
+import { pasaranDariTanggal } from 'App/CustomClasses/CPasaran';
 import Database from '@ioc:Adonis/Lucid/Database';
 import User from "App/Models/User";
 
@@ -140,8 +140,6 @@ async function generateSubRekapKas(tanggalLaporan: string, tanggalMulai: DateTim
     tanggalString = tanggalMulai.toFormat('D')
   }
 
-  const pasar = new CPasaran()
-
   // ------------------------ Persiapan Data --------------------------------
   const totalKasMasuk = await Database
     .from('kas')
@@ -203,7 +201,7 @@ async function generateSubRekapKas(tanggalLaporan: string, tanggalMulai: DateTim
   // ---------------------------- Mulai Print PDF --------------------------------
   let isiTabel = [
     ['Tanggal', ':', tanggalString],
-    ['Pasaran', ':', (tanggalTunggal) ? kapitalHurufPertama(pasar.pasaranDariTanggal(tanggalMulai)) : 'Variatif'],
+    ['Pasaran', ':', (tanggalTunggal) ? kapitalHurufPertama(pasaranDariTanggal(tanggalMulai)) : 'Variatif'],
     ['Total pemasukan', ':', rupiahParser((totalJual[0].nominal | 0) + (totalKasMasuk[0].nominal | 0))],
     ['Jumlah kas masuk', ':', (totalKasMasuk[0].count | 0) + 1],
     ['Total pengeluaran', ':', rupiahParser((totalBeli[0].nominal | 0) + (totalKasKeluar[0].nominal | 0))],

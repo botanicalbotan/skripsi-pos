@@ -7,14 +7,15 @@ import { inet_ntoa } from './IPConverter'
 
 const email = Env.get('SMTP_EMAIL')
 const pass = Env.get('SMTP_PASS')
+// const domain = Env.get('DOMAIN') aslinya pake ini, ntar ganti
 const DOMAIN = "http://127.0.0.1:3333"
 
 export async function emailUbahPassword(user: User, passToken: PasswordResetToken) {
 
   let transporter = nodemailer.createTransport({
-    host: "smtp-mail.outlook.com", //smtp.office365.com
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    host: "mail.botanicalbotan.com", //smtp.office365.com
+    port: 465, // kalau mau tes 587
+    secure: true, // true for 465, false for other ports
     auth: {
       user: email,
       pass: pass

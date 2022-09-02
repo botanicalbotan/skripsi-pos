@@ -28,21 +28,20 @@
                 clip-rule="evenodd" />
             </svg>
           </div>
-          <ul tabindex="0" class="p-2 shadow border menu dropdown-content bg-base-100 rounded-box w-52">
+          <ul tabindex="0" class="p-2 shadow-lg border menu dropdown-content bg-base-100 rounded-box w-60">
             <li>
-              <a href="/app/transaksi/penjualan/pasca?tid={{ PJ.id }}">Cetak Nota</a>
+              <a href="/app/transaksi/penjualan/pasca?tid={{ PJ.id }}">Pasca transaksi</a>
+            </li>
+            @if(session.get('isPemilik'))
+            <li>
+              <a href="#" id="btUbahDurasi">Ubah durasi cetak nota</a>
+              <input type="datetime-local" class="hidden" readonly id="durasiSekarang" value="{{ PJ.maxPrintAt.toFormat("yyyy-MM-dd'T'HH:mm:ss") }}">
             </li>
             <li>
-              <a id="hapusPJ" class="true-text-error">Hapus Penjualan</a>
+              <a id="hapusPJ" class="true-text-error">Hapus transaksi</a>
               <form id="formHapusPJ" action="/app/transaksi/penjualan" method="POST">
                 {{ csrfField() }}
               </form>
-            </li>
-
-            @if(false)
-            <li>
-              <a href="/app/transaksi/penjualan/pasca?tid={{ PJ.id }}">Ini diisi rahasia, cuma jabatan tertentu dari
-                session yang boleh</a>
             </li>
             @endif
 
@@ -61,7 +60,7 @@
           <div class="w-80 h-60 p-2 border">
             <div id="wadahFoto" class="w-full h-full bg-base-300 bg-contain">
               @if(tambahan.adaFotoBarang)
-              <img src="{{ tambahan.urlFotoBarang }}" class="w-full object-contain">
+              <img src="/app/cuma-data/foto/penjualan/{{ PJ.id }}" class="w-full object-contain zoomable" alt="Penjualan: {{ fungsi.kapitalHurufPertama(PJ.namaBarang) }}">
               @else
               <div class="w-full h-full flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-secondary" viewBox="0 0 20 20"
@@ -319,7 +318,8 @@
         <div class="flex flex-col md:flex-row flex-1 md:space-x-4 space-y-4 md:space-y-0 items-center">
           <div class="avatar">
             <div class="w-16 h-16 rounded-full bg-placeholder-user-200 bg-contain">
-              <img src="{{ (tambahan.adaFotoPencatat)? '/app/cuma-data/foto/pegawai/' + PB.pengguna.id : '' }}" onerror="this.style.display='none'">
+              <img src="{{ (tambahan.adaFotoPencatat)? '/app/cuma-data/foto/pegawai/' + PJ.pengguna.id : '' }}"
+            >
             </div>
           </div>
           <div class="flex flex-col justify-center">

@@ -6,14 +6,15 @@ import Env from '@ioc:Adonis/Core/Env'
 
 const email = Env.get('SMTP_EMAIL')
 const pass = Env.get('SMTP_PASS')
+// const port = Env.get('SMTP_PORT')
 
 export default class EmailTestsController {
   public async kirimSekali({}: HttpContextContract) {
 
     let transporter = nodemailer.createTransport({
-      host: "smtp-mail.outlook.com", //smtp.office365.com
-      port: 587,
-      secure: false, // true for 465, false for other ports
+      host: "mail.botanicalbotan.com", //smtp.office365.com
+      port: 465, // kalau mau tes 587
+      secure: true, // true for 465, false for other ports
       auth: {
         user: email,
         pass: pass

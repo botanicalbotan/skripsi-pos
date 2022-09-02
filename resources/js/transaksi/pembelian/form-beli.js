@@ -1,4 +1,5 @@
-import Swal from "sweetalert2"
+// import Swal from "sweetalert2"
+import Swal from "sweetalert2/dist/sweetalert2"
 
 import {
   SwalCustomColor,
@@ -176,10 +177,14 @@ $(function () {
             tandaPotonganNotaLabel.textContent = '(persentase)'
             tandaPotonganNota.textContent = '%'
             tandaPotonganNotaPlus.textContent = ''
+            // yes, hardcoded
+            potonganNota.max = 100
           } else {
             tandaPotonganNotaLabel.textContent = '(nominal)'
             tandaPotonganNota.textContent = 'Rp.'
             tandaPotonganNotaPlus.textContent = 'per gram'
+            // yes, hardcoded
+            potonganNota.max = 50000
           }
 
           potonganNota.disabled = false

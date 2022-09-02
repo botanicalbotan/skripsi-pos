@@ -77,14 +77,14 @@
                 <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                   :class="(radioAsal == 0)? 'bg-error bg-opacity-10 border-error': 'bg-white border-secondary'">
                   <input type="radio" name="asalPerhiasan" checked='checked' class="bisaDikunci radio radio-primary hidden" x-ref="pilihAsalLuar" id="pilihAsalLuar"
-                    value="luar" @click="radioAsal = 0; dariLeo = false; $refs.namaToko.value = ''; $refs.namaToko.readOnly = false">
+                    value="luar" @click="radioAsal = 0; dariLeo = false; $refs.namaToko.value = ''; $refs.namaToko.readOnly = false; $refs.alamatToko.value = ''; $refs.alamatToko.readOnly = true">
                   <span class="label-text text-base" :class="(radioAsal == 0)? 'text-error': 'text-secondary'">Toko
                     Luar</span>
                 </label>
                 <label class="cursor-pointer items-center py-2 flex-1 rounded-box px-4 border"
                   :class="(radioAsal == 1)? 'bg-primary bg-opacity-10 border-primary': 'bg-white border-secondary'">
                   <input type="radio" name="asalPerhiasan" class="bisaDikunci radio radio-primary hidden" value="leo"
-                    @click="radioAsal = 1; dariLeo = true; $refs.namaToko.value = 'Toko Mas Leo'; $refs.namaToko.readOnly = true">
+                    @click="radioAsal = 1; dariLeo = true; $refs.namaToko.value = '{{ toko.nama }}'; $refs.namaToko.readOnly = true; $refs.alamatToko.value = '{{ toko.alamat }}'; $refs.alamatToko.readOnly = true">
                   <span class="label-text text-base" :class="(radioAsal == 1)? 'text-primary': 'text-secondary'">Cabang
                     Toko Leo</span>
                 </label>
@@ -97,10 +97,18 @@
 
             <div class="form-control max-w-xs" x-cloak x-show="adaNota">
               <label for="namaToko">
-                <span class="">Nama Toko Asal</span>
+                <span class="">Nama Toko Asal<span class="text-error"> *</span></span>
               </label>
-              <input type="text" x-ref="namaToko" id="namaToko" name="namaToko"
+              <input type="text" x-ref="namaToko" id="namaToko" name="namaToko" :required="adaNota"
                 class="bisaDikunci input input-bordered" placeholder="Contoh: Toko Mas Leo">
+            </div>
+
+            <div class="form-control max-w-md" x-cloak x-show="adaNota">
+              <label for="namaToko">
+                <span class="">Alamat Toko Asal<span class="text-error"> *</span></span>
+              </label>
+              <textarea x-ref="alamatToko" id="alamatToko" name="alamatToko" :required="adaNota"
+                class="bisaDikunci textarea textarea-bordered" placeholder="Contoh: Jl. Testing, No. 1, Kota Coba-coba"></textarea>
             </div>
 
           </div>

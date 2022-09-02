@@ -3,6 +3,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
+/* sweetalert2 */
+@import '~sweetalert2/dist/sweetalert2.min.css';
+
 .hide-scroll-bar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -28,6 +31,10 @@
   border-bottom-right-radius: 0rem !important;
   border-top-left-radius: 0rem !important;
   border-bottom-left-radius: 0rem !important;
+}
+
+.true-rounded-full {
+  border-radius: 9999px !important;
 }
 
 .true-text-error {
@@ -189,5 +196,85 @@ div#wadah-item-penjualan input.radio:checked ~ label > span{
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+.zoomable{
+  cursor: zoom-in;
+  transition: 0.3s;
+}
+
+.zoomable:hover{
+  opacity: 0.7;
+}
+
+/* The Modal (background) */
+.modal-zoomer {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 30; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+.modal-zoomer-content {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+}
+
+/* Caption of Modal Image (Image Text) - Same Width as the Image */
+#caption-zoomer {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+  height: 150px;
+}
+
+/* Add Animation - Zoom in the Modal */
+.modal-zoomer-content, #caption-zoomer {
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+@keyframes zoom {
+  from {transform:scale(0)}
+  to {transform:scale(1)}
+}
+
+
+/* The Close Button */
+.close-zoomer {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close-zoomer:hover,
+.close-zoomer:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px){
+  .zoomer-modal-content {
+    width: 100%;
   }
 }
