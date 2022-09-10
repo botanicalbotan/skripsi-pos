@@ -1,7 +1,7 @@
 @layout('layouts/master')
 
 {{-- buat ngeset judul --}}
-@set('judul', 'Detail Gadai | Postoma')
+@set('judul', 'Detail Gadai '+ fungsi.rupiahParser(gadai.nominalGadai) + ' An. ' + gadai.namaPenggadai + ' | Postoma')
 
 
 @section('content')
@@ -15,7 +15,7 @@
     <div class="flex space-x-2">
       <div class="flex-1">
         <h4 class="text-2xl sm:flex sm:items-center">
-          <span class="mr-2" id="juduiGadai">Gadai {{ fungsi.rupiahParser(gadai.nominalGadai) }}
+          <span class="mr-2" id="judulGadai">Gadai {{ fungsi.rupiahParser(gadai.nominalGadai) }}
             An. {{ gadai.namaPenggadai }}</span>
         </h4>
         <p>
@@ -50,8 +50,8 @@
 
             @if(session.get('isPemilik'))
             <li>
-              <a id="btBatal" class="true-text-error">Batalkan gadai</a>
-              <form id="formBatal"
+              <a id="btBatalGadai" class="true-text-error">Batalkan gadai</a>
+              <form id="formBatalGadai"
                 action="/app/transaksi/gadai/{{ gadai.id }}/" method="POST">
                 {{ csrfField() }}
               </form>

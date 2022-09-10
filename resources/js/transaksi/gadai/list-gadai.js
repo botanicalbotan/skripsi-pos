@@ -167,6 +167,26 @@ let printAturTabelHTML = function () {
 }
 
 
+// ----------------- cara buat gadai -----------------
+const btGadaiBaru = document.getElementById('btGadaiBaru')
+btGadaiBaru.addEventListener('click', () => {
+  Swal.fire({
+    title: 'Pembuatan Gadai Baru',
+    icon: 'info',
+    html: 'Pada sistem ini, gadai dapat diajukan melalui transaksi pembelian dengan memilih opsi <span class="font-semibold">Ajukan sebagai gadai</span>, kemudian mengisi form pengajuan gadai setelah transaksi selesai disimpan.',
+    confirmButtonText: 'Menuju Pembelian',
+    confirmButtonColor: SwalCustomColor.button.confirm,
+    cancelButtonText: 'Tutup',
+    cancelButtonColor: SwalCustomColor.button.cancel,
+    showCancelButton: true,
+  }).then((goto) => {
+    if(goto.isConfirmed){
+      location.href = '/app/transaksi/pembelian'
+    }
+  })
+})
+
+
 // ------------------- refresh -----------------------
 const btPerbaruiData = document.getElementById('btPerbaruiData')
 

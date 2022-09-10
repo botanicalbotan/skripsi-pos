@@ -16,11 +16,7 @@
 
     <div class="card rounded-none w-full border shadow-sm mb-10">
       <div class="card-body">
-        {{--  <div class=" card-title text-center">
-          Data Penjualan Terpindai
-        </div>  --}}
-
-        <div class="font-semibold mb-4 text-lg hover:underline cursor-pointer" onclick="window.open('/app/transaksi/penjualan/{{ penjualan.id }}', '_blank')" style="color:{{ penjualan.kodeProduksi.kadar.warnaNota }}">
+        <div class="mb-4 text-xl hover:underline cursor-pointer" onclick="window.open('/app/transaksi/penjualan/{{ penjualan.id }}', '_blank')" style="color:{{ penjualan.kodeProduksi.kadar.warnaNota }}">
           {{ penjualan.namaBarang }}
         </div>
 

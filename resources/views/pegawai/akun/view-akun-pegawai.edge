@@ -4,6 +4,9 @@
 
 @endsection
 
+{{-- buat ngeset judul --}}
+@set('judul', 'Akun ' + pegawai.nama + ' | Postoma')
+
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="detail" id="base-page">
   <h2 class="text-4xl font-semibold">Akun Pegawai</h2>
@@ -48,6 +51,7 @@
             </a>
           </li>
 
+          @if(pegawai.jabatan === 'Pemilik')
           <li class="border-b">
             <a href="#" id="ubahEmail" class="flex py-3 px-2 group hover:bg-base-300">
               <div class="flex-1">
@@ -63,6 +67,7 @@
               </span>
             </a>
           </li>
+          @endif
 
           <li class="border-b">
             <a href="#" id="ubahPassword" class="flex py-3 px-2 group hover:bg-base-300">

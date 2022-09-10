@@ -57,15 +57,22 @@ toko3.addEventListener('click', () =>{
   jamBukaToko.textContent = dataToko[2].jamBuka
 })
 
-
 window.onscroll = function () {
   scrollFunction()
 };
 
+const btnTop = document.getElementById('scrollTopBtn')
+btnTop.addEventListener('click', () => {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+})
+
 function scrollFunction() {
   if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-    $('#scrollTopBtn').removeClass('invisible translate-y-8').addClass('visible translate-y-0')
+    btnTop.classList.remove('invisible', 'translate-y-8')
+    btnTop.classList.add('visible', 'translate-y-0')
   } else {
-    $('#scrollTopBtn').removeClass('visible translate-y-0').addClass('invisible translate-y-8');
+    btnTop.classList.add('invisible', 'translate-y-8')
+    btnTop.classList.remove('visible', 'translate-y-0')
   }
 }

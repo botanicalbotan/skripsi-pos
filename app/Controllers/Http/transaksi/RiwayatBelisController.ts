@@ -326,6 +326,7 @@ export default class RiwayatBelisController {
       return response.redirect().toPath('/app/riwayat/pembelian/')
     }
   }
+  
 }
 
 function rupiahParser(angka: number) {

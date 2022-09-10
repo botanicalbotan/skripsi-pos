@@ -3,12 +3,6 @@ import Swal from "sweetalert2/dist/sweetalert2"
 
 import { SwalCustomColor, capsFirstWord } from '../../fungsi.js'
 
-// const capsFirstWord = function (text) {
-//   if (!isNaN(text.charAt(0))) {
-//     return text
-//   }
-//   return text.slice(0, 1).toUpperCase() + text.slice(1)
-// }
 
 const namaPegawai = document.getElementById('namaPegawai').textContent
 const jabatanPegawai = document.getElementById('jabatanPegawai').textContent
@@ -195,9 +189,172 @@ ubahUsername.addEventListener('click', () => {
   })
 })
 
-ubahEmail.addEventListener('click', () => {
+if(ubahEmail){
+  ubahEmail.addEventListener('click', () => {
+    Swal.fire({
+      title: 'Menu Ubah Email',
+      text: 'Pada sistem ini, email digunakan sebagai media pengubahan password pegawai dari menu Lupa Password. Lanjutkan?',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, ubah email!',
+      cancelButtonText: 'Batal',
+      scrollbarPadding: false,
+      focusCancel: true,
+      confirmButtonColor: SwalCustomColor.button.confirm,
+    }).then((prepare) => {
+  
+      if (prepare.isConfirmed) {
+        Swal.fire({
+          title: 'Isikan password anda',
+          input: 'password',
+          inputLabel: 'Sebagai konfirmasi bahwa ini adalah anda',
+          inputPlaceholder: 'Password anda',
+          showCancelButton: true,
+          scrollbarPadding: false,
+          confirmButtonColor: SwalCustomColor.button.confirm,
+          confirmButtonText: 'Selanjutnya',
+          inputValidator: (password) => {
+            if (!password) {
+              return 'Password tidak boleh kosong!'
+            }
+          },
+          preConfirm: (password) => {
+            Swal.showLoading()
+  
+            return new Promise(function (resolve, reject) {
+              setTimeout(function () {
+                reject({
+                  tipe: 'lokal',
+                  msg: 'Tidak ada respon dari server'
+                })
+              }, 5000)
+  
+              $.ajax({
+                type: "POST",
+                url: location.pathname + '/check',
+                data: {
+                  pass: password
+                },
+                dataType: 'json',
+                success: function (data) {
+                  resolve({
+                    yangPunya: data.yangPunya,
+                    pass: password
+                  })
+                },
+                error: function (xhr) {
+                  reject({
+                    tipe: 'lokal',
+                    msg: (typeof xhr.responseJSON.error === 'string') ? xhr.responseJSON.error : 'Ada error pada server!'
+                  })
+                }
+              });
+            }).catch(function (error) {
+              Swal.hideLoading()
+              if (error.tipe && error.tipe === 'lokal') {
+                Swal.showValidationMessage(error.msg)
+              } else {
+                Swal.showValidationMessage(error)
+              }
+  
+            })
+  
+          }
+        }).then((cekPassword) => {
+          if (cekPassword.isConfirmed) {
+            const nyebut = (cekPassword.value.yangPunya) ? 'anda' : 'pegawai ini'
+  
+            Swal.fire({
+              title: 'Isikan email baru ' + nyebut,
+              input: 'email',
+              inputPlaceholder: 'Email baru',
+              showCancelButton: true,
+              scrollbarPadding: false,
+              confirmButtonColor: SwalCustomColor.button.confirm,
+              confirmButtonText: 'Selanjutnya',
+            }).then((gantiEmail) => {
+              if (gantiEmail.isConfirmed) {
+  
+                Swal.fire({
+                  title: 'Konfirmasi Pengubahan Email',
+                  text: 'Anda akan secara sengaja mengubah email ' + nyebut + ' menjadi "' + gantiEmail.value + '". Lanjutkan?',
+                  icon: 'question',
+                  showCancelButton: true,
+                  confirmButtonText: 'Ya, ubah email!',
+                  cancelButtonText: 'Batal',
+                  scrollbarPadding: false,
+                  focusCancel: true,
+                  confirmButtonColor: SwalCustomColor.button.confirm,
+                  preConfirm: () => {
+                    Swal.showLoading()
+  
+                    return new Promise(function (resolve, reject) {
+                      setTimeout(function () {
+                        reject({
+                          tipe: 'lokal',
+                          msg: 'Tidak ada respon dari server'
+                        })
+                      }, 5000)
+  
+                      $.ajax({
+                        type: "PUT",
+                        url: location.pathname + '/ubah-email',
+                        data: {
+                          newEmail: gantiEmail.value,
+                        },
+                        dataType: 'json',
+                        success: function () {
+                          resolve({
+                            apakahSukses: true,
+                            msg: 'Email ' + nyebut + ' berhasil diubah!'
+                          })
+                        },
+                        error: function (xhr) {
+                          reject({
+                            tipe: 'lokal',
+                            msg: (typeof xhr.responseJSON.error === 'string') ? xhr.responseJSON.error : 'Ada error pada server!'
+                          })
+                        }
+                      });
+                    }).catch(function (error) {
+                      if (error.tipe && error.tipe === 'lokal') {
+                        return error
+                      } else {
+                        return {
+                          apakahSukses: false,
+                          msg: 'Ada kesalahan pada sistem. Silahkan coba lagi.'
+                        }
+                      }
+                    })
+  
+                  }
+                }).then((hasilUbah) => {
+                  if (hasilUbah.isConfirmed) {
+                    Swal.fire({
+                      title: ((hasilUbah.value.apakahSukses) ? 'Pengubahan Berhasil!' : 'Error'),
+                      text: capsFirstWord(hasilUbah.value.msg),
+                      icon: ((hasilUbah.value.apakahSukses) ? 'success' : 'error'),
+                      scrollbarPadding: false,
+                      confirmButtonText: 'Tutup',
+                      confirmButtonColor: SwalCustomColor.button.cancel
+                    }).then(() => {
+                      location.href = location.pathname
+                    })
+  
+                  }
+                })
+  
+              }
+            })
+          }
+        })
+  
+      }
+  
+    })
+  })
+}
 
-})
 
 ubahPassword.addEventListener('click', () => {
   Swal.fire({

@@ -3,97 +3,97 @@ import Swal from "sweetalert2/dist/sweetalert2"
 
 import { SwalCustomColor } from '../fungsi.js'
 
-$(function () {
-  const basePage = document.getElementById('base-page').dataset.pagename
-  // ========================================= list ==========================================================
-  if (basePage == "list") {
-    const BASEURL = window.location.pathname
-    const qsParam = new URLSearchParams(window.location.search)
-    const pencarian = document.querySelector('input#pencarian')
-    const hapuscari = document.getElementById('hapusPencarian')
-    const btAturTabel = document.getElementById('btAturTabel')
 
-    let ob = 0,
-      aob = 0
-    if (qsParam.has('ob')) {
-      if (['0', '1', '2', '3', '4'].includes(qsParam.get('ob'))) {
-        ob = qsParam.get('ob')
-      }
+const basePage = document.getElementById('base-page').dataset.pagename
+// ========================================= list ==========================================================
+if (basePage == "list") {
+  const BASEURL = window.location.pathname
+  const qsParam = new URLSearchParams(window.location.search)
+  const pencarian = document.querySelector('input#pencarian')
+  const hapuscari = document.getElementById('hapusPencarian')
+  const btAturTabel = document.getElementById('btAturTabel')
+
+  let ob = 0,
+    aob = 0
+  if (qsParam.has('ob')) {
+    if (['0', '1', '2', '3', '4'].includes(qsParam.get('ob'))) {
+      ob = qsParam.get('ob')
+    }
+  }
+
+  if (qsParam.has('aob')) {
+    if (['0', '1'].includes(qsParam.get('aob'))) {
+      aob = qsParam.get('aob')
+    }
+  }
+
+  function persiapanKirim() {
+    if (qsParam.get('cari') === null || pencarian.value === '') {
+      qsParam.delete('cari')
     }
 
-    if (qsParam.has('aob')) {
-      if (['0', '1'].includes(qsParam.get('aob'))) {
-        aob = qsParam.get('aob')
+    updateKeyQs('ob', ob)
+    updateKeyQs('aob', aob)
+
+    qsParam.delete('page')
+    window.location = BASEURL + '?' + qsParam.toString()
+  }
+
+  pencarian.addEventListener("keyup", function (event) {
+    if (event.key === "Enter") {
+      if (pencarian.value !== '' && pencarian.value) {
+        updateKeyQs('cari', pencarian.value)
+        persiapanKirim()
       }
     }
+  });
 
-    function persiapanKirim() {
-      if (qsParam.get('cari') === null || pencarian.value === '') {
-        qsParam.delete('cari')
-      }
+  hapuscari.addEventListener("click", function () {
+    pencarian.value = ''
+    persiapanKirim()
+  });
 
-      updateKeyQs('ob', ob)
-      updateKeyQs('aob', aob)
 
-      qsParam.delete('page')
-      window.location = BASEURL + '?' + qsParam.toString()
-    }
-
-    pencarian.addEventListener("keyup", function (event) {
-      if (event.key === "Enter") {
-        if (pencarian.value !== '' && pencarian.value) {
-          updateKeyQs('cari', pencarian.value)
-          persiapanKirim()
+  btAturTabel.addEventListener('click', (e) => {
+    Swal.fire({
+      title: 'Atur Tabel',
+      confirmButtonText: 'Terapkan',
+      showCancelButton: true,
+      cancelButtonText: 'Batal',
+      scrollbarPadding: false,
+      confirmButtonColor: SwalCustomColor.button.confirm,
+      html: printAturTabelHTML(),
+      willOpen: () => {
+        Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
+      },
+      preConfirm: () => {
+        return {
+          ob: Swal.getHtmlContainer().querySelector('#swal-ob').value,
+          aob: Swal.getHtmlContainer().querySelector('input[name="swal-arahOb"]:checked').value,
         }
       }
-    });
-
-    hapuscari.addEventListener("click", function () {
-      pencarian.value = ''
-      persiapanKirim()
-    });
-
-
-    btAturTabel.addEventListener('click', (e) => {
-      Swal.fire({
-          title: 'Atur Tabel',
-          confirmButtonText: 'Terapkan',
-          showCancelButton: true,
-          cancelButtonText: 'Batal',
-          scrollbarPadding: false,
-          confirmButtonColor: SwalCustomColor.button.confirm,
-          html: printAturTabelHTML(),
-          willOpen: () => {
-            Swal.getHtmlContainer().querySelector('#swal-ob').value = ob
-          },
-          preConfirm: () => {
-            return {
-              ob: Swal.getHtmlContainer().querySelector('#swal-ob').value,
-              aob: Swal.getHtmlContainer().querySelector('input[name="swal-arahOb"]:checked').value,
-            }
-          }
-        })
-        .then((resolve) => {
-          if (resolve.isConfirmed) {
-            ob = resolve.value.ob
-            aob = resolve.value.aob
-            persiapanKirim()
-          }
-        })
     })
+      .then((resolve) => {
+        if (resolve.isConfirmed) {
+          ob = resolve.value.ob
+          aob = resolve.value.aob
+          persiapanKirim()
+        }
+      })
+  })
 
 
-    let updateKeyQs = function (key, value) {
-      if (qsParam.has(key)) {
-        qsParam.set(key, value)
-      } else {
-        qsParam.append(key, value)
-      }
+  let updateKeyQs = function (key, value) {
+    if (qsParam.has(key)) {
+      qsParam.set(key, value)
+    } else {
+      qsParam.append(key, value)
     }
+  }
 
-    let printAturTabelHTML = function () {
+  let printAturTabelHTML = function () {
 
-      const htmlAddStock = `
+    const htmlAddStock = `
                   <div class="w-full px-6 space-y-6 flex flex-col text-left" >
 
                     <div class="form-control">
@@ -134,112 +134,112 @@ $(function () {
 
                 </div>
               `
-      return htmlAddStock
-    }
+    return htmlAddStock
   }
+}
 
-  // ========================================== form ===========================================
-  if (basePage == "form") {
-    const formKas = document.getElementById('formKas')
-    const submitKas = document.getElementById('submitKas')
+// ========================================== form ===========================================
+if (basePage == "form") {
+  const formKas = document.getElementById('formKas')
+  const submitKas = document.getElementById('submitKas')
 
-    submitKas.addEventListener('click', (e) => {
+  submitKas.addEventListener('click', (e) => {
 
-      if (!formKas.reportValidity()) return
+    if (!formKas.reportValidity()) return
 
+    Swal.fire({
+      title: 'Yakin untuk menyimpan?',
+      text: 'Pastikan data yang anda isikan sudah benar!',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: SwalCustomColor.button.confirm,
+      confirmButtonText: 'Ya, simpan!',
+      cancelButtonText: 'Batal',
+      scrollbarPadding: false,
+      focusCancel: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        formKas.action = '/app/kas'
+        formKas.submit()
+      }
+    })
+
+  })
+
+  formKas.addEventListener('submit', (e) => {
+    if (!formKas.reportValidity()) e.preventDefault()
+  })
+
+}
+
+
+// ========================================== detail ===========================================
+if (basePage == "detail") {
+  const BASEURL = window.location.pathname
+  const namaKas = document.getElementById('namaKas')
+
+  const formKas = document.getElementById('formKas')
+  const hapusKas = document.getElementById('hapusKas')
+
+  if (formKas && hapusKas) {
+    hapusKas.addEventListener('click', (e) => {
       Swal.fire({
-        title: 'Yakin untuk menyimpan?',
-        text: 'Pastikan data yang anda isikan sudah benar!',
+        title: 'Yakin untuk menghapus?',
+        text: 'Anda akan menghapus kas "' + namaKas.innerText + '", dan kas yang dihapus tidak dapat dikembalikan.',
         icon: 'question',
+        iconColor: SwalCustomColor.icon.error,
         showCancelButton: true,
-        confirmButtonColor: SwalCustomColor.button.confirm,
-        confirmButtonText: 'Ya, simpan!',
+        confirmButtonText: 'Ya, hapus!',
         cancelButtonText: 'Batal',
         scrollbarPadding: false,
         focusCancel: true,
-      }).then((result)=>{
-        if(result.isConfirmed){
-          formKas.action = '/app/kas'
+        confirmButtonColor: SwalCustomColor.button.deny,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          formKas.action = BASEURL + '?_method=DELETE'
           formKas.submit()
         }
       })
 
     })
-
-    formKas.addEventListener('submit', (e) => {
-      if(!formKas.reportValidity()) e.preventDefault()
-    })
-
   }
 
-
-  // ========================================== detail ===========================================
-  if (basePage == "detail") {
-    const BASEURL = window.location.pathname
-    const namaKas = document.getElementById('namaKas')
-
-    const formKas = document.getElementById('formKas')
-    const hapusKas = document.getElementById('hapusKas')
-
-    if(formKas && hapusKas){
-      hapusKas.addEventListener('click', (e) => {
-        Swal.fire({
-          title: 'Yakin untuk menghapus?',
-          text: 'Anda akan menghapus kas "'+ namaKas.innerText +'", dan kas yang dihapus tidak dapat dikembalikan.',
-          icon: 'question',
-          iconColor: SwalCustomColor.icon.error,
-          showCancelButton: true,
-          confirmButtonText: 'Ya, hapus!',
-          cancelButtonText: 'Batal',
-          scrollbarPadding: false,
-          focusCancel: true,
-          confirmButtonColor: SwalCustomColor.button.deny,
-        }).then((result)=>{
-          if(result.isConfirmed){
-            formKas.action = BASEURL + '?_method=DELETE'
-            formKas.submit()
-          }
-        })
-
-      })
-    }
-
-  }
+}
 
 
-  // ========================================== edit ===========================================
-  if (basePage == "edit") {
-    const BASEURL = window.location.pathname
+// ========================================== edit ===========================================
+if (basePage == "edit") {
+  const BASEURL = window.location.pathname
 
-    const formKas = document.getElementById('formKas')
-    const editKas = document.getElementById('editKas')
+  const formKas = document.getElementById('formKas')
+  const editKas = document.getElementById('editKas')
 
-    editKas.addEventListener('click', (e) => {
+  editKas.addEventListener('click', (e) => {
 
-      if (!formKas.reportValidity()) return
+    if (!formKas.reportValidity()) return
 
-      Swal.fire({
-        title: 'Yakin untuk mengubah?',
-        text: 'Pastikan data yang anda isikan sudah benar!',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: SwalCustomColor.button.confirm,
-        confirmButtonText: 'Ya, ubah!',
-        cancelButtonText: 'Batal',
-        scrollbarPadding: false,
-        focusCancel: true,
-      }).then((result)=>{
-        if(result.isConfirmed){
-          formKas.action = BASEURL.slice(0, -5) + '?_method=PUT'
-          formKas.submit()
-        }
-      })
+    Swal.fire({
+      title: 'Yakin untuk mengubah?',
+      text: 'Pastikan data yang anda isikan sudah benar!',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: SwalCustomColor.button.confirm,
+      confirmButtonText: 'Ya, ubah!',
+      cancelButtonText: 'Batal',
+      scrollbarPadding: false,
+      focusCancel: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        formKas.action = BASEURL.slice(0, -5) + '?_method=PUT'
+        formKas.submit()
+      }
     })
+  })
 
-    formKas.addEventListener('submit', (e) => {
-      if(!formKas.reportValidity()) e.preventDefault()
-    })
+  formKas.addEventListener('submit', (e) => {
+    if (!formKas.reportValidity()) e.preventDefault()
+  })
 
-  }
+}
 
-})
+

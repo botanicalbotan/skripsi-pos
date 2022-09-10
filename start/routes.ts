@@ -63,6 +63,8 @@ Route.group(() => {
   Route.group(() => {
     // ================================ KELOMPOK ===============================================
     Route.get('/', 'barang/KelompoksController.index')
+    Route.get('/kelompok/:id/mutasi-penambahan', 'barang/KelompoksController.showMutasiTambah')
+    Route.get('/kelompok/:id/mutasi-koreksi', 'barang/KelompoksController.showMutasiKoreksi')
     Route.put('/kelompok/:id/ubah-stok', 'barang/KelompoksController.ubahStok').middleware(['isKepalaWeb'])
 
     Route.post('/kelompok/cek-kelompok-duplikat', 'barang/KelompoksController.cekKelompokDuplikat').middleware(['isPemilikWeb'])
@@ -136,12 +138,14 @@ Route.group(() => {
       'destroy': ['isPemilikWeb']
     })
 
+    Route.get('/:id/tagihan-gaji', 'akun/PegawaisController.showListTagihan') // kepala, pemilik sama karyawan yang id nya bersangkutan bisa akses 
+
     Route.get('/:id/akun', 'akun/PegawaisController.showDataAkun').middleware(['izinEditPegawaiWeb'])
     Route.post('/:id/akun/check', 'akun/PegawaisController.checkCreditUbahAkun') // ada built in middleware
     Route.put('/:id/akun/ubah-username', 'akun/PegawaisController.ubahUsername') // ada built in middleware
     Route.put('/:id/akun/ubah-password', 'akun/PegawaisController.ubahPassword') // ada built in middleware
-    Route.put('/:id/akun/ubah-email', 'akun/PegawaisController.ubahEmail')
-    Route.post('/:id/akun/verivy-email', 'akun/PegawaisController.verivyEmail')
+    Route.put('/:id/akun/ubah-email', 'akun/PegawaisController.ubahEmail') // ada built in middleware
+    // Route.post('/:id/akun/verivy-email', 'akun/PegawaisController.verivyEmail')  // ngga jadi 
   }).prefix('/pegawai')
 
   Route.resource('/pegawai', 'akun/PegawaisController').middleware({
@@ -186,9 +190,16 @@ Route.group(() => {
     Route.get('/kodepros-by-id', 'barang/KodeProduksisController.getKodeprosByKadarId')
 
     // view kelompok
-    Route.get('/peringkat-kelompok', 'barang/KelompoksController.peringkatKelompokAll')
     Route.get('/peringkat-kelompok/:id', 'barang/KelompoksController.peringkatKelompok')
-    Route.get('/sebaran-data/:id', 'barang/KelompoksController.sebaranData')
+    Route.get('/sebaran-data-kelompok/:id', 'barang/KelompoksController.sebaranData')
+
+    // view model
+    Route.get('/peringkat-model/:id', 'barang/ModelsController.peringkatModel')
+    Route.get('/sebaran-data-model/:id', 'barang/ModelsController.sebaranDataModel')
+
+    // view kodepro
+    Route.get('/peringkat-kodepro/:id', 'barang/KodeProduksisController.peringkatKodepro')
+    Route.get('/sebaran-data-kodepro/:id', 'barang/KodeProduksisController.sebaranDataKodepro')
 
     // restok
     Route.get('/kelompok-dengan-input', 'barang/PenambahanStoksController.getKelompokDenganInput')

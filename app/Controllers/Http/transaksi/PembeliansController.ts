@@ -78,7 +78,6 @@ export default class PembeliansController {
 
       return await view.render('transaksi/pembelian/view-beli', { PB, fungsi, tambahan })
     } catch (error) {
-      console.error(error)
       session.flash('alertError', 'Pembelian yang anda pilih tidak valid!')
       return response.redirect().toPath('/app/riwayat/pembelian')
     }
@@ -606,6 +605,8 @@ export default class PembeliansController {
           } catch (error) {
             // buat nangkep error doang
           }
+          
+          i++
         }
       }
 
@@ -640,7 +641,7 @@ export default class PembeliansController {
     }
   }
 
-  public async pascaTransaksi({ view, request }: HttpContextContract) {
+  public async pascaTransaksi({ view, request, session, response }: HttpContextContract) {
     const tid = request.input('tid')
 
     try {
@@ -694,7 +695,8 @@ export default class PembeliansController {
         tambahan,
       })
     } catch (error) {
-      return { error: 'ewe babyyyy' }
+      session.flash('alertError', 'Pembelian yang anda pilih tidak valid!')
+      return response.redirect().toPath('/app/riwayat/pembelian/')
     }
   }
 
@@ -736,6 +738,29 @@ export default class PembeliansController {
       }
       
       return response.redirect().back()
+    }
+  }
+
+  public async rusakBeli({ view, params, response, session }: HttpContextContract) {
+    try {
+      const PB = await Pembelian.findOrFail(params.id)
+      await PB.load('kodeProduksi', (query) => {
+        query.preload('kadar')
+      })
+      await PB.load('model', (query) => {
+        query.preload('bentuk')
+      })
+      await PB.load('kerusakans')
+      await PB.load('pembelianNotaLeo')
+
+      const fungsi = {
+        rupiahParser: rupiahParser
+      }
+
+      return view.render('riwayat/pembelian/rusak-beli', { PB, fungsi })
+    } catch (error) {
+      session.flash('alertError', 'Kerusakan pembelian yang anda pilih tidak valid!')
+      return response.redirect().toPath('/app/transaksi/pembelian/' + params.id)
     }
   }
 

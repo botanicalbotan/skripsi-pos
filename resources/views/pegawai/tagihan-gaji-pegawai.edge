@@ -1,0 +1,151 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+{{--  set judul  --}}
+@set('judul', 'Daftar Tagihan Gaji | Postoma')
+
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="list-tagihan" id="base-page">
+  <h2 class="text-4xl font-semibold">Daftar Tagihan Gaji</h2>
+  <h4 class="text-lg text-secondary opacity-60">Kumpulan data seluruh model perhiasan yang tercatat pada sistem.</h4>
+
+  {{--  Card Utama  --}}
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+    @include('partials/wadah-alert')
+
+    <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+      <div class="flex-1">
+        <div class="max-w-lg">
+            <a href="/app/pegawai/{{pegawai.id}}" class="text-2xl link link-hover" id="namaPegawai">{{ pegawai.nama }}</a>
+            <p>{{ pegawai.jabatan.nama }}</p>
+        </div>
+      </div>
+      <div class="flex-none flex space-x-2">
+        <button class="btn" id="btAturTabel">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+            </svg>
+            <span class="hidden md:inline">Atur Tabel</span>
+          </button>
+      </div>
+    </div>
+
+    {{--  tabel  --}}
+    <div class="my-8 rounded pb-4">
+      @if(tagihans.total > 0)
+      <h5 class=" text-secondary mb-4">Menampilkan data ke {{ tambahan.firstDataInPage }}-{{ tambahan.lastDataInPage }}
+        ({{ tagihans.total }} data) untuk
+        <span class="text-neutral font-semibold">"{{ (tambahan.pencarian)? tambahan.pencarian:'Tagihan Gaji' }}"</span>
+      </h5>
+      @else
+      <h5 class=" text-secondary mb-4">Menampilkan 0 data untuk
+        <span class="text-neutral font-semibold">"{{ (tambahan.pencarian)? tambahan.pencarian:'Tagihan Gaji' }}"</span>
+      </h5>
+      @endif
+
+      <div class="overflow-x-auto relative min-h-60"> {{-- aslinya ada overflow-x-auto disini --}}
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th>Jatuh Tempo Penggajian</th>
+              <th>Nominal Gaji</th>
+              <th>Status Tagihan</th>
+              <th>Tanggal Dibayar</th>
+              <th>Dibayar Oleh</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            @each(tag in tagihans)
+            <tr class="hover">
+              <td class="font-semibold">
+                {{ new Date(tag.tanggalJatuhTempo).toLocaleDateString('id-ID', { day: 'numeric', month:'long', year:'numeric' })  }}
+              </td>
+              <td>{{ fungsi.rupiahParser(tag.nominalGaji)}}</td>
+              <td>
+                @if(tag.status === 'menunggu')
+                  <div class="badge badge-warning">Menunggu Pembayaran</div>
+                @elseif(tag.status === 'dibayar')
+                  <div class="badge badge-success">Sudah Dibayar</div>
+                @else
+                  <div class="badge badge-error">Dibatalkan</div>
+                @endif
+              </td>
+              @if(tag.dibayarAt && tag.namaPencatat)
+                <td>{{ new Date(tag.dibayarAt).toLocaleDateString('id-ID', { day: 'numeric', month:'long', year:'numeric' }) }}</td>
+                <td>
+                    <a href="/app/pegawai/{{ tag.idPencatat }}" class="link link-hover">{{ tag.namaPencatat }}</a>
+                </td>
+              @else
+                <td>-</td>
+                <td>-</td>
+              @endif
+            </tr>
+            @endeach
+
+          </tbody>
+        </table>
+
+        @if(tagihans.length == 0)
+          <div class="text-center absolute right-0 left-0 mt-6">Tidak ada tagihan</div>
+        @endif
+      </div>
+    </div>
+
+    @if(tagihans.hasPages)
+    <div class="flex justify-center">
+      <div class="btn-group">
+        <a class="btn btn-sm btn-link" href="{{ tagihans.getUrl(tagihans.firstPage) }}">
+          <span class="md:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z"
+                clip-rule="evenodd" />
+            </svg>
+          </span>
+          <span class="hidden md:inline">Pertama</span>
+        </a>
+
+        @each(anchor in tagihans.getUrlsForRange(tambahan.firstPage, tambahan.lastPage))
+
+        @if(anchor.isActive)
+        <a href="{{ anchor.url }}" class="btn btn-active true-text-white btn-sm">
+          {{ anchor.page }}
+        </a>
+        @else
+        <a href="{{ anchor.url }}" class="btn btn-sm btn-link">
+          {{ anchor.page }}
+        </a>
+        @endif
+
+        @endeach
+
+        <a class="btn btn-sm btn-link" href="{{ tagihans.getUrl(tagihans.lastPage) }}">
+          <span class="md:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+                clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+                clip-rule="evenodd" />
+            </svg>
+          </span>
+          <span class="hidden md:inline">Terakhir</span>
+        </a>
+      </div>
+    </div>
+    @endif
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/all-pegawai.js')}}"></script>
+@endsection

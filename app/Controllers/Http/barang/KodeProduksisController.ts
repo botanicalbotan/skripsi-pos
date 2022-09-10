@@ -5,7 +5,7 @@ import Kadar from 'App/Models/barang/Kadar'
 import KodeProduksi from 'App/Models/barang/KodeProduksi'
 import Pengaturan from 'App/Models/sistem/Pengaturan'
 import Drive from '@ioc:Adonis/Core/Drive'
-import { DateTime } from 'luxon'
+import { DateTime, Settings } from 'luxon'
 import User from 'App/Models/User'
 
 export default class KodeProduksisController {
@@ -223,14 +223,10 @@ export default class KodeProduksisController {
         query.preload('jabatan')
       })
 
-      const urlPencatat = (await Drive.exists('profilePict/' + kodepro.pengguna.foto))
-        ? await Drive.getUrl('profilePict/' + kodepro.pengguna.foto)
-        : ''
-
       let pengaturan = await Pengaturan.findOrFail(1)
 
       const tambahan = {
-        urlFotoPencatat: urlPencatat,
+        adaFotoPencatat: await Drive.exists('profilePict/' + kodepro.pengguna.foto),
       }
 
       let fungsi = {
@@ -501,6 +497,183 @@ export default class KodeProduksisController {
       return { kodepros, kadar }
     } catch (error) {
       return response.badRequest('Id kadar tidak valid.')
+    }
+  }
+
+
+  public async peringkatKodepro({ params }: HttpContextContract) {
+    Settings.defaultZone = 'Asia/Jakarta'
+    Settings.defaultLocale = 'id-ID'
+
+    // yang di select ntar bisa diganti sesuai kebutuhan
+    let rankTotal = await Database.rawQuery(
+      "SELECT kode_produksis.id, tabelRanking.jumlah, tabelRanking.ranking FROM kode_produksis, (SELECT row_number() OVER (ORDER BY jumlah desc) AS 'ranking', kode_produksi_id, COUNT(*) as 'jumlah' FROM penjualans WHERE penjualans.deleted_at IS NULL GROUP BY kode_produksi_id ORDER BY `jumlah` DESC) as tabelRanking WHERE kode_produksis.id = tabelRanking.kode_produksi_id && kode_produksis.id = :kodeproId LIMIT 1",
+      {
+        kodeproId: params.id,
+      }
+    )
+
+    let rankTahunIni = await Database.rawQuery(
+      "SELECT kode_produksis.id, tabelRanking.jumlah, tabelRanking.ranking FROM kode_produksis, (SELECT row_number() OVER (ORDER BY jumlah desc) AS 'ranking', kode_produksi_id, COUNT(*) as 'jumlah' FROM penjualans WHERE penjualans.deleted_at IS NULL && DATE(created_at)>= :tanggalAwal && DATE(created_at)<= :tanggalAkhir GROUP BY kode_produksi_id ORDER BY `jumlah` DESC) as tabelRanking WHERE kode_produksis.id = tabelRanking.kode_produksi_id && kode_produksis.id = :kodeproId LIMIT 1",
+      {
+        kodeproId: params.id,
+        tanggalAwal: DateTime.now().startOf('year').toISODate(),
+        tanggalAkhir: DateTime.now().endOf('year').toISODate(),
+      }
+    )
+
+    let rankBulanIni = await Database.rawQuery(
+      "SELECT kode_produksis.id, tabelRanking.jumlah, tabelRanking.ranking FROM kode_produksis, (SELECT row_number() OVER (ORDER BY jumlah desc) AS 'ranking', kode_produksi_id, COUNT(*) as 'jumlah' FROM penjualans WHERE penjualans.deleted_at IS NULL && DATE(created_at)>= :tanggalAwal && DATE(created_at)<= :tanggalAkhir GROUP BY kode_produksi_id ORDER BY `jumlah` DESC) as tabelRanking WHERE kode_produksis.id = tabelRanking.kode_produksi_id && kode_produksis.id = :kodeproId LIMIT 1",
+      {
+        kodeproId: params.id,
+        tanggalAwal: DateTime.now().startOf('month').toISODate(),
+        tanggalAkhir: DateTime.now().endOf('month').toISODate(),
+      }
+    )
+
+    let terakhirTransaksi = await Database.from('kode_produksis')
+      .join('penjualans', 'kode_produksis.id', 'penjualans.kode_produksi_id')
+      .select('penjualans.created_at as tanggal')
+      .where('kode_produksis.id', params.id)
+      .orderBy('penjualans.created_at', 'desc')
+      .limit(1)
+
+    let totalKodepro = await Database.from('kode_produksis').whereNull('deleted_at').count('*', 'total')
+
+    // Kenapa ngejoin kelompok sama penjualan? gegara ntar lu bakal ngesortir ngebuang kelompok yang kena softdelete
+
+    let wadah = {
+      peringkatTotal: rankTotal[0][0],
+      peringkatTahunIni: rankTahunIni[0][0],
+      peringkatBulanIni: rankBulanIni[0][0],
+      totalKodepro: totalKodepro[0].total,
+      transaksiTerakhir: terakhirTransaksi[0],
+    }
+
+    return wadah
+  }
+
+  public async sebaranDataKodepro({ params, request, response }: HttpContextContract) {
+    Settings.defaultZone = 'Asia/Jakarta'
+    Settings.defaultLocale = 'id-ID'
+
+    let mode = request.input('mode', 0)
+    if (!['0', '1', '2'].includes(mode)) mode = 0
+    // 0 mingguan by hari
+    // 1 bulanan by minggu
+    // 2 tahunan by bulan
+
+    try {
+      if (mode == 0) {
+        let penjualanMingguIni = await Database.rawQuery(
+          'SELECT kode_produksi_id, created_at as tanggal, WEEKDAY(created_at) as hariMingguan, COUNT(*) as jumlah FROM penjualans WHERE deleted_at IS NULL && DATE(created_at) >= :tanggalAwal && DATE(created_at) <= :tanggalAkhir && kode_produksi_id = :kodeproId GROUP BY hariMingguan',
+          {
+            kodeproId: params.id,
+            tanggalAwal: DateTime.local().startOf('week').toISODate(),
+            tanggalAkhir: DateTime.local().endOf('week').toISODate(),
+          }
+        )
+
+        let wadahMingguan: {
+          label: string
+          jumlah: number
+        }[] = []
+
+        for (let i = 0; i < 7; i++) {
+          wadahMingguan[i] = {
+            label: DateTime.local()
+              .startOf('week')
+              .plus({
+                days: i,
+              })
+              .toISODate(),
+            jumlah: 0,
+          }
+        }
+
+        penjualanMingguIni[0].forEach((element) => {
+          wadahMingguan[element.hariMingguan].jumlah = element.jumlah
+        })
+
+        return wadahMingguan
+      }
+
+      if (mode == 1) {
+        let start = DateTime.local().startOf('month')
+        let end = DateTime.local().endOf('month')
+
+        let penjualanPerMinggu = await Database.rawQuery(
+          'SELECT CONCAT(YEAR(created_at), "/", WEEK(created_at, 2)) as grouping, WEEK(created_at,2) as mingguKe, COUNT(*) as jumlah FROM penjualans WHERE deleted_at IS NULL && WEEK(created_at,2) >= WEEK(:tanggalAwal,2) && WEEK(created_at,2) <= WEEK(:tanggalAkhir,2) && kode_produksi_id = :kodeproId GROUP BY CONCAT(YEAR(created_at), "/", WEEK(created_at,2))',
+          {
+            kodeproId: params.id,
+            tanggalAwal: start.toISODate(),
+            tanggalAkhir: end.toISODate(),
+          }
+        )
+
+        let wadahPerMinggu: {
+          minggu: number
+          label: string
+          jumlah: number
+        }[] = []
+
+        for (let i = 0, j = start.weekNumber; j <= end.weekNumber; i++, j++) {
+          wadahPerMinggu[i] = {
+            label: 'Minggu ke-' + j,
+            minggu: j,
+            jumlah: 0,
+          }
+        }
+
+        penjualanPerMinggu[0].forEach((elePJ) => {
+          let skip = false
+          wadahPerMinggu.forEach((eleWadah) => {
+            if (skip) return
+
+            if (eleWadah.minggu == elePJ.mingguKe) {
+              eleWadah.jumlah = elePJ.jumlah
+              skip = true
+            }
+          })
+        })
+
+        return wadahPerMinggu
+      }
+
+      if (mode == 2) {
+        let penjualanTahunIni = await Database.rawQuery(
+          'SELECT kode_produksi_id, MONTH(created_at) as bulan, COUNT(*) as jumlah FROM penjualans WHERE deleted_at IS NULL && DATE(created_at) >= :tanggalAwal && DATE(created_at) <= :tanggalAkhir && kode_produksi_id = :kodeproId GROUP BY bulan',
+          {
+            kodeproId: params.id,
+            tanggalAwal: DateTime.local().startOf('year').toISODate(),
+            tanggalAkhir: DateTime.local().endOf('year').toISODate(),
+          }
+        )
+
+        let wadahTahunan: {
+          label: string
+          jumlah: number
+        }[] = []
+
+        for (let i = 0; i < 12; i++) {
+          wadahTahunan[i] = {
+            label: DateTime.local().startOf('year').plus({
+              months: i,
+            }).monthLong,
+            jumlah: 0,
+          }
+        }
+
+        penjualanTahunIni[0].forEach((element) => {
+          wadahTahunan[element.bulan - 1].jumlah = element.jumlah
+        })
+
+        return wadahTahunan
+      }
+    } catch (error) {
+      return response.badRequest({
+        error: 'Ada error',
+      })
     }
   }
 }

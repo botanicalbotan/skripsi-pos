@@ -239,15 +239,12 @@ export default class KasController {
       })
       await kas.load('rekapHarian')
 
-      const urlPencatat = (await Drive.exists('profilePict/' + kas.pengguna.foto)) ? (await Drive.getUrl('profilePict/' + kas.pengguna.foto)) : ''
-
-
       const fungsi = {
         rupiahParser: rupiahParser,
       }
 
       const tambahan = {
-        urlFotoPencatat: urlPencatat
+        adaFotoPencatat: (await Drive.exists('profilePict/' + kas.pengguna.foto)),
       }
 
       return await view.render('kas/view-kas', {

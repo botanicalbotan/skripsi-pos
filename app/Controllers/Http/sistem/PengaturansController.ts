@@ -12,6 +12,8 @@ import Hash from '@ioc:Adonis/Core/Hash'
 var isBase64 = require('is-base64')
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { prepareRekap } from 'App/CustomClasses/CustomRekapHarian'
+import KoreksiSaldo from 'App/Models/kas/KoreksiSaldo'
+import Pasaran from 'App/Models/sistem/Pasaran'
 
 export default class PengaturansController {
   public async checkCreditPengubah({ request, response, auth }: HttpContextContract) {
@@ -59,7 +61,10 @@ export default class PengaturansController {
         query.preload('jabatan')
       })
 
-      if (userPengakses.pengguna.jabatan.nama !== 'Pemilik' && userPengakses.pengguna.jabatan.nama !== 'Kepala Toko') {
+      if (
+        userPengakses.pengguna.jabatan.nama !== 'Pemilik' &&
+        userPengakses.pengguna.jabatan.nama !== 'Kepala Toko'
+      ) {
         throw 'Anda tidak memiliki hak untuk melakukan perubahan!'
       }
 
@@ -82,9 +87,20 @@ export default class PengaturansController {
   public async pageGeneral({ view }: HttpContextContract) {
     // Ini udah make middleware
     const pengaturan = await Pengaturan.findOrFail(1)
+    await pengaturan.load('pasarans')
+
+    let teksPasaran = ''
+
+    for (let i = 0; i < pengaturan.pasarans.length; i++) {
+      teksPasaran += kapitalHurufPertama(pengaturan.pasarans[i].hari)
+      if (i < pengaturan.pasarans.length - 1) {
+        teksPasaran += ', '
+      }
+    }
 
     let tambahan = {
       adaLogo: await Drive.exists('logoToko/' + pengaturan.logoToko),
+      teksPasaran,
     }
     return await view.render('pengaturan/atur-general', { pengaturan, tambahan })
   }
@@ -201,6 +217,77 @@ export default class PengaturansController {
     }
   }
 
+  public async ubahHariPasaran({ request, response }: HttpContextContract) {
+    const newPasaranSchema = schema.create({
+      pasarPon: schema.boolean(),
+      pasarWage: schema.boolean(),
+      pasarKliwon: schema.boolean(),
+      pasarLegi: schema.boolean(),
+      pasarPahing: schema.boolean(),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newPasaranSchema })
+      const pengaturan = await Pengaturan.findOrFail(1)
+
+      // tbh ini prakteknya beneran juelek banget, ntar PERLU BANGET DIGANTI
+
+      // reset semua record di pengaturan_pasarans
+      await Database.from('pengaturan_pasarans').where('pengaturan_id', pengaturan.id).delete()
+
+      // mulai cek satu-satu
+      if (validrequest.pasarPon) {
+        const pasar = await Pasaran.findByOrFail('hari', 'pon')
+
+        await pengaturan.related('pasarans').attach({
+          [pasar.id]:{}
+        })
+      }
+
+      if (validrequest.pasarWage) {
+        const pasar = await Pasaran.findByOrFail('hari', 'wage')
+        
+        await pengaturan.related('pasarans').attach({
+          [pasar.id]:{}
+        })
+      }
+
+      if (validrequest.pasarKliwon) {
+        const pasar = await Pasaran.findByOrFail('hari', 'kliwon')
+
+        await pengaturan.related('pasarans').attach({
+          [pasar.id]:{}
+        })
+      }
+
+      if (validrequest.pasarLegi) {
+        const pasar = await Pasaran.findByOrFail('hari', 'legi')
+
+        await pengaturan.related('pasarans').attach({
+          [pasar.id]:{}
+        })
+      }
+
+      if (validrequest.pasarPahing) {
+        const pasar = await Pasaran.findByOrFail('hari', 'pahing')
+
+        await pengaturan.related('pasarans').attach({
+          [pasar.id]:{}
+        })
+      }
+
+      return response.ok({ message: 'Hari pasaran toko berhasil diubah' })
+    } catch (error) {
+      console.log(error)
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
+
   // =======================================- KADAR ===================================================
   public async pageKadar({ view }: HttpContextContract) {
     // Ini udah make middleware
@@ -242,7 +329,29 @@ export default class PengaturansController {
     }
   }
 
-  public async ubahIzinCetakNota({ response }: HttpContextContract) {}
+  public async ubahIzinCetakNota({ request, response }: HttpContextContract) {
+    const newIzinCetakSchema = schema.create({
+      newIzin: schema.boolean(),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newIzinCetakSchema })
+
+      const pengaturan = await Pengaturan.findOrFail(1)
+      pengaturan.defaultBolehPrintNota = validrequest.newIzin
+      await pengaturan.save()
+
+      return response.ok({ message: 'Default izin cetak nota transaksi penjualan berhasil diubah' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+
+  }
 
   public async ubahWaktuMaksimalCetakNota({ request, response }: HttpContextContract) {
     const newWaktuCetakSchema = schema.create({
@@ -272,9 +381,7 @@ export default class PengaturansController {
 
   public async ubahPenaltiTelatTTMin({ request, response }: HttpContextContract) {
     const newPenaltiMinSchema = schema.create({
-      newPenaltiMin: schema.number([
-        rules.unsigned(),
-      ]),
+      newPenaltiMin: schema.number([rules.unsigned()]),
     })
 
     try {
@@ -285,7 +392,9 @@ export default class PengaturansController {
       pengaturan.penaltiTelatJanjiMin = validrequest.newPenaltiMin
       await pengaturan.save()
 
-      return response.ok({ message: 'Penalti minimum keterlambatan tukar tambah dengan janji berhasil diubah' })
+      return response.ok({
+        message: 'Penalti minimum keterlambatan tukar tambah dengan janji berhasil diubah',
+      })
     } catch (error) {
       if (typeof error === 'string') {
         return response.badRequest({ error: error })
@@ -297,9 +406,7 @@ export default class PengaturansController {
 
   public async ubahPenaltiTelatTTMax({ request, response }: HttpContextContract) {
     const newPenaltiMaxSchema = schema.create({
-      newPenaltiMax: schema.number([
-        rules.unsigned(),
-      ]),
+      newPenaltiMax: schema.number([rules.unsigned()]),
     })
 
     try {
@@ -310,7 +417,9 @@ export default class PengaturansController {
       pengaturan.penaltiTelatJanjiMax = validrequest.newPenaltiMax
       await pengaturan.save()
 
-      return response.ok({ message: 'Penalti maksimum keterlambatan tukar tambah dengan janji berhasil diubah' })
+      return response.ok({
+        message: 'Penalti maksimum keterlambatan tukar tambah dengan janji berhasil diubah',
+      })
     } catch (error) {
       if (typeof error === 'string') {
         return response.badRequest({ error: error })
@@ -348,9 +457,7 @@ export default class PengaturansController {
 
   public async ubahHargaMal({ request, response }: HttpContextContract) {
     const newHargaMalSchema = schema.create({
-      newHargaMal: schema.number([
-        rules.unsigned(),
-      ]),
+      newHargaMal: schema.number([rules.unsigned()]),
     })
 
     try {
@@ -376,12 +483,12 @@ export default class PengaturansController {
     // Ini udah make middleware
     const pengaturan = await Pengaturan.findOrFail(1)
     const rekap = await prepareRekap()
-    await rekap.load('pencatatBanding', (query) =>{
+    await rekap.load('pencatatBanding', (query) => {
       query.preload('jabatan')
     })
 
     const fungsi = {
-      rupiahParser: rupiahParser
+      rupiahParser: rupiahParser,
     }
 
     return await view.render('pengaturan/atur-saldo', { pengaturan, rekap, fungsi })
@@ -389,13 +496,11 @@ export default class PengaturansController {
 
   public async bandingSaldoToko({ response, request, auth }: HttpContextContract) {
     const newBandingSaldoSchema = schema.create({
-      saldoRiil: schema.number([
-        rules.unsigned(),
-      ]),
+      saldoRiil: schema.number([rules.unsigned()]),
     })
 
     try {
-      if(!auth.user) throw 'Tidak ada izin'
+      if (!auth.user) throw 'Tidak ada izin'
 
       const validrequest = await request.validate({ schema: newBandingSaldoSchema })
       const pengaturan = await Pengaturan.findOrFail(1)
@@ -408,11 +513,17 @@ export default class PengaturansController {
       rekap.dibandingAt = DateTime.now()
       rekap.saldoTokoReal = validrequest.saldoRiil
       rekap.saldoTokoTerakhir = pengaturan.saldoToko
+      rekap.apakahSudahBandingSaldo = true
       await rekap.save()
 
       const selisih = validrequest.saldoRiil - pengaturan.saldoToko
 
-      return response.ok({ message: 'Selisih antara saldo toko pada sistem dengan saldo toko sebenarnya adalah: ' + rupiahParser(selisih), selisih: rupiahParser(selisih) })
+      return response.ok({
+        message:
+          'Selisih antara saldo toko pada sistem dengan saldo toko sebenarnya adalah: ' +
+          rupiahParser(selisih),
+        selisih: rupiahParser(selisih),
+      })
     } catch (error) {
       if (typeof error === 'string') {
         return response.badRequest({ error: error })
@@ -422,14 +533,165 @@ export default class PengaturansController {
     }
   }
 
-  public async ubahSaldoToko({ response }: HttpContextContract) {}
+  public async ubahSaldoToko({ response, request, auth }: HttpContextContract) {
+    const newBandingSaldoSchema = schema.create({
+      saldoBaru: schema.number([rules.unsigned()]),
+      alasan: schema.string({ trim: true }, [rules.maxLength(100)]),
+    })
 
-  public async pageListUbahSaldo({ view }: HttpContextContract) {
-    return view.render('pengaturan/ubah-saldo/list-ubah-saldo')
+    try {
+      if (!auth.user) throw 'Tidak ada izin'
+
+      const validrequest = await request.validate({ schema: newBandingSaldoSchema })
+      const pengaturan = await Pengaturan.findOrFail(1)
+
+      const userPengakses = await User.findOrFail(auth.user.id)
+      await userPengakses.load('pengguna')
+
+      await userPengakses.pengguna.related('koreksiSaldos').create({
+        alasan: kapitalHurufPertama(validrequest.alasan),
+        saldoAkhir: validrequest.saldoBaru,
+        perubahanSaldo: validrequest.saldoBaru - pengaturan.saldoToko,
+      })
+
+      // sekalian jadi banding
+      const rekap = await prepareRekap()
+      rekap.pencatatBandingId = userPengakses.pengguna.id
+      rekap.dibandingAt = DateTime.now()
+      rekap.saldoTokoReal = validrequest.saldoBaru
+      rekap.saldoTokoTerakhir = validrequest.saldoBaru
+      rekap.apakahSudahBandingSaldo = true
+      await rekap.save()
+
+      pengaturan.saldoToko = validrequest.saldoBaru
+      await pengaturan.save()
+
+      return response.ok({ message: 'Nominal saldo toko pada sistem berhasil diubah!' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
   }
 
-  public async pageShowUbahSaldo({ view }: HttpContextContract) {
-    return view.render('pengaturan/ubah-saldo/list-ubah-saldo')
+  public async pageListUbahSaldo({ view, request }: HttpContextContract) {
+    const opsiOrder = ['tanggal', 'namaPencatat', 'jabatanPencatat', 'saldoAwal', 'saldoAkhir']
+    const page = request.input('page', 1)
+    const order = request.input('ob', 0)
+    const arahOrder = request.input('aob', 0)
+    const sanitizedOrder = order < opsiOrder.length && order >= 0 && order ? order : 0
+    const sanitizedArahOrder = arahOrder == 1 ? 1 : 0
+    const cari = request.input('cari', '')
+    const limit = 10
+
+    const ubahs = await Database.from('koreksi_saldos')
+      .join('penggunas', 'penggunas.id', 'koreksi_saldos.pengguna_id')
+      .join('jabatans', 'jabatans.id', 'penggunas.jabatan_id')
+      .select(
+        'koreksi_saldos.id as id',
+        'koreksi_saldos.created_at as tanggal',
+        'koreksi_saldos.saldo_akhir as saldoAkhir',
+        'koreksi_saldos.alasan as alasan',
+        'penggunas.nama as namaPencatat',
+        'jabatans.nama as jabatanPencatat'
+      )
+      .select(
+        Database.raw(
+          '(SELECT koreksi_saldos.saldo_akhir - koreksi_saldos.perubahan_saldo) as saldoAwal'
+        )
+      )
+      .if(cari !== '', (query) => {
+        query.where('koreksi_saldos.alasan', 'like', `%${cari}%`)
+      })
+      .if(
+        sanitizedOrder !== 0,
+        (query) => {
+          query
+            .orderBy(opsiOrder[sanitizedOrder], sanitizedArahOrder == 1 ? 'desc' : 'asc')
+            .orderBy('tanggal', 'desc')
+        },
+        (query) => {
+          query.orderBy('tanggal', sanitizedArahOrder == 0 ? 'desc' : 'asc')
+        }
+      )
+      .paginate(page, limit)
+
+    ubahs.baseUrl('/app/pengaturan/saldo/pengubahan')
+
+    let qsParam = {
+      ob: sanitizedOrder,
+      aob: sanitizedArahOrder,
+    }
+    ubahs.queryString(qsParam)
+
+    let firstPage =
+      ubahs.currentPage - 2 > 0
+        ? ubahs.currentPage - 2
+        : ubahs.currentPage - 1 > 0
+        ? ubahs.currentPage - 1
+        : ubahs.currentPage
+    let lastPage =
+      ubahs.currentPage + 2 <= ubahs.lastPage
+        ? ubahs.currentPage + 2
+        : ubahs.currentPage + 1 <= ubahs.lastPage
+        ? ubahs.currentPage + 1
+        : ubahs.currentPage
+
+    if (lastPage - firstPage < 4 && ubahs.lastPage > 4) {
+      if (ubahs.currentPage < ubahs.firstPage + 2) {
+        lastPage += 4 - (lastPage - firstPage)
+      }
+
+      if (lastPage == ubahs.lastPage) {
+        firstPage -= 4 - (lastPage - firstPage)
+      }
+    }
+
+    const tempLastData = 10 + (ubahs.currentPage - 1) * limit
+
+    const tambahan = {
+      pencarian: cari,
+      pengurutan: sanitizedOrder,
+      firstPage: firstPage,
+      lastPage: lastPage,
+      firstDataInPage: 1 + (ubahs.currentPage - 1) * limit,
+      lastDataInPage: tempLastData >= ubahs.total ? ubahs.total : tempLastData,
+    }
+
+    const fungsi = {
+      rupiahParser: rupiahParser,
+      formatDate: formatDate,
+    }
+
+    return await view.render('pengaturan/ubah-saldo/list-ubah-saldo', {
+      ubahs,
+      tambahan,
+      fungsi,
+    })
+  }
+
+  public async pageViewUbahSaldo({ view, response, params, session }: HttpContextContract) {
+    try {
+      const ubah = await KoreksiSaldo.findOrFail(params.id)
+      await ubah.load('pengguna', (query) => {
+        query.preload('jabatan')
+      })
+
+      const fungsi = {
+        rupiahParser: rupiahParser,
+      }
+
+      const tambahan = {
+        adaFotoPencatat: await Drive.exists('profilePict/' + ubah.pengguna.foto),
+      }
+
+      return view.render('pengaturan/ubah-saldo/view-ubah-saldo', { ubah, fungsi, tambahan })
+    } catch (error) {
+      session.flash('alertError', 'Pegubahan saldo yang anda akses tidak valid.')
+      return response.redirect().toPath('/app/pengaturan/saldo/pengubahan')
+    }
   }
 
   // =========================================== BARANG ================================================
@@ -445,7 +707,7 @@ export default class PengaturansController {
       const toko = await Database.from('pengaturans')
         .select(
           'default_stok_minimal_kelompok as stokMinimumKelompok',
-          'default_ingatkan_stok_menipis as peringatanStokMenipis',
+          'default_ingatkan_stok_menipis as peringatanStokMenipis'
         )
         .where('id', 1)
         .first()
@@ -458,9 +720,7 @@ export default class PengaturansController {
 
   public async ubahMinimalStokKelompok({ request, response }: HttpContextContract) {
     const newMinimalStokSchema = schema.create({
-      newStokMin: schema.number([
-        rules.unsigned(),
-      ]),
+      newStokMin: schema.number([rules.unsigned()]),
     })
 
     try {
@@ -481,7 +741,28 @@ export default class PengaturansController {
     }
   }
 
-  public async ubahPeringatanStokMenipis({ response }: HttpContextContract) {}
+  public async ubahPeringatanStokMenipis({ request, response }: HttpContextContract) {
+    const newPeringatanStokSchema = schema.create({
+      newPeri: schema.boolean(),
+    })
+
+    try {
+      // udah kesambung middleware, ngga perlu ngecek auth lagi
+      const validrequest = await request.validate({ schema: newPeringatanStokSchema })
+
+      const pengaturan = await Pengaturan.findOrFail(1)
+      pengaturan.defaultIngatkanStokMenipis = validrequest.newPeri
+      await pengaturan.save()
+
+      return response.ok({ message: 'Default peringatan stok kelompok menipis berhasil diubah' })
+    } catch (error) {
+      if (typeof error === 'string') {
+        return response.badRequest({ error: error })
+      } else {
+        return response.badRequest({ error: 'Ada masalah pada server!' })
+      }
+    }
+  }
 
   // ========================================== PEGAWAI ================================================
   public async pagePegawai({ view }: HttpContextContract) {
@@ -498,9 +779,7 @@ export default class PengaturansController {
   public async getDataPegawai({ response }: HttpContextContract) {
     try {
       const toko = await Database.from('pengaturans')
-        .select(
-          'default_gaji_karyawan as gajiMinimumPegawai',
-        )
+        .select('default_gaji_karyawan as gajiMinimumPegawai')
         .where('id', 1)
         .first()
 
@@ -512,9 +791,7 @@ export default class PengaturansController {
 
   public async ubahMinimalGajiPegawai({ request, response }: HttpContextContract) {
     const newMinimalGajiSchema = schema.create({
-      newGajiMin: schema.number([
-        rules.unsigned(),
-      ]),
+      newGajiMin: schema.number([rules.unsigned()]),
     })
 
     try {
@@ -573,9 +850,12 @@ export default class PengaturansController {
         } else {
           throw 'kosong penjualan'
         }
-      }else if (params.tipe === 'gadai') {
+      } else if (params.tipe === 'gadai') {
         const gadai = await Gadai.findOrFail(params.id)
-        if (await Drive.exists('transaksi/gadai/barang/' + gadai.fotoBarang) && gadai.fotoBarang) {
+        if (
+          (await Drive.exists('transaksi/gadai/barang/' + gadai.fotoBarang)) &&
+          gadai.fotoBarang
+        ) {
           // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
           const foto = await Drive.getStream('transaksi/gadai/barang/' + gadai.fotoBarang) // ntar diganti jadi dinamis dari db, sama diresize dulu kali hmmm
           response.stream(foto)
@@ -583,8 +863,7 @@ export default class PengaturansController {
         } else {
           throw 'kosong gadai'
         }
-      }
-       else if (params.tipe === 'logo-toko') {
+      } else if (params.tipe === 'logo-toko') {
         const pengaturan = await Pengaturan.findOrFail(1)
         if (await Drive.exists('logoToko/' + pengaturan.logoToko)) {
           // kalo ngga di giniin, ntar bakal infinite await kalo file gaada
@@ -637,4 +916,18 @@ function rupiahParser(angka: number) {
   } else {
     return 'error'
   }
+}
+
+function formatDate(ISODate: string) {
+  const tanggal = DateTime.fromISO(ISODate)
+
+  if (tanggal.isValid) {
+    return tanggal.toISODate()
+  } else {
+    return 'error'
+  }
+}
+
+function kapitalHurufPertama(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1)
 }

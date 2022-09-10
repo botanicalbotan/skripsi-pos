@@ -152,10 +152,8 @@ export default class KerusakansController {
         query.preload('jabatan')
       })
 
-      const urlPencatat = (await Drive.exists('profilePict/' + kerusakan.pengguna.foto))? (await Drive.getUrl('profilePict/' + kerusakan.pengguna.foto)) : ''
-
       const tambahan = {
-        urlFotoPencatat: urlPencatat
+        adaFotoPencatat: (await Drive.exists('profilePict/' + kerusakan.pengguna.foto)),
       }
 
       return await view.render('barang/kerusakan/view-kerusakan', { kerusakan, tambahan })

@@ -95,9 +95,9 @@
             <div class="flex space-x-2">
               <div class="flex-1">Selanjutnya:</div>
               @if(data.nextPasaran.apakahSet)
-              <div>Kliwon {{ data.nextPasaran.tanggal }}</div>
+              <div>{{ sentenceCase(data.nextPasaran.pasaran) }} {{ data.nextPasaran.tanggal }}</div>
               @else
-              <div>belum set</div>
+              <div>Belum diatur</div>
               @endif
               
             </div>

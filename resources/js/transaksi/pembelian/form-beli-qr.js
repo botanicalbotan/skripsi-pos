@@ -201,10 +201,6 @@ function cekHarga() {
             setTimeout(() => {
               SUDAHHITUNG = true
               tempWadah = response
-
-              console.log('nih data')
-              console.log(response)
-
               Swal.clickConfirm()
             }, 1000)
 
@@ -393,6 +389,8 @@ btTawar.addEventListener('click', () => {
 btSimpan.addEventListener('click', () => {
   apakahDitawar.checked = APAKAHDITAWAR
   dealTawaran.value = HARGADEAL
+  kode.value = isiKode
+  bentuk.value = isiBentuk
 
   if (cekConstrain()) {
     if (!SUDAHHITUNG) {

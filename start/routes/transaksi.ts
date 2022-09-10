@@ -46,6 +46,7 @@ Route.group(() => {
       Route.post('/hitung-harga-belakang', 'transaksi/PembeliansController.hitungHargaBelakang') // dari ajax
       
       Route.put('/:id/gantiDurasi', 'transaksi/PembeliansController.gantiDurasi').middleware(['isPemilikApi'])
+      Route.get('/:id/kerusakan', 'transaksi/PembeliansController.rusakBeli')
 
       Route.get('/pengajuan-gadai', 'transaksi/GadaisController.formulirGadai').middleware(['isKepalaWeb']) // perlu transaksiId -> tid
 
@@ -71,7 +72,6 @@ Route.group(() => {
         .middleware({
           'destroy': ['isPemilikWeb']
         })
-        
       }).middleware(['isKepalaWeb'])
 
       Route.get('/:id/nik', 'transaksi/GadaisController.getNIK').middleware(['isKepalaApi'])

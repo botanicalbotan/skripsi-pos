@@ -1,0 +1,118 @@
+@layout('layouts/master')
+
+{{-- buat ngeset judul --}}
+@set('judul', 'Pembayaran Gadai '+ PB.namaBarang + ' | Postoma')
+
+
+@set('anulir', false)
+
+
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="restok" id="base-page">
+  <h2 class="text-4xl font-semibold">Daftar Kerusakan</h2>
+  <h4 class="text-lg text-secondary opacity-60">Daftar kerusakan perhiasan dari transaksi pembelian yang dipilih.</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+    @include('partials/wadah-alert')
+
+    <div class="flex space-x-2">
+      <div class="flex-1">
+        <div class="max-w-lg">
+          <a href="/app/transaksi/pembelian/{{PB.id}}" class="text-2xl link link-hover" id="namaBarang">{{ PB.namaBarang }}</a>
+          <p style="color: {{ PB.kodeProduksi.kadar.warnaNota }}">{{ PB.model.bentuk.bentuk }}
+            {{ PB.kodeProduksi.kadar.nama }}</p>
+        </div>
+
+      </div>
+      <div class="flex-none">
+
+      </div>
+    </div>
+
+    {{--  tabel  --}}
+    <div class="my-8 border rounded">
+      <div class="overflow-x-auto relative  min-h-60 "> {{-- aslinya ada overflow-x-auto disini --}}
+
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th>Nama & Tingkat Kerusakan</th>
+              <th>Ongkos</th>
+              <th>Banyak</th>
+              <th>Sub Total</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            @each(rusak in PB.kerusakans)
+            <tr>
+              <td>
+                <a href="">
+                    <div class="">
+                        {{ rusak.nama }}
+                      </div>
+                      @if(rusak.apakahBisaDiperbaiki)
+                      <div class="text-sm text-warning">Bisa diperbaiki</div>
+                      @else
+                      <div class="text-sm text-error">Tidak bisa diperbaiki</div>
+                      @endif
+                </a>
+              </td>
+              <td>{{ rusak.ongkosDeskripsi }}</td>
+              <td>
+                {{ rusak.$extras.pivot_banyak_kerusakan }}
+              </td>
+              <td>
+                @if(rusak.$extras.pivot_apakah_diabaikan)
+                  <span>Dianulir</span>
+                  @set('anulir', true)
+                @else
+                {{ fungsi.rupiahParser(rusak.$extras.pivot_total_ongkos) }}
+                @endif
+              </td>
+            </tr>
+            @endeach
+
+          </tbody>
+        </table>
+
+        @if(PB.kerusakans.length == 0)
+          <div class="text-center absolute right-0 left-0 mt-6">Tidak ada kerusakan</div>
+        @endif
+
+      </div>
+    </div>
+
+    {{--  menu bawah  --}}
+    <div class="mt-4 flex flex-col md:flex-row space-y-8 md:space-y-0">
+      <div class="flex-1 p-2">
+        <div class="flex flex-col md:flex-row md:space-x-2 ">
+            <div>Tanggal Transaksi: </div>
+            <div class="font-semibold">{{ PB.createdAt.toFormat('DDD T') }}</div>
+        </div>
+      </div>
+
+      <div class="space-y-2 w-full max-w-xs">
+        <div class="flex p-2 border-b">
+          <span class="flex-1">Total Ongkos</span>
+          <span class="flex-none md:text-lg font-semibold text-error">{{ (anulir)? 'Dianggap rosok' : fungsi.rupiahParser(-PB.ongkosKerusakanTotal) }}</span>
+        </div>
+        <div class="p-2">
+            <div class="font-semibold">
+                Keterangan
+            </div>
+            <div>
+                {{ (PB.keteranganTransaksi)? PB.keteranganTransaksi : 'Tidak ada' }}
+            </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+@endsection

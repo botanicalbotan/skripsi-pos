@@ -219,7 +219,7 @@ export default class KelompoksController {
       })
 
       await kadar.related('kelompoks').create({
-        nama: await kapitalKalimat(validrequest.nama),
+        nama: kapitalKalimat(validrequest.nama),
         kodeKelompok: await generateKodeKelompok(kadar.nama, bentuk.bentuk),
         bentukId: bentuk.id,
         beratKelompok: validrequest.beratKelompok,
@@ -240,7 +240,7 @@ export default class KelompoksController {
     }
   }
 
-  public async show({ view, response, params }: HttpContextContract) {
+  public async show({ view, response, params, session }: HttpContextContract) {
     try {
       const kelompok = await Kelompok.findOrFail(params.id)
       await kelompok.load('bentuk')
@@ -257,12 +257,8 @@ export default class KelompoksController {
         rupiahParser: rupiahParser,
       }
 
-      const urlPencatat = (await Drive.exists('profilePict/' + kelompok.pengguna.foto))
-        ? await Drive.getUrl('profilePict/' + kelompok.pengguna.foto)
-        : ''
-
       const tambahan = {
-        urlFotoPencatat: urlPencatat,
+        adaFotoPencatat: await Drive.exists('profilePict/' + kelompok.pengguna.foto),
       }
 
       return await view.render('barang/kelompok/view-kelompok', {
@@ -271,6 +267,147 @@ export default class KelompoksController {
         tambahan,
       })
     } catch (error) {
+      session.flash('alertError', 'Kelompok yang anda akses tidak valid atau terhapus.')
+      return response.redirect().toPath('/app/barang/')
+    }
+  }
+
+  public async showMutasiTambah({ view, request, params, response, session }: HttpContextContract) {
+    const page = request.input('page', 1)
+    const limit = 10
+
+    try {
+      const kelompok = await Kelompok.findOrFail(params.id)
+      await kelompok.load('bentuk')
+
+      const tambahs = await Database.from('kelompok_penambahans')
+        .join('penambahan_stoks', 'penambahan_stoks.id', 'kelompok_penambahans.penambahan_stok_id')
+        .select(
+          'penambahan_stoks.id as idPenambahan',
+          'penambahan_stoks.created_at as createdAt',
+          'penambahan_stoks.asal_stok as asalStok',
+          'penambahan_stoks.catatan as catatan',
+          'kelompok_penambahans.perubahan_stok as perubahanStok',
+          'kelompok_penambahans.stok_akhir as stokAkhir'
+        )
+        .where('kelompok_penambahans.kelompok_id', params.id)
+        .orderBy('createdAt', 'desc')
+        .paginate(page, limit)
+
+      tambahs.baseUrl(`app/barang/kelompok/${params.id}/mutasi-koreksi`)
+
+      let firstPage =
+        tambahs.currentPage - 2 > 0
+          ? tambahs.currentPage - 2
+          : tambahs.currentPage - 1 > 0
+          ? tambahs.currentPage - 1
+          : tambahs.currentPage
+      let lastPage =
+        tambahs.currentPage + 2 <= tambahs.lastPage
+          ? tambahs.currentPage + 2
+          : tambahs.currentPage + 1 <= tambahs.lastPage
+          ? tambahs.currentPage + 1
+          : tambahs.currentPage
+
+      if (lastPage - firstPage < 4 && tambahs.lastPage > 4) {
+        if (tambahs.currentPage < tambahs.firstPage + 2) {
+          lastPage += 4 - (lastPage - firstPage)
+        }
+
+        if (lastPage == tambahs.lastPage) {
+          firstPage -= 4 - (lastPage - firstPage)
+        }
+      }
+      // sampe sini
+      const tempLastData = 10 + (tambahs.currentPage - 1) * limit
+
+      const tambahan = {
+        firstPage: firstPage,
+        lastPage: lastPage,
+        firstDataInPage: 1 + (tambahs.currentPage - 1) * limit,
+        lastDataInPage: tempLastData >= tambahs.total ? tambahs.total : tempLastData,
+      }
+
+      return await view.render('barang/kelompok/mutasi-penambahan-kelompok', {
+        tambahs,
+        tambahan,
+        kelompok,
+      })
+    } catch (error) {
+      session.flash('alertError', 'Kelompok yang anda akses tidak valid atau terhapus.')
+      return response.redirect().toPath('/app/barang/')
+    }
+  }
+
+  public async showMutasiKoreksi({
+    view,
+    request,
+    params,
+    response,
+    session,
+  }: HttpContextContract) {
+    const page = request.input('page', 1)
+    const limit = 10
+
+    try {
+      const kelompok = await Kelompok.findOrFail(params.id)
+      await kelompok.load('bentuk')
+
+      const koreksis = await Database.from('koreksi_stoks')
+        .join('penggunas', 'penggunas.id', 'koreksi_stoks.pengguna_id')
+        .select(
+          'koreksi_stoks.created_at as createdAt',
+          'koreksi_stoks.alasan as alasan',
+          'koreksi_stoks.perubahan_stok as perubahanStok',
+          'koreksi_stoks.stok_akhir as stokAkhir',
+          'penggunas.nama as namaPencatat',
+          'penggunas.id as idPencatat'
+        )
+        .where('koreksi_stoks.kelompok_id', params.id)
+        .orderBy('createdAt', 'desc')
+        .paginate(page, limit)
+
+      koreksis.baseUrl(`app/barang/kelompok/${params.id}/mutasi-koreksi`)
+
+      let firstPage =
+        koreksis.currentPage - 2 > 0
+          ? koreksis.currentPage - 2
+          : koreksis.currentPage - 1 > 0
+          ? koreksis.currentPage - 1
+          : koreksis.currentPage
+      let lastPage =
+        koreksis.currentPage + 2 <= koreksis.lastPage
+          ? koreksis.currentPage + 2
+          : koreksis.currentPage + 1 <= koreksis.lastPage
+          ? koreksis.currentPage + 1
+          : koreksis.currentPage
+
+      if (lastPage - firstPage < 4 && koreksis.lastPage > 4) {
+        if (koreksis.currentPage < koreksis.firstPage + 2) {
+          lastPage += 4 - (lastPage - firstPage)
+        }
+
+        if (lastPage == koreksis.lastPage) {
+          firstPage -= 4 - (lastPage - firstPage)
+        }
+      }
+      // sampe sini
+      const tempLastData = 10 + (koreksis.currentPage - 1) * limit
+
+      const tambahan = {
+        firstPage: firstPage,
+        lastPage: lastPage,
+        firstDataInPage: 1 + (koreksis.currentPage - 1) * limit,
+        lastDataInPage: tempLastData >= koreksis.total ? koreksis.total : tempLastData,
+      }
+
+      return await view.render('barang/kelompok/mutasi-koreksi-kelompok', {
+        koreksis,
+        tambahan,
+        kelompok,
+      })
+    } catch (error) {
+      session.flash('alertError', 'Kelompok yang anda akses tidak valid atau terhapus.')
       return response.redirect().toPath('/app/barang/')
     }
   }
@@ -369,8 +506,8 @@ export default class KelompoksController {
         kelompok.deletedAt = DateTime.now()
         await kelompok.save()
 
-        session.flash('alertSukses', 'Kerusakan "' + kelompok.nama + '" berhasil dihapus!')
-        return response.redirect().toPath('/app/barang/kelompok/')
+        session.flash('alertSukses', 'Kelompok "' + kelompok.nama + '" berhasil dihapus!')
+        return response.redirect().toPath('/app/barang/')
       } else {
         throw 'Anda tidak memiliki akses untuk menghapus data ini!'
       }
@@ -380,22 +517,14 @@ export default class KelompoksController {
       } else {
         session.flash(
           'alertError',
-          'Ada masalah saat menghapus data kerusakan. Silahkan coba lagi setelah beberapa saat.'
+          'Ada masalah saat menghapus data kelompok. Silahkan coba lagi setelah beberapa saat.'
         )
       }
       return response.redirect().back()
     }
   }
 
-  // ================================= Fungsi tambahan yang bukan CRUD ===========================================
-  public async peringkatKelompokAll({}: HttpContextContract) {
-    // yang di select ntar bisa diganti sesuai kebutuhan
-    let testraw = await Database.rawQuery(
-      "SELECT kelompoks.id, tabelRanking.jumlah, tabelRanking.ranking FROM kelompoks, (SELECT row_number() OVER (ORDER BY jumlah desc) AS 'ranking', kelompok_id, COUNT(*) as 'jumlah' FROM penjualans GROUP BY kelompok_id ORDER BY `jumlah` DESC) as tabelRanking WHERE kelompoks.id = tabelRanking.kelompok_id"
-    )
-
-    return testraw[0]
-  }
+  // ================================= Analisis & Statistik ===========================================
 
   public async peringkatKelompok({ params }: HttpContextContract) {
     Settings.defaultZone = 'Asia/Jakarta'
@@ -428,8 +557,8 @@ export default class KelompoksController {
     )
 
     let terakhirTransaksi = await Database.from('kelompoks')
-      .select('penjualans.created_at as tanggal')
       .join('penjualans', 'kelompoks.id', 'penjualans.kelompok_id')
+      .select('penjualans.created_at as tanggal')
       .where('kelompoks.id', params.id)
       .orderBy('penjualans.created_at', 'desc')
       .limit(1)
@@ -708,8 +837,7 @@ function rupiahParser(angka: number) {
       currency: 'IDR',
       minimumFractionDigits: 0,
     }).format(angka)
-  }
-  else return 'error'
+  } else return 'error'
 }
 
 function generateKodeKelompok(kadar: string, bentuk: string) {

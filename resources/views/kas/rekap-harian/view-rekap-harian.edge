@@ -1,7 +1,7 @@
 @layout('layouts/master')
 
 {{-- buat ngeset judul --}}
-@set('judul', 'Detail Rekap Harian | Postoma')
+@set('judul', 'Detail Rekap Harian Tanggal '+ rekap.tanggalRekap.toFormat('DDD') +' | Postoma')
 
 
 @section('content')
@@ -261,10 +261,31 @@
             </ul>
           </div>
           @else
-          <div class=" min-h-16">
-            <div class="">Tidak ada banding saldo yang tercatat pada tanggal ini. Untuk melakukan banding saldo, silahkan akses menu <span class="font-semibold">Pengaturan &gt Saldo Toko &gt Banding Saldo</span></div>
+          <div>
+            Tidak ada banding saldo yang tercatat pada tanggal ini. Untuk melakukan banding saldo, silahkan akses menu <span class="font-semibold">Pengaturan &gt Saldo Toko &gt Banding Saldo</span>
           </div>
           @endif
+        </div>
+
+        <div id="ubah">
+          <div class="flex px-2">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Pengubahan Saldo</h4>
+            </div>
+          </div>
+
+          <div class="space-y-4 min-h-16">
+            @if(tambahan.pengubahanSaldo > 0)
+            <div class="">Tercatat ada <span class="font-semibold text-error">{{ tambahan.pengubahanSaldo }} kali</span> pengubahan saldo di tanggal ini.  Klik tombol dibawah untuk melakukan review.</div>
+            @else
+            <div class="">Tidak ada catatan pengubahan saldo toko di tanggal ini. Klik tombol dibawah untuk melakukan review.</div>
+            @endif
+            <a href="/app/pengaturan/saldo/pengubahan" class="btn btn-sm btn-outline">Catatan Pengubahan Saldo</a>
+          </div>
         </div>
 
       </div>
@@ -278,7 +299,7 @@
 
             <div class="space-y-1">
               @if(rekap.apakahSudahBandingSaldo && rekap.dibandingAt && rekap.pencatatBanding)
-              <div class="link link-hover flex text-accent-focus items-center">
+              <a href="#banding" class="link link-hover flex text-accent-focus items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                   class="w-5 h-5 mr-2 flex-none">
                   <path fill-rule="evenodd"
@@ -286,9 +307,9 @@
                     clip-rule="evenodd" />
                 </svg>
                 <span>Sudah banding saldo</span>
-              </div>
+              </a>
               @else
-              <div class="link link-hover flex text-error items-center">
+              <a href="#banding" class="link link-hover flex text-error items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                   class="w-5 h-5 mr-2 flex-none">
                   <path fill-rule="evenodd"
@@ -296,7 +317,7 @@
                     clip-rule="evenodd" />
                 </svg>
                 <span>Belum banding saldo</span>
-              </div>
+              </a>
               @endif
 
               @if(tambahan.anomaliStok == 0)
@@ -322,7 +343,7 @@
               @endif
 
               @if(tambahan.pengubahanSaldo == 0)
-              <div class="link link-hover flex text-accent-focus items-center">
+              <a href="#ubah" class="link link-hover flex text-accent-focus items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                   class="w-5 h-5 mr-2 flex-none">
                   <path fill-rule="evenodd"
@@ -330,9 +351,9 @@
                     clip-rule="evenodd" />
                 </svg>
                 <span>Tidak ada pegubahan saldo toko</span>
-              </div>
+              </a>
               @else
-              <div class="link link-hover flex text-error items-center">
+              <a href="#ubah" class="link link-hover flex text-error items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                   class="w-5 h-5 mr-2 flex-none">
                   <path fill-rule="evenodd"
@@ -340,7 +361,7 @@
                     clip-rule="evenodd" />
                 </svg>
                 <span>Ada pegubahan saldo toko</span>
-              </div>
+              </a>
               @endif
             </div>
 

@@ -391,7 +391,6 @@ export default class RiwayatJualsController {
       session.flash('alertError', 'Tanggal penjualan yang anda isikan tidak valid!')
       return response.redirect().toPath('/app/riwayat/penjualan/')
     }
-    // return await view.render('riwayat/penjualan/list-riwayat-jual-pertanggal')
   }
 }
 

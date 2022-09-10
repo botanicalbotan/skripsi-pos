@@ -52,7 +52,6 @@ export default class PembayaranGadaisController {
       })
 
     } catch (error) {
-      console.error('error index')
       session.flash('alertError', 'Ada kesalahan pada pencatatan pembayaran gadai, silahkan coba lagi nanti.')
       return response.redirect().toPath('/app/transaksi/gadai/' + params.idGadai)
     }

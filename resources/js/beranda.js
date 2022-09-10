@@ -125,6 +125,8 @@ tipeLaku.addEventListener('change', () => {
 
   loadingLaku.classList.remove('hidden')
   wadahLaku.classList.add('hidden')
+  errorLaku.classList.add('hidden')
+
   setTimeout(() => {
     prepareDaftarLaku()
   }, 1000);

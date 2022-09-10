@@ -212,8 +212,6 @@ export default class GadaisController {
       latestId = tigaDigit(latestGadai[0].id + 1)
     }
 
-    console.log(latestId)
-
     try {
       // ------------- cek auth user --------------------
       if(!auth.user) throw 'auth ngga valid'
@@ -302,6 +300,7 @@ export default class GadaisController {
       pembelian.digadaiAt = DateTime.now()
       await pembelian.save()
 
+      session.flash('alertSukses', 'Gadai baru berhasil disimpan!')
       return response.redirect().toPath('/app/transaksi/gadai/' + gadai.id)
       
     } catch (error) {
@@ -372,17 +371,181 @@ export default class GadaisController {
       return await view.render('transaksi/gadai/view-gadai', { gadai, fungsi, tambahan })
 
     } catch (error) {
-      console.error('error show')
-      console.error(error)
       session.flash('alertError', 'Gadai yang anda akses tidak valid atau terhapus.')
       return response.redirect().toPath('/app/transaksi/gadai/')
     }
   }
 
-  public async edit ({}: HttpContextContract) {
+  public async edit ({ view, response, session, params }: HttpContextContract) {
+    try {
+      const gadai = await Gadai.findOrFail(params.id)
+      await gadai.load('pembelian', (query) => {
+        query.preload('kodeProduksi', (ququery) => {
+          ququery.preload('kadar')
+        })
+        .preload('model', (ququery)=>{
+          ququery.preload('bentuk')
+        })
+        .preload('pembelianNotaLeo')
+      })
+      await gadai.load('statusGadai')
+
+      let potongan = 0
+      let teksPotongan = ''
+      if(gadai.pembelian.pembelianNotaLeo){
+        potongan = gadai.pembelian.pembelianNotaLeo.ongkosPotonganTotal
+        teksPotongan = (gadai.pembelian.pembelianNotaLeo.apakahPotonganPersen)? `${gadai.pembelian.pembelianNotaLeo.potonganPadaNota}% harga jual` : `${rupiahParser(gadai.pembelian.pembelianNotaLeo.potonganPadaNota)} per gram`
+      }
+
+      const tambahan = {
+        adaFotoKTP: (await Drive.exists('transaksi/gadai/katepe/' + gadai.fotoKtpPenggadai)),
+        adaFotoBarang: (await Drive.exists('transaksi/gadai/barang/' + gadai.fotoBarang)),
+        totalKerusakan: -Math.abs(gadai.pembelian.ongkosKerusakanTotal),
+        totalPotongan: -Math.abs(potongan),
+        teksPotongan: teksPotongan
+      }
+
+      const fungsi = {
+        kapitalHurufPertama: kapitalHurufPertama,
+        rupiahParser: rupiahParser
+      }
+
+      return view.render('transaksi/gadai/form-edit-gadai', { gadai, tambahan, fungsi })
+
+    } catch (error) {
+      session.flash('alertError', 'Ada masalah pada server, silahkan coba lagi setelah beberapa saat.')
+      return response.redirect().toPath('/app/transaksi/gadai/' + params.id)
+    }
   }
 
-  public async update ({}: HttpContextContract) {
+  public async update ({ request, auth, session, response, params }: HttpContextContract) {
+    const updateGadaiSchema = schema.create({
+      namaPenggadai: schema.string({ trim: true }, [rules.maxLength(50)]),
+      nikPenggadai: schema.string({ trim: true }, [rules.maxLength(16)]),
+      alamatPenggadai: schema.string({ trim: true }, [rules.maxLength(100)]),
+      noHpAktif: schema.string({ trim: true }, [rules.maxLength(15)]),
+      indiGambarKTPBerubah: schema.string({ trim: true }),
+      fotoKTPBase64: schema.string(),
+      indiGambarPerhiasanBerubah: schema.string({ trim: true }),
+      fotoPerhiasanBase64: schema.string(),
+      tanggalTenggat: schema.date(),
+      keterangan: schema.string.optional({ trim: true }, [rules.maxLength(100)]),
+    })
+
+    const validrequest = await request.validate({ schema: updateGadaiSchema })
+    const gantiFotoKTP = validrequest.indiGambarKTPBerubah === 'ganti'
+    const gantiFotoPerhiasan = validrequest.indiGambarPerhiasanBerubah === 'ganti'
+
+    try {
+
+      // udah diiket dari middleware, cuma tambahan aja
+      if(!auth.user) throw 'auth ngga valid'
+
+      const gadai = await Gadai.findOrFail(params.id)
+      
+      // --------------- Foto KTP -------------------
+      let namaFileFotoKtp = ''
+      let fileFotoKtp = validrequest.fotoKTPBase64 || ''
+
+      if(gantiFotoKTP){
+        try {
+          if (!isBase64(fileFotoKtp, { mimeRequired: true, allowEmpty: false }) || fileFotoKtp === '') {
+            throw new Error('Input foto ktp tidak valid!')
+          }
+  
+          var block = fileFotoKtp.split(';')
+          var realData = block[1].split(',')[1] // In this case "iVBORw0KGg...."
+          namaFileFotoKtp = (gadai.fotoKtpPenggadai)? gadai.fotoKtpPenggadai : 'GD001' + DateTime.now().toMillis() + tigaDigit(params.id) + '.jpg' // bisa diganti yang lebih propper
+  
+          const buffer = Buffer.from(realData, 'base64')
+          await Drive.put('transaksi/gadai/katepe/' + namaFileFotoKtp, buffer)
+        } catch (error) {
+  
+          throw {
+            custom: true,
+            foto: true,
+            perhiasan: false,
+            error: 'Input foto ktp tidak valid!'
+          }
+        }
+      }
+
+      // --------------- Foto Barang -------------------
+      let namaFileFotoPerhiasan = ''
+      let fileFotoPerhiasan = validrequest.fotoPerhiasanBase64 || ''
+
+      if(gantiFotoPerhiasan){
+        try {
+          if (!isBase64(fileFotoPerhiasan, { mimeRequired: true, allowEmpty: false }) || fileFotoPerhiasan === '') {
+            throw new Error('Input foto barang tidak valid!')
+          }
+  
+          var block = fileFotoPerhiasan.split(';')
+          var realData = block[1].split(',')[1] // In this case "iVBORw0KGg...."
+          namaFileFotoPerhiasan = (gadai.fotoBarang)? gadai.fotoBarang : 'GD002' + DateTime.now().toMillis() + tigaDigit(params.id) + '.jpg' // bisa diganti yang lebih propper
+  
+          const buffer = Buffer.from(realData, 'base64')
+          await Drive.put('transaksi/gadai/barang/' + namaFileFotoPerhiasan, buffer)
+        } catch (error) {
+          throw {
+            custom: true,
+            foto: true,
+            perhiasan: true,
+            error: 'Input foto barang tidak valid!'
+          }
+        }
+      }
+ 
+      // mulai isi data
+      gadai.namaPenggadai = validrequest.namaPenggadai
+      gadai.alamatPenggadai = validrequest.alamatPenggadai
+      gadai.nikPenggadai = validrequest.nikPenggadai
+      gadai.nohpPenggadai = validrequest.noHpAktif
+      gadai.tanggalTenggat = validrequest.tanggalTenggat
+      gadai.keterangan = (validrequest.keterangan)? validrequest.keterangan : null 
+
+      if(gantiFotoKTP){
+        gadai.fotoKtpPenggadai = namaFileFotoKtp
+      }
+
+      if(gantiFotoPerhiasan){
+        gadai.fotoBarang = namaFileFotoPerhiasan
+      }
+
+      // ganti status disini
+      if(validrequest.tanggalTenggat > DateTime.now().startOf('day') && gadai.statusGadai.status === 'terlambat'){
+        const statusBaru = await StatusGadai.findByOrFail('status', 'berjalan')
+        gadai.statusGadaiId = statusBaru.id
+      }
+
+      // save disini
+      await gadai.save()
+
+      // redirect disini
+      session.flash('alertSukses', 'Data gadai berhasil diperbarui!')
+      return response.redirect().toPath('/app/transaksi/gadai/' + params.id)
+
+    } catch (error) {
+      if(error.custom){
+        if(error.foto){
+          if(error.perhiasan){
+            session.flash('errors', {
+              fotoPerhiasanBase64: error.error
+            })
+          } else {
+            session.flash('errors', {
+              fotoKTPBase64: error.error
+            })
+          }
+          
+        } else {
+          session.flash('alertError', 'Ada masalah saat memperbarui data gadai. Silahkan coba lagi setelah beberapa saat. q')
+        }
+      } else {
+        session.flash('alertError', 'Ada masalah saat memperbarui data gadai. Silahkan coba lagi setelah beberapa saat.')
+      }
+      return response.redirect().back()
+    }
   }
 
   public async destroy ({ response, session, params }: HttpContextContract) {
@@ -396,14 +559,17 @@ export default class GadaisController {
       gadai.statusGadaiId = statusBaru.id
       gadai.keterangan += ' Gadai dibatalkan.'
 
-      // ------------ hapus nik sama foto ktp --------------
+      // ------------ hapus nik sama foto ktp, ama foto barang --------------
       gadai.nikPenggadai = '0' // ngga bisa null, yaudah dibikin 0
       await Drive.delete('transaksi/gadai/katepe/' + gadai.fotoKtpPenggadai) // gaperlu try-catch
       gadai.fotoKtpPenggadai = null
-
+      await Drive.delete('transaksi/gadai/barang/' + gadai.fotoBarang) // gaperlu try-catch
+      
       await gadai.save()
 
+      session.flash('alertSukses', `Data gadai ${rupiahParser(gadai.nominalGadai)} An. ${ gadai.namaPenggadai } berhasil dibatalkan!`)
       return response.redirect().toPath('/app/transaksi/gadai/')
+
     } catch (error) {
       session.flash('alertError', 'Ada masalah saat membatalkan gadai. Silahkan coba lagi setelah beberapa saat.')
       return response.redirect().back()

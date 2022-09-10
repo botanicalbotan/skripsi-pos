@@ -1,0 +1,405 @@
+@layout('layouts/master')
+
+@section('more-style')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.css"
+  integrity="sha512-+VDbDxc9zesADd49pfvz7CgsOl2xREI/7gnzcdyA9XjuTxLXrdpuz21VVIqc5HPfZji2CypSbxx1lgD7BgBK5g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+@endsection
+
+{{-- buat ngeset judul --}}
+@set('judul', 'Formulir Pengajuan Gadai | Postoma')
+
+@section('content')
+<div class="w-full p-8" id="base-page">
+  <h2 class="text-4xl font-semibold">Formulir Pengajuan Gadai</h2>
+  <h4 class="text-lg text-secondary opacity-60">Buat gadai baru dan simpan ke dalam sistem.</h4>
+
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+    @include('partials/wadah-alert')
+
+    {{ inspect(flashMessages.all()) }}
+
+    <div class="flex">
+        <div class="flex-1">
+            <a href="/app/transaksi/gadai/{{ gadai.id }}" class="text-2xl sm:flex sm:items-center link link-hover">
+              <span class="mr-2" id="juduiGadai">Gadai {{ fungsi.rupiahParser(gadai.nominalGadai) }}
+                An. {{ gadai.namaPenggadai }}</span>
+              </a>
+            <p>
+              @if(gadai.statusGadai.status === 'berjalan')
+              <div class="badge badge-info">Berjalan</div>
+              @elseif(gadai.statusGadai.status === 'selesai')
+              <div class="badge badge-success">Selesai</div>
+              @elseif(gadai.statusGadai.status === 'terlambat')
+              <div class="badge badge-error">Terlambat</div>
+              @else
+              <div class="badge badge-error">Dibatalkan</div>
+              @endif
+            </p>
+          </div>
+    </div>
+
+    <form action="/app/transaksi/gadai/" method="POST" id="formGadai">
+      <input type="number" name="id" id="id" class="hidden hidden-but-real" hidden value="{{ gadai.pembelian.id }}">
+      <input type="number" id="nominalGadai" class="hidden hidden-but-real" hidden value="{{ gadai.pembelian.hargaBeliAkhir }}">
+
+      {{ csrfField() }}
+      <div class="my-8 flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6 lg:space-x-8"
+        x-data="{ radioStok: 0, beratDesimal: 0 }">
+
+        <div class="w-full md:w-3/5 space-y-10">
+          {{--  Identitas Penggadai  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Identitas Penggadai</h1>
+            </div>
+
+            <div class="form-control max-w-xs">
+              <label for="namaPenggadai">
+                <span class="">Nama Penggadai<span class="text-error"> *</span></span>
+              </label>
+              <input type="text" id="namaPenggadai" name="namaPenggadai" maxlength="50" class="input input-bordered"
+                placeholder="Contoh: Budi" value="{{ gadai.namaPenggadai }}" required>
+
+              @if(flashMessages.has('errors.tanggalBeli'))
+              <p class="text-error">{{ flashMessages.get('errors.tanggalBeli') }}</p>
+              @endif
+            </div>
+
+            <div class="form-control max-w-xs">
+              <label for="nikPenggadai">
+                <span class="">NIK Penggadai<span class="text-error"> *</span></span>
+              </label>
+              <input type="text" id="nikPenggadai" name="nikPenggadai" maxlength="16" class="input input-bordered"
+                placeholder="Contoh: 33XXXXXXXXXXXXXX" value="{{ gadai.nikPenggadai }}" required>
+
+              @if(flashMessages.has('errors.nikPenggadai'))
+              <p class="text-error">{{ flashMessages.get('errors.nikPenggadai') }}</p>
+              @endif
+            </div>
+
+            <div class="form-control max-w-md">
+              <label for="alamatPenggadai">
+                <span class="">Alamat Penggadai<span class="text-error"> *</span></span>
+              </label>
+              <textarea type="text" id="alamatPenggadai" name="alamatPenggadai" class="textarea textarea-bordered h-24"
+                placeholder="Contoh: Kacangan, Boyolali" maxlength="100" required>{{ gadai.alamatPenggadai }}</textarea>
+
+              @if(flashMessages.has('errors.alamatPenggadai'))
+              <p class="text-error">{{ flashMessages.get('errors.alamatPenggadai') }}</p>
+              @endif
+            </div>
+
+            <div class="form-control max-w-xs">
+              <label for="noHpAktif">
+                <span class="">Nomor Handphone Aktif<span class="text-error"> *</span></span>
+              </label>
+              <input type="text" id="noHpAktif" name="noHpAktif" maxlength="15" class="input input-bordered"
+                placeholder="Contoh: 0888888888" value="{{ gadai.nohpPenggadai }}" required>
+
+              @if(flashMessages.has('errors.noHpAktif'))
+              <p class="text-error">{{ flashMessages.get('errors.noHpAktif') }}</p>
+              @endif
+            </div>
+
+          </div>
+
+          {{--  Kelompok foto ktp  --}}
+          <div class="space-y-4">
+            <div class="mb-6">
+              <h1 class="text-2xl font-semibold">Foto KTP<span class="text-error"> *</span></h1>
+            </div>
+            <div class="form-control" x-data="{ adaGambar: {{ tambahan.adaFotoKTP }} }">
+              <div class="w-full flex flex-col space-y-4 items-center">
+                <div class="w-80 h-60 p-2 border">
+                  <div id="wadahFoto" class="w-full h-full bg-base-300 bg-contain">
+                    <div x-show="adaGambar == false" x-cloak class="w-full h-full flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-secondary" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <img src="{{ (tambahan.adaFotoKTP)? '/app/cuma-data/foto-secret/gadai/' + gadai.id : '' }}" id="fotoKTP" x-ref="fotoKTP" class="w-full object-contain" @error="adaGambar = false"
+                      @load="adaGambar = true">
+                  </div>
+                </div>
+                <div class="space-y-4 flex flex-col items-center">
+                  <div x-show="adaGambar == false" x-cloak>
+                    {{--  kalo gaada foto  --}}
+                    <button type="button" class="btn btn-outline" id="bukaKamera">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      Ambil foto</button>
+                  </div>
+                  <div class="space-x-2 flex items-start" x-show="adaGambar == true" x-cloak>
+                    {{--  kalo ada foto  --}}
+                    <button type="button" class="btn btn-outline" id="bukaUlangKamera">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
+                          clip-rule="evenodd" />
+                      </svg>Ambil ulang</button>
+                    <button type="button" class="btn btn-outline btn-error"
+                      @click="$refs.fotoKTP.src = ''; $refs.foto64.value = ''">Hapus</button>
+                  </div>
+                  <div>
+                    {{--  wadah error  --}}
+                    <textarea name="fotoKTPBase64" x-ref="foto64" id="fotoKTPBase64" class="hidden-but-real hidden"
+                      hidden>{{ (tambahan.adaFotoKTP)? 'ada' : '' }}</textarea>
+                    <input type="text" name="indiGambarKTPBerubah" id="indiGambarKTPBerubah" class="hidden" value="tidak">
+
+                    @if(flashMessages.has('errors.fotoKTPBase64'))
+                    <p class="text-error">{{ flashMessages.get('errors.fotoKTPBase64') }}</p>
+                    @endif
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {{--  Kelompok tanggal pembelian  --}}
+          <div class="space-y-4">
+            <div class="mb-4">
+              <h1 class="text-2xl font-semibold">Tanggal Tenggat Gadai</h1>
+            </div>
+
+            <div>Adalah perjanjian waktu peminjaman gadai akan dikembalikan. Bila tanggal tenggat terlewati, sistem akan memberikan notifikasi dan peringatan.</div>
+
+            <div class="form-control max-w-xs">
+                <label for="tanggalTenggat" class="flex-1">Tanggal Tenggat<span class="text-error"> *</span></label>
+
+              <input type="date" name="tanggalTenggat" id="tanggalTenggat" class="input input-bordered"
+                min="{{ gadai.tanggalTenggat.toFormat('yyyy-MM-dd') }}" value="{{ gadai.tanggalTenggat.toFormat('yyyy-MM-dd') }}" required>
+
+              @if(flashMessages.has('errors.tanggalTenggat'))
+              <p class="text-error">{{ flashMessages.get('errors.tanggalTenggat') }}</p>
+              @endif
+            </div>
+          </div>
+
+          {{--  Kelompok foto perhiasan  --}}
+          <div class="space-y-4">
+            <div class="mb-6">
+              <h1 class="text-2xl font-semibold">Foto Perhiasan<span class="text-error"> *</span></h1>
+            </div>
+            <div class="form-control" x-data="{ adaGambar: {{ tambahan.adaFotoBarang }} }">
+              <div class="w-full flex flex-col space-y-4 items-center">
+                <div class="w-80 h-60 p-2 border">
+                  <div id="wadahFotoPerhiasan" class="w-full h-full bg-base-300 bg-contain">
+                    <div x-show="adaGambar == false" x-cloak class="w-full h-full flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-secondary" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <img src="{{ (tambahan.adaFotoBarang)? '/app/cuma-data/foto/gadai/' + gadai.id : '' }}" id="fotoPerhiasan" x-ref="fotoPerhiasan" class="w-full object-contain" @error="adaGambar = false"
+                      @load="adaGambar = true">
+                  </div>
+                </div>
+                <div class="space-y-4 flex flex-col items-center">
+                  <div x-show="adaGambar == false" x-cloak>
+                    {{--  kalo gaada foto  --}}
+                    <button type="button" class="btn btn-outline" id="bukaKameraPerhiasan">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      Ambil foto</button>
+                  </div>
+                  <div class="space-x-2 flex items-start" x-show="adaGambar == true" x-cloak>
+                    {{--  kalo ada foto  --}}
+                    <button type="button" class="btn btn-outline" id="bukaUlangKameraPerhiasan">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z"
+                          clip-rule="evenodd" />
+                      </svg>Ambil ulang</button>
+                    <button type="button" class="btn btn-outline btn-error"
+                      @click="$refs.fotoPerhiasan.src = ''; $refs.foto64.value = ''">Hapus</button>
+                  </div>
+                  <div>
+                    {{--  wadah error  --}}
+                    <textarea name="fotoPerhiasanBase64" x-ref="foto64" id="fotoPerhiasanBase64" class="hidden-but-real hidden"
+                      hidden>{{ (tambahan.adaFotoBarang)? 'ada' : '' }}</textarea>
+                    <input type="text" name="indiGambarPerhiasanBerubah" id="indiGambarPerhiasanBerubah" class="hidden" value="tidak">
+
+                    @if(flashMessages.has('errors.fotoPerhiasanBase64'))
+                    <p class="text-error">{{ flashMessages.get('errors.fotoPerhiasanBase64') }}</p>
+                    @endif
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {{--  kelompok keteranga gadai  --}}
+        <div class="space-y-4">
+          <div class="mb-4">
+            <h1 class="text-2xl font-semibold">Keterangan Gadai</h1>
+          </div>
+
+          <div class="form-control max-w-md">
+            <label for="keterangan">
+              <span class="">Keterangan</span>
+            </label>
+            <textarea type="text" id="keterangan" name="keterangan" class="textarea textarea-bordered h-24"
+              placeholder="Keterangan seputar transaksi gadai" maxlength="100">{{ gadai.keterangan }}</textarea>
+
+            @if(flashMessages.has('errors.keterangan'))
+            <p class="text-error">{{ flashMessages.get('errors.keterangan') }}</p>
+            @endif
+          </div>
+        </div>
+
+        </div>
+
+        <div class="flex-1 space-y-8">
+
+          {{--  card perhiasan gadai  --}}
+          <div class="w-full border bg-base-200 card">
+            <div class="card-body">
+              <div class=" card-title text-center">
+                Perhiasan Gadai
+              </div>
+              <div class="w-full h-full space-y-8">
+                <div class="space-y-4">
+                  <div>
+                    <h2 class="font-semibold">Rincian Barang</h2>
+
+                    <div>
+                      <div class="flex">
+                        <span class="flex-1">Kadar:</span>
+                        <span class="flex-none">{{ gadai.pembelian.kodeProduksi.kadar.nama }}</span>
+                      </div>
+                      <div class="flex">
+                        <span class="flex-1">Bentuk:</span>
+                        <span class="flex-none">{{ gadai.pembelian.model.bentuk.bentuk }}</span>
+                      </div>
+                      <div class="flex">
+                        <span class="flex-1">Kode:</span>
+                        <span class="flex-none">{{ gadai.pembelian.kodeProduksi.kode }}</span>
+                      </div>
+                      <div class="flex">
+                        <span class="flex-1">Berat barang:</span>
+                        <span class="flex-none">{{ gadai.pembelian.beratBarang }} gram</span>
+                      </div>
+
+                      @if(gadai.pembelian.pembelianNotaLeo)
+                      <div class="flex">
+                        <span class="flex-1">Harga nota:</span>
+                        <span class="flex-none">{{ fungsi.rupiahParser(gadai.pembelian.pembelianNotaLeo.hargaJualPadaNota) }}</span>
+                      </div>
+                      <div class="flex">
+                        <span class="flex-1">Potongan:</span>
+                        <span class="flex-none">{{ tambahan.teksPotongan }}</span>
+                      </div>
+                      @endif
+                    </div>
+
+                  </div>
+                  <div>
+                    <h2 class="font-semibold">Rincian Transaksi</h2>
+                    <div>
+                      <div class="flex">
+                        <span class="flex-1">Kondisi barang:</span>
+                        <span class="flex-none">{{ fungsi.kapitalHurufPertama(gadai.pembelian.kondisiFisik) }}</span>
+                      </div>
+
+                      <div class="flex">
+                        <span class="flex-1">Harga per gram:</span>
+
+                        @if(gadai.pembelian.pembelianNotaLeo)
+                        <div class="flex-none">
+                          {{ fungsi.rupiahParser(gadai.pembelian.hargaBeliPerGramSeharusnya) }}</div>
+                        @else
+                        <div class="flex-none">
+                          {{ fungsi.rupiahParser(gadai.pembelian.hargaBeliPerGramAkhir) }}</div>
+                        @endif
+                      </div>
+
+                      <div class="flex">
+                        <span class="flex-1">Total kerusakan:</span>
+                        <span class="flex-none text-error">{{ fungsi.rupiahParser(tambahan.totalKerusakan) }}</span>
+                      </div>
+                      <div class="flex">
+                        <span class="flex-1">Total potongan:</span>
+                        <span class="flex-none text-error">{{ fungsi.rupiahParser(tambahan.totalPotongan) }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+
+                </div>
+
+                <div class="flex flex-col w-full items-center">
+                  <h2 class="font-semibold text-center">Harga Beli</h2>
+                  <h1 class="font-bold text-3xl text-center">{{ fungsi.rupiahParser(gadai.pembelian.hargaBeliAkhir) }}</h1>
+                </div>
+                <div class="space-y-4">
+                  <button type="button" id="btLihatDetail" class="btn btn-block btn-outline btn-sm">Lihat
+                    detail pembelian</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          {{--  card hitung  --}}
+          <div class="card bg-base-200 w-full border">
+            <div class="card-body">
+              <div class="card-title text-center">
+                Nominal Gadai
+              </div>
+              <div>
+                Besaran nominal uang yang dapat dipinjamkan adalah senilai harga beli perhiasan yang digadaikan.
+              </div>
+              <div class="flex flex-col w-full items-center mt-6">
+                {{--  <h2 class="font-semibold text-center">Harga Beli</h2>  --}}
+                <h1 class="font-bold text-3xl text-center">{{ fungsi.rupiahParser(gadai.pembelian.hargaBeliAkhir) }}</h1>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="mt-24 flex flex-col space-y-4 items-center">
+        <div class="text-secondary italic ">
+          Pastikan anda mengisi seluruh masukan bertanda bintang (*)
+        </div>
+        <div class="w-full flex flex-col sm:flex-row justify-center items-center space-y-5 sm:space-y-0 sm:space-x-5">
+          <button type="button" id="btSubmit" class="btn btn-block sm:btn-wide btn-primary text-white">Simpan Perubahan</button>
+          <a href="/app/transaksi/gadai/{{ gadai.id }}" class="btn btn-block sm:btn-wide btn-secondary text-white ">Kembali</a>
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+@endsection
+
+@section('script')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js"
+  integrity="sha512-ZK6m9vADamSl5fxBPtXw6ho6A4TuX89HUbcfvxa2v2NYNT/7l8yFGJ3JlXyMN4hlNbz0il4k6DvqbIW5CCwqkw=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="{{asset('assets/app.js')}}"></script>
+<script src="{{asset('assets/edit-gadai.js')}}"></script>
+
+@endsection

@@ -1,7 +1,7 @@
 @layout('layouts/master')
 
 {{-- buat ngeset judul --}}
-@set('judul', 'Detail Penjualan | Postoma')
+@set('judul', 'Detail Penjualan '+ PJ.namaBarang +' | Postoma')
 
 
 @section('content')
@@ -313,7 +313,7 @@
     </div>
 
     <div class="w-full max-w-lg min-h-16 rounded-box space-y-4">
-      <span class="block text-xl font-semibold">Dicatat dan Dilayani oleh: </span>
+      <span class="block text-xl font-semibold">Dicatat dan dilayani oleh: </span>
       <div class="bg-base-200 flex flex-col md:flex-row px-4 py-3 rounded-box md:space-x-4 space-y-4 md:space-y-0">
         <div class="flex flex-col md:flex-row flex-1 md:space-x-4 space-y-4 md:space-y-0 items-center">
           <div class="avatar">

@@ -167,16 +167,13 @@
               </svg>
               Data Akun</h4>
           </div>
-          <div class="flex-none flex align-bottom mb-2 items-end">
-            {{--  <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada {{ pegawai.user.updatedAt.setLocale('id-ID').toLocaleString() }}
-            </p> --}}
-          </div>
+          <div class="flex-none flex align-bottom mb-2 items-end"></div>
         </div>
         <div class="space-y-4">
           <div>Anda dapat melihat dan mengubah data akun seperti username, email dan password pada menu <span
               class="font-semibold">Data Akun</span>.
             </div>
-          <button id="btAkun" class="btn btn-secondary text-white">Akses Data Akun</button>
+          <a href="/app/pegawai/{{ pegawai.id }}/akun" class="btn btn-sm btn-outline">Akses Data Akun</a>
         </div>
       </div>
       @endif
@@ -263,21 +260,41 @@
 
             <li class="border-b last:border-b-0">
               <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
-                <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Gajian Selanjutnya</h3>
-                <span
-                  class="flex-1 ">{{ (pegawai.tanggalGajianSelanjutnya)? pegawai.tanggalGajianSelanjutnya.setLocale('id-ID').toLocaleString() : 'Pegawai tidak aktif' }}</span>
+                <h3 class="flex-none w-full sm:w-1/3 opacity-75">Jumlah Tagihan Gaji Belum Terbayar</h3>
+                <span class="flex-1 text-error">{{ tambahan.jumlahTagihan }}</span>
               </div>
             </li>
 
             <li class="border-b last:border-b-0">
               <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
-                <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Gajian Terakhir</h3>
+                <h3 class="flex-none w-full sm:w-1/3 opacity-75">Nominal Tagihan Gaji Belum Terbayar</h3>
+                <span class="flex-1 text-error">{{ fungsi.rupiahParser(-tambahan.gajiBelumDibayar) }}</span>
+              </div>
+            </li>
+
+            <li class="border-b last:border-b-0">
+              <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Penagihan Gaji Terakhir</h3>
                 <span
                   class="flex-1 ">{{ (pegawai.tanggalGajianTerakhir)? pegawai.tanggalGajianTerakhir.setLocale('id-ID').toLocaleString() : 'Belum pernah gajian' }}</span>
               </div>
             </li>
 
+            <li class="border-b last:border-b-0">
+              <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Penagihan Gaji Selanjutnya</h3>
+                <span
+                  class="flex-1 ">{{ (pegawai.tanggalGajianSelanjutnya)? pegawai.tanggalGajianSelanjutnya.setLocale('id-ID').toLocaleString() : 'Pegawai tidak aktif' }}</span>
+              </div>
+            </li>
+
+            
+
           </ul>
+        </div>
+        <div class="mt-4 space-y-4">
+          <div>Anda dapat melihat daftar tagihan gaji pegawai baik yang sudah maupun yang belum dibayar pada submenu berikut</div>
+          <a href="/app/pegawai/{{ pegawai.id }}/tagihan-gaji" class="btn btn-sm btn-outline">Daftar Tagihan Gaji</a>
         </div>
       </div>
 

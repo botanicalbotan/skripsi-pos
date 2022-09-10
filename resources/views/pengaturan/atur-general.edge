@@ -10,14 +10,12 @@
 @set('judul', 'Menu General - Pengaturan | Postoma')
 
 @section('content')
-<div class="w-full p-8 base-page" data-pagename="atur-general" id="base-page">
+<div class="w-full p-8 base-page" data-pagename="atur-general" id="base-page" data-pasaran="{{ tambahan.teksPasaran }}" data-bolehedit="{{ (session.get('isPemilik'))? 1 : 0 }}">
   <h2 class="text-4xl font-semibold">Pengaturan</h2>
   <h4 class="text-lg text-secondary opacity-60">Opsi dan aturan dalam pengoperasian aplikasi.</h4>
 
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
     @include('partials/wadah-alert')
-
-    <input type="number" class="hidden" id="eleBolehEdit" value="{{ (session.get('isPemilik'))? 1 : 0 }}">
 
     {{--  informasi  --}}
     <div class="min-h-96 flex lg:space-x-8 space-y-6 lg:space-y-0 flex-col lg:flex-row">
@@ -172,6 +170,32 @@
             </ul>
           </div>
 
+
+          {{--  Data Pasaran  --}}
+          <div>
+            <h4 class="text-2xl mb-4">Data Hari Pasaran</h4>
+            <p>Menu ini berfungsi untuk mengubah kapan hari pasaran di area toko ini beroperasi. Hari pasaran diidentikkan sebagai waktu yang lebih ramai dari biasanya karena melonjaknya intensitas orang yang datang ke pasar.</p>
+
+            <ul class="mt-4">
+
+              <li class="border-b">
+                <a href="#" id="ubahPasaran" class="flex py-3 px-2 group {{ (session.get('isPemilik'))? 'hover:bg-base-300' : ' cursor-default' }}">
+                  <div class="flex-1">
+                    <h3 class="font-semibold">Hari pasaran</h3>
+                    <span class="opacity-75">{{ (tambahan.teksPasaran)? tambahan.teksPasaran : 'Belum diatur' }}</span>
+                  </div>
+                  <span class="flex-none flex items-center {{ (session.get('isPemilik'))? '' : 'text-secondary' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </a>
+              </li>
+    
+            </ul>
+          </div>
 
         </div>
 

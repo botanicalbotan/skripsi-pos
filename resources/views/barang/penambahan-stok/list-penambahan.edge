@@ -17,7 +17,7 @@
     <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
       <div class="flex-1">
         <div
-          class="relative flex w-full flex-wrap items-stretch border-b-2 text-secondary focus-within:border-primary focus-within:text-primary">
+          class="max-w-xs relative flex w-full flex-wrap items-stretch border-b-2 text-secondary focus-within:border-primary focus-within:text-primary">
           <span class="z-10 h-full flex leading-snug absolute text-center items-center justify-center w-8 pl-3 py-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 items-center" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
@@ -61,7 +61,7 @@
                 d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
                 clip-rule="evenodd" />
             </svg>
-            <span class="hidden md:inline">Tambah Stok Perhiasan</span>
+            <span class="hidden md:inline">Tambah Stok Kelompok</span>
           </a>
           </button>
         </div>
@@ -108,7 +108,7 @@
               <td>{{ (penambahan.apakahKulakan)? 'Kulakan': 'Cucian' }}</td>
               <td>{{ penambahan.asalStok }}</td>
               <td>{{ penambahan.jumlahKelompok }}</td>
-              <td> <a href="/app/pegawai/{{ penambahan.penggunaId }}">{{ penambahan.pencatat }}</a></td>
+              <td> <a class="link link-hover" href="/app/pegawai/{{ penambahan.penggunaId }}">{{ penambahan.pencatat }}</a></td>
             </tr>
             @endeach
 

@@ -6,7 +6,7 @@ import Kadar from 'App/Models/barang/Kadar'
 import Jabatan from 'App/Models/akun/Jabatan'
 import User from 'App/Models/User'
 import Pasaran from 'App/Models/sistem/Pasaran'
-import RentangUsia from 'App/Models/transaksi/RentangUsia'
+// import RentangUsia from 'App/Models/transaksi/RentangUsia'
 import StatusGadai from 'App/Models/transaksi/StatusGadai'
 import TipeNotif from 'App/Models/sistem/TipeNotif'
 import {
@@ -30,15 +30,14 @@ export default class BasicSeeder extends BaseSeeder {
      * - model perhiasan (lainnya buat semua bentuk) -> ditaro di faker aja kali ya
      * - kerusakan mau ditambahin sekalian? gausah pake faker tp seedernya dipisah
      *
-     * Seeder ini juga dipake buat ngebikin 1 super user / pemilik, yang gabisa dibikin pake cara lain
+     *  Seeder ini juga dipake buat ngebikin 1 super user / pemilik, yang gabisa dibikin pake cara lain
      */
 
-    const pengaturan = await Pengaturan.create({
+    await Pengaturan.create({
       namaToko: 'Toko Mas Leo',
       alamatTokoLengkap: 'Alamat Toko Anda',
       alamatTokoSingkat: 'Timur Pasar Karanggede - BOYOLALI',
       toleransiSusutBerat: 0,
-      // toleransiPersentaseTawaran: 0,
       defaultWaktuMaksimalPrintNota: 30, // menit
       defaultWaktuMaksimalPengajuanGadai: 30, // menit
       penaltiTelatJanjiMin: 5000,
@@ -75,6 +74,7 @@ export default class BasicSeeder extends BaseSeeder {
 
     const penggunaBaru = await userBaru.related('pengguna').create({
       nama: 'Testing Admin',
+      super: true,
       gender: 'L',
       alamat: 'Klego',
       nohpAktif: '0888888888',
@@ -221,7 +221,7 @@ export default class BasicSeeder extends BaseSeeder {
       },
     ])
 
-
+    // bikin pasaran
     await Pasaran.createMany([{
         hari: 'pon',
         referensiTanggal: DateTime.fromISO('2021-07-01')
@@ -244,22 +244,24 @@ export default class BasicSeeder extends BaseSeeder {
       },
     ])
 
-    let pasaranPon = await Pasaran.findByOrFail('hari', 'pon')
-    await pengaturan.related('pasarans').attach([pasaranPon.id])
+    // kalau mau ngeset pasaran, tp ngga usah
+    // let pasaranPon = await Pasaran.findByOrFail('hari', 'pon')
+    // await pengaturan.related('pasarans').attach([pasaranPon.id])
 
-    await RentangUsia.createMany([{
-        golongan: 'Muda',
-        deskripsi: 'Rentang usia 15-24 tahun'
-      },
-      {
-        golongan: 'Dewasa / Pekerja',
-        deskripsi: 'Rentang usia 19-59 tahun'
-      },
-      {
-        golongan: 'Lansia / Pensiun',
-        deskripsi: 'Rentang usia 60 tahun keatas'
-      },
-    ])
+    // kalau mau make rentang usia, tp buat sekarang ngga dulu
+    // await RentangUsia.createMany([{
+    //     golongan: 'Muda',
+    //     deskripsi: 'Rentang usia 15-24 tahun'
+    //   },
+    //   {
+    //     golongan: 'Dewasa / Pekerja',
+    //     deskripsi: 'Rentang usia 19-59 tahun'
+    //   },
+    //   {
+    //     golongan: 'Lansia / Pensiun',
+    //     deskripsi: 'Rentang usia 60 tahun keatas'
+    //   },
+    // ])
 
     await StatusGadai.createMany([{
         status: 'berjalan'

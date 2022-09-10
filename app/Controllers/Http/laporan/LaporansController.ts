@@ -55,7 +55,7 @@ export default class LaporansController {
       daftarKelompokLaku: schema.string.optional(),
       daftarKodeproLaku: schema.string.optional(),
       daftarKelompokMenipis: schema.string.optional(),
-      daftarModalLaku: schema.string.optional(),
+      daftarModelLaku: schema.string.optional(),
     })
 
     try {
@@ -80,7 +80,7 @@ export default class LaporansController {
         adaTransaksi = true
       }
 
-      if (validrequest.semuaBarang || validrequest.daftarPenambahan || validrequest.daftarKoreksi || validrequest.daftarKelompokLaku || validrequest.daftarKodeproLaku || validrequest.daftarKelompokMenipis || validrequest.daftarModalLaku) {
+      if (validrequest.semuaBarang || validrequest.daftarPenambahan || validrequest.daftarKoreksi || validrequest.daftarKelompokLaku || validrequest.daftarKodeproLaku || validrequest.daftarKelompokMenipis || validrequest.daftarModelLaku) {
         adaBarang = true
       }
 
@@ -111,7 +111,7 @@ export default class LaporansController {
         daftarKelompokLaku: (validrequest.daftarKelompokLaku) ? true : false,
         daftarKodeproLaku: (validrequest.daftarKodeproLaku) ? true : false,
         daftarKelompokMenipis: (validrequest.daftarKelompokMenipis) ? true : false,
-        daftarModelLaku: (validrequest.daftarModalLaku) ? true : false
+        daftarModelLaku: (validrequest.daftarModelLaku) ? true : false
       }
 
       // ================================= NYIAPIN DATA DISINI =============================================================

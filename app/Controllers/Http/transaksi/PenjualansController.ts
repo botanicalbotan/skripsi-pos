@@ -477,8 +477,6 @@ export default class PenjualansController {
 
       response.stream(doc) // di bind ke response
 
-      let TIPE = 2 // ntar dihapus, cuma buat tes
-
       // ================================ MULAI NGODING DOKUMEN DISINI =====================================================
 
       // Ini frame paling luar dari dokumen
@@ -539,36 +537,22 @@ export default class PenjualansController {
 
       let hRow2 = pMargins + 80
 
-      const namaPemilik = (penjualan.namaPemilik)? penjualan.namaPemilik : ''
-      const alamatPemilik = (penjualan.alamatPemilik)? penjualan.alamatPemilik : ''
+      const namaPemilik = (penjualan.namaPemilik)? penjualan.namaPemilik : '-'
+      const alamatPemilik = (penjualan.alamatPemilik)? penjualan.alamatPemilik : '-'
       let potongan = (penjualan.apakahPotonganPersen)? penjualan.potongan + '%' : rupiahParser(penjualan.potongan) + '/ Gr'
       let potonganFinal = (penjualan.apakahStokBaru)? potongan + ' (NEW)' : potongan
 
-      if(TIPE == 1){
-        doc.fontSize(13)
-        .text('Tanggal: ', pMargins + 5, hRow2,  { continued:true })
-        .font('Times-Bold')
-        .text(penjualan.createdAt.toFormat('dd-LL-yyyy'))
-
-        doc.fontSize(13)
-          .font('Times-Roman')
-          .text('Potongan: ', (pWidth / 2), hRow2,  { continued:true })
-          .font('Times-Bold')
-          .text(potonganFinal)
-      }
-
-      if(TIPE == 2){
-        doc.fontSize(13)
+      doc.fontSize(13)
         .text('Nama: ', pMargins + 5, hRow2,  { continued:true }) // mau dikasi max width sama max character?
         .font('Times-Bold')
         .text(namaPemilik)
 
-        doc.fontSize(13)
-          .font('Times-Roman')
-          .text('Alamat: ', (pWidth / 2) - 35, hRow2,  { continued:true }) // mau dikasi max width sama max character?
-          .font('Times-Bold')
-          .text(alamatPemilik)
-      }
+      doc.fontSize(13)
+        .font('Times-Roman')
+        .text('Alamat: ', (pWidth / 2) - 35, hRow2,  { continued:true }) // mau dikasi max width sama max character?
+        .font('Times-Bold')
+        .text(alamatPemilik)
+
 
       doc.moveTo(pMargins, hRow2 + 15)
         .lineTo(pWidth - pMargins, hRow2 + 15)
@@ -688,14 +672,11 @@ export default class PenjualansController {
         .font('Times-Bold')
         .text(rupiahParser(penjualan.hargaJualAkhir), maxWRow3 - wCol3 + 10, hRow3 + 100 + (hContentRow3 / 4))
 
-
-      if(TIPE == 2){
-        doc.fontSize(13)
-          .font('Times-Roman')
-          .text('Potongan: ', pMargins + 5, hRow3 + 100 + (hContentRow3 / 4),  { continued:true }) // mau dikasi max width sama max character?
-          .font('Times-Bold')
-          .text(potonganFinal)
-      }
+      doc.fontSize(13)
+        .font('Times-Roman')
+        .text('Potongan: ', pMargins + 5, hRow3 + 100 + (hContentRow3 / 4),  { continued:true }) // mau dikasi max width sama max character?
+        .font('Times-Bold')
+        .text(potonganFinal)
 
       // =============== Footer / ROW 4 =======================
 
@@ -710,24 +691,13 @@ export default class PenjualansController {
         ], pMargins, hRow4)
 
 
-      if(TIPE == 1){
-        doc.fontSize(13)
-        .font('Times-Roman')
-        .fill(warnaNetral)
-        .text('Dicatat oleh:',maxWRow3 + 15, hRow4 - 10)
-        .moveDown(0.4)
-        .text('TKL1 BUDI')
-      }
-
-      if(TIPE == 2){
-        doc.fontSize(13)
+      doc.fontSize(13)
         .font('Times-Roman')
         .fill(warnaNetral)
         .text(`${ penjualan.createdAt.toFormat('ff') },`,maxWRow3 + 15, hRow4 - 20)
         .moveDown(1.5)
-        .font('Times-Bold')
-        .text('TKL1 BUDI')
-      }
+        // .font('Times-Bold')
+        .text(penjualan.pengguna.nama.substring(0, 15))
 
       
       doc.end()
@@ -767,7 +737,7 @@ export default class PenjualansController {
 }
 
 
-  // ============================ Fungsi Tambahan=====================================
+  // ============================ Fungsi Tambahan =====================================
 
   function kapitalHurufPertama(text: string) {
     return text.charAt(0).toUpperCase() + text.slice(1)

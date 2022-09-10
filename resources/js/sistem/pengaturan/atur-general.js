@@ -8,12 +8,16 @@ import {
 import { swalPrepareUbah, swalCekAkun, swalKonfirmasiUbah, swalSelesai } from './base-pengaturan'
 
 // cek boleh ngedit ato ngga
-const eleBolehEdit = document.getElementById('eleBolehEdit')
-let BOLEHEDIT = (eleBolehEdit && eleBolehEdit.value && eleBolehEdit.value == 1)
+const eleBolehEdit = document.querySelector('.base-page').dataset.bolehedit
+let BOLEHEDIT = (eleBolehEdit && eleBolehEdit == 1)
 // BOLEHEDIT wajib dipake di function buat event pengaturan
 
 // ngambil data yang bakal dipake buat ubah data
 let DATA = {}
+
+const elePasaran = document.querySelector('.base-page').dataset.pasaran
+const dataPasaran = elePasaran.split(', ')
+
 
 if (BOLEHEDIT) {
   $.getJSON("/app/cuma-data/my-toko", {},
@@ -31,6 +35,7 @@ if (BOLEHEDIT) {
   const ubahNamaToko = document.getElementById('ubahNamaToko')
   const ubahAlamatToko = document.getElementById('ubahAlamatToko')
   const ubahAlamatTokoSingkat = document.getElementById('ubahAlamatTokoSingkat')
+  const ubahPasaran = document.getElementById('ubahPasaran')
 
   function eventFoto() {
     swalCekAkun().then((cek) => {
@@ -531,7 +536,179 @@ if (BOLEHEDIT) {
 
   })
 
+  ubahPasaran.addEventListener('click', () => {
+    swalPrepareUbah.fire({
+      title: 'Ubah Hari Pasaran Toko',
+      text: 'Pengubahan alamat singkat toko akan mengubah identitas toko yang tertera pada nota penjualan. Lanjutkan?',
+    }).then((prepare) => {
 
+      if (prepare.isConfirmed) {
+        swalCekAkun().then((cek) => {
+          if (cek.isConfirmed) {
+
+            Swal.fire({
+              title: 'Ubah Hari Pasaran Toko',
+              html: printGantiPasaranHTML(),
+              showCancelButton: true,
+              scrollbarPadding: false,
+              allowOutsideClick: false,
+              confirmButtonColor: SwalCustomColor.button.confirm,
+              confirmButtonText: 'Selanjutnya',
+              preConfirm: () => {
+                const pon = document.getElementById('swal-pon')
+                const wage = document.getElementById('swal-wage')
+                const kliwon = document.getElementById('swal-kliwon')
+                const legi = document.getElementById('swal-legi')
+                const pahing = document.getElementById('swal-pahing')
+          
+                let teks = 'tidak ada pasaran'
+                const semua = document.querySelectorAll('input.swal-ck:checked')
+
+                if(semua.length > 0){
+                  teks = '['
+                  for (let i = 0; i < semua.length; i++) {
+                    teks += semua[i].name
+                    if(i < semua.length - 1){
+                      teks += ', '
+                    }
+                  }
+                  teks += ']'
+                }
+
+
+                return{
+                  pon: pon.checked,
+                  wage: wage.checked,
+                  kliwon: kliwon.checked,
+                  legi: legi.checked,
+                  pahing: pahing.checked,
+                  teks
+                }
+              }
+            }).then((gantiPasaran) => {
+              if (gantiPasaran.isConfirmed) {
+
+                swalKonfirmasiUbah.fire({
+                  title: 'Konfirmasi Pengubahan',
+                  html: 'Anda akan secara sengaja mengubah hari pasaran toko anda menjadi <span class="font-semibold">' + gantiPasaran.value.teks + '</span>. Lanjutkan?',
+                  preConfirm: () => {
+                    Swal.showLoading()
+
+                    return new Promise(function (resolve, reject) {
+                      setTimeout(function () {
+                        reject({
+                          tipe: 'lokal',
+                          msg: 'Tidak ada respon dari server'
+                        })
+                      }, 5000)
+
+                      $.ajax({
+                        type: "PUT",
+                        url: '/app/pengaturan/api/general/ubah-hari-pasaran',
+                        data: {
+                          pasarPon: gantiPasaran.value.pon,
+                          pasarWage: gantiPasaran.value.wage,
+                          pasarKliwon: gantiPasaran.value.kliwon,
+                          pasarLegi: gantiPasaran.value.legi,
+                          pasarPahing: gantiPasaran.value.pahing,
+                        },
+                        dataType: 'json',
+                        success: function () {
+                          resolve({
+                            apakahSukses: true,
+                            msg: 'Hari pasaran toko berhasil diubah!'
+                          })
+                        },
+                        error: function (xhr) {
+                          reject({
+                            tipe: 'lokal',
+                            msg: (typeof xhr.responseJSON.error === 'string') ? xhr.responseJSON.error : 'Ada error pada server!'
+                          })
+                        }
+                      });
+                    }).catch(function (error) {
+                      if (error.tipe && error.tipe === 'lokal') {
+                        return error
+                      } else {
+                        return {
+                          apakahSukses: false,
+                          msg: 'Ada kesalahan pada sistem. Silahkan coba lagi.'
+                        }
+                      }
+                    })
+
+                  }
+                }).then((hasilUbah) => {
+                  if (hasilUbah.isConfirmed) {
+                    swalSelesai(hasilUbah).then(() => {
+                      location.href = location.pathname
+                    })
+                  }
+                })
+
+              }
+            })
+          }
+        })
+
+      }
+
+    })
+
+  })
+
+  let printGantiPasaranHTML = function () {
+    const html = `
+            <form>
+              <div class="w-full px-6 space-y-6 flex flex-col items-center">   
+                  <div class="text-center">
+                    Ubah hari pasaran toko dengan memilih satu atau lebih ceklist pasaran berikut
+                  </div>
+  
+                  <div class="max-w-xs">
+                    <div class="form-control">
+                      <label class="label cursor-pointer justify-start space-x-4">
+                        <input type="checkbox" id="swal-pon" name="Pon" ${(dataPasaran.includes('Pon')? 'checked' : '')} class="checkbox swal-ck">
+                        <span class="">Pasaran Pon</span>
+                      </label>
+                    </div>
+                    
+                    <div class="form-control">
+                      <label class="label cursor-pointer justify-start space-x-4">
+                        <input type="checkbox" id="swal-wage" name="Wage" ${(dataPasaran.includes('Wage')? 'checked' : '')} class="checkbox swal-ck">
+                        <span class="">Pasaran Wage</span>
+                      </label>
+                    </div>
+
+                    <div class="form-control">
+                      <label class="label cursor-pointer justify-start space-x-4">
+                        <input type="checkbox" id="swal-kliwon" name="Kliwon" ${(dataPasaran.includes('Kliwon')? 'checked' : '')} class="checkbox swal-ck">
+                        <span class="">Pasaran Kliwon</span>
+                      </label>
+                    </div>
+
+                    <div class="form-control">
+                      <label class="label cursor-pointer justify-start space-x-4">
+                        <input type="checkbox" id="swal-legi" name="Legi" ${(dataPasaran.includes('Legi')? 'checked' : '')} class="checkbox swal-ck">
+                        <span class="">Pasaran Legi</span>
+                      </label>
+                    </div>
+
+                    <div class="form-control">
+                      <label class="label cursor-pointer justify-start space-x-4">
+                        <input type="checkbox" id="swal-pahing" name="Pahing" ${(dataPasaran.includes('Pahing')? 'checked' : '')} class="checkbox swal-ck">
+                        <span class="">Pasaran Pahing</span>
+                      </label>
+                    </div>
+                  </div>
+  
+              </div>
+            </form>
+        `
+    return html
+  }
+
+  
 }
 
 

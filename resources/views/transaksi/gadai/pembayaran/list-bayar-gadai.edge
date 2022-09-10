@@ -1,7 +1,7 @@
 @layout('layouts/master')
 
 {{-- buat ngeset judul --}}
-@set('judul', 'Pembayaran Gadai | Postoma')
+@set('judul', 'Pembayaran Gadai '+ fungsi.rupiahParser(gadai.nominalGadai) + ' An. ' + gadai.namaPenggadai + ' | Postoma')
 
 
 @section('content')
@@ -31,7 +31,7 @@
         </p>
       </div>
       <div class="flex-none">
-        @if(tambahan.kekurangan < 0)
+        @if(tambahan.kekurangan < 0 && (gadai.statusGadai.status === 'berjalan' || gadai.statusGadai.status === 'terlambat'))
         <a href="/app/transaksi/gadai/{{ gadai.id }}/pembayaran/create" class="btn btn-primary text-white">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd"
@@ -57,7 +57,7 @@
               <th>Nominal Pembayaran</th>
             </tr>
           </thead>
-          <tbody id="wadah-data">
+          <tbody>
 
             @each(bayar in gadai.pembayaranGadais)
               <tr>

@@ -121,10 +121,6 @@ export default class PenggajianPegawaisController {
     })
   }
 
-  public async create({}: HttpContextContract) {}
-
-  public async store({}: HttpContextContract) {}
-
   public async show({ view, params, response, session }: HttpContextContract) {
     try {
       let penggajian = await PenggajianPegawai.findOrFail(params.id)
@@ -171,10 +167,6 @@ export default class PenggajianPegawaisController {
       return response.redirect().toPath('/app/pegawai/penggajian')
     }
   }
-
-  public async edit({}: HttpContextContract) {}
-
-  public async update({}: HttpContextContract) {}
 
   public async destroy({ params, response, session }: HttpContextContract) {
     try {

@@ -26,6 +26,12 @@ Route.group(() => {
         }).middleware(['isPemilikWeb'])
         
       }).prefix('kadar')
+
+      Route.group(() => {
+        Route.get('pengubahan/:id', 'sistem/PengaturansController.pageViewUbahSaldo')
+        Route.get('pengubahan/', 'sistem/PengaturansController.pageListUbahSaldo')
+      }).prefix('saldo')
+
     }).middleware('isKepalaWeb')
     
 
@@ -43,6 +49,8 @@ Route.group(() => {
         Route.put('/ubah-nama-toko', 'sistem/PengaturansController.ubahNamaToko')
         Route.put('/ubah-alamat-toko', 'sistem/PengaturansController.ubahAlamatToko')
         Route.put('/ubah-alamat-singkat-toko', 'sistem/PengaturansController.ubahAlamatSingkatToko')
+
+        Route.put('/ubah-hari-pasaran', 'sistem/PengaturansController.ubahHariPasaran')
       }).prefix('general').middleware('isPemilikApi')
 
       Route.group(() => {

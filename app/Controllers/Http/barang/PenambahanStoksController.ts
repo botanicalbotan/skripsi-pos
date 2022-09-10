@@ -131,13 +131,11 @@ export default class PenambahanStoksController {
       penambahanBaru.penggunaId = 1
       penambahanBaru.apakahKulakan = validrequest.stokTipe === 'Kulakan'
       penambahanBaru.asalStok = (validrequest.stokTipe === 'Kulakan')? validrequest.stokAsal: 'Garapan'
-      penambahanBaru.catatan = validrequest.stokCatatan
+      penambahanBaru.catatan = kapitalHurufPertama(validrequest.stokCatatan)
       await penambahanBaru.save()
 
       let i = 0
       for (const element of validrequest.stokIdPerhiasan) {
-        // console.log('no ' + i + ', value; ' + element + ', stok: ' + validrequest.stokTambahan[i])
-
         try {
           let kelompok = await Kelompok.findOrFail(element)
           kelompok.stok += validrequest.stokTambahan[i]
@@ -188,9 +186,6 @@ export default class PenambahanStoksController {
         query.preload('jabatan')
       })
 
-      const urlPencatat = (await Drive.exists('profilePict/' + penambahan.pengguna.foto))? (await Drive.getUrl('profilePict/' + penambahan.pengguna.foto)) : ''
-
-
       const hitungKelompok = await Database.from('penambahan_stoks')
         .join('kelompok_penambahans', 'penambahan_stoks.id', '=', 'kelompok_penambahans.penambahan_stok_id')
         .select(
@@ -202,7 +197,7 @@ export default class PenambahanStoksController {
 
       let tambahan = {
         jumlahKelompok: hitungKelompok[0].jumlahKelompok,
-        urlFotoPencatat: urlPencatat
+        adaFotoPencatat: (await Drive.exists('profilePict/' + penambahan.pengguna.foto)),
       }
 
 
@@ -225,4 +220,9 @@ export default class PenambahanStoksController {
 
     return kelompokCari
   }
+}
+
+
+function kapitalHurufPertama(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1)
 }

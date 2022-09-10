@@ -27,7 +27,6 @@ export default class RekapHariansController {
         'pasaran',
         'tanggal_rekap as tanggalRekap',
         'apakah_hari_pasaran as apakahHariPasaran',
-        // 'apakah_ada_error as apakahAdaError', // ntar ganti error jadi anomali
         'apakah_sudah_banding_saldo as apakahSudahBandingSaldo',
         'saldo_toko_terakhir as saldoTokoTerakhir'
       )

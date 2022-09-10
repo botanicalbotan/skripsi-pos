@@ -1,0 +1,149 @@
+@layout('layouts/master')
+
+@section('more-style')
+
+@endsection
+
+{{-- buat ngeset judul --}}
+@set('judul', 'Daftar Penambahan Stok Kelompok '+ kelompok.nama +' | Postoma')
+
+@section('content')
+<div class="w-full p-8 base-page" data-pagename="list" id="base-page">
+  <h2 class="text-4xl font-semibold">Daftar Penambahan Stok</h2>
+  <h4 class="text-lg text-secondary opacity-60">Daftar perekapan seluruh penambahan stok suatu kelompok perhiasan dari
+    garapan atau kulakan.</h4>
+
+
+  {{--  Card Utama  --}}
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+    @include('partials/wadah-alert')
+
+    <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+      <div class="flex-1">
+        <a href="/app/barang/kelompok/{{ kelompok.id }}" class="text-2xl link link-hover">{{ kelompok.nama }}</a>
+        <p class="opacity-75">{{ 'Perhiasan ' + kelompok.bentuk.bentuk }}</p>
+      </div>
+      <div class="flex-none flex space-x-2">
+      </div>
+    </div>
+
+    {{--  tabel  --}}
+    <div class="my-8 min-h-60 rounded">
+      @if(tambahs.total > 0)
+      <h5 class=" text-secondary mb-4">Menampilkan data ke {{ tambahan.firstDataInPage }}-{{ tambahan.lastDataInPage }}
+        ({{ tambahs.total }} data) untuk
+        <span class="text-neutral font-semibold">"Daftar Penambahan Stok"</span>
+      </h5>
+      @else
+      <h5 class=" text-secondary mb-4">Menampilkan 0 data untuk
+        <span class="text-neutral font-semibold">"Daftar Penambahan Stok"</span>
+      </h5>
+      @endif
+
+      <div class="overflow-x-auto md:overflow-y-visible"> {{-- aslinya ada overflow-x-auto disini --}}
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th>Tanggal & Waktu</th>
+              <th>Asal Stok</th>
+              <th class="w-2/5">Catatan</th>
+              <th>Stok Awal</th>
+              <th>Stok Akhir</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            @each(tambah in tambahs)
+            <tr class="hover">
+              <td>
+                <a href="/app/barang/penambahan/{{ tambah.idPenambahan }}">
+                  <div class="font-semibold">
+                    {{ new Date(tambah.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month:'long', year:'numeric' }) }}
+                  </div>
+                  <div class="text-sm">
+                    {{ new Date(tambah.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }}
+                  </div>
+                </a>
+              </td>
+              <td>
+                <a href="/app/barang/penambahan/{{ tambah.idPenambahan }}">
+                  {{ tambah.asalStok }}
+                </a>
+
+              </td>
+              <td class="whitespace-normal">
+                <a href="/app/barang/penambahan/{{ tambah.idPenambahan }}">
+                  {{ tambah.catatan }}</a>
+
+              </td>
+              <td>
+                {{ tambah.stokAkhir - tambah.perubahanStok }}
+              </td>
+              <td>
+                {{ tambah.stokAkhir }}
+              </td>
+            </tr>
+            @endeach
+
+          </tbody>
+        </table>
+      </div>
+
+
+    </div>
+
+    {{--  pagination bawah tabel  --}}
+    @if(tambahs.hasPages)
+
+    <div class="flex justify-center">
+      <div class="btn-group">
+        <a class="btn btn-sm btn-link" href="{{ tambahs.getUrl(tambahs.firstPage) }}">
+          <span class="md:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z"
+                clip-rule="evenodd" />
+            </svg>
+          </span>
+          <span class="hidden md:inline">Pertama</span>
+        </a>
+
+        @each(anchor in tambahs.getUrlsForRange(tambahan.firstPage, tambahan.lastPage))
+
+        @if(anchor.isActive)
+        <a href="{{ anchor.url }}" class="btn btn-active true-text-white btn-sm">
+          {{ anchor.page }}
+        </a>
+        @else
+        <a href="{{ anchor.url }}" class="btn btn-sm btn-link">
+          {{ anchor.page }}
+        </a>
+        @endif
+
+        @endeach
+
+        <a class="btn btn-sm btn-link" href="{{ tambahs.getUrl(tambahs.lastPage) }}">
+          <span class="md:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+                clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+                clip-rule="evenodd" />
+            </svg>
+          </span>
+          <span class="hidden md:inline">Terakhir</span>
+        </a>
+      </div>
+    </div>
+
+    @endif
+  </div>
+
+</div>
+@endsection
+
+@section('script')
+<script src="{{asset('assets/app.js')}}"></script>
+@endsection

@@ -37,6 +37,9 @@ export default class Pengguna extends BaseModel {
   public id: number
 
   @column()
+  public super: boolean
+
+  @column()
   public nama: string
 
   @column()
