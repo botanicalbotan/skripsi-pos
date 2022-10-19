@@ -7,8 +7,8 @@ import { inet_ntoa } from './IPConverter'
 
 const email = Env.get('SMTP_EMAIL')
 const pass = Env.get('SMTP_PASS')
-// const domain = Env.get('DOMAIN') aslinya pake ini, ntar ganti
-const DOMAIN = "http://127.0.0.1:3333"
+const DOMAIN = Env.get('DOMAIN') // aslinya pake ini, ntar ganti
+// const DOMAIN = "http://127.0.0.1:3333"
 
 export async function emailUbahPassword(user: User, passToken: PasswordResetToken) {
 

@@ -39,7 +39,7 @@
   "assets/akun-pegawai.js": "http://localhost:8080/assets/akun-pegawai.js",
   "assets/all-penggajian.js": "http://localhost:8080/assets/all-penggajian.js",
   "assets/all-laporan.js": "http://localhost:8080/assets/all-laporan.js",
-  "assets/atur-general.js": "http://localhost:8080/assets/atur-general.js",
+  "assets/atur-toko.js": "http://localhost:8080/assets/atur-toko.js",
   "assets/atur-kadar.js": "http://localhost:8080/assets/atur-kadar.js",
   "assets/atur-transaksi.js": "http://localhost:8080/assets/atur-transaksi.js",
   "assets/atur-saldo.js": "http://localhost:8080/assets/atur-saldo.js",

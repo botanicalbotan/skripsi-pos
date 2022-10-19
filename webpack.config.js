@@ -107,7 +107,7 @@ Encore.addEntry('all-penggajian', './resources/js/pegawai/penggajian/all-penggaj
 Encore.addEntry('all-laporan', './resources/js/laporan/all-laporan.js')
 
 // Pengaturan ===================================
-Encore.addEntry('atur-general', './resources/js/sistem/pengaturan/atur-general.js')
+Encore.addEntry('atur-toko', './resources/js/sistem/pengaturan/atur-toko.js')
 Encore.addEntry('atur-kadar', './resources/js/sistem/pengaturan/atur-kadar.js')
 Encore.addEntry('atur-transaksi', './resources/js/sistem/pengaturan/atur-transaksi.js')
 Encore.addEntry('atur-saldo', './resources/js/sistem/pengaturan/atur-saldo.js')

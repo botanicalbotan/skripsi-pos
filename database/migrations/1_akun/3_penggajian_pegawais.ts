@@ -9,7 +9,7 @@ export default class PenggajianPegawais extends BaseSchema {
       table.enum('status', ['menunggu', 'dibayar', 'dihapus']).notNullable()
       table.dateTime('tanggal_seharusnya_dibayar').notNullable()
       table.dateTime('dibayar_at').nullable()
-      table.integer('nominal_gaji').notNullable().defaultTo(0)
+      table.integer('nominal_gaji').notNullable().defaultTo(0).unsigned()
       table.integer('penerima_gaji_id').unsigned().references('penggunas.id').notNullable()
       table.integer('pencatat_gajian_id').unsigned().references('penggunas.id').nullable()
 

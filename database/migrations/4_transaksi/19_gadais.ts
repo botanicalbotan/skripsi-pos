@@ -13,14 +13,15 @@ export default class Gadais extends BaseSchema {
       table.string('foto_ktp_penggadai') // bisa dihapus
       table.string('alamat_penggadai', 100).notNullable()
       table.string('nohp_penggadai', 15).notNullable()
-      table.integer('nominal_gadai').notNullable()
+      table.string('foto_barang')
+      table.integer('nominal_gadai').notNullable().unsigned()
       table.string('keterangan', 100).nullable()
       table.integer('status_gadai_id').unsigned().references('status_gadais.id').notNullable() // start dari 'berjalan'
       table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
       table.dateTime('deleted_at').nullable()
 
 
-      table.string('foto_barang')
+      
       table.dateTime('dilunasi_at').nullable() // kalo udah dibeli gabisa dibeli lagi
 
       /**

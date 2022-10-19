@@ -7,10 +7,10 @@
 @endsection
 
 {{-- buat ngeset judul --}}
-@set('judul', 'Menu General - Pengaturan | Postoma')
+@set('judul', 'Menu Toko - Pengaturan | Postoma')
 
 @section('content')
-<div class="w-full p-8 base-page" data-pagename="atur-general" id="base-page" data-pasaran="{{ tambahan.teksPasaran }}" data-bolehedit="{{ (session.get('isPemilik'))? 1 : 0 }}">
+<div class="w-full p-8 base-page" data-pagename="atur-toko" id="base-page" data-pasaran="{{ tambahan.teksPasaran }}" data-bolehedit="{{ (session.get('isPemilik'))? 1 : 0 }}">
   <h2 class="text-4xl font-semibold">Pengaturan</h2>
   <h4 class="text-lg text-secondary opacity-60">Opsi dan aturan dalam pengoperasian aplikasi.</h4>
 
@@ -24,7 +24,7 @@
           <li class="menu-title">
             <span>Menu Pengaturan</span>
           </li>
-          <li class="bordered"><a href="/app/pengaturan/general">General</a></li>
+          <li class="bordered"><a href="/app/pengaturan/toko">Toko</a></li>
           <li><a href="/app/pengaturan/kadar">Kadar Perhiasan</a></li>
           <li><a href="/app/pengaturan/transaksi">Transaksi</a></li>
           <li><a href="/app/pengaturan/saldo">Saldo Toko</a></li>
@@ -34,7 +34,7 @@
       </div>
       <div class="flex-1 space-y-4">
         <div>
-          <span class="text-2xl font-semibold">Menu General</span>
+          <span class="text-2xl font-semibold">Menu Toko</span>
         </div>
 
 
@@ -214,5 +214,5 @@
 
 
 <script src="{{asset('assets/app.js')}}"></script>
-<script src="{{asset('assets/atur-general.js')}}"></script>
+<script src="{{asset('assets/atur-toko.js')}}"></script>
 @endsection

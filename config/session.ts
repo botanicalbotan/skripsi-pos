@@ -44,9 +44,10 @@ const sessionConfig: SessionConfig = {
   |--------------------------------------------------------------------------
   |
   | The name of the cookie that will hold the session id.
+  | Boleh diisi bebas kalo dari docs-nya
   |
   */
-  cookieName: 'adonis-session',
+  cookieName: 'kuki-sneaky-postoma',
 
   /*
   |--------------------------------------------------------------------------

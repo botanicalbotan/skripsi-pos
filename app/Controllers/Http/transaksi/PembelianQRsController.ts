@@ -538,6 +538,9 @@ export default class PembelianQRsController {
       penjualan.dibeliAt = DateTime.now()
       await penjualan.save()
 
+      pengaturan.saldoToko -= hargaFinal
+      await pengaturan.save()
+
       return response.redirect().withQs({ tid: pembelianBaru.id }).toPath('/app/transaksi/pembelian/pasca')
 
     } catch (error) {

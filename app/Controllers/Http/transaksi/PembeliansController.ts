@@ -524,15 +524,15 @@ export default class PembeliansController {
         throw 'Input tawaran tidak valid.'
       }
 
-      const lastPenjualan = await Database.from('pembelians')
+      const lastPembelian = await Database.from('pembelians')
         .select('id')
         .orderBy('id', 'desc')
         .limit(1)
 
       let latestId = '001'
 
-      if (lastPenjualan[0]) {
-        latestId = tigaDigit(lastPenjualan[0].id + 1)
+      if (lastPembelian[0]) {
+        latestId = tigaDigit(lastPembelian[0].id + 1)
       }
 
       const model = await Model.findOrFail(validrequest.model)
@@ -627,6 +627,9 @@ export default class PembeliansController {
           alamatPemilik: null,
         })
       }
+
+      pengaturan.saldoToko -= hargaFinal
+      await pengaturan.save()
 
       return response
         .redirect()

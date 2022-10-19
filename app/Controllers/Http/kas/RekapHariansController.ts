@@ -218,7 +218,8 @@ export default class RekapHariansController {
         hitungKasMasuk: totalKasMasuk[0].count + 1,
         hitungKasKeluar: totalKasKeluar[0].count + 1,
         anomaliStok: anomaliStok.jumlah | 0,
-        pengubahanSaldo: pengubahanSaldo.jumlah | 0
+        pengubahanSaldo: pengubahanSaldo.jumlah | 0,
+        tanggalKemarin: kemarin
       }
 
       return await view.render('kas/rekap-harian/view-rekap-harian', {

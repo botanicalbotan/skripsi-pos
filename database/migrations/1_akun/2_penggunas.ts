@@ -28,7 +28,7 @@ export default class Penggunas extends BaseSchema {
       table.dateTime('deleted_at').nullable()
 
 
-      table.integer('gaji_bulanan').notNullable()
+      table.integer('gaji_bulanan').notNullable().unsigned()
       table.date('tanggal_gajian_selanjutnya').nullable()
       table.date('tanggal_gajian_terakhir').nullable()
       table.integer('kali_gajian').notNullable().defaultTo(0)

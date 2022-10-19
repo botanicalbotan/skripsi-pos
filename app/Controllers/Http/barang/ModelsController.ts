@@ -191,7 +191,7 @@ export default class ModelsController {
       model.nama = kapitalKalimat(prepareNama)
       model.deskripsi = kapitalHurufPertama(validrequest.deskripsi)
       model.bentukId = bentuk.id
-      model.save()
+      await model.save()
 
       session.flash('alertSukses', 'Data model berhasil diubah!')
 
@@ -211,7 +211,7 @@ export default class ModelsController {
       if (model.apakahPlaceholder) throw 'Gaboleh diedit'
 
       model.deletedAt = DateTime.now()
-      model.save()
+      await model.save()
 
       session.flash('alertSukses', 'Model "' + model.nama + '" berhasil dihapus!')
 

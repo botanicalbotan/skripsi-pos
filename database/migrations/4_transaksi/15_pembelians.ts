@@ -33,8 +33,6 @@ export default class Pembelians extends BaseSchema {
       table.integer('harga_beli_akhir').notNullable()
       table.integer('ongkos_kerusakan_total').notNullable()
 
-      // table.boolean('apakah_pembelian_normal').notNullable() //??
-
       // CONSTRAIN
       table.dateTime('deleted_at').nullable()
 

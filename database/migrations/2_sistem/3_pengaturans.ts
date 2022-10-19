@@ -22,7 +22,7 @@ export default class Pengaturans extends BaseSchema {
       table.integer('penalti_telat_janji_min').notNullable()
       table.integer('penalti_telat_janji_max').notNullable()
       // table.integer('toleransi_persentase_tawaran').notNullable().defaultTo(0)
-      table.integer('harga_mal').notNullable().defaultTo(0)
+      table.integer('harga_mal').notNullable().defaultTo(0).unsigned()
 
       // saldo dan harga mal
       table.integer('saldo_toko').notNullable().defaultTo(0)
@@ -33,7 +33,7 @@ export default class Pengaturans extends BaseSchema {
       table.boolean('default_ingatkan_stok_menipis').notNullable().defaultTo(true)
       
       // pegawai
-      table.integer('default_gaji_karyawan').notNullable().defaultTo(1000000)
+      table.integer('default_gaji_karyawan').notNullable().unsigned().defaultTo(1000000)
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

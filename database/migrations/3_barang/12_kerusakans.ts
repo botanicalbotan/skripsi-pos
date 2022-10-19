@@ -14,11 +14,6 @@ export default class Kerusakans extends BaseSchema {
       table.integer('ongkos_nominal').notNullable()
       table.dateTime('deleted_at').nullable()
 
-      /**
-       * Ini ntar di uncomment kalo dah siap modelnya
-       * table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
-       */
-
       table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

@@ -33,7 +33,7 @@ export default class TaskCekGajianPegawai extends BaseTask {
       .whereNull('deleted_at')
       .whereNotNull('tanggal_mulai_aktif')
       .whereNotNull('tanggal_gajian_selanjutnya')
-      // .andWhere('tanggal_gajian_selanjutnya', '<=', DateTime.now().toISO())
+      .where('super', false)
       .whereRaw('DATE(tanggal_gajian_selanjutnya) <= DATE(NOW())')
       .orderBy('tanggal_gajian_selanjutnya', 'asc')
 

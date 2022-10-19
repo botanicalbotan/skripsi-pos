@@ -8,18 +8,13 @@ export default class Kelompoks extends BaseSchema {
       table.increments('id')
       table.string('nama', 50).notNullable()
       table.string('kode_kelompok', 50).notNullable().unique() // ntar diganti jadi kode unik
-      table.integer('berat_kelompok').notNullable()
+      table.integer('berat_kelompok').notNullable().unsigned()
       table.integer('kadar_id').unsigned().references('kadars.id').notNullable()
       table.integer('bentuk_id').unsigned().references('bentuks.id').notNullable()
-      table.integer('stok_minimal').notNullable().defaultTo(0)
+      table.integer('stok_minimal').notNullable().unsigned().defaultTo(0)
       table.boolean('ingatkan_stok_menipis').notNullable().defaultTo(true)
-      table.integer('stok').notNullable().defaultTo(0)
+      table.integer('stok').notNullable().unsigned().defaultTo(0)
       table.dateTime('deleted_at').nullable()
-
-      /**Ini ntar di uncomment kalo dah siap modelnya
-       *
-       * table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
-       */
 
       table.integer('pengguna_id').unsigned().references('penggunas.id').notNullable()
       /**

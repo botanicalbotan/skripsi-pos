@@ -66,17 +66,36 @@ export default class BasicSeeder extends BaseSeeder {
     Settings.defaultZone = 'Asia/Jakarta'
 
     const jabatanPemilik = await Jabatan.findByOrFail('nama', 'Pemilik')
-    const userBaru = await User.create({
-      username: 'admin',
+    const userSuper = await User.create({
+      username: 'adminsuper',
       email: 'testbotan@gmail.com',
-      password: 'admin'
+      password: 'adminsuper'
     })
 
-    const penggunaBaru = await userBaru.related('pengguna').create({
-      nama: 'Testing Admin',
+    const penggunaSuper = await userSuper.related('pengguna').create({
+      nama: 'Super Admin',
       super: true,
       gender: 'L',
-      alamat: 'Klego',
+      alamat: 'Banyubiru',
+      nohpAktif: '0888888888',
+      apakahPegawaiAktif: true,
+      gajiBulanan: 0,
+      jabatanId: jabatanPemilik.id,
+      tempatLahir: 'Semarang',
+      tanggalLahir: DateTime.now(),
+    })
+
+    const userTesting = await User.create({
+      username: 'testingadmin',
+      email: 'testingadmin@gmail.com',
+      password: 'testingadmin'
+    })
+
+    await userTesting.related('pengguna').create({
+      nama: 'Testing Pemilik',
+      super: false,
+      gender: 'L',
+      alamat: 'Banyubiru',
       nohpAktif: '0888888888',
       apakahPegawaiAktif: true,
       gajiBulanan: 1000000,
@@ -120,49 +139,49 @@ export default class BasicSeeder extends BaseSeeder {
       nama: 'Model Anting Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: penggunaBaru.id
+      penggunaId: penggunaSuper.id
     })
     const bentuk2 = await Bentuk.findOrFail(2)
     await bentuk2.related('models').create({
       nama: 'Model Cincin Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: penggunaBaru.id
+      penggunaId: penggunaSuper.id
     })
     const bentuk3 = await Bentuk.findOrFail(3)
     await bentuk3.related('models').create({
       nama: 'Model Gelang Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: penggunaBaru.id
+      penggunaId: penggunaSuper.id
     })
     const bentuk4 = await Bentuk.findOrFail(4)
     await bentuk4.related('models').create({
       nama: 'Model Kalung Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: penggunaBaru.id
+      penggunaId: penggunaSuper.id
     })
     const bentuk5 = await Bentuk.findOrFail(5)
     await bentuk5.related('models').create({
       nama: 'Model Liontin Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: penggunaBaru.id
+      penggunaId: penggunaSuper.id
     })
     const bentuk6 = await Bentuk.findOrFail(6)
     await bentuk6.related('models').create({
       nama: 'Model Tindik Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: penggunaBaru.id
+      penggunaId: penggunaSuper.id
     })
     const bentuk7 = await Bentuk.findOrFail(7)
     await bentuk7.related('models').create({
       nama: 'Model Lain dari Bentuk Lainnya',
       apakahPlaceholder: true,
       deskripsi: 'Model ini adalah placeholder bila model perhiasan belum terdefinisikan di sistem',
-      penggunaId: penggunaBaru.id
+      penggunaId: penggunaSuper.id
     })
 
     await Kadar.createMany([{
@@ -174,14 +193,14 @@ export default class BasicSeeder extends BaseSeeder {
         persentaseMalUripan: 42,
         toleransiPenguranganPotonganMin: 1000,
         toleransiPenguranganPotonganMax: 3000,
-        marginPersenUntungUripanMin: 0,
-        marginPersenUntungUripanMax: 0,
+        marginPersenUntungUripanMin: 1,
+        marginPersenUntungUripanMax: 2,
         marginPersenUntungUripanTtMin: 0,
-        marginPersenUntungUripanTtMax: 0,
-        marginPersenUntungRosokMin: 0,
-        marginPersenUntungRosokMax: 0,
+        marginPersenUntungUripanTtMax: 1,
+        marginPersenUntungRosokMin: 1,
+        marginPersenUntungRosokMax: 2,
         marginPersenUntungRosokTtMin: 0,
-        marginPersenUntungRosokTtMax: 0
+        marginPersenUntungRosokTtMax: 1
       },
       {
         nama: 'Muda',
@@ -192,14 +211,14 @@ export default class BasicSeeder extends BaseSeeder {
         persentaseMalUripan: 22,
         toleransiPenguranganPotonganMin: 1000,
         toleransiPenguranganPotonganMax: 3000,
-        marginPersenUntungUripanMin: 0,
-        marginPersenUntungUripanMax: 0,
+        marginPersenUntungUripanMin: 1,
+        marginPersenUntungUripanMax: 2,
         marginPersenUntungUripanTtMin: 0,
-        marginPersenUntungUripanTtMax: 0,
-        marginPersenUntungRosokMin: 0,
-        marginPersenUntungRosokMax: 0,
+        marginPersenUntungUripanTtMax: 1,
+        marginPersenUntungRosokMin: 1,
+        marginPersenUntungRosokMax: 2,
         marginPersenUntungRosokTtMin: 0,
-        marginPersenUntungRosokTtMax: 0
+        marginPersenUntungRosokTtMax: 1
       },
       {
         nama: 'Tua',
@@ -210,14 +229,14 @@ export default class BasicSeeder extends BaseSeeder {
         persentaseMalUripan: 72,
         toleransiPenguranganPotonganMin: 1,
         toleransiPenguranganPotonganMax: 2,
-        marginPersenUntungUripanMin: 0,
-        marginPersenUntungUripanMax: 0,
+        marginPersenUntungUripanMin: 1,
+        marginPersenUntungUripanMax: 2,
         marginPersenUntungUripanTtMin: 0,
-        marginPersenUntungUripanTtMax: 0,
-        marginPersenUntungRosokMin: 0,
-        marginPersenUntungRosokMax: 0,
+        marginPersenUntungUripanTtMax: 1,
+        marginPersenUntungRosokMin: 1,
+        marginPersenUntungRosokMax: 2,
         marginPersenUntungRosokTtMin: 0,
-        marginPersenUntungRosokTtMax: 0
+        marginPersenUntungRosokTtMax: 1
       },
     ])
 

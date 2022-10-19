@@ -194,9 +194,9 @@
         "http://localhost:8080/assets/all-laporan.js"
       ]
     },
-    "atur-general": {
+    "atur-toko": {
       "js": [
-        "http://localhost:8080/assets/atur-general.js"
+        "http://localhost:8080/assets/atur-toko.js"
       ]
     },
     "atur-kadar": {

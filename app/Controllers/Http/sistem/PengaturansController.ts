@@ -83,8 +83,8 @@ export default class PengaturansController {
     }
   }
 
-  // ========================================= GENERAL ================================================
-  public async pageGeneral({ view }: HttpContextContract) {
+  // ========================================= TOKO ================================================
+  public async pageToko({ view }: HttpContextContract) {
     // Ini udah make middleware
     const pengaturan = await Pengaturan.findOrFail(1)
     await pengaturan.load('pasarans')
@@ -102,7 +102,7 @@ export default class PengaturansController {
       adaLogo: await Drive.exists('logoToko/' + pengaturan.logoToko),
       teksPasaran,
     }
-    return await view.render('pengaturan/atur-general', { pengaturan, tambahan })
+    return await view.render('pengaturan/atur-toko', { pengaturan, tambahan })
   }
 
   public async gantiLogo({ request, response }: HttpContextContract) {
@@ -241,15 +241,15 @@ export default class PengaturansController {
         const pasar = await Pasaran.findByOrFail('hari', 'pon')
 
         await pengaturan.related('pasarans').attach({
-          [pasar.id]:{}
+          [pasar.id]: {},
         })
       }
 
       if (validrequest.pasarWage) {
         const pasar = await Pasaran.findByOrFail('hari', 'wage')
-        
+
         await pengaturan.related('pasarans').attach({
-          [pasar.id]:{}
+          [pasar.id]: {},
         })
       }
 
@@ -257,7 +257,7 @@ export default class PengaturansController {
         const pasar = await Pasaran.findByOrFail('hari', 'kliwon')
 
         await pengaturan.related('pasarans').attach({
-          [pasar.id]:{}
+          [pasar.id]: {},
         })
       }
 
@@ -265,7 +265,7 @@ export default class PengaturansController {
         const pasar = await Pasaran.findByOrFail('hari', 'legi')
 
         await pengaturan.related('pasarans').attach({
-          [pasar.id]:{}
+          [pasar.id]: {},
         })
       }
 
@@ -273,7 +273,7 @@ export default class PengaturansController {
         const pasar = await Pasaran.findByOrFail('hari', 'pahing')
 
         await pengaturan.related('pasarans').attach({
-          [pasar.id]:{}
+          [pasar.id]: {},
         })
       }
 
@@ -350,7 +350,6 @@ export default class PengaturansController {
         return response.badRequest({ error: 'Ada masalah pada server!' })
       }
     }
-
   }
 
   public async ubahWaktuMaksimalCetakNota({ request, response }: HttpContextContract) {
@@ -483,9 +482,11 @@ export default class PengaturansController {
     // Ini udah make middleware
     const pengaturan = await Pengaturan.findOrFail(1)
     const rekap = await prepareRekap()
-    await rekap.load('pencatatBanding', (query) => {
-      query.preload('jabatan')
-    })
+    if(rekap.apakahSudahBandingSaldo){
+      await rekap.load('pencatatBanding', (query) => {
+        query.preload('jabatan')
+      })
+    }
 
     const fungsi = {
       rupiahParser: rupiahParser,

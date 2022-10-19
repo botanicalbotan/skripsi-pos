@@ -50,12 +50,6 @@ export default class RekapHarian extends BaseModel {
   /** Mulai dari sini */
 
   // @column()
-  // public totalNominalKasMasuk: number
-
-  // @column()
-  // public totalNominalKasKeluar: number
-
-  // @column()
   // public saldoFinal: number
 
   // @column()

@@ -323,7 +323,7 @@ let printUbahHTML = function (saldoSistem = 0) {
 
                   <div class="form-control">
                     <label for="swal-alasan">
-                      <span class="">Alasan Pengubahan Saldo</span>
+                      <span class="">Alasan Pengubahan Saldo<span class="text-error"> *</span></span>
                     </label>
                     <textarea type="text" id="swal-alasan" name="swal-alasan" class="textarea textarea-bordered h-24"
                       placeholder="Contoh: Catatan saldo tidak cocok dengan saldo sebenarnya" maxlength="100" required></textarea>

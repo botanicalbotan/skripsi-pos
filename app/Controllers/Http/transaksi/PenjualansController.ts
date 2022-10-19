@@ -684,8 +684,8 @@ export default class PenjualansController {
       doc.fontSize(10)
         .font('Times-Roman')
         .list([
-          'Barang2 yang sudah dibeli beratnya ditimbang dan sudah diperiksa betul oleh si pembeli',
-          'Barang2 dapat diterima kembali dengan membawa surat keterangan pembeli',
+          'Barang yang sudah dibeli beratnya ditimbang dan sudah diperiksa betul oleh si pembeli',
+          'Barang dapat diterima kembali dengan membawa surat keterangan pembeli',
           // 'Minggu pon libur',
           'Dalam keadaan rusak diterima dengan harga lain'
         ], pMargins, hRow4)

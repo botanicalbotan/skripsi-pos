@@ -16,7 +16,7 @@ export default class PembelianNotaLeos extends BaseSchema {
       table.boolean('apakah_sudah_dipakai').notNullable()
       table.datetime('tanggal_jual_pada_nota').notNullable()
 
-      table.integer('berat_barang_pada_nota').notNullable() // bisa dibandingin sama berat barang di sebelah
+      table.float('berat_barang_pada_nota').notNullable() // bisa dibandingin sama berat barang di sebelah
       table.integer('harga_jual_pada_nota').notNullable() // bisa dibandingin sama harga akhir di sebelah
 
       table.boolean('apakah_potongan_persen').notNullable()

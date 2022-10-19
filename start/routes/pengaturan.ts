@@ -9,8 +9,8 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.group(() => {
   Route.group(() => {
     Route.group(() => {
-      Route.get('/', 'sistem/PengaturansController.pageGeneral')
-      Route.get('/general', 'sistem/PengaturansController.pageGeneral')
+      Route.get('/', 'sistem/PengaturansController.pageToko')
+      Route.get('/toko', 'sistem/PengaturansController.pageToko')
       Route.get('/kadar', 'sistem/PengaturansController.pageKadar')
       Route.get('/transaksi', 'sistem/PengaturansController.pageTransaksi')
       Route.get('/saldo', 'sistem/PengaturansController.pageSaldo')
@@ -42,7 +42,7 @@ Route.group(() => {
       
 
       Route.group(() => {
-        // ngambil data 'general' udah jadi satu ama rute 'my-toko' di cuma-data
+        // ngambil data 'toko' udah jadi satu ama rute 'my-toko' di cuma-data
         Route.post('/ganti-logo', 'sistem/PengaturansController.gantiLogo')
         Route.delete('/hapus-logo', 'sistem/PengaturansController.hapusLogo')
 
@@ -51,7 +51,7 @@ Route.group(() => {
         Route.put('/ubah-alamat-singkat-toko', 'sistem/PengaturansController.ubahAlamatSingkatToko')
 
         Route.put('/ubah-hari-pasaran', 'sistem/PengaturansController.ubahHariPasaran')
-      }).prefix('general').middleware('isPemilikApi')
+      }).prefix('toko').middleware('isPemilikApi')
 
       Route.group(() => {
         Route.get('/', 'sistem/PengaturansController.getDataTransaksi')

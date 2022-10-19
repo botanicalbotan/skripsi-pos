@@ -9,8 +9,6 @@ export default class KelompokPenambahans extends BaseSchema {
       table.integer('penambahan_stok_id').unsigned().references('penambahan_stoks.id').notNullable()
       table.integer('kelompok_id').unsigned().references('kelompoks.id').notNullable()
       table.unique(['penambahan_stok_id', 'kelompok_id'])
-      // table.unique(['penambahan_stok_id', 'kelompok_id', 'apakah_kulakan'], 'field_harus_unik')
-      // table.unique(['penambahan_stok_id', 'kelompok_id', 'apakah_kulakan'], {indexName: 'field_harus_unik'})
       table.integer('perubahan_stok').notNullable()
       table.integer('stok_akhir').notNullable()
 

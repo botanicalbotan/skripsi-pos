@@ -224,13 +224,13 @@
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Selisih Saldo Kemarin
-                    ({{ rekapKemarin.createdAt.toFormat('D') }})</h3>
+                    ({{ tambahan.tanggalKemarin.toFormat('D') }})</h3>
                   @if(rekapKemarin && rekapKemarin.apakahSudahBandingSaldo && rekapKemarin.dibandingAt)
                   <span
                     class="flex-1 text-error">{{ fungsi.rupiahParser(rekapKemarin.saldoTokoReal - rekapKemarin.saldoTokoTerakhir) }}</span>
                   @else
                   <span class="flex-1 ">Tidak ada banding saldo di tanggal
-                    {{ rekapKemarin.createdAt.toFormat('D') }}</span>
+                    {{ tambahan.tanggalKemarin.toFormat('D') }}</span>
                   @endif
                 </div>
               </li>
@@ -243,7 +243,7 @@
                     class="flex-1 text-error">{{ fungsi.rupiahParser((rekap.saldoTokoReal - rekap.saldoTokoTerakhir) - (rekapKemarin.saldoTokoReal - rekapKemarin.saldoTokoTerakhir)) }}</span>
                   @else
                   <span class="flex-1 ">Tidak ada banding saldo di tanggal
-                    {{ rekapKemarin.createdAt.toFormat('D') }}</span>
+                    {{ tambahan.tanggalKemarin.toFormat('D') }}</span>
                   @endif
                 </div>
               </li>

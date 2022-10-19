@@ -9,6 +9,7 @@ export default class RentangUsias extends BaseSchema {
       table.string('golongan', 20).notNullable()
       table.string('deskripsi', 30)
 
+      // INI UDAH HAMPIR FIX BAKAL DIHAPUS
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

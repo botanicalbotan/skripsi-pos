@@ -149,34 +149,52 @@ if (BOLEHEDIT) {
       imageWidth: 400,
       imageAlt: 'Custom image',
       text: 'Anda akan mengganti logo toko dengan gambar ini. Lanjutkan?',
-    }).then((hasil) => {
-      if (hasil.isConfirmed && sudahFoto) {
-        // ------------------- kirim foto ------------------
-        $.post("/app/pengaturan/api/general/ganti-logo", {
-          fileFoto: base64
-        },
-          function () {
-            Swal.fire({
-              title: 'Sukses!',
-              text: 'Logo toko berhasil diubah',
-              confirmButtonText: 'Tutup',
-              icon: 'success',
-              confirmButtonColor: SwalCustomColor.button.cancel
-            }).then(() => {
-              location.href = location.pathname
+      preConfirm: () => {
+        Swal.showLoading()
+
+        return new Promise(function (resolve, reject) {
+          setTimeout(function () {
+            reject({
+              tipe: 'lokal',
+              msg: 'Tidak ada respon dari server'
             })
-          },
-          "json"
-        ).fail((jqXHR) => {
-          Swal.fire({
-            title: 'Error!',
-            text: jqXHR.responseJSON.error | 'Ada error pada server',
-            confirmButtonText: 'Tutup',
-            icon: 'error',
-            confirmButtonColor: SwalCustomColor.button.cancel
-          }).then(() => {
-            location.href = location.pathname
-          })
+          }, 5000)
+
+          $.ajax({
+            type: "POST",
+            url: "/app/pengaturan/api/toko/ganti-logo",
+            data: {
+              fileFoto: base64
+            },
+            dataType: 'json',
+            success: function () {
+              resolve({
+                apakahSukses: true,
+                msg: 'Logo toko berhasil diubah!'
+              })
+            },
+            error: function (xhr) {
+              reject({
+                tipe: 'lokal',
+                msg: (typeof xhr.responseJSON.error === 'string') ? xhr.responseJSON.error : 'Ada error pada server!'
+              })
+            }
+          });
+        }).catch(function (error) {
+          if (error.tipe && error.tipe === 'lokal') {
+            return error
+          } else {
+            return {
+              apakahSukses: false,
+              msg: 'Ada kesalahan pada sistem. Silahkan coba lagi.'
+            }
+          }
+        })
+      }
+    }).then((hasilUbah) => {
+      if (hasilUbah.isConfirmed) {
+        swalSelesai(hasilUbah).then(() => {
+          location.href = location.pathname
         })
       }
     })
@@ -206,7 +224,7 @@ if (BOLEHEDIT) {
 
             $.ajax({
               type: "DELETE",
-              url: '/app/pengaturan/api/general/hapus-logo',
+              url: '/app/pengaturan/api/toko/hapus-logo',
               dataType: "json",
               success: function () {
                 console.log('awyeaah')
@@ -287,7 +305,7 @@ if (BOLEHEDIT) {
 
                       $.ajax({
                         type: "PUT",
-                        url: '/app/pengaturan/api/general/ubah-nama-toko',
+                        url: '/app/pengaturan/api/toko/ubah-nama-toko',
                         data: {
                           newNama: gantiNama.value,
                         },
@@ -387,7 +405,7 @@ if (BOLEHEDIT) {
 
                       $.ajax({
                         type: "PUT",
-                        url: '/app/pengaturan/api/general/ubah-alamat-toko',
+                        url: '/app/pengaturan/api/toko/ubah-alamat-toko',
                         data: {
                           newAlamat: gantiAlamat.value,
                         },
@@ -487,7 +505,7 @@ if (BOLEHEDIT) {
 
                       $.ajax({
                         type: "PUT",
-                        url: '/app/pengaturan/api/general/ubah-alamat-singkat-toko',
+                        url: '/app/pengaturan/api/toko/ubah-alamat-singkat-toko',
                         data: {
                           newAlamatSingkat: gantiAlamatSingkat.value,
                         },
@@ -560,15 +578,15 @@ if (BOLEHEDIT) {
                 const kliwon = document.getElementById('swal-kliwon')
                 const legi = document.getElementById('swal-legi')
                 const pahing = document.getElementById('swal-pahing')
-          
+
                 let teks = 'tidak ada pasaran'
                 const semua = document.querySelectorAll('input.swal-ck:checked')
 
-                if(semua.length > 0){
+                if (semua.length > 0) {
                   teks = '['
                   for (let i = 0; i < semua.length; i++) {
                     teks += semua[i].name
-                    if(i < semua.length - 1){
+                    if (i < semua.length - 1) {
                       teks += ', '
                     }
                   }
@@ -576,7 +594,7 @@ if (BOLEHEDIT) {
                 }
 
 
-                return{
+                return {
                   pon: pon.checked,
                   wage: wage.checked,
                   kliwon: kliwon.checked,
@@ -604,7 +622,7 @@ if (BOLEHEDIT) {
 
                       $.ajax({
                         type: "PUT",
-                        url: '/app/pengaturan/api/general/ubah-hari-pasaran',
+                        url: '/app/pengaturan/api/toko/ubah-hari-pasaran',
                         data: {
                           pasarPon: gantiPasaran.value.pon,
                           pasarWage: gantiPasaran.value.wage,
@@ -668,35 +686,35 @@ if (BOLEHEDIT) {
                   <div class="max-w-xs">
                     <div class="form-control">
                       <label class="label cursor-pointer justify-start space-x-4">
-                        <input type="checkbox" id="swal-pon" name="Pon" ${(dataPasaran.includes('Pon')? 'checked' : '')} class="checkbox swal-ck">
+                        <input type="checkbox" id="swal-pon" name="Pon" ${(dataPasaran.includes('Pon') ? 'checked' : '')} class="checkbox swal-ck">
                         <span class="">Pasaran Pon</span>
                       </label>
                     </div>
                     
                     <div class="form-control">
                       <label class="label cursor-pointer justify-start space-x-4">
-                        <input type="checkbox" id="swal-wage" name="Wage" ${(dataPasaran.includes('Wage')? 'checked' : '')} class="checkbox swal-ck">
+                        <input type="checkbox" id="swal-wage" name="Wage" ${(dataPasaran.includes('Wage') ? 'checked' : '')} class="checkbox swal-ck">
                         <span class="">Pasaran Wage</span>
                       </label>
                     </div>
 
                     <div class="form-control">
                       <label class="label cursor-pointer justify-start space-x-4">
-                        <input type="checkbox" id="swal-kliwon" name="Kliwon" ${(dataPasaran.includes('Kliwon')? 'checked' : '')} class="checkbox swal-ck">
+                        <input type="checkbox" id="swal-kliwon" name="Kliwon" ${(dataPasaran.includes('Kliwon') ? 'checked' : '')} class="checkbox swal-ck">
                         <span class="">Pasaran Kliwon</span>
                       </label>
                     </div>
 
                     <div class="form-control">
                       <label class="label cursor-pointer justify-start space-x-4">
-                        <input type="checkbox" id="swal-legi" name="Legi" ${(dataPasaran.includes('Legi')? 'checked' : '')} class="checkbox swal-ck">
+                        <input type="checkbox" id="swal-legi" name="Legi" ${(dataPasaran.includes('Legi') ? 'checked' : '')} class="checkbox swal-ck">
                         <span class="">Pasaran Legi</span>
                       </label>
                     </div>
 
                     <div class="form-control">
                       <label class="label cursor-pointer justify-start space-x-4">
-                        <input type="checkbox" id="swal-pahing" name="Pahing" ${(dataPasaran.includes('Pahing')? 'checked' : '')} class="checkbox swal-ck">
+                        <input type="checkbox" id="swal-pahing" name="Pahing" ${(dataPasaran.includes('Pahing') ? 'checked' : '')} class="checkbox swal-ck">
                         <span class="">Pasaran Pahing</span>
                       </label>
                     </div>
@@ -708,7 +726,7 @@ if (BOLEHEDIT) {
     return html
   }
 
-  
+
 }
 
 
