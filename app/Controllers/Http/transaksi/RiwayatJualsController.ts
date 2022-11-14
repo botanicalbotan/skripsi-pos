@@ -81,7 +81,6 @@ export default class RiwayatJualsController {
       lastDataInPage: tempLastData >= tanggals.total ? tanggals.total : tempLastData,
     }
 
-
     const fungsi = {
       rupiahParser: rupiahParser,
       kapitalHurufPertama: kapitalHurufPertama,
@@ -89,10 +88,17 @@ export default class RiwayatJualsController {
       pasaranFromTanggal: pasaranFromTanggal
     }
 
+    let roti = [
+      {
+        laman: 'Riwayat Penjualan'
+      }
+    ]
+
     return await view.render('riwayat/penjualan/list-tanggal-jual', {
       tanggals,
       tambahan,
-      fungsi
+      fungsi,
+      roti
     })
   }
 
@@ -244,11 +250,18 @@ export default class RiwayatJualsController {
       lastDataInPage: tempLastData >= penjualans.total ? penjualans.total : tempLastData,
     }
 
+    let roti = [
+      {
+        laman: 'Riwayat Penjualan'
+      }
+    ]
+
     return await view.render('riwayat/penjualan/list-riwayat-jual-sekarang', {
       tambahan,
       penjualans,
       fungsi,
-      rekap
+      rekap,
+      roti
     })
   }
 
@@ -378,12 +391,19 @@ export default class RiwayatJualsController {
         lastDataInPage: tempLastData >= penjualans.total ? penjualans.total : tempLastData,
       }
 
+      let roti = [
+        {
+          laman: 'Riwayat Penjualan'
+        }
+      ]
+
       return await view.render('riwayat/penjualan/list-riwayat-jual-pertanggal', {
         tambahan,
         penjualans,
         fungsi,
         rekap,
-        tanggal
+        tanggal,
+        roti
       })
 
 

@@ -4,7 +4,7 @@ import { KodeProTanggungDummyFactories } from 'Database/factories/barang/Kodepro
 import { KodeProTuaDummyFactories } from 'Database/factories/barang/Kodepro/KodeProTuaDummyFactories'
 
 export default class KodeproKomplitSeeder extends BaseSeeder {
-  public static developmentOnly = true
+  // public static developmentOnly = true
   public async run () {
     // Write your database queries inside the run method
     await KodeProMudaDummyFactories.createMany(10)

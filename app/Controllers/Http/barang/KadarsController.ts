@@ -14,7 +14,17 @@ export default class KadarsController {
         rupiahParser: rupiahParser
       }
 
-      return await view.render('pengaturan/kadar/view-kadar', { kadar, fungsi })
+      let roti = [
+        {
+          laman: 'Pengaturan Kadar',
+          alamat: '/app/pengaturan/kadar',
+        },
+        {
+          laman: 'Kadar ' + kadar.nama
+        }
+      ]
+
+      return await view.render('pengaturan/kadar/view-kadar', { kadar, fungsi, roti })
     } catch (error) {
       return response.redirect().toPath('/app/')
     }
@@ -26,7 +36,21 @@ export default class KadarsController {
     try {
       const kadar = await Kadar.findOrFail(params.id)
 
-      return await view.render('pengaturan/kadar/form-edit-kadar', { kadar })
+      let roti = [
+        {
+          laman: 'Pengaturan Kadar',
+          alamat: '/app/pengaturan/kadar',
+        },
+        {
+          laman: 'Kadar ' + kadar.nama,
+          alamat: '/app/pengaturan/kadar/' + kadar.id
+        },
+        {
+          laman: 'Ubah Data'
+        }
+      ]
+
+      return await view.render('pengaturan/kadar/form-edit-kadar', { kadar, roti })
     } catch (error) {
       return response.redirect().toPath('/app/')
     }

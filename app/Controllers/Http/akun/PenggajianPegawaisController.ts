@@ -115,9 +115,20 @@ export default class PenggajianPegawaisController {
       // lifehackUrlSementara: '/uploads/profilePict/',
     }
 
+    let roti = [
+      {
+        laman: 'Pegawai',
+        alamat: '/app/pegawai',
+      },
+      {
+        laman: 'Penggajian Pegawai',
+      },
+    ]
+
     return await view.render('pegawai/penggajian-pegawai/list-penggajian-pegawai', {
       penggajians,
-      tambahan
+      tambahan,
+      roti
     })
   }
 
@@ -159,7 +170,21 @@ export default class PenggajianPegawaisController {
         jarakHari: jarakHari
       }
 
-      return await view.render('pegawai/penggajian-pegawai/view-penggajian-pegawai', { penggajian, fungsi, tambahan })
+      let roti = [
+        {
+          laman: 'Pegawai',
+          alamat: '/app/pegawai',
+        },
+        {
+          laman: 'Penggajian Pegawai',
+          alamat: '/app/pegawai/penggajian',
+        },
+        {
+          laman: penggajian.penerimaGaji.nama
+        }
+      ]
+
+      return await view.render('pegawai/penggajian-pegawai/view-penggajian-pegawai', { penggajian, fungsi, tambahan, roti })
 
     } catch (error) {
       console.error(error)

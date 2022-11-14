@@ -117,12 +117,29 @@ export default class PegawaisController {
       // lifehackUrlSementara: '/uploads/profilePict/'
     }
 
-    return await view.render('pegawai/list-pegawai', { pegawais, tambahan })
+    let roti = [
+      {
+        laman: 'Pegawai'
+      }
+    ]
+
+    return await view.render('pegawai/list-pegawai', { pegawais, tambahan, roti })
   }
 
   public async create({ view }: HttpContextContract) {
     const pengaturan = await Pengaturan.findOrFail(1)
-    return await view.render('pegawai/form-pegawai', { gaji: pengaturan.defaultGajiKaryawan })
+
+    let roti = [
+      {
+        laman: 'Pegawai',
+        alamat: '/app/pegawai',
+      },
+      {
+        laman: 'Baru'
+      }
+    ]
+
+    return await view.render('pegawai/form-pegawai', { gaji: pengaturan.defaultGajiKaryawan, roti })
   }
 
   public async store({ request, response, session }: HttpContextContract) {
@@ -264,10 +281,21 @@ export default class PegawaisController {
         rupiahParser: rupiahParser,
       }
 
+      let roti = [
+        {
+          laman: 'Pegawai',
+          alamat: '/app/pegawai',
+        },
+        {
+          laman: pegawai.nama
+        }
+      ]
+
       return await view.render('pegawai/view-pegawai', {
         pegawai,
         tambahan,
         fungsi,
+        roti
       })
     } catch (error) {
       // sebener e kalo bisa raise error flag dulu
@@ -283,6 +311,20 @@ export default class PegawaisController {
       await pegawai.load('user')
       await pegawai.load('jabatan')
 
+      let roti = [
+        {
+          laman: 'Pegawai',
+          alamat: '/app/pegawai',
+        },
+        {
+          laman: pegawai.nama,
+          alamat: '/app/pegawai/' + pegawai.id,
+        },
+        {
+          laman: 'Akun'
+        }
+      ]
+
       return await view.render('pegawai/akun/view-akun-pegawai', {
         pegawai: {
           nama: pegawai.nama,
@@ -292,6 +334,7 @@ export default class PegawaisController {
           username: pegawai.user.username,
           apakahPegawaiAktif: pegawai.apakahPegawaiAktif,
         },
+        roti
       })
     } catch (error) {
       session.flash('alertError', 'Permintaan anda tidak dapat diproses.')
@@ -323,8 +366,22 @@ export default class PegawaisController {
         isAdmin,
       }
 
+      let roti = [
+        {
+          laman: 'Pegawai',
+          alamat: '/app/pegawai',
+        },
+        {
+          laman: pegawai.nama,
+          alamat: '/app/pegawai/' + pegawai.id,
+        },
+        {
+          laman: 'Ubah Data'
+        }
+      ]
+
       // lanjut disini
-      return await view.render('pegawai/form-edit-pegawai', { pegawai, tambahan })
+      return await view.render('pegawai/form-edit-pegawai', { pegawai, tambahan, roti })
     } catch (error) {
       console.error(error)
       session.flash('alertError', 'Anda tidak memiliki hak untuk mengakses laman tersebut!')
@@ -555,7 +612,21 @@ export default class PegawaisController {
         rupiahParser: rupiahParser,
       }
 
-      return view.render('pegawai/tagihan-gaji-pegawai', { pegawai, tambahan, fungsi, tagihans })
+      let roti = [
+        {
+          laman: 'Pegawai',
+          alamat: '/app/pegawai',
+        },
+        {
+          laman: pegawai.nama,
+          alamat: '/app/pegawai/' + pegawai.id,
+        },
+        {
+          laman: 'Tagihan Gaji'
+        }
+      ]
+
+      return view.render('pegawai/tagihan-gaji-pegawai', { pegawai, tambahan, fungsi, tagihans, roti })
     } catch (error) {
       session.flash('alertError', 'Pegawai yang anda akses tidak valid atau terhapus.')
       return response.redirect().toPath('/app/pegawai')

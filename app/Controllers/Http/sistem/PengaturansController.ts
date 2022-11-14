@@ -97,11 +97,17 @@ export default class PengaturansController {
       }
     }
 
+    let roti = [
+      {
+        laman: 'Pengaturan Toko',
+      },
+    ]
+
     let tambahan = {
       adaLogo: await Drive.exists('logoToko/' + pengaturan.logoToko),
       teksPasaran,
     }
-    return await view.render('pengaturan/atur-toko', { pengaturan, tambahan })
+    return await view.render('pengaturan/atur-toko', { pengaturan, tambahan, roti })
   }
 
   public async gantiLogo({ request, response }: HttpContextContract) {
@@ -293,7 +299,13 @@ export default class PengaturansController {
 
     const kadars = await Kadar.query().orderBy('id', 'asc')
 
-    return await view.render('pengaturan/atur-kadar', { kadars })
+    let roti = [
+      {
+        laman: 'Pengaturan Kadar',
+      },
+    ]
+
+    return await view.render('pengaturan/atur-kadar', { kadars, roti })
   }
 
   // ======================================= TRANSAKSI ================================================
@@ -305,7 +317,13 @@ export default class PengaturansController {
       rupiahParser: rupiahParser,
     }
 
-    return await view.render('pengaturan/atur-transaksi', { pengaturan, fungsi })
+    let roti = [
+      {
+        laman: 'Pengaturan Transaksi',
+      },
+    ]
+
+    return await view.render('pengaturan/atur-transaksi', { pengaturan, fungsi, roti })
   }
 
   public async getDataTransaksi({ response }: HttpContextContract) {
@@ -491,7 +509,13 @@ export default class PengaturansController {
       rupiahParser: rupiahParser,
     }
 
-    return await view.render('pengaturan/atur-saldo', { pengaturan, rekap, fungsi })
+    let roti = [
+      {
+        laman: 'Pengaturan Saldo',
+      },
+    ]
+
+    return await view.render('pengaturan/atur-saldo', { pengaturan, rekap, fungsi, roti })
   }
 
   public async bandingSaldoToko({ response, request, auth }: HttpContextContract) {
@@ -538,7 +562,13 @@ export default class PengaturansController {
     // Ini udah make middleware
     const pengaturan = await Pengaturan.findOrFail(1)
 
-    return await view.render('pengaturan/atur-barang', { pengaturan })
+    let roti = [
+      {
+        laman: 'Pengaturan Barang',
+      },
+    ]
+
+    return await view.render('pengaturan/atur-barang', { pengaturan, roti })
   }
 
   public async getDataBarang({ response }: HttpContextContract) {
@@ -612,7 +642,13 @@ export default class PengaturansController {
       rupiahParser: rupiahParser,
     }
 
-    return await view.render('pengaturan/atur-pegawai', { pengaturan, fungsi })
+    let roti = [
+      {
+        laman: 'Pengaturan Pegawai',
+      },
+    ]
+
+    return await view.render('pengaturan/atur-pegawai', { pengaturan, fungsi, roti })
   }
 
   public async getDataPegawai({ response }: HttpContextContract) {

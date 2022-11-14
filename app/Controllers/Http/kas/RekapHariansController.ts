@@ -131,10 +131,21 @@ export default class RekapHariansController {
       formatDate: formatDate,
     }
 
+    let roti = [
+      {
+        laman: 'Pembukuan Kas',
+        alamat: '/app/kas',
+      },
+      {
+        laman: 'Rekap Harian'
+      }
+    ]
+
     return await view.render('kas/rekap-harian/list-rekap-harian', {
       rekaps,
       tambahan,
       fungsi,
+      roti
     })
   }
 
@@ -211,6 +222,20 @@ export default class RekapHariansController {
         tanggalKemarin: kemarin
       }
 
+      let roti = [
+        {
+          laman: 'Pembukuan Kas',
+          alamat: '/app/kas',
+        },
+        {
+          laman: 'Rekap Harian',
+          alamat: '/app/kas/rekap-harian'
+        },
+        {
+          laman: rekap.tanggalRekap.toFormat('D')
+        }
+      ]
+
       return await view.render('kas/rekap-harian/view-rekap-harian', {
         rekap,
         rekapKemarin,
@@ -218,6 +243,7 @@ export default class RekapHariansController {
         rekapPembelian,
         fungsi,
         tambahan,
+        roti
       })
     } catch (error) {
       console.error(error)

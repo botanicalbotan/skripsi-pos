@@ -143,10 +143,17 @@ export default class KelompoksController {
       stokHabis: stokHabis[0].jumlah,
     }
 
+    let roti = [
+      {
+        laman: 'Kelola Barang',
+      },
+    ]
+
     return await view.render('barang/list-kelompok', {
       kelompoks,
       tambahan,
       statistik,
+      roti
     })
   }
 
@@ -161,10 +168,25 @@ export default class KelompoksController {
 
     const bentuks = await Database.from('bentuks').select('id', 'bentuk')
 
+    let roti = [
+      {
+        laman: 'Kelola Barang',
+        alamat: '/app/barang',
+      },
+      {
+        laman: 'Kelompok',
+        alamat: '/app/barang',
+      },
+      {
+        laman: 'Baru'
+      }
+    ]
+
     return await view.render('barang/kelompok/form-kelompok', {
       defaultPengaturan,
       kadars,
       bentuks,
+      roti
     })
   }
 
@@ -261,10 +283,25 @@ export default class KelompoksController {
         adaFotoPencatat: await Drive.exists('profilePict/' + kelompok.pengguna.foto),
       }
 
+      let roti = [
+        {
+          laman: 'Kelola Barang',
+          alamat: '/app/barang',
+        },
+        {
+          laman: 'Kelompok',
+          alamat: '/app/barang',
+        },
+        {
+          laman: kelompok.nama
+        }
+      ]
+
       return await view.render('barang/kelompok/view-kelompok', {
         kelompok,
         fungsi,
         tambahan,
+        roti
       })
     } catch (error) {
       session.flash('alertError', 'Kelompok yang anda akses tidak valid atau terhapus.')
@@ -328,10 +365,29 @@ export default class KelompoksController {
         lastDataInPage: tempLastData >= tambahs.total ? tambahs.total : tempLastData,
       }
 
+      let roti = [
+        {
+          laman: 'Kelola Barang',
+          alamat: '/app/barang',
+        },
+        {
+          laman: 'Kelompok',
+          alamat: '/app/barang',
+        },
+        {
+          laman: kelompok.nama,
+          alamat: '/app/barang/kelompok/' + kelompok.id
+        },
+        {
+          laman: 'Penambahan'
+        }
+      ]
+
       return await view.render('barang/kelompok/mutasi-penambahan-kelompok', {
         tambahs,
         tambahan,
         kelompok,
+        roti
       })
     } catch (error) {
       session.flash('alertError', 'Kelompok yang anda akses tidak valid atau terhapus.')
@@ -401,10 +457,29 @@ export default class KelompoksController {
         lastDataInPage: tempLastData >= koreksis.total ? koreksis.total : tempLastData,
       }
 
+      let roti = [
+        {
+          laman: 'Kelola Barang',
+          alamat: '/app/barang',
+        },
+        {
+          laman: 'Kelompok',
+          alamat: '/app/barang',
+        },
+        {
+          laman: kelompok.nama,
+          alamat: '/app/barang/kelompok/' + kelompok.id
+        },
+        {
+          laman: 'Koreksi'
+        }
+      ]
+
       return await view.render('barang/kelompok/mutasi-koreksi-kelompok', {
         koreksis,
         tambahan,
         kelompok,
+        roti
       })
     } catch (error) {
       session.flash('alertError', 'Kelompok yang anda akses tidak valid atau terhapus.')
@@ -420,10 +495,29 @@ export default class KelompoksController {
 
       const bentuks = await Database.from('bentuks').select('id', 'bentuk')
 
+      let roti = [
+        {
+          laman: 'Kelola Barang',
+          alamat: '/app/barang',
+        },
+        {
+          laman: 'Kelompok',
+          alamat: '/app/barang',
+        },
+        {
+          laman: kelompok.nama,
+          alamat: '/app/barang/kelompok/' + kelompok.id
+        },
+        {
+          laman: 'Ubah Data'
+        }
+      ]
+
       return await view.render('barang/kelompok/form-edit-kelompok', {
         kelompok,
         kadars,
         bentuks,
+        roti
       })
     } catch (error) {
       session.flash('alertError', 'Kelompok yang anda cari tidak valid!')

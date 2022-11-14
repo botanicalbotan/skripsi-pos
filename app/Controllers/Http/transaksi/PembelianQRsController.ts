@@ -17,6 +17,7 @@ import User from 'App/Models/User'
 
 export default class PembelianQRsController {
 
+  // ajax
   public async cariQR({
     request,
     response
@@ -114,7 +115,13 @@ export default class PembelianQRsController {
         lamaTerlambat: lamaTerlambat
       }
 
-      return await view.render('transaksi/pembelian/form-QR-beli', { penjualan, tambahan, tags, fungsi })
+      let roti = [
+        {
+          laman: 'Pembelian QR'
+        }
+      ]
+
+      return await view.render('transaksi/pembelian/form-QR-beli', { penjualan, tambahan, tags, fungsi, roti })
 
     } catch (error) {
       session.flash('alertError', 'Kode mungkin salah, typo, atau transaksi terkait telah dijual sebelumnya.')
@@ -243,7 +250,6 @@ export default class PembelianQRsController {
       let apakahBisaDitawar = false
       
       // INGET, SELALU ADA NOTA LEO
-      let apakahGadai = (validrequest.ajukanGadai)? true : false
       let apakahTT = (validrequest.ajukanTT && !validrequest.ajukanGadai) ? true : false // ga dicek lagi, INI GADAI TAMBAHAN DARI DOSEN GABISA TT
       // janjiTT diatas
       let apakahTerlambatTT = false // OK
@@ -493,8 +499,6 @@ export default class PembelianQRsController {
         hargaBeliSeharusnya: hargaBeliTarget, // diitung dulu
         hargaBeliAkhir: hargaFinal, // diitung dulu
         ongkosKerusakanTotal: ongkosRusak,
-        apakahDigadaikan: apakahGadai,
-        maxGadaiAt: (apakahGadai)? DateTime.now().plus({ minute: 30 }) : DateTime.now() // konsepnya sama kek print nota di penjualan
       })
 
       // n-to-n ke kerusakan

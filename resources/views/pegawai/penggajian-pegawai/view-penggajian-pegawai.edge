@@ -1,11 +1,13 @@
 @layout('layouts/master')
 
 {{-- buat ngeset judul --}}
-@set('judul', 'Pembayaran Gadi Periode '+ penggajian.tanggalSeharusnyaDibayar.toLocaleString({ month:'long', year:'numeric' }) + 'An. '+ penggajian.penerimaGaji.nama +' | Postoma')
+@set('judul', 'Pembayaran Gaji Periode '+ penggajian.tanggalSeharusnyaDibayar.toLocaleString({ month:'long', year:'numeric' }) + 'An. '+ penggajian.penerimaGaji.nama +' | Postoma')
 
 
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="detail" id="base-page">
+  @include('partials/wadah-bread')
+
   <h2 class="text-4xl font-semibold">Data Penggajian</h2>
   <h4 class="text-xl text-secondary">Detail data dari tagihan pembayaran gaji karyawan yang anda pilih.</h4>
 

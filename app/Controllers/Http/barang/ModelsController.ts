@@ -78,11 +78,35 @@ export default class ModelsController {
       lastDataInPage: tempLastData >= models.total ? models.total : tempLastData,
     }
 
-    return await view.render('barang/model/list-model', { models, tambahan })
+    let roti = [
+      {
+        laman: 'Kelola Barang',
+        alamat: '/app/barang',
+      },
+      {
+        laman: 'Model',
+      },
+    ]
+
+    return await view.render('barang/model/list-model', { models, tambahan, roti })
   }
 
   public async create({ view }: HttpContextContract) {
-    return await view.render('barang/model/form-model')
+    let roti = [
+      {
+        laman: 'Kelola Barang',
+        alamat: '/app/barang',
+      },
+      {
+        laman: 'Model',
+        alamat: '/app/barang/model',
+      },
+      {
+        laman: 'Baru'
+      }
+    ]
+
+    return await view.render('barang/model/form-model', { roti })
   }
 
   public async store({ request, response, session, auth }: HttpContextContract) {
@@ -142,7 +166,21 @@ export default class ModelsController {
         adaFotoPencatat: await Drive.exists('profilePict/' + model.pengguna.foto),
       }
 
-      return await view.render('barang/model/view-model', { model, tambahan })
+      let roti = [
+        {
+          laman: 'Kelola Barang',
+          alamat: '/app/barang',
+        },
+        {
+          laman: 'Model',
+          alamat: '/app/barang/model',
+        },
+        {
+          laman: model.nama
+        }
+      ]
+
+      return await view.render('barang/model/view-model', { model, tambahan, roti })
     } catch (error) {
       session.flash('alertError', 'Model yang anda akses tidak valid atau terhapus.')
       return response.redirect().toPath('/app/barang/model/')
@@ -156,7 +194,25 @@ export default class ModelsController {
 
       await model.load('bentuk')
 
-      return await view.render('barang/model/form-edit-model', { model })
+      let roti = [
+        {
+          laman: 'Kelola Barang',
+          alamat: '/app/barang',
+        },
+        {
+          laman: 'Model',
+          alamat: '/app/barang/model',
+        },
+        {
+          laman: model.nama,
+          alamat: '/app/barang/model/' + model.id
+        }, 
+        {
+          laman: 'Ubah Data'
+        }
+      ]
+
+      return await view.render('barang/model/form-edit-model', { model, roti })
     } catch (error) {
       return response.redirect().toPath('/app/barang/model/')
     }

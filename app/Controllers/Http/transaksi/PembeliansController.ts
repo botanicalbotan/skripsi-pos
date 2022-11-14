@@ -20,12 +20,19 @@ export default class PembeliansController {
 
     const pengaturan = await Pengaturan.findOrFail(1)
 
+    let roti = [
+      {
+        laman: 'Formulir Pembelian'
+      }
+    ]
+
     return await view.render('transaksi/pembelian/form-beli', {
       // kadars,
       toko: {
         nama: pengaturan.namaToko,
         alamat: pengaturan.alamatTokoLengkap,
       },
+      roti
     })
   }
 
@@ -76,7 +83,17 @@ export default class PembeliansController {
         apakahTelat,
       }
 
-      return await view.render('transaksi/pembelian/view-beli', { PB, fungsi, tambahan })
+      let roti = [
+        {
+          laman: 'Riwayat Pembelian',
+          alamat: '/app/riwayat/pembelian/',
+        },
+        {
+          laman: PB.namaBarang
+        }
+      ]
+
+      return await view.render('transaksi/pembelian/view-beli', { PB, fungsi, tambahan, roti })
     } catch (error) {
       session.flash('alertError', 'Pembelian yang anda pilih tidak valid!')
       return response.redirect().toPath('/app/riwayat/pembelian')
@@ -662,18 +679,24 @@ export default class PembeliansController {
 
       const terparser = new Terbilang()
 
-      // let now = new Date().getTime()
-      // let max = new Date(pembelian.maxGadaiAt.toJSDate()).getTime()
-      // let distance = max - now
-
-      // Time calculations for days, hours, minutes and seconds
-      // let minutes = distance > 0 ? Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)) : 0
-      // let seconds = distance > 0 ? Math.floor((distance % (1000 * 60)) / 1000) : 0
-
       const fungsi = {
         rupiahParser: rupiahParser,
         kapitalHurufPertama: kapitalHurufPertama,
       }
+
+      let roti = [
+        {
+          laman: 'Riwayat Pembelian',
+          alamat: '/app/riwayat/pembelian',
+        },
+        {
+          laman: pembelian.namaBarang,
+          alamat: '/app/transaksi/pembelian/' + pembelian.id,
+        },
+        {
+          laman: 'Pasca'
+        }
+      ]
 
       let penalti = 0
       let potongan = 0
@@ -686,9 +709,6 @@ export default class PembeliansController {
       const tambahan = {
         hargaBeliTerbilang:
           kapitalHurufPertama(terparser.ubahKeTeks(pembelian.hargaBeliAkhir || 0)) + ' rupiah',
-        // apakahExpired: distance <= 0,
-        // menit: minutes,
-        // detik: seconds,
         totalPenalti: -Math.abs(penalti),
         totalPotongan: -Math.abs(potongan),
         totalKerusakan: -Math.abs(pembelian.ongkosKerusakanTotal),
@@ -698,6 +718,7 @@ export default class PembeliansController {
         pembelian,
         fungsi,
         tambahan,
+        roti
       })
     } catch (error) {
       session.flash('alertError', 'Pembelian yang anda pilih tidak valid!')
@@ -762,7 +783,21 @@ export default class PembeliansController {
         rupiahParser: rupiahParser
       }
 
-      return view.render('riwayat/pembelian/rusak-beli', { PB, fungsi })
+      let roti = [
+        {
+          laman: 'Riwayat Pembelian',
+          alamat: '/app/riwayat/pembelian',
+        },
+        {
+          laman: PB.namaBarang,
+          alamat: '/app/transaksi/pembelian/' + PB.id,
+        },
+        {
+          laman: 'Kerusakan'
+        }
+      ]
+
+      return view.render('riwayat/pembelian/rusak-beli', { PB, fungsi, roti })
     } catch (error) {
       session.flash('alertError', 'Kerusakan pembelian yang anda pilih tidak valid!')
       return response.redirect().toPath('/app/transaksi/pembelian/' + params.id)

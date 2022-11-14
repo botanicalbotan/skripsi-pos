@@ -73,10 +73,17 @@ export default class RiwayatBelisController {
       pasaranFromTanggal: pasaranFromTanggal,
     }
 
+    let roti = [
+      {
+        laman: 'Riwayat Pembelian',
+      },
+    ]
+
     return await view.render('riwayat/pembelian/list-tanggal-beli', {
       tanggals,
       tambahan,
       fungsi,
+      roti
     })
   }
 
@@ -189,11 +196,18 @@ export default class RiwayatBelisController {
       lastDataInPage: tempLastData >= pembelians.total ? pembelians.total : tempLastData,
     }
 
+    let roti = [
+      {
+        laman: 'Riwayat Pembelian'
+      }
+    ]
+
     return await view.render('riwayat/pembelian/list-riwayat-beli-sekarang', {
       tambahan,
       pembelians,
       fungsi,
       rekap,
+      roti
     })
   }
 
@@ -314,12 +328,19 @@ export default class RiwayatBelisController {
         lastDataInPage: tempLastData >= pembelians.total ? pembelians.total : tempLastData,
       }
 
+      let roti = [
+        {
+          laman: 'Riwayat Pembelian '
+        }
+      ]
+
       return await view.render('riwayat/pembelian/list-riwayat-beli-pertanggal', {
         tambahan,
         pembelians,
         fungsi,
         rekap,
         tanggal,
+        roti
       })
     } else {
       session.flash('alertError', 'Tanggal pembelian yang anda isikan tidak valid!')

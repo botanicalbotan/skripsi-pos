@@ -52,7 +52,13 @@ export default class PenjualansController {
       apakahSembunyi: sanitizedSembunyiStok == 0
     }
 
-    return await view.render('transaksi/penjualan/prepare-jual', { kelompoks, tambahan })
+    let roti = [
+      {
+        laman: 'Persiapan Penjualan'
+      }
+    ]
+
+    return await view.render('transaksi/penjualan/prepare-jual', { kelompoks, tambahan, roti })
   }
 
   public async form({ view, request, response, session }: HttpContextContract) {
@@ -84,7 +90,17 @@ export default class PenjualansController {
         })
         .firstOrFail()
 
-      return await view.render('transaksi/penjualan/form-jual', { kelompok })
+      let roti = [
+        {
+          laman: 'Persiapan Penjualan',
+          alamat: '/app/transaksi/penjualan',
+        },
+        {
+          laman: 'Formulir Penjualan',
+        },
+      ]
+
+      return await view.render('transaksi/penjualan/form-jual', { kelompok, roti })
     } catch (error) {
       session.flash('alertError', 'Kelompok yang ada pilih tidak valid!')
       return response.redirect().toPath('/app/transaksi/penjualan')
@@ -317,7 +333,17 @@ export default class PenjualansController {
         adaFotoPencatat: (await Drive.exists('profilePict/' + PJ.pengguna.foto))
       }
 
-      return await view.render('transaksi/penjualan/view-jual', { PJ, fungsi, tambahan })
+      let roti = [
+        {
+          laman: 'Riwayat Penjualan',
+          alamat: '/app/riwayat/penjualan',
+        },
+        {
+          laman: PJ.namaBarang,
+        },
+      ]
+
+      return await view.render('transaksi/penjualan/view-jual', { PJ, fungsi, tambahan, roti })
 
     } catch (error) {
       session.flash('alertError', 'Penjualan yang anda pilih tidak valid!')
@@ -394,7 +420,21 @@ export default class PenjualansController {
       detik: seconds
     }
 
-    return await view.render('transaksi/penjualan/pasca-jual', { PJ, fungsi, tambahan })
+    let roti = [
+      {
+        laman: 'Riwayat Penjualan',
+        alamat: '/app/riwayat/penjualan',
+      },
+      {
+        laman: PJ.namaBarang,
+        alamat: '/app/transaksi/penjualan/' + PJ.id,
+      },
+      {
+        laman: 'Pasca'
+      }
+    ]
+
+    return await view.render('transaksi/penjualan/pasca-jual', { PJ, fungsi, tambahan, roti })
 
     } catch (error) {
       session.flash('alertError', 'Penjualan yang anda pilih tidak valid!')

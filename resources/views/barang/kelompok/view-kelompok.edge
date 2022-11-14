@@ -5,6 +5,8 @@
 
 @section('content')
 <div class="w-full p-8 base-page" data-idk = "{{ kelompok.id }}" data-stok ="{{ kelompok.stok }}"  id="base-page">
+  @include('partials/wadah-bread')
+  
   <h2 class="text-4xl font-semibold">Detail Kelompok</h2>
   <h4 class="text-lg text-secondary opacity-60">Detail data dan analisa transaksi dari kelompok perhiasan yang anda
     pilih.</h4>

@@ -63,6 +63,7 @@ Route.group(() => {
   Route.group(() => {
     // ================================ KELOMPOK ===============================================
     Route.get('/', 'barang/KelompoksController.index')
+    Route.get('/kelompok', 'barang/KelompoksController.index')
     Route.get('/kelompok/:id/mutasi-penambahan', 'barang/KelompoksController.showMutasiTambah')
     Route.get('/kelompok/:id/mutasi-koreksi', 'barang/KelompoksController.showMutasiKoreksi')
     Route.put('/kelompok/:id/ubah-stok', 'barang/KelompoksController.ubahStok').middleware(['isKepalaWeb'])

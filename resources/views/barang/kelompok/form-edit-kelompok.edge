@@ -9,9 +9,11 @@
 
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="edit" id="base-page">
-  <h2 class="text-4xl font-semibold">Kelompok Perhiasan Baru</h2>
-  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mencatat kelompok perhiasan baru berdasarkan kadar, berat
-    dan bentuk perhiasannya.</h4>
+  @include('partials/wadah-bread')
+  
+  <h2 class="text-4xl font-semibold">Ubah Data Kelompok Perhiasan</h2>
+  <h4 class="text-lg text-secondary opacity-60">Formulir untuk mengubah data kelompok perhiasan yang tersimpan dalam
+    sistem.</h4>
 
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 md:w-min">
     @include('partials/wadah-alert')

@@ -87,6 +87,16 @@ export default class PenambahanStoksController {
       lastDataInPage: tempLastData >= penambahans.total ? penambahans.total : tempLastData,
     }
 
+    let roti = [
+      {
+        laman: 'Kelola Barang',
+        alamat: '/app/barang',
+      },
+      {
+        laman: 'Penambahan Stok',
+      },
+    ]
+
     const fungsi = {
       tanggalLokal: function(datetime){
         let tanggal = new Date(datetime)
@@ -98,11 +108,25 @@ export default class PenambahanStoksController {
       }
     }
 
-    return await view.render('barang/penambahan-stok/list-penambahan', { penambahans, tambahan, fungsi })
+    return await view.render('barang/penambahan-stok/list-penambahan', { penambahans, tambahan, fungsi, roti })
   }
 
   public async create ({ view }: HttpContextContract) {
-    return await view.render('barang/penambahan-stok/form-penambahan')
+    let roti = [
+      {
+        laman: 'Kelola Barang',
+        alamat: '/app/barang',
+      },
+      {
+        laman: 'Penambahan Stok',
+        alamat: '/app/barang/penambahan',
+      },
+      {
+        laman: 'Baru'
+      }
+    ]
+
+    return await view.render('barang/penambahan-stok/form-penambahan', { roti })
   }
 
   public async store ({ request, session, response }: HttpContextContract) {
@@ -200,8 +224,21 @@ export default class PenambahanStoksController {
         adaFotoPencatat: (await Drive.exists('profilePict/' + penambahan.pengguna.foto)),
       }
 
+      let roti = [
+        {
+          laman: 'Kelola Barang',
+          alamat: '/app/barang',
+        },
+        {
+          laman: 'Penambahan Stok',
+          alamat: '/app/barang/penambahan',
+        },
+        {
+          laman: 'Penambahan Stok ' + penambahan.createdAt.toFormat('F')
+        }
+      ]
 
-      return await view.render('barang/penambahan-stok/view-penambahan', { penambahan, tambahan })
+      return await view.render('barang/penambahan-stok/view-penambahan', { penambahan, tambahan, roti })
     } catch (error) {
       return response.redirect().toPath('/app/barang/kodepro/')
     }

@@ -45,10 +45,25 @@ export default class PembayaranGadaisController {
         kekurangan: terbayar - gadai.nominalGadai
       }
 
+      let roti = [
+        {
+          laman: 'Gadai',
+          alamat: '/app/transaksi/gadai',
+        },
+        {
+          laman: `Gadai ${rupiahParser(gadai.nominalGadai)} An. ${gadai.namaPenggadai}`,
+          alamat: '/app/transaksi/gadai/' + gadai.id,
+        },
+        {
+          laman: `Pembayaran`
+        }
+      ]
+
       return await view.render('transaksi/gadai/pembayaran/list-bayar-gadai', {
         gadai,
         fungsi,
-        tambahan
+        tambahan,
+        roti
       })
 
     } catch (error) {
@@ -78,14 +93,35 @@ export default class PembayaranGadaisController {
         query.preload('statusGadai')
       })
 
+      await pembayaran.load('gadai')
+
       const fungsi = {
         rupiahParser: rupiahParser,
         kapitalKalimat: kapitalKalimat
       }
 
+      let roti = [
+        {
+          laman: 'Gadai',
+          alamat: '/app/transaksi/gadai',
+        },
+        {
+          laman: `Gadai ${rupiahParser(pembayaran.gadai.nominalGadai)} An. ${pembayaran.gadai.namaPenggadai}`,
+          alamat: '/app/transaksi/gadai/' + pembayaran.gadai.id,
+        },
+        {
+          laman: `Pembayaran`,
+          alamat: `/app/transaksi/gadai/${pembayaran.gadai.id}/pembayaran`
+        },
+        {
+          laman: pembayaran.judulPembayaran
+        }
+      ]
+
       return await view.render('transaksi/gadai/pembayaran/view-bayar-gadai', {
         pembayaran,
-        fungsi
+        fungsi,
+        roti
       })
 
     } catch (error) {
@@ -121,10 +157,29 @@ export default class PembayaranGadaisController {
         kekurangan: terbayar - gadai.nominalGadai
       }
 
+      let roti = [
+        {
+          laman: 'Gadai',
+          alamat: '/app/transaksi/gadai',
+        },
+        {
+          laman: `Gadai ${rupiahParser(gadai.nominalGadai)} An. ${gadai.namaPenggadai}`,
+          alamat: '/app/transaksi/gadai/' + gadai.id,
+        },
+        {
+          laman: `Pembayaran`,
+          alamat: `/app/transaksi/gadai/${gadai.id}/pembayaran`
+        },
+        {
+          laman: 'Baru'
+        }
+      ]
+
       return await view.render('transaksi/gadai/pembayaran/form-bayar-gadai', {
         gadai,
         fungsi,
-        tambahan
+        tambahan,
+        roti
       })
     } catch (error) {
       console.error('error create')

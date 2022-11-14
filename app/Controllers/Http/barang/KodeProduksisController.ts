@@ -87,9 +87,20 @@ export default class KodeProduksisController {
       lastDataInPage: tempLastData >= kodepros.total ? kodepros.total : tempLastData,
     }
 
+    let roti = [
+      {
+        laman: 'Kelola Barang',
+        alamat: '/app/barang',
+      },
+      {
+        laman: 'Kode Produksi',
+      },
+    ]
+
     return await view.render('barang/kodepro/list-kodepro', {
       kodepros,
       tambahan,
+      roti
     })
   }
 
@@ -102,9 +113,24 @@ export default class KodeProduksisController {
 
     let pengaturan = await Pengaturan.findOrFail(1)
 
+    let roti = [
+      {
+        laman: 'Kelola Barang',
+        alamat: '/app/barang',
+      },
+      {
+        laman: 'Kode Produksi',
+        alamat: '/app/barang/kodepro',
+      },
+      {
+        laman: 'Baru'
+      }
+    ]
+
     return await view.render('barang/kodepro/form-kodepro', {
       kadars,
       hargaMal: pengaturan.hargaMal,
+      roti
     })
   }
 
@@ -233,11 +259,26 @@ export default class KodeProduksisController {
         rupiahParser: rupiahParser,
       }
 
+      let roti = [
+        {
+          laman: 'Kelola Barang',
+          alamat: '/app/barang',
+        },
+        {
+          laman: 'Kode Produksi',
+          alamat: '/app/barang/kodepro',
+        },
+        {
+          laman: kodepro.kode
+        }
+      ]
+
       return await view.render('barang/kodepro/view-kodepro', {
         kodepro,
         tambahan,
         fungsi,
         hargaMal: pengaturan.hargaMal,
+        roti
       })
     } catch (error) {
       session.flash('alertError', 'Kode produksi yang anda akses tidak valid atau terhapus.')
@@ -258,10 +299,29 @@ export default class KodeProduksisController {
 
       let pengaturan = await Pengaturan.findOrFail(1)
 
+      let roti = [
+        {
+          laman: 'Kelola Barang',
+          alamat: '/app/barang',
+        },
+        {
+          laman: 'Kode Produksi',
+          alamat: '/app/barang/kodepro',
+        },
+        {
+          laman: kodepro.kode,
+          alamat: '/app/barang/kodepro/' + kodepro.id
+        },
+        {
+          laman: 'Ubah Data'
+        }
+      ]
+
       return await view.render('barang/kodepro/form-edit-kodepro', {
         kodepro,
         kadars,
         hargaMal: pengaturan.hargaMal,
+        roti
       })
     } catch (error) {
       session.flash('alertError', 'Ada masalah di server!')

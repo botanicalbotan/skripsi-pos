@@ -70,7 +70,13 @@ export default class NotifikasisController {
         waktuDiff: bandingWaktu,
       }
 
-      return await view.render('notifikasi/semua-notifikasi', { notifikasis, tambahan, fungsi })
+      let roti = [
+        {
+          laman: 'Notifikasi',
+        },
+      ]
+
+      return await view.render('notifikasi/semua-notifikasi', { notifikasis, tambahan, fungsi, roti })
     } catch (error) {
       session.flash('alertError', 'Ada kesalahan pada notifikasi sistem!')
       return response.redirect().toPath('/app')

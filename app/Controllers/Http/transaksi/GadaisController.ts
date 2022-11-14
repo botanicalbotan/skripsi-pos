@@ -933,212 +933,6 @@ export default class GadaisController {
     }
   }
 
-  // ini yang lama, ntar diganti
-  // public async formulirGadai({ view, request, response, session }: HttpContextContract) {
-  //   let tid = request.input('tid', '')
-
-  //   try {
-  //     const pembelian = await Pembelian.query()
-  //       .where('id', tid)
-  //       .where('apakah_digadaikan', true)
-  //       .whereNull('deleted_at')
-  //       .preload('model', (query) => {
-  //         query.preload('bentuk')
-  //       })
-  //       .preload('kodeProduksi', (query) => {
-  //         query.preload('kadar')
-  //       })
-  //       .preload('pembelianNotaLeo')
-  //       .firstOrFail()
-
-  //     if (!pembelian.apakahDigadaikan) throw 'gaboleh'
-  //     if (pembelian.digadaiAt || pembelian.maxGadaiAt < DateTime.now()) throw 'gaboleh'
-
-  //     let potongan = 0
-  //     let teksPotongan = ''
-  //     if (pembelian.pembelianNotaLeo) {
-  //       potongan = pembelian.pembelianNotaLeo.ongkosPotonganTotal
-  //       teksPotongan = pembelian.pembelianNotaLeo.apakahPotonganPersen
-  //         ? `${pembelian.pembelianNotaLeo.potonganPadaNota}% harga jual`
-  //         : `${rupiahParser(pembelian.pembelianNotaLeo.potonganPadaNota)} per gram`
-  //     }
-
-  //     const fungsi = {
-  //       rupiahParser: rupiahParser,
-  //       kapitalHurufPertama: kapitalHurufPertama,
-  //     }
-
-  //     const tambahan = {
-  //       totalKerusakan: -Math.abs(pembelian.ongkosKerusakanTotal),
-  //       totalPotongan: -Math.abs(potongan),
-  //       teksPotongan: teksPotongan,
-  //     }
-
-  //     return await view.render('transaksi/gadai/form-gadai', { pembelian, fungsi, tambahan })
-  //   } catch (error) {
-  //     session.flash(
-  //       'alertError',
-  //       'Pembelian yang akan anda gadaikan tidak valid, tidak memenuhi syarat gadai, atau telah digadaikan sebelumnya!'
-  //     )
-  //     return response.redirect().toPath('/app/transaksi/gadai')
-  //   }
-  // }
-
-  // public async storeLama({ request, auth, session, response }: HttpContextContract) {
-  //   const newGadaiSchema = schema.create({
-  //     // ini id pembelian
-  //     id: schema.number([
-  //       rules.unsigned(),
-  //       rules.exists({
-  //         table: 'pembelians',
-  //         column: 'id',
-  //         where: {
-  //           deleted_at: null,
-  //           // karena agak ribet, syarat laen gw taro dibawah
-  //         },
-  //       }),
-  //     ]),
-  //     namaPenggadai: schema.string({ trim: true }, [rules.maxLength(50)]),
-  //     nikPenggadai: schema.string({ trim: true }, [rules.maxLength(16)]),
-  //     alamatPenggadai: schema.string({ trim: true }, [rules.maxLength(100)]),
-  //     noHpAktif: schema.string({ trim: true }, [rules.maxLength(15)]),
-
-  //     fotoKTPBase64: schema.string(),
-  //     fotoPerhiasanBase64: schema.string(),
-  //     tanggalTenggat: schema.date({}, [rules.afterOrEqual('today')]),
-  //     keterangan: schema.string.optional({ trim: true }, [rules.maxLength(100)]),
-  //   })
-
-  //   const validrequest = await request.validate({ schema: newGadaiSchema })
-
-  //   let idTransaksi = await buatId()
-  //   let namaFileFotoKtp = ''
-  //   let fileFotoKtp = validrequest.fotoKTPBase64 || ''
-  //   let namaFileFotoPerhiasan = ''
-  //   let fileFotoPerhiasan = validrequest.fotoPerhiasanBase64 || ''
-
-  //   try {
-  //     // ------------- cek auth user --------------------
-  //     if (!auth.user) throw 'auth ngga valid'
-
-  //     const userPengakses = await User.findOrFail(auth.user.id)
-  //     await userPengakses.load('pengguna')
-
-  //     // -------- cek ke validan id pembelian ----------
-  //     const pembelian = await Pembelian.findOrFail(validrequest.id)
-
-  //     if (!pembelian.apakahDigadaikan)
-  //       throw {
-  //         custom: true,
-  //       }
-
-  //     if (pembelian.digadaiAt || pembelian.maxGadaiAt < DateTime.now())
-  //       throw {
-  //         custom: true,
-  //       }
-
-  //     // --------------- Foto KTP -------------------
-  //     try {
-  //       if (
-  //         !isBase64(fileFotoKtp, { mimeRequired: true, allowEmpty: false }) ||
-  //         fileFotoKtp === ''
-  //       ) {
-  //         throw new Error('Input foto ktp tidak valid!')
-  //       }
-
-  //       var block = fileFotoKtp.split(';')
-  //       var realData = block[1].split(',')[1] // In this case "iVBORw0KGg...."
-  //       namaFileFotoKtp = 'GD001' + DateTime.now().toMillis() + idTransaksi + '.jpg' // bisa diganti yang lebih propper
-
-  //       const buffer = Buffer.from(realData, 'base64')
-  //       await Drive.put('transaksi/gadai/katepe/' + namaFileFotoKtp, buffer)
-  //     } catch (error) {
-  //       throw {
-  //         custom: true,
-  //         foto: true,
-  //         perhiasan: false,
-  //         error: 'Input foto ktp tidak valid!',
-  //       }
-  //     }
-
-  //     // --------------- Foto Barang -------------------
-  //     try {
-  //       if (
-  //         !isBase64(fileFotoPerhiasan, { mimeRequired: true, allowEmpty: false }) ||
-  //         fileFotoPerhiasan === ''
-  //       ) {
-  //         throw new Error('Input foto barang tidak valid!')
-  //       }
-
-  //       var block = fileFotoPerhiasan.split(';')
-  //       var realData = block[1].split(',')[1] // In this case "iVBORw0KGg...."
-  //       namaFileFotoPerhiasan = 'GD002' + DateTime.now().toMillis() + idTransaksi + '.jpg' // bisa diganti yang lebih propper
-
-  //       const buffer = Buffer.from(realData, 'base64')
-  //       await Drive.put('transaksi/gadai/barang/' + namaFileFotoPerhiasan, buffer)
-  //     } catch (error) {
-  //       throw {
-  //         custom: true,
-  //         foto: true,
-  //         perhiasan: true,
-  //         error: 'Input foto barang tidak valid!',
-  //       }
-  //     }
-
-  //     const status = await StatusGadai.findByOrFail('status', 'berjalan')
-
-  //     const gadai = await pembelian.related('gadai').create({
-  //       tanggalTenggat: validrequest.tanggalTenggat,
-  //       namaPenggadai: validrequest.namaPenggadai,
-  //       nikPenggadai: validrequest.nikPenggadai,
-  //       fotoKtpPenggadai: namaFileFotoKtp,
-  //       alamatPenggadai: validrequest.alamatPenggadai,
-  //       nohpPenggadai: validrequest.noHpAktif,
-  //       nominalGadai: pembelian.hargaBeliAkhir, // keknya buat sekarang nominalnya harus sama ama penjualan
-  //       keterangan: validrequest.keterangan,
-  //       fotoBarang: namaFileFotoPerhiasan,
-  //       statusGadaiId: status.id,
-  //       penggunaId: userPengakses.pengguna.id,
-  //     })
-
-  //     pembelian.digadaiAt = DateTime.now()
-  //     await pembelian.save()
-
-  //     session.flash('alertSukses', 'Gadai baru berhasil disimpan!')
-  //     return response.redirect().toPath('/app/transaksi/gadai/' + gadai.id)
-  //   } catch (error) {
-  //     await Drive.delete('transaksi/gadai/katepe/' + namaFileFotoKtp)
-  //     await Drive.delete('transaksi/gadai/barang/' + namaFileFotoPerhiasan)
-
-  //     if (error.custom) {
-  //       if (error.foto) {
-  //         if (error.perhiasan) {
-  //           session.flash('errors', {
-  //             fotoPerhiasanBase64: error.error,
-  //           })
-  //         } else {
-  //           session.flash('errors', {
-  //             fotoKTPBase64: error.error,
-  //           })
-  //         }
-  //       } else {
-  //         session.flash(
-  //           'alertError',
-  //           'Pembelian yang akan anda gadaikan tidak valid, tidak memenuhi syarat gadai, atau telah digadaikan sebelumnya!'
-  //         )
-  //         return response.redirect().toPath('/app/transaksi/gadai')
-  //       }
-  //     } else {
-  //       session.flash(
-  //         'alertError',
-  //         'Ada masalah saat menyimpan data gadai. Silahkan coba lagi setelah beberapa saat.'
-  //       )
-  //     }
-
-  //     return response.redirect().withQs().back()
-  //   }
-  // }
-
   public async show({ view, response, session, params }: HttpContextContract) {
     try {
       let gadai = await Gadai.findOrFail(params.id)
@@ -1240,16 +1034,6 @@ export default class GadaisController {
       await gadai.load('model', (query)=>{
         query.preload('bentuk')
       })
-      // await gadai.load('pembelian', (query) => {
-      //   query
-      //     .preload('kodeProduksi', (ququery) => {
-      //       ququery.preload('kadar')
-      //     })
-      //     .preload('model', (ququery) => {
-      //       ququery.preload('bentuk')
-      //     })
-      //     .preload('pembelianNotaLeo')
-      // })
       await gadai.load('statusGadai')
 
       let potongan = 0
@@ -1274,7 +1058,21 @@ export default class GadaisController {
         rupiahParser: rupiahParser,
       }
 
-      return view.render('transaksi/gadai/form-edit-gadai', { gadai, tambahan, fungsi })
+      let roti = [
+        {
+          laman: 'Gadai',
+          alamat: '/app/transaksi/gadai',
+        },
+        {
+          laman: `Gadai ${rupiahParser(gadai.nominalGadai)} An. ${gadai.namaPenggadai}`,
+          alamat: '/app/transaksi/gadai/' + gadai.id,
+        },
+        {
+          laman: `Ubah Data`
+        }
+      ]
+
+      return view.render('transaksi/gadai/form-edit-gadai', { gadai, tambahan, fungsi, roti })
     } catch (error) {
       session.flash(
         'alertError',

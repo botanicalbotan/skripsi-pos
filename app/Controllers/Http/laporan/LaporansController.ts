@@ -18,7 +18,13 @@ export default class LaporansController {
   public async index({
     view
   }: HttpContextContract) {
-    return await view.render('laporan/form-laporan')
+    let roti = [
+      {
+        laman: 'Laporan',
+      },
+    ]
+
+    return await view.render('laporan/form-laporan', { roti })
   }
 
   public async generateLaporan({

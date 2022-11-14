@@ -148,6 +148,12 @@ export default class KasController {
       lastDataInPage: tempLastData >= kass.total ? kass.total : tempLastData,
     }
 
+    let roti = [
+      {
+        laman: 'Pembukuan Kas',
+      },
+    ]
+
     // return { tambahan, kass, tes: this.rupiahParser(tambahan.totalKasKeluar) }
 
     return await view.render('kas/list-kas', {
@@ -155,14 +161,25 @@ export default class KasController {
       kass,
       fungsi,
       rekapPenjualan,
-      rekapPembelian
+      rekapPembelian,
+      roti
     })
   }
 
   public async create({
     view
   }: HttpContextContract) {
-    return await view.render('kas/form-kas')
+    let roti = [
+      {
+        laman: 'Pembukuan Kas',
+        alamat: '/app/kas',
+      },
+      {
+        laman: 'Baru'
+      }
+    ]
+
+    return await view.render('kas/form-kas', { roti })
   }
 
   public async store({
@@ -247,10 +264,21 @@ export default class KasController {
         adaFotoPencatat: (await Drive.exists('profilePict/' + kas.pengguna.foto)),
       }
 
+      let roti = [
+        {
+          laman: 'Pembukuan Kas',
+          alamat: '/app/kas',
+        },
+        {
+          laman: ((kas.apakahKasKeluar)? "Kas Keluar ": "Kas Masuk ") + rupiahParser(Math.abs(kas.nominal))
+        }
+      ]
+
       return await view.render('kas/view-kas', {
         kas,
         fungsi,
-        tambahan
+        tambahan,
+        roti
       })
 
     } catch (error) {
@@ -273,8 +301,23 @@ export default class KasController {
         return response.redirect().back()
       }
 
+      let roti = [
+        {
+          laman: 'Pembukuan Kas',
+          alamat: '/app/kas',
+        },
+        {
+          laman: ((kas.apakahKasKeluar)? "Kas Keluar ": "Kas Masuk ") + rupiahParser(Math.abs(kas.nominal)),
+          alamat: '/app/kas/' + kas.id
+        },
+        {
+          laman: 'Ubah Data'
+        }
+      ]
+
       return await view.render('kas/form-edit-kas', {
-        kas
+        kas,
+        roti
       })
 
     } catch (error) {

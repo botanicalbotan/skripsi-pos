@@ -4,7 +4,7 @@ import { KerusakanFactory } from 'Database/factories/barang/KerusakanDummyFactor
 import { KelompokFactory } from 'Database/factories/barang/KelompokDummyFactories'
 
 export default class UserDummySeeder extends BaseSeeder {
-  public static developmentOnly = true
+  // public static developmentOnly = true
   public async run () {
     await ModelFactory.createMany(40)
     await KerusakanFactory.createMany(20)

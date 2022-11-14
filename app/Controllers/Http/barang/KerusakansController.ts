@@ -87,12 +87,36 @@ export default class KerusakansController {
       lastDataInPage: tempLastData >= kerusakans.total ? kerusakans.total : tempLastData,
     }
 
-    return await view.render('barang/kerusakan/list-kerusakan', { kerusakans, tambahan })
+    let roti = [
+      {
+        laman: 'Kelola Barang',
+        alamat: '/app/barang',
+      },
+      {
+        laman: 'Kerusakan',
+      },
+    ]
+
+    return await view.render('barang/kerusakan/list-kerusakan', { kerusakans, tambahan, roti })
     // return await view.render('barang/kerusakan/back-up-list-kerusakan')
   }
 
   public async create({ view }: HttpContextContract) {
-    return await view.render('barang/kerusakan/form-kerusakan')
+    let roti = [
+      {
+        laman: 'Kelola Barang',
+        alamat: '/app/barang',
+      },
+      {
+        laman: 'Kerusakan',
+        alamat: '/app/barang/kerusakan',
+      },
+      {
+        laman: 'Baru'
+      }
+    ]
+
+    return await view.render('barang/kerusakan/form-kerusakan', { roti })
   }
 
   public async store({ request, response, session, auth }: HttpContextContract) {
@@ -156,7 +180,21 @@ export default class KerusakansController {
         adaFotoPencatat: (await Drive.exists('profilePict/' + kerusakan.pengguna.foto)),
       }
 
-      return await view.render('barang/kerusakan/view-kerusakan', { kerusakan, tambahan })
+      let roti = [
+        {
+          laman: 'Kelola Barang',
+          alamat: '/app/barang',
+        },
+        {
+          laman: 'Kerusakan',
+          alamat: '/app/barang/kerusakan',
+        },
+        {
+          laman: kerusakan.nama
+        }
+      ]
+
+      return await view.render('barang/kerusakan/view-kerusakan', { kerusakan, tambahan, roti })
     } catch (error) {
       session.flash('alertError', 'Kerusakan yang anda akses tidak valid atau terhapus.')
       return response.redirect().toPath('/app/barang/kerusakan/')
@@ -168,7 +206,25 @@ export default class KerusakansController {
       const kerusakan = await Kerusakan.findOrFail(params.id)
       await kerusakan.load('bentuk')
 
-      return await view.render('barang/kerusakan/form-edit-kerusakan', { kerusakan })
+      let roti = [
+        {
+          laman: 'Kelola Barang',
+          alamat: '/app/barang',
+        },
+        {
+          laman: 'Kerusakan',
+          alamat: '/app/barang/kerusakan',
+        },
+        {
+          laman: kerusakan.nama,
+          alamat: '/app/barang/kerusakan/' + kerusakan.id
+        },
+        {
+          laman: 'Ubah Data'
+        }
+      ]
+
+      return await view.render('barang/kerusakan/form-edit-kerusakan', { kerusakan, roti })
     } catch (error) {
       return response.redirect().toPath('/app/barang/kerusakan/')
     }
