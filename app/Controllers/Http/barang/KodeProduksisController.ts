@@ -264,8 +264,7 @@ export default class KodeProduksisController {
         hargaMal: pengaturan.hargaMal,
       })
     } catch (error) {
-      session.flash('errorServerThingy', 'Ada masalah di server!')
-      console.error(error)
+      session.flash('alertError', 'Ada masalah di server!')
       return response.redirect().toPath('/app/barang/kodepro/')
     }
   }

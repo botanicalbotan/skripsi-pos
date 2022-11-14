@@ -6,6 +6,8 @@
 
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="detail" id="base-page">
+  @include('partials/wadah-bread')
+
   <h2 class="text-4xl font-semibold">Detail Gadai</h2>
   <h4 class="text-xl text-secondary">Detail data dari gadai yang anda pilih.</h4>
 
@@ -45,19 +47,18 @@
           </div>
           <ul tabindex="0" class="p-2 shadow-lg menu border dropdown-content bg-base-100 rounded-box w-60">
             <li>
-                <a href="/app/transaksi/gadai/{{ gadai.id }}/edit">Ubah data</a>
+              <a href="/app/transaksi/gadai/{{ gadai.id }}/edit">Ubah data</a>
             </li>
 
             @if(session.get('isPemilik'))
             <li>
               <a id="btBatalGadai" class="true-text-error">Batalkan gadai</a>
-              <form id="formBatalGadai"
-                action="/app/transaksi/gadai/{{ gadai.id }}/" method="POST">
+              <form id="formBatalGadai" action="/app/transaksi/gadai/{{ gadai.id }}/" method="POST">
                 {{ csrfField() }}
               </form>
             </li>
             @endif
-            
+
 
           </ul>
         </div>
@@ -165,12 +166,13 @@
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Tenggat</h3>
-                  <span class="flex-1"> 
+                  <span class="flex-1">
                     {{ gadai.tanggalTenggat.toLocaleString({ day: 'numeric', month:'long', year:'numeric' }) }}
-                    
-                    @if(tambahan.jarakHari < 0)
-                      <span class="ml-1 text-error">(terlambat {{ Math.abs(tambahan.jarakHari) }} hari)</span>
-                    @endif
+
+                    @if(tambahan.jarakHari < 0) 
+                    <span class="ml-1 text-error">
+                      &#40;terlambat {{ Math.abs(tambahan.jarakHari) }} hari&#41;</span>
+                  @endif
                   </span>
                 </div>
               </li>
@@ -186,19 +188,20 @@
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Nominal Dibayar</h3>
-                  <span class="flex-1 " id="nominalGadai"> 
+                  <span class="flex-1 " id="nominalGadai">
                     {{ fungsi.rupiahParser(tambahan.terbayar) }}
-                  
+
                     @if(tambahan.terbayar - gadai.nominalGadai >= 0)
-                      <span class="ml-1 text-accent-focus">(Lunas)</span>
+                    <span class="ml-1 text-accent-focus">&#40;Lunas&#41;</span>
                     @else
-                    <span class="ml-1 text-error">({{ fungsi.rupiahParser(tambahan.terbayar - gadai.nominalGadai) }})</span>
+                    <span
+                      class="ml-1 text-error">&#40;{{ fungsi.rupiahParser(tambahan.terbayar - gadai.nominalGadai) }}&#41;</span>
                     @endif
                   </span>
                 </div>
               </li>
 
-              
+
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
                   <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Waktu Pelunasan</h3>
@@ -220,110 +223,307 @@
 
         {{--  Pembayaran Gadai  --}}
         <div>
-            <div class="flex px-2">
-              <div class="flex-1">
-                <h4 class="text-xl mb-2 flex items-center font-semibold">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  Pembayaran Gadai</h4>
-              </div>
-              <div class="flex-none flex align-bottom mb-2 items-end"></div>
+          <div class="flex px-2">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Pembayaran Gadai</h4>
             </div>
-            <div class="space-y-4 border-secondary">
-              <div>Anda dapat melihat daftar pembayaran gadai pada submenu berikut.</div>
-              <a href="/app/transaksi/gadai/{{ gadai.id }}/pembayaran" class="btn btn-sm btn-outline">Lihat Daftar Pembayaran</a>
-            </div>
+            <div class="flex-none flex align-bottom mb-2 items-end"></div>
           </div>
+          <div class="space-y-4 border-secondary">
+            <div>Anda dapat melihat daftar pembayaran gadai pada submenu berikut.</div>
+            <a href="/app/transaksi/gadai/{{ gadai.id }}/pembayaran" class="btn btn-sm btn-outline">Lihat Daftar
+              Pembayaran</a>
+          </div>
+        </div>
 
 
         {{--  Data perhiasan tergadai  --}}
         <div>
-            <div class="flex px-2">
-              <div class="flex-1">
-                <h4 class="text-xl mb-2 flex items-center font-semibold">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Rekap Perhiasan Tergadai</h4>
-              </div>
-              <div class="flex-none flex align-bottom mb-2 items-end">
-                
-              </div>
+          <div class="flex px-2">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Rekap Perhiasan Tergadai</h4>
             </div>
-            <div class="border-t border-b border-secondary">
-              <ul>
-  
-                <li class="border-b last:border-b-0">
-                  <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
-                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Nama Barang</h3>
-                    <a class="flex-1 link link-primary" href="/app/transaksi/pembelian/{{ gadai.pembelian.id }}">{{ fungsi.kapitalHurufPertama(gadai.pembelian.namaBarang) }}</a>
-                  </div>
-                </li>
-  
-                <li class="border-b last:border-b-0">
-                  <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
-                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kondisi Perhiasan</h3>
-                    <span class="flex-1 ">{{ fungsi.kapitalHurufPertama(gadai.pembelian.kondisiFisik)}}</span>
-                  </div>
-                </li>
-  
-                <li class="border-b last:border-b-0">
-                  <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
-                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Berat Barang</h3>
-                    <span class="flex-1">{{ gadai.pembelian.beratBarang }} Gram</span>
-                  </div>
-                </li>
-  
-                <li class="border-b last:border-b-0">
-                  <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
-                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Bentuk & Kadar Perhiasan</h3>
-                    <span class="flex-1" style="color: {{ gadai.pembelian.kodeProduksi.kadar.warnaNota }}">{{ gadai.pembelian.model.bentuk.bentuk }}
-                      {{ gadai.pembelian.kodeProduksi.kadar.nama }}</span>
-                  </div>
-                </li>
-  
-                <li class="border-b last:border-b-0">
-                  <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
-                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Model Perhiasan</h3>
-                    <span class="flex-1 ">{{ gadai.pembelian.model.nama }}</span>
-                  </div>
-                </li>
-  
-                <li class="border-b last:border-b-0">
-                  <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
-                    <h3 class="flex-none w-full sm:w-1/3 opacity-75">Harga Beli</h3>
-                    <span class="flex-1 ">{{ fungsi.rupiahParser(gadai.pembelian.hargaBeliAkhir) }}</span>
-                  </div>
-                </li>
-  
-              </ul>
+            <div class="flex-none flex align-bottom mb-2 items-end">
+
+            </div>
+          </div>
+          <div class="border-t border-b border-secondary">
+            <ul>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kondisi Perhiasan</h3>
+                  <span class="flex-1 ">{{ fungsi.kapitalHurufPertama(gadai.kondisiFisik)}}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Berat Barang</h3>
+                  <span class="flex-1">{{ gadai.beratBarang }} Gram</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Bentuk & Kadar Perhiasan</h3>
+                  <span class="flex-1"
+                    style="color: {{ gadai.kodeProduksi.kadar.warnaNota }}">{{ gadai.model.bentuk.bentuk }}
+                    {{ gadai.kodeProduksi.kadar.nama }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Model Perhiasan</h3>
+                  <span class="flex-1 ">{{ gadai.model.nama }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Keterangan</h3>
+                  <span class="flex-1 ">{{ (gadai.keterangan)? gadai.keterangan : '-' }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Asal Toko</h3>
+                  <span class="flex-1 ">{{ (gadai.asalToko)? gadai.asalToko : '-' }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Alamat Asal Toko</h3>
+                  <span class="flex-1 ">{{ (gadai.alamatAsalToko)? gadai.alamatAsalToko : '-' }}</span>
+                </div>
+              </li>
+
+              @if(gadai.gadaiNotaLeo)
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Berat Barang di Nota</h3>
+                  <span class="flex-1">{{ gadai.gadaiNotaLeo.beratBarangPadaNota }} Gram</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Harga Jual di Nota</h3>
+                  <span class="flex-1 ">{{ fungsi.rupiahParser(gadai.gadaiNotaLeo.hargaJualPadaNota) }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Potongan di Nota</h3>
+                  <span
+                    class="flex-1 ">{{ (gadai.gadaiNotaLeo.apakahPotonganPersen)? gadai.gadaiNotaLeo.potonganPadaNota + '% dari harga jual' : fungsi.rupiahParser(gadai.gadaiNotaLeo.potonganPadaNota) + ' per gram' }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Nota Dibuat</h3>
+                  <span class="flex-1 ">{{ gadai.gadaiNotaLeo.tanggalJualPadaNota.toFormat('ff') }}</span>
+                </div>
+              </li>
+              @endif
+
+            </ul>
+          </div>
+        </div>
+
+        <div class="w-full flex items-center justify-center">
+          <div class="w-80 h-60 p-2 border">
+            <div id="wadahFoto" class="w-full h-full bg-base-300 bg-contain">
+              @if(tambahan.adaFotoBarang)
+              <img src="/app/cuma-data/foto/gadai/{{ gadai.id }}" class="w-full object-contain zoomable" alt="Gadai: {{ fungsi.rupiahParser(gadai.nominalGadai) }}
+                An. {{ gadai.namaPenggadai }}">
+              @else
+              <div class="w-full h-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-secondary" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              @endif
+
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex px-2">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Data Nota Leo</h4>
             </div>
           </div>
 
-          <div class="w-full flex items-center justify-center">
-            <div class="w-80 h-60 p-2 border">
-              <div id="wadahFoto" class="w-full h-full bg-base-300 bg-contain">
-                @if(tambahan.adaFotoBarang)
-                <img src="/app/cuma-data/foto/gadai/{{ gadai.id }}" class="w-full object-contain zoomable" alt="Gadai: {{ fungsi.rupiahParser(gadai.nominalGadai) }}
-                An. {{ gadai.namaPenggadai }}">
-                @else
-                <div class="w-full h-full flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-secondary" viewBox="0 0 20 20"
-                    fill="currentColor">
-                    <path fill-rule="evenodd"
-                      d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                      clip-rule="evenodd" />
-                  </svg>
+          @if(false)
+          <div class="border-t border-b border-secondary">
+            <ul>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Berat Barang di Nota</h3>
+                  <span class="flex-1">{{ PB.pembelianNotaLeo.beratBarangPadaNota }} Gram</span>
                 </div>
-                @endif
-  
-              </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Harga Jual di Nota</h3>
+                  <span class="flex-1 ">{{ fungsi.rupiahParser(PB.pembelianNotaLeo.hargaJualPadaNota) }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Potongan di Nota</h3>
+                  <span
+                    class="flex-1 ">{{ (PB.pembelianNotaLeo.apakahPotonganPersen)? PB.pembelianNotaLeo.potonganPadaNota + '% dari harga jual' : fungsi.rupiahParser(PB.pembelianNotaLeo.potonganPadaNota) + ' per gram' }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Tanggal Nota Dibuat</h3>
+                  <span class="flex-1 ">{{ PB.pembelianNotaLeo.tanggalJualPadaNota.toFormat('ff') }}</span>
+                </div>
+              </li>
+
+            </ul>
+          </div>
+          @else
+          <div>
+            <span>Perhiasan tidak dilengkapi dengan nota atau bukan berasal dari Toko Mas Leo.</span>
+          </div>
+          @endif
+
+        </div>
+
+        <div>
+          <div class="flex px-2">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                Penentuan Harga Perhiasan</h4>
+            </div>
+            <div class="flex-none flex align-bottom mb-2 items-end">
             </div>
           </div>
-        
+          <div class="border-t border-b border-secondary">
+            <ul>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Ditawar</h3>
+                  <span class="flex-1">{{ (gadai.apakahDitawar)? 'Ya' : 'Tidak' }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Harga Per Gram Deal</h3>
+                  <span class="flex-1">{{ fungsi.rupiahParser(gadai.hargaBarangPerGramAkhir) }}</span>
+                </div>
+              </li>
+
+              @if(gadai.gadaiNotaLeo)
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Total Potongan</h3>
+                  <span
+                    class="flex-1 text-error">{{ fungsi.rupiahParser(-gadai.gadaiNotaLeo.ongkosPotonganTotal) }}</span>
+                </div>
+              </li>
+
+              @endif
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Ongkos Kerusakan</h3>
+                  <span class="flex-1 text-error">{{ fungsi.rupiahParser(-gadai.ongkosKerusakanTotal) }}</span>
+                </div>
+              </li>
+
+
+              @if(gadai.apakahDitawar)
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Harga Barang Target</h3>
+                  <span class="flex-1">{{ fungsi.rupiahParser(gadai.hargaBarangSeharusnya) }}</span>
+                </div>
+              </li>
+              @endif
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Harga Barang Deal</h3>
+                  <span class="flex-1 font-semibold">{{ fungsi.rupiahParser(gadai.nominalGadai) }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Keterangan Hitungan</h3>
+                  <span class="flex-1 ">{{ (gadai.keteranganTransaksi)? PB.keteranganTransaksi : '-' }}</span>
+                </div>
+              </li>
+
+
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex px-2">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+                Daftar Kerusakan</h4>
+            </div>
+            <div class="flex-none flex align-bottom mb-2 items-end"></div>
+          </div>
+          <div class="space-y-4 border-secondary">
+            <div>Anda dapat melihat daftar dan hasil perhitungan kerusakan perhiasan pada submenu berikut.</div>
+            <a href="/app/transaksi/gadai/{{ gadai.id }}/kerusakan" class="btn btn-sm btn-outline">Lihat Daftar
+              Kerusakan</a>
+          </div>
+        </div>
+
 
       </div>
 

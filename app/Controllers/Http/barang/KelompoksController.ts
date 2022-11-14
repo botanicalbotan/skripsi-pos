@@ -426,7 +426,7 @@ export default class KelompoksController {
         bentuks,
       })
     } catch (error) {
-      session.flash('errorServerThingy', 'Kelompok yang anda cari tidak valid!')
+      session.flash('alertError', 'Kelompok yang anda cari tidak valid!')
       return response.redirect().toPath('/app/barang/')
     }
   }

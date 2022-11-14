@@ -36,10 +36,10 @@ export default class Pembelians extends BaseSchema {
       // CONSTRAIN
       table.dateTime('deleted_at').nullable()
 
-      // INI BUAT GADAI, permintaan dosen
-      table.boolean('apakah_digadaikan').notNullable()
-      table.dateTime('max_gadai_at').notNullable()
-      table.dateTime('digadai_at').nullable() // kalo udah digadai gabisa digadai lagi
+      // INI BUAT GADAI, permintaan dosen, hapus
+      // table.boolean('apakah_digadaikan').notNullable()
+      // table.dateTime('max_gadai_at').notNullable()
+      // table.dateTime('digadai_at').nullable() // kalo udah digadai gabisa digadai lagi
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

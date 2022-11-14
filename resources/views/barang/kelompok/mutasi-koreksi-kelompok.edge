@@ -68,8 +68,8 @@
               <td>
                 {{ korek.stokAkhir - korek.perubahanStok }}
               </td>
-              <td>
-                {{ korek.stokAkhir }}
+              <td class="text-error">
+                {{ korek.stokAkhir }} ({{ (korek.perubahanStok > 0)? '+'+korek.perubahanStok : korek.perubahanStok }})
               </td>
               <td>
                 <a href="/app/pegawai/{{ korek.idPencatat }}" class="link link-hover">{{ korek.namaPencatat }}</a>

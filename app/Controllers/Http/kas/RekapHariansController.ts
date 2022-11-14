@@ -28,13 +28,8 @@ export default class RekapHariansController {
         'tanggal_rekap as tanggalRekap',
         'apakah_hari_pasaran as apakahHariPasaran',
         'apakah_sudah_banding_saldo as apakahSudahBandingSaldo',
-        'saldo_toko_terakhir as saldoTokoTerakhir'
-      )
-      .select(
-        Database.from('koreksi_saldos')
-          .count('koreksi_saldos.id')
-          .whereRaw('DATE(koreksi_saldos.created_at) = DATE(rekap_harians.tanggal_rekap)')
-          .as('jumlahKoreksiSaldo')
+        'saldo_toko_terakhir as saldoTokoTerakhir',
+        'saldo_toko_real as saldoTokoReal'
       )
       .select(
         Database.from('koreksi_stoks')
@@ -186,11 +181,6 @@ export default class RekapHariansController {
         .whereRaw('DATE(koreksi_stoks.created_at) = DATE(?)', [rekap.tanggalRekap.toISO()])
         .first()
 
-      const pengubahanSaldo = await Database.from('koreksi_saldos')
-        .count('koreksi_saldos.id', 'jumlah')
-        .whereRaw('DATE(koreksi_saldos.created_at) = DATE(?)', [rekap.tanggalRekap.toISO()])
-        .first()
-
       const rekapPenjualan = {
         apakahKasKeluar: 0,
         nominal: totalJual[0].nominal | 0,
@@ -218,7 +208,6 @@ export default class RekapHariansController {
         hitungKasMasuk: totalKasMasuk[0].count + 1,
         hitungKasKeluar: totalKasKeluar[0].count + 1,
         anomaliStok: anomaliStok.jumlah | 0,
-        pengubahanSaldo: pengubahanSaldo.jumlah | 0,
         tanggalKemarin: kemarin
       }
 

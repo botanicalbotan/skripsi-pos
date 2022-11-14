@@ -12,7 +12,6 @@ import {
   beforeFind,
 } from '@ioc:Adonis/Lucid/Orm'
 import Ka from 'App/Models/kas/Ka'
-import KoreksiSaldo from 'App/Models/kas/KoreksiSaldo'
 import User from 'App/Models/User'
 import PenambahanStok from 'App/Models/barang/PenambahanStok'
 import Gadai from 'App/Models/transaksi/Gadai'
@@ -139,9 +138,6 @@ export default class Pengguna extends BaseModel {
 
   @hasMany(() => Notifikasi)
   public notifikasis: HasMany<typeof Notifikasi>
-
-  @hasMany(() => KoreksiSaldo)
-  public koreksiSaldos: HasMany<typeof KoreksiSaldo>
 
   @hasMany(() => PenambahanStok)
   public penambahanStoks: HasMany<typeof PenambahanStok>

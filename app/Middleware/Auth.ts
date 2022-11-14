@@ -55,7 +55,7 @@ export default class AuthMiddleware {
     session.flash('alertError', 'Anda harus login terlebih dahulu!')
 
     throw new AuthenticationException(
-      'Unauthorized access',
+      'Err: Anda harus login terlebih dahulu!',
       'E_UNAUTHORIZED_ACCESS',
       guardLastAttempted,
       this.redirectTo,

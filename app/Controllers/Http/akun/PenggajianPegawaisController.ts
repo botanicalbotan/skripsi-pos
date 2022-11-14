@@ -171,14 +171,17 @@ export default class PenggajianPegawaisController {
   public async destroy({ params, response, session }: HttpContextContract) {
     try {
       const penggajian = await PenggajianPegawai.findOrFail(params.id)
+      await penggajian.load('penerimaGaji')
       penggajian.status = 'dihapus'
       penggajian.pencatatGajianId = null
       penggajian.dibayarAt = null
       await penggajian.save()
 
+      session.flash('alertSukses', `Tagihan an. ${ penggajian.penerimaGaji.nama } periode ${ penggajian.tanggalSeharusnyaDibayar.toFormat('f') } berhasil dihapus`)
+
       return response.redirect().toPath('/app/pegawai/penggajian')
     } catch (error) {
-      session.flash('errorServerThingy', 'Tagihan yang anda pilih tidak valid!')
+      session.flash('alertError', 'Tagihan yang anda pilih tidak valid!')
       return response.redirect().back()
     }
   }

@@ -57,7 +57,7 @@
               <th>Tanggal & Pasaran</th>
               <th>Total {{ (tambahan.filter)? 'Pemasukan' : 'Penjualan' }}</th>
               <th>Total {{ (tambahan.filter)? 'Pengeluaran' : 'Pembelian' }}</th>
-              <th>Koreksi Stok</th>
+              <th>Selisih Saldo</th>
               <th>Saldo Akhir Toko</th>
             </tr>
           </thead>
@@ -83,33 +83,17 @@
                 <span class="text-error">{{ fungsi.rupiahParser(rekap.totalPengeluaran | 0) }}</span>
               </td>
               <td>
-                @if(rekap.jumlahKoreksiStok > 0)
-                <div class="tooltip" data-tip="Ada koreksi stok kelompok perhiasan">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-                    <path fill-rule="evenodd"
-                      d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z"
-                      clip-rule="evenodd" />
-                  </svg>
+                <div class="text-error">
+                  @if(rekap.apakahSudahBandingSaldo)
+                    {{ fungsi.rupiahParser(rekap.saldoTokoTerakhir - rekap.saldoTokoReal) }}
+                  @else
+                    belum banding!
+                  @endif
                 </div>
-                @else
-                <div class="tooltip" data-tip="Tidak ada koreksi stok kelompok perhiasan">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-                    <path fill-rule="evenodd"
-                      d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-                      clip-rule="evenodd" />
-                  </svg>
-                </div>
-                @endif
               </td>
               <td>
-                
-
-                @if(rekap.apakahSudahBandingSaldo && rekap.jumlahKoreksiSaldo == 0)
-                <div class="tooltip text-accent-focus tooltip-left" data-tip="Sudah banding dan tidak ada pengubahan saldo">
-                  {{ fungsi.rupiahParser(rekap.saldoTokoTerakhir) }}
-                </div>
-                @elseif(rekap.jumlahKoreksiSaldo > 0)
-                <div class="tooltip text-error tooltip-left" data-tip="Ada pengubahan saldo toko">
+                @if(rekap.apakahSudahBandingSaldo)
+                <div class="tooltip text-accent-focus tooltip-left" data-tip="Sudah banding saldo">
                   {{ fungsi.rupiahParser(rekap.saldoTokoTerakhir) }}
                 </div>
                 @else

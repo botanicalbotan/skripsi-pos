@@ -1,7 +1,6 @@
 import User from "App/Models/User";
 import nodemailer from 'nodemailer';
 import Env from '@ioc:Adonis/Core/Env'
-import Drive from '@ioc:Adonis/Core/Drive'
 import PasswordResetToken from "App/Models/akun/PasswordResetToken";
 import { inet_ntoa } from './IPConverter'
 
@@ -24,8 +23,6 @@ export async function emailUbahPassword(user: User, passToken: PasswordResetToke
 
   let url = DOMAIN + "/lupa-password/next?token=" + passToken.token
 
-  const logoToko = (await Drive.exists('logos/logo-postoma.png') ? await Drive.get('logos/logo-postoma.png') : undefined)
-
   try {
     return await transporter.sendMail({
       from: {
@@ -35,14 +32,14 @@ export async function emailUbahPassword(user: User, passToken: PasswordResetToke
       to: user.email, // list of receivers
       subject: 'Ubah password Postoma anda', // Subject line
       html: `
-      <img src= "cid:logo-postoma-for-email" style="
+      <img src= "https://asset.botanicalbotan.com/postoma/logo/default.png" style="
       width:200px; 
       margin-bottom: 1rem; "
       /> <br>
   
       <div>Halo, ${ user.pengguna.nama }!<div><br>
   
-      <div>Seseorang dengan IP ${inet_ntoa(passToken.clientIpv4)} mengirimkan permintaan pengubahan password untuk akun Postoma anda. Untuk melanjutkan proses pengubahan, klik link berikut dan ikuti arahan selanjutnya:<div><br>
+      <div>Seseorang dengan alamat IP ${inet_ntoa(passToken.clientIpv4)} mengirimkan permintaan pengubahan password untuk akun Postoma anda. Untuk melanjutkan proses pengubahan, klik tautan berikut dan ikuti arahan selanjutnya:<div><br>
   
       <a href='${url}' target='_blank' style="background-color: #4F6FBF;
       border: none;
@@ -57,12 +54,7 @@ export async function emailUbahPassword(user: User, passToken: PasswordResetToke
   
       <div>Hormat kami,</div>
       <div>Team Postoma</div>
-      `, // html body
-      attachments: [{
-        filename: 'logo-postoma.png',
-        content: logoToko,
-        cid: 'logo-postoma-for-email'
-      }]
+      `,
     })
   } catch (error) {
     console.error(error)

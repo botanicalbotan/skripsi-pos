@@ -205,48 +205,52 @@ if (BOLEHEDIT) {
 
   if (btHapusLogoToko) {
     btHapusLogoToko.addEventListener('click', () => {
-      Swal.fire({
-        title: 'Hapus Logo Toko?',
-        showCancelButton: true,
-        text: 'Dengan menghapus logo toko, toko akan kehilangan logo yang akan digunakan pada nota dan laporan. Lanjutkan?',
-        confirmButtonText: 'Ya, hapus!',
-        cancelButtonText: 'Batal',
-        focusCancel: true,
-        icon: 'question',
-        confirmButtonColor: SwalCustomColor.button.deny,
-        preConfirm: () => {
-          Swal.showLoading(Swal.getConfirmButton())
-          return new Promise(function (resolve, reject) {
-            setTimeout(function () {
-              Swal.hideLoading()
-              reject('Tidak ada respon dari server')
-            }, 5000)
+      swalCekAkun().then((cek) => {
+        if (cek.isConfirmed) {
+          Swal.fire({
+            title: 'Hapus Logo Toko?',
+            showCancelButton: true,
+            text: 'Dengan menghapus logo toko, toko akan kehilangan logo yang akan digunakan pada nota dan laporan. Lanjutkan?',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal',
+            focusCancel: true,
+            icon: 'question',
+            confirmButtonColor: SwalCustomColor.button.deny,
+            preConfirm: () => {
+              Swal.showLoading(Swal.getConfirmButton())
+              return new Promise(function (resolve, reject) {
+                setTimeout(function () {
+                  Swal.hideLoading()
+                  reject('Tidak ada respon dari server')
+                }, 5000)
 
-            $.ajax({
-              type: "DELETE",
-              url: '/app/pengaturan/api/toko/hapus-logo',
-              dataType: "json",
-              success: function () {
-                console.log('awyeaah')
-                resolve()
-              },
-              error: function (xhr) {
-                reject(xhr.responseJSON.error)
-              }
-            });
-          }).catch(function (error) {
-            Swal.hideLoading()
-            Swal.showValidationMessage('Error: ' + error)
-          })
-        }
-      }).then((hapus) => {
-        if (hapus.isConfirmed) {
-          Swal.fire(
-            'Sukses!',
-            'Logo toko berhasil dihapus!',
-            'success'
-          ).then(() => {
-            location.href = location.pathname
+                $.ajax({
+                  type: "DELETE",
+                  url: '/app/pengaturan/api/toko/hapus-logo',
+                  dataType: "json",
+                  success: function () {
+                    console.log('awyeaah')
+                    resolve()
+                  },
+                  error: function (xhr) {
+                    reject(xhr.responseJSON.error)
+                  }
+                });
+              }).catch(function (error) {
+                Swal.hideLoading()
+                Swal.showValidationMessage('Error: ' + error)
+              })
+            }
+          }).then((hapus) => {
+            if (hapus.isConfirmed) {
+              Swal.fire(
+                'Sukses!',
+                'Logo toko berhasil dihapus!',
+                'success'
+              ).then(() => {
+                location.href = location.pathname
+              })
+            }
           })
         }
       })
@@ -456,8 +460,8 @@ if (BOLEHEDIT) {
 
   ubahAlamatTokoSingkat.addEventListener('click', () => {
     swalPrepareUbah.fire({
-      title: 'Ubah Alamat Singkat Toko',
-      text: 'Pengubahan alamat singkat toko akan mengubah identitas toko yang tertera pada nota penjualan. Lanjutkan?',
+      title: 'Ubah Alamat Nota Toko',
+      text: 'Pengubahan alamat nota toko akan mengubah identitas toko yang tertera pada nota penjualan. Lanjutkan?',
     }).then((prepare) => {
 
       if (prepare.isConfirmed) {
@@ -465,10 +469,10 @@ if (BOLEHEDIT) {
           if (cek.isConfirmed) {
 
             Swal.fire({
-              title: 'Ubah Alamat Singkat Toko',
+              title: 'Ubah Alamat Nota Toko',
               input: 'textarea',
-              inputLabel: 'Masukkan alamat singkat baru toko anda pada input berikut',
-              inputPlaceholder: 'Alamat singkat baru toko',
+              inputLabel: 'Masukkan alamat nota toko baru anda pada input berikut',
+              inputPlaceholder: 'Alamat nota toko baru',
               inputValue: (DATA.alamatTokoSingkat) ? DATA.alamatTokoSingkat : '',
               inputAttributes: {
                 maxlength: 50
@@ -491,7 +495,7 @@ if (BOLEHEDIT) {
 
                 swalKonfirmasiUbah.fire({
                   title: 'Konfirmasi Pengubahan',
-                  text: 'Anda akan secara sengaja mengubah alamat singkat toko anda menjadi "' + gantiAlamatSingkat.value + '". Lanjutkan?',
+                  text: 'Anda akan secara sengaja mengubah alamat nota toko anda menjadi "' + gantiAlamatSingkat.value + '". Lanjutkan?',
                   preConfirm: () => {
                     Swal.showLoading()
 

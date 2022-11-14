@@ -12,7 +12,6 @@ import Hash from '@ioc:Adonis/Core/Hash'
 var isBase64 = require('is-base64')
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { prepareRekap } from 'App/CustomClasses/CustomRekapHarian'
-import KoreksiSaldo from 'App/Models/kas/KoreksiSaldo'
 import Pasaran from 'App/Models/sistem/Pasaran'
 
 export default class PengaturansController {
@@ -428,31 +427,31 @@ export default class PengaturansController {
     }
   }
 
-  public async ubahWaktuMaksimalPengajuanGadai({ request, response }: HttpContextContract) {
-    const newWaktuGadaiSchema = schema.create({
-      newWaktuAju: schema.number([
-        rules.unsigned(),
-        rules.range(0, 60), // kalau ngubah ini, jangan lupa ngubah yang di js pengaturan transaksi
-      ]),
-    })
+  // public async ubahWaktuMaksimalPengajuanGadai({ request, response }: HttpContextContract) {
+  //   const newWaktuGadaiSchema = schema.create({
+  //     newWaktuAju: schema.number([
+  //       rules.unsigned(),
+  //       rules.range(0, 60), // kalau ngubah ini, jangan lupa ngubah yang di js pengaturan transaksi
+  //     ]),
+  //   })
 
-    try {
-      // udah kesambung middleware, ngga perlu ngecek auth lagi
-      const validrequest = await request.validate({ schema: newWaktuGadaiSchema })
+  //   try {
+  //     // udah kesambung middleware, ngga perlu ngecek auth lagi
+  //     const validrequest = await request.validate({ schema: newWaktuGadaiSchema })
 
-      const pengaturan = await Pengaturan.findOrFail(1)
-      pengaturan.defaultWaktuMaksimalPengajuanGadai = validrequest.newWaktuAju
-      await pengaturan.save()
+  //     const pengaturan = await Pengaturan.findOrFail(1)
+  //     pengaturan.defaultWaktuMaksimalPengajuanGadai = validrequest.newWaktuAju
+  //     await pengaturan.save()
 
-      return response.ok({ message: 'Waktu maksimum cetak nota penjualan berhasil diubah' })
-    } catch (error) {
-      if (typeof error === 'string') {
-        return response.badRequest({ error: error })
-      } else {
-        return response.badRequest({ error: 'Ada masalah pada server!' })
-      }
-    }
-  }
+  //     return response.ok({ message: 'Waktu maksimum cetak nota penjualan berhasil diubah' })
+  //   } catch (error) {
+  //     if (typeof error === 'string') {
+  //       return response.badRequest({ error: error })
+  //     } else {
+  //       return response.badRequest({ error: 'Ada masalah pada server!' })
+  //     }
+  //   }
+  // }
 
   public async ubahHargaMal({ request, response }: HttpContextContract) {
     const newHargaMalSchema = schema.create({
@@ -531,167 +530,6 @@ export default class PengaturansController {
       } else {
         return response.badRequest({ error: 'Ada masalah pada server!' })
       }
-    }
-  }
-
-  public async ubahSaldoToko({ response, request, auth }: HttpContextContract) {
-    const newBandingSaldoSchema = schema.create({
-      saldoBaru: schema.number([rules.unsigned()]),
-      alasan: schema.string({ trim: true }, [rules.maxLength(100)]),
-    })
-
-    try {
-      if (!auth.user) throw 'Tidak ada izin'
-
-      const validrequest = await request.validate({ schema: newBandingSaldoSchema })
-      const pengaturan = await Pengaturan.findOrFail(1)
-
-      const userPengakses = await User.findOrFail(auth.user.id)
-      await userPengakses.load('pengguna')
-
-      await userPengakses.pengguna.related('koreksiSaldos').create({
-        alasan: kapitalHurufPertama(validrequest.alasan),
-        saldoAkhir: validrequest.saldoBaru,
-        perubahanSaldo: validrequest.saldoBaru - pengaturan.saldoToko,
-      })
-
-      // sekalian jadi banding
-      const rekap = await prepareRekap()
-      rekap.pencatatBandingId = userPengakses.pengguna.id
-      rekap.dibandingAt = DateTime.now()
-      rekap.saldoTokoReal = validrequest.saldoBaru
-      rekap.saldoTokoTerakhir = validrequest.saldoBaru
-      rekap.apakahSudahBandingSaldo = true
-      await rekap.save()
-
-      pengaturan.saldoToko = validrequest.saldoBaru
-      await pengaturan.save()
-
-      return response.ok({ message: 'Nominal saldo toko pada sistem berhasil diubah!' })
-    } catch (error) {
-      if (typeof error === 'string') {
-        return response.badRequest({ error: error })
-      } else {
-        return response.badRequest({ error: 'Ada masalah pada server!' })
-      }
-    }
-  }
-
-  public async pageListUbahSaldo({ view, request }: HttpContextContract) {
-    const opsiOrder = ['tanggal', 'namaPencatat', 'jabatanPencatat', 'saldoAwal', 'saldoAkhir']
-    const page = request.input('page', 1)
-    const order = request.input('ob', 0)
-    const arahOrder = request.input('aob', 0)
-    const sanitizedOrder = order < opsiOrder.length && order >= 0 && order ? order : 0
-    const sanitizedArahOrder = arahOrder == 1 ? 1 : 0
-    const cari = request.input('cari', '')
-    const limit = 10
-
-    const ubahs = await Database.from('koreksi_saldos')
-      .join('penggunas', 'penggunas.id', 'koreksi_saldos.pengguna_id')
-      .join('jabatans', 'jabatans.id', 'penggunas.jabatan_id')
-      .select(
-        'koreksi_saldos.id as id',
-        'koreksi_saldos.created_at as tanggal',
-        'koreksi_saldos.saldo_akhir as saldoAkhir',
-        'koreksi_saldos.alasan as alasan',
-        'penggunas.nama as namaPencatat',
-        'jabatans.nama as jabatanPencatat'
-      )
-      .select(
-        Database.raw(
-          '(SELECT koreksi_saldos.saldo_akhir - koreksi_saldos.perubahan_saldo) as saldoAwal'
-        )
-      )
-      .if(cari !== '', (query) => {
-        query.where('koreksi_saldos.alasan', 'like', `%${cari}%`)
-      })
-      .if(
-        sanitizedOrder !== 0,
-        (query) => {
-          query
-            .orderBy(opsiOrder[sanitizedOrder], sanitizedArahOrder == 1 ? 'desc' : 'asc')
-            .orderBy('tanggal', 'desc')
-        },
-        (query) => {
-          query.orderBy('tanggal', sanitizedArahOrder == 0 ? 'desc' : 'asc')
-        }
-      )
-      .paginate(page, limit)
-
-    ubahs.baseUrl('/app/pengaturan/saldo/pengubahan')
-
-    let qsParam = {
-      ob: sanitizedOrder,
-      aob: sanitizedArahOrder,
-    }
-    ubahs.queryString(qsParam)
-
-    let firstPage =
-      ubahs.currentPage - 2 > 0
-        ? ubahs.currentPage - 2
-        : ubahs.currentPage - 1 > 0
-        ? ubahs.currentPage - 1
-        : ubahs.currentPage
-    let lastPage =
-      ubahs.currentPage + 2 <= ubahs.lastPage
-        ? ubahs.currentPage + 2
-        : ubahs.currentPage + 1 <= ubahs.lastPage
-        ? ubahs.currentPage + 1
-        : ubahs.currentPage
-
-    if (lastPage - firstPage < 4 && ubahs.lastPage > 4) {
-      if (ubahs.currentPage < ubahs.firstPage + 2) {
-        lastPage += 4 - (lastPage - firstPage)
-      }
-
-      if (lastPage == ubahs.lastPage) {
-        firstPage -= 4 - (lastPage - firstPage)
-      }
-    }
-
-    const tempLastData = 10 + (ubahs.currentPage - 1) * limit
-
-    const tambahan = {
-      pencarian: cari,
-      pengurutan: sanitizedOrder,
-      firstPage: firstPage,
-      lastPage: lastPage,
-      firstDataInPage: 1 + (ubahs.currentPage - 1) * limit,
-      lastDataInPage: tempLastData >= ubahs.total ? ubahs.total : tempLastData,
-    }
-
-    const fungsi = {
-      rupiahParser: rupiahParser,
-      formatDate: formatDate,
-    }
-
-    return await view.render('pengaturan/ubah-saldo/list-ubah-saldo', {
-      ubahs,
-      tambahan,
-      fungsi,
-    })
-  }
-
-  public async pageViewUbahSaldo({ view, response, params, session }: HttpContextContract) {
-    try {
-      const ubah = await KoreksiSaldo.findOrFail(params.id)
-      await ubah.load('pengguna', (query) => {
-        query.preload('jabatan')
-      })
-
-      const fungsi = {
-        rupiahParser: rupiahParser,
-      }
-
-      const tambahan = {
-        adaFotoPencatat: await Drive.exists('profilePict/' + ubah.pengguna.foto),
-      }
-
-      return view.render('pengaturan/ubah-saldo/view-ubah-saldo', { ubah, fungsi, tambahan })
-    } catch (error) {
-      session.flash('alertError', 'Pegubahan saldo yang anda akses tidak valid.')
-      return response.redirect().toPath('/app/pengaturan/saldo/pengubahan')
     }
   }
 
@@ -879,7 +717,7 @@ export default class PengaturansController {
       }
     } catch (error) {
       // return response.notFound('File not found.')
-      console.log(error)
+      // console.log(error)
       return {} // biar ngga ngasi error di image
     }
   }
@@ -914,16 +752,6 @@ function rupiahParser(angka: number) {
       currency: 'IDR',
       minimumFractionDigits: 0,
     }).format(angka)
-  } else {
-    return 'error'
-  }
-}
-
-function formatDate(ISODate: string) {
-  const tanggal = DateTime.fromISO(ISODate)
-
-  if (tanggal.isValid) {
-    return tanggal.toISODate()
   } else {
     return 'error'
   }

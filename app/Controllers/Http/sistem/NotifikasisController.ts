@@ -171,7 +171,7 @@ export default class NotifikasisController {
 
       return response.ok({ message: 'Mantap' })
     } catch (error) {
-      return response.badRequest('Ada kesalahan pada notifikasi sistem!')
+      return response.ok({ message: 'Error tp ga penting' })
     }
   }
 }

@@ -91,7 +91,7 @@ export default class PenjualansController {
     }
   }
 
-  public async simpanTransaksi({ request, session, response, auth }: HttpContextContract) {
+  public async simpanPenjualan({ request, session, response, auth }: HttpContextContract) {
     const newPenjualanSchema = schema.create({
       id: schema.number([
         rules.unsigned(),
@@ -161,60 +161,40 @@ export default class PenjualansController {
 
     const validrequest = await request.validate({ schema: newPenjualanSchema })
 
-    const lastPenjualan = await Database
-      .from('penjualans')
-      .select('id')
-      .orderBy('id', 'desc')
-      .limit(1)
-
-    let latestId = '001'
-
-    if(lastPenjualan[0]){
-      latestId = tigaDigit(lastPenjualan[0].id + 1)
-    }
-
-    let kodeTransaksi = 'PJ' + validrequest.id.toString() + validrequest.model.toString() + latestId
-
-    // ========== Cek Item, ada tambahan ntar dibawah ==========
-    if(validrequest.jenisItem?.length != validrequest.keteranganItem?.length || validrequest.jenisItem?.length != validrequest.jumlahItem?.length){
-      session.flash('errors', {
-        jenisItem: 'Item yang anda input tidak valid!'
-      })
-      return response.redirect().withQs().back()
-    }
-
-    // ========== Foto ==========
+    let idTransaksi = await buatId()
+    let kodeTransaksi = 'PJ' + validrequest.id.toString() + validrequest.model.toString() + idTransaksi
     let namaFileFoto = ''
     let fileFoto = validrequest.fotoBarangBase64 || ''
-
-    try {
-      if (!isBase64(fileFoto, { mimeRequired: true, allowEmpty: false }) || fileFoto === '') {
-        throw new Error('Input foto barang tidak valid!')
-      }
-
-      var block = fileFoto.split(';')
-      var realData = block[1].split(',')[1] // In this case "iVBORw0KGg...."
-      namaFileFoto = 'PJ' + DateTime.now().toMillis() + latestId + '.jpg' // bisa diganti yang lebih propper
-
-      // ntar di resize buffernya pake sharp dulu jadi 300x300
-      const buffer = Buffer.from(realData, 'base64')
-      await Drive.put('transaksi/penjualan/' + namaFileFoto, buffer)
-    } catch (error) {
-      console.error(error)
-      namaFileFoto = 'kosong'
-
-      session.flash('errors', {
-        fotoBarangBase64: 'Input foto barang tidak valid!'
-      })
-      return response.redirect().withQs().back()
-    }
 
     try {
       if(!auth.user) throw 'auth ngga valid'
       const userPengakses = await User.findOrFail(auth.user.id)
       await userPengakses.load('pengguna')
-
       const pengaturan = await Pengaturan.findOrFail(1)
+
+      // ========== Cek Item, ada tambahan ntar dibawah ==========
+      if(validrequest.jenisItem?.length != validrequest.keteranganItem?.length || validrequest.jenisItem?.length != validrequest.jumlahItem?.length){
+        throw new Error('Item yang anda input tidak valid!')
+      }
+
+      // ========== Foto ==========
+      try {
+        if (!isBase64(fileFoto, { mimeRequired: true, allowEmpty: false }) || fileFoto === '') {
+          throw new Error('Input foto barang tidak valid!')
+        }
+  
+        var block = fileFoto.split(';')
+        var realData = block[1].split(',')[1] // In this case "iVBORw0KGg...."
+        namaFileFoto = 'PJ' + DateTime.now().toMillis() + idTransaksi + '.jpg' // bisa diganti yang lebih propper
+
+        const buffer = Buffer.from(realData, 'base64')
+        await Drive.put('transaksi/penjualan/' + namaFileFoto, buffer)
+      } catch (error) {
+        throw {
+          custom: true,
+          foto: true,
+        }
+      }
 
       // ========== Hitungan Rumus ==========
       const kodepro = await KodeProduksi.findOrFail(validrequest.kodepro)
@@ -230,30 +210,7 @@ export default class PenjualansController {
       const hargaJual = pembulatanRupiah(hargaPerGram * beratBarang)
 
       const model = await Model.findOrFail(validrequest.model)
-
-      let adaBatu = false
-      let adaMainan = false
-      let teksBatu = 'AD'
-      let teksMainan = 'PM'
-
-      if(validrequest.jenisItem && validrequest.jenisItem.length > 0 && validrequest.keteranganItem && validrequest.jumlahItem){
-        let i = 0
-        for (const item of validrequest.jenisItem) {
-          if(item === 'batu'){
-            adaBatu = true
-            teksBatu += ' ' + validrequest.jumlahItem[i] + ' ' + validrequest.keteranganItem[i]
-          }
-
-          if(item === 'mainan'){
-            adaMainan = true
-            teksMainan += ' ' + validrequest.jumlahItem[i] + ' ' + validrequest.keteranganItem[i]
-          }
-
-          i++
-        }
-      }
-
-      let namaBarang = kelompok.bentuk.kode + ' ' + beratBarang + ' gr ' + model.nama + (adaBatu? ' ' + teksBatu: '') + (adaMainan? ' ' + teksMainan: '')
+      let namaBarang = kelompok.bentuk.kode + ' ' + beratBarang + ' gr ' + model.nama
 
       const pjBaru = await kelompok.related('penjualans').create({
         kodeTransaksi: kodeTransaksi,
@@ -279,11 +236,25 @@ export default class PenjualansController {
       await kelompok.save()
 
       // ========== tambah item jual ==========
-      async function addItem() {
+
         if(validrequest.jenisItem && validrequest.jenisItem.length > 0 && validrequest.keteranganItem && validrequest.jumlahItem){
           let i = 0
+
+          let adaBatu = false
+          let adaMainan = false
+          let teksBatu = 'AD'
+          let teksMainan = 'PM'
+
           for (const item of validrequest.jenisItem) {
             try {
+              if(item === 'batu'){
+                adaBatu = true
+                teksBatu += ' ' + validrequest.jumlahItem[i] + ' ' + validrequest.keteranganItem[i]
+              } else {
+                adaMainan = true
+                teksMainan += ' ' + validrequest.jumlahItem[i] + ' ' + validrequest.keteranganItem[i]
+              }
+
               await pjBaru.related('itemJuals').create({
                 jenis: item,
                 keterangan: validrequest.keteranganItem[i],
@@ -292,13 +263,14 @@ export default class PenjualansController {
 
               i++
             } catch (error) {
-              console.error('Penjualan: ada input item error!')
+              // console.error('Penjualan: ada input item error!')
             }
           }
-        }
-      }
 
-      await addItem()
+          let namaBarangBaru = kelompok.bentuk.kode + ' ' + beratBarang + ' gr ' + model.nama + (adaBatu? ' ' + teksBatu: '') + (adaMainan? ' ' + teksMainan: '')
+          pjBaru.namaBarang = namaBarangBaru
+          await pjBaru.save()
+        }
 
       
       pengaturan.saldoToko += hargaJual
@@ -308,9 +280,15 @@ export default class PenjualansController {
       // udah kelar, tinggal redirect ke page finish
 
     } catch (error) {
-      console.error(error)
-      await Drive.delete(namaFileFoto)
-      session.flash('alertError', 'Ada masalah saat menyimpan transaksi. Mohon ulangi beberapa saat lagi.')
+      // console.error(error)
+      await Drive.delete('transaksi/penjualan/' + namaFileFoto)
+      if(error.foto && error.custom){
+        session.flash('errors', {
+          fotoBarangBase64: 'Input foto barang tidak valid!'
+        })
+      } else {
+        session.flash('alertError', 'Ada masalah saat menyimpan transaksi. Mohon ulangi beberapa saat lagi.')
+      }
       return response.redirect().withQs().back()
     }
   }
@@ -738,6 +716,18 @@ export default class PenjualansController {
 
 
   // ============================ Fungsi Tambahan =====================================
+
+  async function buatId() {
+    const lastPenjualan = await Database
+      .from('penjualans')
+      .select('id')
+      .orderBy('id', 'desc')
+      .limit(1)
+
+    if(lastPenjualan[0]){
+      return tigaDigit(lastPenjualan[0].id + 1)
+    } else return '001'
+  }
 
   function kapitalHurufPertama(text: string) {
     return text.charAt(0).toUpperCase() + text.slice(1)

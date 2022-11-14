@@ -297,8 +297,6 @@ let cropGambar = function (imgData, isPerhiasan) {
 
 }
 
-// ==================================================== SAMPE SINI KAMERA ==================================================
-
 let printHTML = function () {
   return `
           <div class="space-y-4">
@@ -310,3 +308,7 @@ let printHTML = function () {
           </div>
       `
 }
+
+// ==================================================== SAMPE SINI KAMERA ==================================================
+
+

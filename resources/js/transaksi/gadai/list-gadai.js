@@ -168,23 +168,41 @@ let printAturTabelHTML = function () {
 
 
 // ----------------- cara buat gadai -----------------
-const btGadaiBaru = document.getElementById('btGadaiBaru')
-btGadaiBaru.addEventListener('click', () => {
+const btOtwGadai = document.getElementById('btOtwGadai')
+btOtwGadai.addEventListener('click', ()=>{
   Swal.fire({
     title: 'Pembuatan Gadai Baru',
     icon: 'info',
-    html: 'Pada sistem ini, gadai dapat diajukan melalui transaksi pembelian dengan memilih opsi <span class="font-semibold">Ajukan sebagai gadai</span>, kemudian mengisi form pengajuan gadai setelah transaksi selesai disimpan.',
-    confirmButtonText: 'Menuju Pembelian',
+    html: printHTMLOtw(),
+    confirmButtonText: 'Tuju Formulir Gadai',
     confirmButtonColor: SwalCustomColor.button.confirm,
     cancelButtonText: 'Tutup',
     cancelButtonColor: SwalCustomColor.button.cancel,
     showCancelButton: true,
   }).then((goto) => {
     if(goto.isConfirmed){
-      location.href = '/app/transaksi/pembelian'
+      location.href = '/app/transaksi/gadai/form'
     }
   })
 })
+
+function printHTMLOtw() {
+  return `
+    <div class="w-full">
+      <div class="mb-2">
+        Untuk mengajukan gadai, pastikan kustomer memiliki persyaratan berikut:
+      </div>
+
+      <div class="px-4">
+        <ul class="list-disc list-inside text-left">
+          <li>Identitas penggadai, seperti nama, NIK, alamat, dan nomor HP aktif, serta KTP</li>
+          <li>Perhiasan yang akan digadai</li>
+          <li>Nota transaksi perhiasan (jika ada)</li>
+        </ul>
+      </div>
+    </div>
+  `
+}
 
 
 // ------------------- refresh -----------------------

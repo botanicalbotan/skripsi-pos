@@ -1,7 +1,7 @@
 @layout('layouts/master')
 
 {{-- buat ngeset judul --}}
-@set('judul', 'Daftar Kerusakan '+ PB.namaBarang + ' | Postoma')
+@set('judul', 'Daftar Kerusakan Gadai An. '+ GD.namaPenggadai + ' | Postoma')
 
 
 @set('anulir', false)
@@ -9,8 +9,10 @@
 
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="restok" id="base-page">
+  @include('partials/wadah-bread')
+  
   <h2 class="text-4xl font-semibold">Daftar Kerusakan</h2>
-  <h4 class="text-lg text-secondary opacity-60">Daftar kerusakan perhiasan dari transaksi pembelian yang dipilih.</h4>
+  <h4 class="text-lg text-secondary opacity-60">Daftar kerusakan perhiasan dari transaksi gadai yang dipilih.</h4>
 
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
     @include('partials/wadah-alert')
@@ -18,9 +20,10 @@
     <div class="flex space-x-2">
       <div class="flex-1">
         <div class="max-w-lg">
-          <a href="/app/transaksi/pembelian/{{PB.id}}" class="text-2xl link link-hover" id="namaBarang">{{ PB.namaBarang }}</a>
-          <p style="color: {{ PB.kodeProduksi.kadar.warnaNota }}">{{ PB.model.bentuk.bentuk }}
-            {{ PB.kodeProduksi.kadar.nama }}</p>
+          <a href="/app/transaksi/gadai/{{GD.id}}" class="text-2xl link link-hover" id="namaBarang">Gadai {{ fungsi.rupiahParser(GD.nominalGadai) }}
+            An. {{ GD.namaPenggadai }}</a>
+          <p style="color: {{ GD.kodeProduksi.kadar.warnaNota }}">{{ GD.model.bentuk.bentuk }}
+            {{ GD.kodeProduksi.kadar.nama }}</p>
         </div>
 
       </div>
@@ -44,7 +47,7 @@
           </thead>
           <tbody>
 
-            @each(rusak in PB.kerusakans)
+            @each(rusak in GD.kerusakans)
             <tr>
               <td>
                 <a href="">
@@ -76,7 +79,7 @@
           </tbody>
         </table>
 
-        @if(PB.kerusakans.length == 0)
+        @if(GD.kerusakans.length == 0)
           <div class="text-center absolute right-0 left-0 mt-6">Tidak ada kerusakan</div>
         @endif
 
@@ -88,21 +91,21 @@
       <div class="flex-1 p-2">
         <div class="flex flex-col md:flex-row md:space-x-2 ">
             <div>Tanggal Transaksi: </div>
-            <div class="font-semibold">{{ PB.createdAt.toFormat('DDD T') }}</div>
+            <div class="font-semibold">{{ GD.createdAt.toFormat('DDD T') }}</div>
         </div>
       </div>
 
       <div class="space-y-2 w-full max-w-xs">
         <div class="flex p-2 border-b">
           <span class="flex-1">Total Ongkos</span>
-          <span class="flex-none md:text-lg font-semibold text-error">{{ (anulir)? 'Dianggap rosok' : fungsi.rupiahParser(-PB.ongkosKerusakanTotal) }}</span>
+          <span class="flex-none md:text-lg font-semibold text-error">{{ (anulir)? 'Dianggap rosok' : fungsi.rupiahParser(-GD.ongkosKerusakanTotal) }}</span>
         </div>
         <div class="p-2">
             <div class="font-semibold">
                 Keterangan
             </div>
             <div>
-                {{ (PB.keteranganTransaksi)? PB.keteranganTransaksi : 'Tidak ada' }}
+                {{ (GD.keteranganTransaksi)? GD.keteranganTransaksi : 'Tidak ada' }}
             </div>
         </div>
       </div>

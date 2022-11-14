@@ -18,7 +18,7 @@ export default class Pengaturans extends BaseSchema {
       table.float('toleransi_susut_berat').notNullable().defaultTo(0) // ditanyain lagi dulu ??
       table.boolean('default_boleh_print_nota').notNullable().defaultTo(true)
       table.integer('default_waktu_maksimal_print_nota').notNullable().unsigned()
-      table.integer('default_waktu_maksimal_pengajuan_gadai').notNullable().unsigned()
+      // table.integer('default_waktu_maksimal_pengajuan_gadai').notNullable().unsigned()
       table.integer('penalti_telat_janji_min').notNullable()
       table.integer('penalti_telat_janji_max').notNullable()
       // table.integer('toleransi_persentase_tawaran').notNullable().defaultTo(0)

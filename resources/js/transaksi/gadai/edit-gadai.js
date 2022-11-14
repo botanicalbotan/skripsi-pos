@@ -4,14 +4,12 @@ import Swal from "sweetalert2/dist/sweetalert2"
 import { SwalCustomColor, rupiahParser, capsFirstWord, removeElementsByClass } from '../../fungsi.js'
 
 // ======================================== SUPER ==============================================
-let sudahFotoKTP = false
-let sudahFotoPerhiasan = false
-let inputId = document.getElementById('id') // di set balik kesini pas mau ngirim
-let idPembelian = inputId.value
+let gantiFotoKTP = false
+let gantiFotoPerhiasan = false
+// let inputId = document.getElementById('id') // di set balik kesini pas mau ngirim
+// let idPembelian = inputId.value
 let hargaBeli = document.getElementById('nominalGadai').value
 const nominalGadai = parseInt(hargaBeli)
-const adaFotoBarang = (document.getElementById('fotoPerhiasanBase64').value == 'ada')
-const adaFotoKTP = (document.getElementById('fotoKTPBase64').value == 'ada')
 
 // ===================================== FORM & SUBMIT =========================================
 const namaPenggadai = document.getElementById('namaPenggadai')
@@ -28,8 +26,6 @@ const wadahFotoPerhiasan = document.getElementById('wadahFotoPerhiasan')
 const indiGambarPerhiasanBerubah = document.getElementById('indiGambarPerhiasanBerubah')
 const indiGambarKTPBerubah = document.getElementById('indiGambarKTPBerubah')
 
-
-const btLihatDetail = document.getElementById('btLihatDetail')
 const tanggalTenggat = document.getElementById('tanggalTenggat')
 
 function resetFoto(isPerhiasan) {
@@ -52,7 +48,7 @@ btSubmit.addEventListener('click', () => {
     errorMsg.classList.add('text-error', 'pesanerror')
 
     // cek foto KTP, masukin di constrain
-    if ((!sudahFotoKTP || !fotoKTPBase64.value || fotoKTP.naturalHeight == 0) && !adaFotoKTP) {
+    if (!fotoKTPBase64.value || fotoKTP.naturalHeight == 0) {
         wadahFoto.classList.remove('bg-base-300')
         wadahFoto.classList.add('bg-error', 'bg-opacity-10')
 
@@ -68,7 +64,7 @@ btSubmit.addEventListener('click', () => {
         return
     }
 
-    if ((!sudahFotoPerhiasan || !fotoPerhiasanBase64.value || fotoPerhiasan.naturalHeight == 0) && !adaFotoBarang) {
+    if (!fotoPerhiasanBase64.value || fotoPerhiasan.naturalHeight == 0 ) {
         wadahFotoPerhiasan.classList.remove('bg-base-300')
         wadahFotoPerhiasan.classList.add('bg-error', 'bg-opacity-10')
 
@@ -98,19 +94,15 @@ btSubmit.addEventListener('click', () => {
     }).then((result) => {
         if (result.isConfirmed) {
 
-            if (sudahFotoKTP) indiGambarKTPBerubah.value = "ganti"
-            if (sudahFotoPerhiasan) indiGambarPerhiasanBerubah.value = "ganti"
+            if (gantiFotoKTP) indiGambarKTPBerubah.value = "ganti"
+            if (gantiFotoPerhiasan) indiGambarPerhiasanBerubah.value = "ganti"
 
-            inputId.value = idPembelian
+            // inputId.value = idPembelian
             formGadai.method = 'POST'
             formGadai.action = window.location.pathname.slice(0, -5) + '?_method=PUT'
             formGadai.submit()
         }
     })
-})
-
-btLihatDetail.addEventListener('click', () => {
-    window.open('/app/transaksi/pembelian/' + idPembelian, '_blank');
 })
 
 // ==================================================== KAMERA FULL ==========================================================
@@ -290,13 +282,13 @@ let cropGambar = function (imgData, isPerhiasan) {
                     fotoPerhiasan.src = cropper.getCroppedCanvas().toDataURL()
                     fotoPerhiasan.style.display = 'block'
                     fotoPerhiasanBase64.value = cropper.getCroppedCanvas().toDataURL()
-                    sudahFotoPerhiasan = true
+                    gantiFotoPerhiasan = true
                 } else {
                     // let fotoKTP = document.getElementById('fotoKTP')
                     fotoKTP.src = cropper.getCroppedCanvas().toDataURL()
                     fotoKTP.style.display = 'block'
                     fotoKTPBase64.value = cropper.getCroppedCanvas().toDataURL()
-                    sudahFotoKTP = true
+                    gantiFotoKTP = true
                 }
 
                 resetFoto(isPerhiasan)

@@ -16,12 +16,12 @@ export default class PembeliansController {
   // ============================= fungsi rute ==========================================
 
   public async index({ view }: HttpContextContract) {
-    const kadars = await Database.from('kadars').select('id', 'nama')
+    // const kadars = await Database.from('kadars').select('id', 'nama')
 
     const pengaturan = await Pengaturan.findOrFail(1)
 
     return await view.render('transaksi/pembelian/form-beli', {
-      kadars,
+      // kadars,
       toko: {
         nama: pengaturan.namaToko,
         alamat: pengaturan.alamatTokoLengkap,
@@ -47,7 +47,7 @@ export default class PembeliansController {
       })
 
       await PB.load('pembelianNotaLeo')
-      await PB.load('gadai')
+      // await PB.load('gadai')
 
       await PB.load('model', (query) => {
         query.preload('bentuk')
@@ -83,7 +83,7 @@ export default class PembeliansController {
     }
   }
 
-  public async simpanTransaksi({ request, response, session, auth }: HttpContextContract) {
+  public async simpanPembelian({ request, response, session, auth }: HttpContextContract) {
     const newPembelianSchema = schema.create({
       kelengkapanNota: schema.enum(['tanpa', 'dengan'] as const),
       asalPerhiasan: schema.enum(['luar', 'leo'] as const),
@@ -148,6 +148,7 @@ export default class PembeliansController {
       barangDipakai: schema.string.optional(), //cukup dicek undefined apa ngga, isinya ngga penting
       pelangganTetap: schema.string.optional(), //cukup dicek undefined apa ngga, isinya ngga penting
 
+      // DIHAPUS ntar, sekarang gini dulu ga aapa
       ajukanGadai: schema.string.optional(), //cukup dicek undefined apa ngga, isinya ngga penting. INI GADAI TAMBAHAN DARI DOSEN
 
       idKerusakan: schema.array.optional([rules.minLength(1)]).members(
@@ -172,19 +173,20 @@ export default class PembeliansController {
       dealTawaran: schema.number([rules.unsigned()]),
     })
 
-    try {
-      const validrequest = await request.validate({
-        schema: newPembelianSchema,
-      })
-      const kodepro = await KodeProduksi.findOrFail(validrequest.kodepro)
-      await kodepro.load('kadar')
+    const validrequest = await request.validate({
+      schema: newPembelianSchema,
+    })
 
-      const pengaturan = await Pengaturan.findOrFail(1)
-
+    try { 
+      
       // ------------ PENGAKSES ------------------
       if (!auth.user) throw 'auth ngga valid'
       const userPengakses = await User.findOrFail(auth.user.id)
       await userPengakses.load('pengguna')
+
+      const kodepro = await KodeProduksi.findOrFail(validrequest.kodepro)
+      await kodepro.load('kadar')
+      const pengaturan = await Pengaturan.findOrFail(1)
 
       // ------------ DILUAR --------------------
       let keteranganTransaksi = ''
@@ -518,8 +520,8 @@ export default class PembeliansController {
 
       // harus ngecek tawaran, diatas TARGET dibawah MAKS. Selain itu ngga bener
       if (
-        validrequest.dealTawaran < pembulatanRupiah(hargaBeliTarget, 500) ||
-        validrequest.dealTawaran > pembulatanRupiah(hargaBeliMaksDitawar, 500)
+        validrequest.dealTawaran < pembulatanRupiah(hargaBeliTarget) ||
+        validrequest.dealTawaran > pembulatanRupiah(hargaBeliMaksDitawar)
       ) {
         throw 'Input tawaran tidak valid.'
       }
@@ -581,8 +583,8 @@ export default class PembeliansController {
         hargaBeliSeharusnya: hargaBeliTarget, // diitung dulu
         hargaBeliAkhir: hargaFinal, // diitung dulu
         ongkosKerusakanTotal: ongkosRusak,
-        apakahDigadaikan: apakahGadai,
-        maxGadaiAt: apakahGadai ? DateTime.now().plus({ minute: 30 }) : DateTime.now(), // konsepnya sama kek print nota di penjualan
+        // apakahDigadaikan: apakahGadai,
+        // maxGadaiAt: apakahGadai ? DateTime.now().plus({ minute: 30 }) : DateTime.now(), // konsepnya sama kek print nota di penjualan
       })
 
       // n-to-n ke kerusakan
@@ -660,13 +662,13 @@ export default class PembeliansController {
 
       const terparser = new Terbilang()
 
-      let now = new Date().getTime()
-      let max = new Date(pembelian.maxGadaiAt.toJSDate()).getTime()
-      let distance = max - now
+      // let now = new Date().getTime()
+      // let max = new Date(pembelian.maxGadaiAt.toJSDate()).getTime()
+      // let distance = max - now
 
       // Time calculations for days, hours, minutes and seconds
-      let minutes = distance > 0 ? Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)) : 0
-      let seconds = distance > 0 ? Math.floor((distance % (1000 * 60)) / 1000) : 0
+      // let minutes = distance > 0 ? Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)) : 0
+      // let seconds = distance > 0 ? Math.floor((distance % (1000 * 60)) / 1000) : 0
 
       const fungsi = {
         rupiahParser: rupiahParser,
@@ -684,9 +686,9 @@ export default class PembeliansController {
       const tambahan = {
         hargaBeliTerbilang:
           kapitalHurufPertama(terparser.ubahKeTeks(pembelian.hargaBeliAkhir || 0)) + ' rupiah',
-        apakahExpired: distance <= 0,
-        menit: minutes,
-        detik: seconds,
+        // apakahExpired: distance <= 0,
+        // menit: minutes,
+        // detik: seconds,
         totalPenalti: -Math.abs(penalti),
         totalPotongan: -Math.abs(potongan),
         totalKerusakan: -Math.abs(pembelian.ongkosKerusakanTotal),
@@ -710,7 +712,7 @@ export default class PembeliansController {
       await userPengakses.load('pengguna')
 
       const PB = await Pembelian.findOrFail(params.id)
-      if(PB.gadai || PB.digadaiAt) throw 'Transaksi pembelian yang sudah digadaikan tidak bisa dihapus!'
+      // if(PB.gadai || PB.digadaiAt) throw 'Transaksi pembelian yang sudah digadaikan tidak bisa dihapus!'
 
       let pengaturan = await Pengaturan.findOrFail(1)
 
@@ -827,6 +829,7 @@ export default class PembeliansController {
       barangDipakai: schema.string.optional(), //cukup dicek undefined apa ngga, isinya ngga penting
       pelangganTetap: schema.string.optional(), //cukup dicek undefined apa ngga, isinya ngga penting
 
+      // dihapus men
       ajukanGadai: schema.string.optional(), //cukup dicek undefined apa ngga, isinya ngga penting. INI GADAI TAMBAHAN DARI DOSEN
 
       idKerusakan: schema.array.optional([rules.minLength(1)]).members(
@@ -1238,8 +1241,8 @@ export default class PembeliansController {
           hargaMal, // buat testing
           hargaPerGram: `${rupiahParser(hargaPerGram)}/g`, // OK
           apakahBisaDitawar, // OK
-          hargaBeliTarget: pembulatanRupiah(hargaBeliTarget, 500), // jangan lupa pembulatan
-          hargaBeliMaksDitawar: pembulatanRupiah(hargaBeliMaksDitawar, 500), // jangan lupa pembulatan
+          hargaBeliTarget: pembulatanRupiah(hargaBeliTarget), // jangan lupa pembulatan
+          hargaBeliMaksDitawar: pembulatanRupiah(hargaBeliMaksDitawar), // jangan lupa pembulatan
         },
       }
     } catch (error) {
@@ -1249,47 +1252,47 @@ export default class PembeliansController {
     }
   }
 
-  public async maxPengajuanGadai({ request, response }: HttpContextContract) {
-    let tid = request.input('tid', '')
+  // public async maxPengajuanGadai({ request, response }: HttpContextContract) {
+  //   let tid = request.input('tid', '')
 
-    try {
-      const PB = await Database.from('pembelians')
-        .select('max_gadai_at as maxGadaiAt')
-        .where('id', tid)
-        .where('apakah_digadaikan', true)
-        .whereNull('deleted_at')
-        .firstOrFail()
+  //   try {
+  //     const PB = await Database.from('pembelians')
+  //       .select('max_gadai_at as maxGadaiAt')
+  //       .where('id', tid)
+  //       .where('apakah_digadaikan', true)
+  //       .whereNull('deleted_at')
+  //       .firstOrFail()
 
-      return { max: PB.maxGadaiAt }
-    } catch (error) {
-      return response.badRequest('Id penjualan tidak valid.')
-    }
-  }
+  //     return { max: PB.maxGadaiAt }
+  //   } catch (error) {
+  //     return response.badRequest('Id penjualan tidak valid.')
+  //   }
+  // }
 
-  public async gantiDurasi({ request, response, params }: HttpContextContract) {
-    const newDurasiSchema = schema.create({
-      durasiBaru: schema.date()
-    })
+  // public async gantiDurasi({ request, response, params }: HttpContextContract) {
+  //   const newDurasiSchema = schema.create({
+  //     durasiBaru: schema.date()
+  //   })
 
-    try {
-      // udah kesambung middleware, ngga perlu ngecek auth lagi
-      const validrequest = await request.validate({ schema: newDurasiSchema })
+  //   try {
+  //     // udah kesambung middleware, ngga perlu ngecek auth lagi
+  //     const validrequest = await request.validate({ schema: newDurasiSchema })
 
-      const pembelian = await Pembelian.findOrFail(params.id)
-      if(validrequest.durasiBaru < pembelian.maxGadaiAt) throw `Waktu maksimal pengajuan gadai baru harus lebih dari ${pembelian.maxGadaiAt.toFormat('f')}`
+  //     const pembelian = await Pembelian.findOrFail(params.id)
+  //     if(validrequest.durasiBaru < pembelian.maxGadaiAt) throw `Waktu maksimal pengajuan gadai baru harus lebih dari ${pembelian.maxGadaiAt.toFormat('f')}`
 
-      pembelian.maxGadaiAt = validrequest.durasiBaru
-      await pembelian.save()
+  //     pembelian.maxGadaiAt = validrequest.durasiBaru
+  //     await pembelian.save()
 
-      return response.ok({ message: 'Durasi pengajuan gadai transaksi berhasil diperbarui!'})
-    } catch (error) {
-      if (typeof error === 'string') {
-        return response.badRequest({ error: error })
-      } else {
-        return response.badRequest({ error: 'Ada masalah pada server!' })
-      }
-    }
-  }
+  //     return response.ok({ message: 'Durasi pengajuan gadai transaksi berhasil diperbarui!'})
+  //   } catch (error) {
+  //     if (typeof error === 'string') {
+  //       return response.badRequest({ error: error })
+  //     } else {
+  //       return response.badRequest({ error: 'Ada masalah pada server!' })
+  //     }
+  //   }
+  // }
 }
 
 // ================================================= INI BANTUIN HITUNGAN RUMUS ===========================================================

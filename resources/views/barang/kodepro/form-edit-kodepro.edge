@@ -12,7 +12,7 @@
   <h2 class="text-4xl font-semibold">Ubah Kode Produksi</h2>
   <h4 class="text-lg text-secondary opacity-60">Formulir untuk mengubah data kode produksi pada sistem.</h4>
 
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96 md:w-min">
     @include('partials/wadah-alert')
 
     <form action="/app/barang/kodepro" method="POST" id="formKode">
@@ -29,7 +29,7 @@
                 <h1 class="text-2xl font-semibold">Data Umum</h1>
               </div>
 
-              <div class="form-control">
+              <div class="form-control max-w-xs">
                 <div class="flex items-center">
                   <label for="kode" class="flex-1">Kode Produksi<span class="text-error"> *</span></label>
 
@@ -55,7 +55,7 @@
                 @endif
               </div>
 
-              <div class="form-control">
+              <div class="form-control max-w-xs">
                 <label for="kadar">
                   <span class="">Kadar Perhiasan<span class="text-error"> *</span></span>
                 </label>
@@ -73,7 +73,21 @@
                 @endif
               </div>
 
-              <div class="form-control">
+              <div id="infoKadar" class="p-2 border bg-primary bg-opacity-10 rounded max-w-md space-y-2 text-sm">
+                <div>
+                  <div>
+                    <span class="font-semibold">Kadar: </span>
+                    <span id="iKKadar">{{ kodepro.kadar.nama }}</span>
+                  </div>
+                  <div>
+                    <span class="font-semibold">Potongan: </span>
+                    <span id="iKTipe">{{ (kodepro.kadar.apakah_potongan_persen)? 'Persentase (%)' : 'Nominal (Rp.) per gram' }}</span>
+                  </div>
+                </div>
+                <div id="iKDesk">{{ kodepro.kadar.deskripsi }}</div>
+              </div>
+
+              <div class="form-control max-w-xs">
                 <div class="flex items-center">
                   <label for="asal" class="flex-1">Asal Produksi<span class="text-error"> *</span></label>
 
@@ -122,7 +136,7 @@
               </div>
 
 
-              <div class="form-control">
+              <div class="form-control max-w-md">
                 <label for="deskripsi">Deskripsi<span class="text-error"> *</span></label>
                 <textarea id="deskripsi" name="deskripsi" class="textarea textarea-bordered h-24" maxlength="100"
                   placeholder="Contoh: Langganan dari pengarjin di Sumatra, dlsb." required>{{ kodepro.deskripsi }}</textarea>
@@ -140,7 +154,7 @@
                 <h1 class="text-2xl font-semibold">Harga Jual dan Potongan</h1>
               </div>
 
-              <div class="form-control" x-data>
+              <div class="form-control max-w-xs" x-data>
                 <div class="flex items-center">
                   <label for="hargaLama" class="flex-1">Harga Jual Perhiasan Stok Lama<span class="text-error"> *</span></label>
 
@@ -172,7 +186,7 @@
                 @endif
               </div>
 
-              <div class="form-control" x-data>
+              <div class="form-control max-w-xs" x-data>
                 <div class="flex items-center">
                   <label for="hargaBaru" class="flex-1">Harga Jual Perhiasan Stok Baru<span class="text-error"> *</span></label>
 
@@ -204,7 +218,7 @@
                 @endif
               </div>
 
-              <div class="form-control max-w-md">
+              <div class="form-control max-w-xs">
                 <label for="tipePotongan">
                   <span class="">Tipe Potongan</span>
                 </label>
@@ -216,7 +230,7 @@
                 @endif
               </div>
 
-              <div class="form-control" x-data>
+              <div class="form-control max-w-xs" x-data>
                 <div class="flex items-center">
                   <label for="potonganLama" class="flex-1"><span id="labelPotonganLama"></span> Potongan Perhiasan Stok Lama<span class="text-error"> *</span></label>
 
@@ -252,7 +266,7 @@
                 @endif
               </div>
 
-              <div class="form-control" x-data>
+              <div class="form-control max-w-xs" x-data>
                 <div class="flex items-center">
                   <label for="potonganBaru" class="flex-1"><span id="labelPotonganBaru"></span> Potongan Perhiasan Stok Baru<span class="text-error"> *</span></label>
 
@@ -288,141 +302,7 @@
                 @endif
               </div>
 
-
             </div>
-
-
-            {{--  Bagian Harga Mal  --}}
-            {{--  <div class="space-y-4">
-              <div class="mb-4">
-                <h1 class="text-2xl font-semibold">Harga Mal</h1>
-              </div>
-
-              <div class="form-control" x-data>
-                <div class="flex items-center">
-                  <label for="hargaMal" class="flex-1">Harga Mal Murni<span class="text-error"> *</span></label>
-
-                  <div class="dropdown dropdown-end dropdown-top">
-                    <a href="#" class="hover:underline flex-none">Apa ini?</a>
-                    <div tabindex="0"
-                      class="shadow border card compact dropdown-content bg-base-100 w-60">
-                      <div class="card-body">
-                        <h2 class="card-title">Harga Mal Murni</h2>
-                        <p>Adalah .... tanya ke pak arifin dulu</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="relative flex w-full flex-wrap items-stretch">
-                  <span
-                    class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
-                    Rp.
-                  </span>
-                  <input type="number" id="hargaMal" class="px-3 py-3 relative input input-bordered w-full pl-12" value="{{ hargaMal }}" readonly>
-                </div>
-
-              </div>
-
-              <div class="form-control" x-data>
-                <div class="flex items-center">
-                  <label for="persentaseMalUripan" class="flex-1">Persentase Mal Perhiasan Uripan<span class="text-error"> *</span></label>
-
-                  <div class="dropdown dropdown-end dropdown-top">
-                    <a href="#" class="hover:underline flex-none">Apa ini?</a>
-                    <div tabindex="0"
-                      class="shadow border card compact dropdown-content bg-base-100 w-60">
-                      <div class="card-body">
-                        <h2 class="card-title">Persentase Mal Uripan</h2>
-                        <p>Adalah .... tanya ke pak arifin dulu</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="relative flex w-full flex-wrap items-stretch">
-                  <span
-                    class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
-                    %
-                  </span>
-                  <input type="number"
-                    oninput="validity.valid||(value='');" value="{{ kodepro.persentaseMalUripan }}"
-                    placeholder="0" min="0" max="100" name="persentaseMalUripan"
-                    id="persentaseMalUripan" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
-                </div>
-
-                @if(flashMessages.has('errors.persentaseMalUripan'))
-                <p class="text-error">{{ flashMessages.get('errors.persentaseMalUripan') }}</p>
-                @endif
-              </div>
-
-              <div class="form-control" x-data>
-                <div class="flex items-center">
-                  <label for="persentaseMalRosok" class="flex-1">Persentase Mal Perhiasan Rosok<span class="text-error"> *</span></label>
-
-                  <div class="dropdown dropdown-end dropdown-top">
-                    <a href="#" class="hover:underline flex-none">Apa ini?</a>
-                    <div tabindex="0"
-                      class="shadow border card compact dropdown-content bg-base-100 w-60">
-                      <div class="card-body">
-                        <h2 class="card-title">Persentase Mal Rosok</h2>
-                        <p>Adalah .... tanya ke pak arifin dulu</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="relative flex w-full flex-wrap items-stretch">
-                  <span
-                    class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
-                    %
-                  </span>
-                  <input type="number"
-                    oninput="validity.valid||(value='');"
-                    placeholder="0" min="0" max="100" name="persentaseMalRosok" value="{{ kodepro.persentaseMalRosok }}"
-                    id="persentaseMalRosok" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
-                </div>
-
-                @if(flashMessages.has('errors.persentaseMalRosok'))
-                <p class="text-error">{{ flashMessages.get('errors.persentaseMalRosok') }}</p>
-                @endif
-              </div>
-
-
-              <div class="form-control" x-data>
-                <div class="flex items-center">
-                  <label for="ongkosBeliTanpaNota" class="flex-1">Ongkos Beli Tanpa Nota<span class="text-error"> *</span></label>
-
-                  <div class="dropdown dropdown-end dropdown-top">
-                    <a href="#" class="hover:underline flex-none">Apa ini?</a>
-                    <div tabindex="0"
-                      class="shadow border card compact dropdown-content bg-base-100 w-60">
-                      <div class="card-body">
-                        <h2 class="card-title">Ongkos Beli Tanpa Nota</h2>
-                        <p>Adalah .... tanya ke pak arifin dulu</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="relative flex w-full flex-wrap items-stretch">
-                  <span
-                    class="z-10 h-full leading-snug absolute text-center text-secondary items-center justify-center w-10 pl-3 py-3">
-                    Rp.
-                  </span>
-                  <input type="number"
-                    oninput="validity.valid||(value='');"
-                    placeholder="0" min="0" name="ongkosBeliTanpaNota" value="{{ kodepro.ongkosBeliTanpaNota }}"
-                    id="ongkosBeliTanpaNota" class="px-3 py-3 relative input input-bordered w-full pl-12" required>
-                </div>
-
-                @if(flashMessages.has('errors.ongkosBeliTanpaNota'))
-                <p class="text-error">{{ flashMessages.get('errors.ongkosBeliTanpaNota') }}</p>
-                @endif
-              </div>
-
-            </div>  --}}
-
 
             <div class="text-secondary italic ">
               Pastikan anda mengisi seluruh masukan bertanda bintang (*)
@@ -441,34 +321,6 @@
           </div>
         </div>
 
-        <div class="flex-none w-full md:w-1/4 space-y-6">
-
-          <div id="infoKadar" class="bg-base-200 min-h-60 card lg:sticky lg:top-10">
-            <div class="card-body space-y-4">
-              <div class=" card-title flex items-center border-b-2 pb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                </svg> Informasi Kadar
-              </div>
-              <div>
-                <h5 class="text-sm font-semibold opacity-50">Kadar Perhiasan</h5>
-                <p id="iKKadar">{{ kodepro.kadar.nama }}</p>
-              </div>
-              <div>
-                <h5 class="text-sm font-semibold opacity-50">Tipe Potongan</h5>
-                <p id="iKTipe">{{ (kodepro.kadar.apakah_potongan_persen)? 'Persentase (%)' : 'Nominal (Rp.) per gram' }}</p>
-              </div>
-              <div>
-                <h5 class="text-sm font-semibold opacity-50">Deskripsi Kadar</h5>
-                <p id="iKDesk">{{ kodepro.kadar.deskripsi }}</p>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
       </div>
     </form>
 

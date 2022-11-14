@@ -11,7 +11,7 @@ Route.group(() => {
     // ======================================================== PENJUALAN ===========================================================
     Route.group(() => {
       Route.get('/form', 'transaksi/PenjualansController.form') // perlu kelompokId terpilih -> kt
-      Route.post('/hitung', 'transaksi/PenjualansController.simpanTransaksi') // aslinya ini STORE, tp biar seragam ama PB
+      Route.post('/hitung', 'transaksi/PenjualansController.simpanPenjualan') // aslinya ini STORE, tp biar seragam ama PB
       Route.get('/pasca', 'transaksi/PenjualansController.pascaTransaksi')  // perlu transaksiId -> tid
 
       Route.put('/:id/gantiDurasi', 'transaksi/PenjualansController.gantiDurasi').middleware(['isPemilikApi'])
@@ -41,13 +41,14 @@ Route.group(() => {
 
       // index di pembelian bawah itu form beli biasa
 
-      Route.post('/', 'transaksi/PembeliansController.simpanTransaksi') // aslinya ini STORE, tp biar seragam ama PJ
+      Route.post('/', 'transaksi/PembeliansController.simpanPembelian') // aslinya ini STORE, tp biar seragam ama PJ
       Route.get('/pasca', 'transaksi/PembeliansController.pascaTransaksi') // perlu transaksiId -> tid
       Route.post('/hitung-harga-belakang', 'transaksi/PembeliansController.hitungHargaBelakang') // dari ajax
       
-      Route.put('/:id/gantiDurasi', 'transaksi/PembeliansController.gantiDurasi').middleware(['isPemilikApi'])
+      // Route.put('/:id/gantiDurasi', 'transaksi/PembeliansController.gantiDurasi').middleware(['isPemilikApi'])
       Route.get('/:id/kerusakan', 'transaksi/PembeliansController.rusakBeli')
 
+      // ini ntar dihapus, jadi gadai sendiri dibawah
       Route.get('/pengajuan-gadai', 'transaksi/GadaisController.formulirGadai').middleware(['isKepalaWeb']) // perlu transaksiId -> tid
 
     }).prefix('pembelian')
@@ -65,8 +66,15 @@ Route.group(() => {
       // DESTROY nya gadai ini ngeset status ke dibatalkan
 
       Route.group(() => {
+        Route.get('/form', 'transaksi/GadaisController.form')
+        Route.post('/hitung-harga-belakang', 'transaksi/GadaisController.hitungHargaBelakang') // dari ajax
         Route.get('/refresh', 'transaksi/GadaisController.refreshGadai')
-        Route.post('/', 'transaksi/GadaisController.store') // perlu transaksiId -> tid
+
+        // ini ntar diganti ama yang diatas
+        Route.post('/store-lama', 'transaksi/GadaisController.storeLama') // perlu transaksiId -> tid
+        Route.post('/', 'transaksi/GadaisController.simpanGadai') // ini buat ngisi data, ntar jadi 'store' biasa
+
+        Route.get('/:id/kerusakan', 'transaksi/GadaisController.rusakGadai')
 
         Route.resource('/:idGadai/pembayaran', 'transaksi/PembayaranGadaisController').except(['edit', 'update'])
         .middleware({

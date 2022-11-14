@@ -1,0 +1,13 @@
+@if(roti && roti.length > 0)
+<div class="text-sm breadcrumbs">
+  <ul>
+    @each(item in roti)
+    @if(item.alamat)
+    <li><a href="{{ item.alamat }}">{{ truncate(item.laman, 20) }}</a></li>
+    @else
+    <li>{{ truncate(item.laman, 20) }}</li>
+    @endif
+    @endeach
+  </ul>
+</div>
+@endif

@@ -109,6 +109,11 @@
         "http://localhost:8080/assets/form-gadai.js"
       ]
     },
+    "baru-form-gadai": {
+      "js": [
+        "http://localhost:8080/assets/baru-form-gadai.js"
+      ]
+    },
     "edit-gadai": {
       "js": [
         "http://localhost:8080/assets/edit-gadai.js"
@@ -212,11 +217,6 @@
     "atur-saldo": {
       "js": [
         "http://localhost:8080/assets/atur-saldo.js"
-      ]
-    },
-    "all-ubah-saldo": {
-      "js": [
-        "http://localhost:8080/assets/all-ubah-saldo.js"
       ]
     },
     "atur-barang": {

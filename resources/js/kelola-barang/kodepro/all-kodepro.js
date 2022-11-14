@@ -146,7 +146,6 @@ if (basePage == "list") {
 // ========================================== form ===========================================
 if (basePage == "form") {
   let kodeValid = false
-  const BASEURL = window.location.pathname
   const kode = document.getElementById('kode')
   const teksPengecekanKode = document.getElementById('teksPengecekanKode')
 
@@ -160,16 +159,12 @@ if (basePage == "form") {
   const tipePotongan = document.getElementById('tipePotongan')
   const potonganLama = document.getElementById('potonganLama')
   const potonganBaru = document.getElementById('potonganBaru')
-  // const persentaseMalUripan = document.getElementById('persentaseMalUripan')
-  // const ongkosMalRosokPerGram = document.getElementById('ongkosMalRosokPerGram')
 
   let resetKadar = function () {
     hargaLama.value = ''
     hargaBaru.value = ''
     potonganLama.value = ''
     potonganBaru.value = ''
-    // persentaseMalUripan.value = ''
-    // ongkosMalRosokPerGram.value = ''
   }
 
   let fullResetKadar = function () {
@@ -309,6 +304,14 @@ if (basePage == "form") {
       }
 
       return
+    }
+
+    if(!kodeValid){
+      return kode.scrollIntoView({
+        // behavior: "smooth",
+        block: "center",
+        inline: "nearest"
+      });
     }
 
     if (!formKode.reportValidity()) return
@@ -533,6 +536,10 @@ if (basePage == "detail") {
 // ========================================== edit ===========================================
 if (basePage == "edit") {
   const BASEURL = window.location.pathname
+  let kodeValid = true // default mesti udah keisi
+  
+  const kode = document.getElementById('kode')
+  const teksPengecekanKode = document.getElementById('teksPengecekanKode')
 
   // deklarasi submit
   const kadar = document.getElementById('kadar')
@@ -570,6 +577,14 @@ if (basePage == "edit") {
       return
     }
 
+    if(!kodeValid){
+      return kode.scrollIntoView({
+        // behavior: "smooth",
+        block: "center",
+        inline: "nearest"
+      });
+    }
+
     if (!formKode.reportValidity()) return
 
     Swal.fire({
@@ -592,9 +607,6 @@ if (basePage == "edit") {
 
   })
 
-  let kodeValid = false
-  const kode = document.getElementById('kode')
-  const teksPengecekanKode = document.getElementById('teksPengecekanKode')
 
 
   // deklarasi cek kadar

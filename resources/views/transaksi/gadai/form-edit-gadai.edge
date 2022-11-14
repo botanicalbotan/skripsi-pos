@@ -11,13 +11,13 @@
 
 @section('content')
 <div class="w-full p-8" id="base-page">
+  @include('partials/wadah-bread')
+  
   <h2 class="text-4xl font-semibold">Formulir Pengajuan Gadai</h2>
   <h4 class="text-lg text-secondary opacity-60">Buat gadai baru dan simpan ke dalam sistem.</h4>
 
   <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
     @include('partials/wadah-alert')
-
-    {{ inspect(flashMessages.all()) }}
 
     <div class="flex">
         <div class="flex-1">
@@ -40,10 +40,9 @@
     </div>
 
     <form action="/app/transaksi/gadai/" method="POST" id="formGadai">
-      <input type="number" name="id" id="id" class="hidden hidden-but-real" hidden value="{{ gadai.pembelian.id }}">
-      <input type="number" id="nominalGadai" class="hidden hidden-but-real" hidden value="{{ gadai.pembelian.hargaBeliAkhir }}">
-
       {{ csrfField() }}
+      <input type="number" id="nominalGadai" class="hidden hidden-but-real" hidden value="{{ gadai.nominalGadai }}">
+
       <div class="my-8 flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6 lg:space-x-8"
         x-data="{ radioStok: 0, beratDesimal: 0 }">
 
@@ -283,25 +282,25 @@
                     <div>
                       <div class="flex">
                         <span class="flex-1">Kadar:</span>
-                        <span class="flex-none">{{ gadai.pembelian.kodeProduksi.kadar.nama }}</span>
+                        <span class="flex-none">{{ gadai.kodeProduksi.kadar.nama }}</span>
                       </div>
                       <div class="flex">
                         <span class="flex-1">Bentuk:</span>
-                        <span class="flex-none">{{ gadai.pembelian.model.bentuk.bentuk }}</span>
+                        <span class="flex-none">{{ gadai.model.bentuk.bentuk }}</span>
                       </div>
                       <div class="flex">
                         <span class="flex-1">Kode:</span>
-                        <span class="flex-none">{{ gadai.pembelian.kodeProduksi.kode }}</span>
+                        <span class="flex-none">{{ gadai.kodeProduksi.kode }}</span>
                       </div>
                       <div class="flex">
                         <span class="flex-1">Berat barang:</span>
-                        <span class="flex-none">{{ gadai.pembelian.beratBarang }} gram</span>
+                        <span class="flex-none">{{ gadai.beratBarang }} gram</span>
                       </div>
 
-                      @if(gadai.pembelian.pembelianNotaLeo)
+                      @if(gadai.gadaiNotaLeo)
                       <div class="flex">
                         <span class="flex-1">Harga nota:</span>
-                        <span class="flex-none">{{ fungsi.rupiahParser(gadai.pembelian.pembelianNotaLeo.hargaJualPadaNota) }}</span>
+                        <span class="flex-none">{{ fungsi.rupiahParser(gadai.gadaiNotaLeo.hargaJualPadaNota) }}</span>
                       </div>
                       <div class="flex">
                         <span class="flex-1">Potongan:</span>
@@ -316,18 +315,18 @@
                     <div>
                       <div class="flex">
                         <span class="flex-1">Kondisi barang:</span>
-                        <span class="flex-none">{{ fungsi.kapitalHurufPertama(gadai.pembelian.kondisiFisik) }}</span>
+                        <span class="flex-none">{{ fungsi.kapitalHurufPertama(gadai.kondisiFisik) }}</span>
                       </div>
 
                       <div class="flex">
                         <span class="flex-1">Harga per gram:</span>
 
-                        @if(gadai.pembelian.pembelianNotaLeo)
+                        @if(gadai.gadaiNotaLeo)
                         <div class="flex-none">
-                          {{ fungsi.rupiahParser(gadai.pembelian.hargaBeliPerGramSeharusnya) }}</div>
+                          {{ fungsi.rupiahParser(gadai.hargaBarangPerGramSeharusnya) }}</div>
                         @else
                         <div class="flex-none">
-                          {{ fungsi.rupiahParser(gadai.pembelian.hargaBeliPerGramAkhir) }}</div>
+                          {{ fungsi.rupiahParser(gadai.hargaBarangPerGramAkhir) }}</div>
                         @endif
                       </div>
 
@@ -346,30 +345,14 @@
                 </div>
 
                 <div class="flex flex-col w-full items-center">
-                  <h2 class="font-semibold text-center">Harga Beli</h2>
-                  <h1 class="font-bold text-3xl text-center">{{ fungsi.rupiahParser(gadai.pembelian.hargaBeliAkhir) }}</h1>
-                </div>
-                <div class="space-y-4">
-                  <button type="button" id="btLihatDetail" class="btn btn-block btn-outline btn-sm">Lihat
-                    detail pembelian</button>
+                  <h2 class="font-semibold text-center">Harga Perhiasan</h2>
+                  <h1 class="font-bold text-3xl text-center">{{ fungsi.rupiahParser(gadai.nominalGadai) }}</h1>
                 </div>
 
-              </div>
-            </div>
-          </div>
+                <div class="text-sm text-secondary italic">
+                  *&#41; Anda tidak bisa mengubah data dan harga perhiasan
+                </div>
 
-          {{--  card hitung  --}}
-          <div class="card bg-base-200 w-full border">
-            <div class="card-body">
-              <div class="card-title text-center">
-                Nominal Gadai
-              </div>
-              <div>
-                Besaran nominal uang yang dapat dipinjamkan adalah senilai harga beli perhiasan yang digadaikan.
-              </div>
-              <div class="flex flex-col w-full items-center mt-6">
-                {{--  <h2 class="font-semibold text-center">Harga Beli</h2>  --}}
-                <h1 class="font-bold text-3xl text-center">{{ fungsi.rupiahParser(gadai.pembelian.hargaBeliAkhir) }}</h1>
               </div>
             </div>
           </div>

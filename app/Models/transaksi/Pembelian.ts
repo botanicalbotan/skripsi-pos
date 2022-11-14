@@ -11,7 +11,7 @@ import {
   beforeFetch,
   beforeFind,
   ModelQueryBuilderContract,
-  scope
+  // scope
 } from '@ioc:Adonis/Lucid/Orm'
 // import Kadar from 'App/Models/barang/Kadar'
 import Model from 'App/Models/barang/Model'
@@ -19,7 +19,7 @@ import Kerusakan from 'App/Models/barang/Kerusakan'
 import Pengguna from 'App/Models/akun/Pengguna'
 import KodeProduksi from '../barang/KodeProduksi'
 import PembelianNotaLeo from './PembelianNotaLeo'
-import Gadai from './Gadai'
+// import Gadai from './Gadai'
 
 type PembeliansQuery = ModelQueryBuilderContract<typeof Pembelian>
 
@@ -84,17 +84,17 @@ export default class Pembelian extends BaseModel {
 
 
   // ========================== GADAI, PERMINTAAN DOSEN ============================
-  @column.dateTime()
-  public maxGadaiAt: DateTime
+  // @column.dateTime()
+  // public maxGadaiAt: DateTime
 
-  @column()
-  public apakahDigadaikan: boolean
+  // @column()
+  // public apakahDigadaikan: boolean
 
-  @column.dateTime()
-  public digadaiAt: DateTime | null
+  // @column.dateTime()
+  // public digadaiAt: DateTime | null
 
-  @hasOne(() => Gadai)
-  public gadai: HasOne<typeof Gadai>
+  // @hasOne(() => Gadai)
+  // public gadai: HasOne<typeof Gadai>
   
 
   @column.dateTime({ autoCreate: true })
@@ -152,11 +152,11 @@ export default class Pembelian extends BaseModel {
 
 
   // ================================ SCOPE ==============================================
-  public static formGadai = scope((query) => {
-    query
-      .where('apakah_digadaikan', true)
-      .whereNull('deleted_at')
-      // tanggalnya di cek manual
-  })
+  // public static formGadai = scope((query) => {
+  //   query
+  //     .where('apakah_digadaikan', true)
+  //     .whereNull('deleted_at')
+  //     // tanggalnya di cek manual
+  // })
 
 }

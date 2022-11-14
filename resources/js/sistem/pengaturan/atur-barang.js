@@ -184,7 +184,7 @@ if (BOLEHEDIT) {
                         success: function () {
                           resolve({
                             apakahSukses: true,
-                            msg: 'Stok minimum kelompok perhiasan diubah!'
+                            msg: 'Peringatan stok kelompok menipis berhasil diubah!'
                           })
                         },
                         error: function (xhr) {

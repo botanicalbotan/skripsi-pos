@@ -28,7 +28,8 @@ module.exports = {
       'input-warning',
       'bg-warning',
       'bg-info',
-      'bg-secondary'
+      'bg-secondary',
+      'list-disc'
     ]
   },
   // purge: {

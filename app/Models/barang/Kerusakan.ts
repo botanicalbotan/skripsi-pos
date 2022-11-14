@@ -13,6 +13,7 @@ import {
 import Bentuk from 'App/Models/barang/Bentuk'
 import Pembelian from 'App/Models/transaksi/Pembelian'
 import Pengguna from 'App/Models/akun/Pengguna'
+import Gadai from '../transaksi/Gadai'
 
 type KerusakanQuery = ModelQueryBuilderContract<typeof Kerusakan>
 
@@ -63,6 +64,20 @@ export default class Kerusakan extends BaseModel {
     ]
   })
   public pembelians: ManyToMany<typeof Pembelian>
+
+  @manyToMany(() => Gadai, {
+    pivotTable: 'gadai_kerusakans',
+    localKey: 'id',
+    pivotForeignKey: 'kerusakan_id',
+    relatedKey: 'id',
+    pivotRelatedForeignKey: 'gadai_id',
+    pivotColumns: [
+      'apakah_diabaikan',
+      'banyak_kerusakan',
+      'total_ongkos'
+    ]
+  })
+  public gadais: ManyToMany<typeof Gadai>
 
   @column()
   public penggunaId: number

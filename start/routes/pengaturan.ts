@@ -27,10 +27,10 @@ Route.group(() => {
         
       }).prefix('kadar')
 
-      Route.group(() => {
-        Route.get('pengubahan/:id', 'sistem/PengaturansController.pageViewUbahSaldo')
-        Route.get('pengubahan/', 'sistem/PengaturansController.pageListUbahSaldo')
-      }).prefix('saldo')
+      // Route.group(() => {
+      //   Route.get('pengubahan/:id', 'sistem/PengaturansController.pageViewUbahSaldo')
+      //   Route.get('pengubahan/', 'sistem/PengaturansController.pageListUbahSaldo')
+      // }).prefix('saldo')
 
     }).middleware('isKepalaWeb')
     
@@ -61,14 +61,15 @@ Route.group(() => {
         Route.put('/ubah-penalti-telat-tt-min', 'sistem/PengaturansController.ubahPenaltiTelatTTMin')
         Route.put('/ubah-penalti-telat-tt-max', 'sistem/PengaturansController.ubahPenaltiTelatTTMax')
 
-        Route.put('/ubah-waktu-max-pengajuan-gadai', 'sistem/PengaturansController.ubahWaktuMaksimalPengajuanGadai')
+        // ini diganti
+        // Route.put('/ubah-waktu-max-pengajuan-gadai', 'sistem/PengaturansController.ubahWaktuMaksimalPengajuanGadai')
 
         Route.put('/ubah-harga-mal', 'sistem/PengaturansController.ubahHargaMal')
       }).prefix('transaksi').middleware('isPemilikApi')
 
       Route.group(() => {
         Route.put('/banding-saldo', 'sistem/PengaturansController.bandingSaldoToko').middleware('isKepalaApi')
-        Route.put('/ubah-saldo', 'sistem/PengaturansController.ubahSaldoToko').middleware('isPemilikApi')
+        // Route.put('/ubah-saldo', 'sistem/PengaturansController.ubahSaldoToko').middleware('isPemilikApi')
       }).prefix('saldo')
       
       Route.group(() => {

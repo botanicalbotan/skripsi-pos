@@ -302,7 +302,7 @@ $(function () {
           icon: 'question',
           iconColor: SwalCustomColor.icon.error,
           showCancelButton: true,
-          confirmButtonText: 'Ya, batalkan tagihan!',
+          confirmButtonText: 'Ya, batalkan pembayaran!',
           cancelButtonText: 'Batal',
           scrollbarPadding: false,
           focusCancel: true,

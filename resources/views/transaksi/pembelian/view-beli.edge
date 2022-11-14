@@ -32,12 +32,6 @@
               <a href="/app/transaksi/pembelian/pasca?tid={{ PB.id }}">Pasca transaski</a>
             </li>
             @if(session.get('isPemilik'))
-              @if(PB.apakahDigadaikan)
-              <li>
-                <a href="#" id="btUbahDurasi">Ubah durasi pengajuan gadai</a>
-                <input type="datetime-local" class="hidden" readonly id="durasiSekarang" value="{{ PB.maxGadaiAt.toFormat("yyyy-MM-dd'T'HH:mm:ss") }}">
-              </li>
-              @endif
             <li>
               <a id="hapusPB" class="true-text-error">Hapus transaksi</a>
               <form id="formHapusPB" action="/app/transaksi/pembelian" method="POST">
@@ -65,7 +59,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Data Fisik Perhiasan</h4>
+                Data Perhiasan</h4>
             </div>
             <div class="flex-none flex align-bottom mb-2 items-end">
               <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada
@@ -118,6 +112,20 @@
                 </div>
               </li>
 
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Asal Toko</h3>
+                  <span class="flex-1 ">{{ (PB.asalToko)? PB.asalToko : '-' }}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Alamat Asal Toko</h3>
+                  <span class="flex-1 ">{{ (PB.alamatAsalToko)? PB.alamatAsalToko : '-' }}</span>
+                </div>
+              </li>
+
             </ul>
           </div>
         </div>
@@ -132,19 +140,13 @@
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Data Perjanjian Nota Jual</h4>
+                Data Nota Leo</h4>
             </div>
           </div>
 
           @if(PB.pembelianNotaLeo)
           <div class="border-t border-b border-secondary">
             <ul>
-              <li class="border-b last:border-b-0">
-                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
-                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Asal Nota</h3>
-                  <span class="flex-1">Toko Mas Leo</span>
-                </div>
-              </li>
 
               <li class="border-b last:border-b-0">
                 <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
@@ -219,7 +221,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
-                Hitungan Transaksi</h4>
+                Penentuan Harga Perhiasan</h4>
             </div>
             <div class="flex-none flex align-bottom mb-2 items-end">
               <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada
@@ -332,7 +334,7 @@
           </div>
         </div>
 
-        <div>
+        {{--  <div>
           <div class="flex px-2">
             <div class="flex-1">
               <h4 class="text-xl mb-2 flex items-center font-semibold">
@@ -383,7 +385,7 @@
 
             </ul>
           </div>
-        </div>
+        </div>  --}}
 
 </div>
 <div class="flex-none w-full lg:w-1/4 space-y-6">

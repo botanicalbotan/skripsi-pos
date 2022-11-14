@@ -39,7 +39,7 @@ export default class BasicSeeder extends BaseSeeder {
       alamatTokoSingkat: 'Timur Pasar Karanggede - BOYOLALI',
       toleransiSusutBerat: 0,
       defaultWaktuMaksimalPrintNota: 30, // menit
-      defaultWaktuMaksimalPengajuanGadai: 30, // menit
+      // defaultWaktuMaksimalPengajuanGadai: 30, // menit
       penaltiTelatJanjiMin: 5000,
       penaltiTelatJanjiMax: 10000,
       saldoToko: 200000000,
