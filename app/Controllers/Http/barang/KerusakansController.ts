@@ -89,11 +89,7 @@ export default class KerusakansController {
 
     let roti = [
       {
-        laman: 'Kelola Barang',
-        alamat: '/app/barang',
-      },
-      {
-        laman: 'Kerusakan',
+        laman: 'Kerusakan Perhiasan',
       },
     ]
 
@@ -104,11 +100,7 @@ export default class KerusakansController {
   public async create({ view }: HttpContextContract) {
     let roti = [
       {
-        laman: 'Kelola Barang',
-        alamat: '/app/barang',
-      },
-      {
-        laman: 'Kerusakan',
+        laman: 'Kerusakan Perhiasan',
         alamat: '/app/barang/kerusakan',
       },
       {
@@ -182,11 +174,7 @@ export default class KerusakansController {
 
       let roti = [
         {
-          laman: 'Kelola Barang',
-          alamat: '/app/barang',
-        },
-        {
-          laman: 'Kerusakan',
+          laman: 'Kerusakan Perhiasan',
           alamat: '/app/barang/kerusakan',
         },
         {
@@ -208,11 +196,7 @@ export default class KerusakansController {
 
       let roti = [
         {
-          laman: 'Kelola Barang',
-          alamat: '/app/barang',
-        },
-        {
-          laman: 'Kerusakan',
+          laman: 'Kerusakan Perhiasan',
           alamat: '/app/barang/kerusakan',
         },
         {

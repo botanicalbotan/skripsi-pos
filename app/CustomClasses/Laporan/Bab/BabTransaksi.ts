@@ -181,7 +181,7 @@ export default class BabTransaksi {
         style: 'subBab'
       },
       {
-        text: `Pada subbab ini, akan dilampirkan rekap olahan data dari seluruh transaksi penjualan, pembelian dan gadai yang tercatat pada sistem pada tanggal ${tanggalString}. Berikut selengkapnya:`,
+        text: `Pada subbab ini, dilampirkan rekap olahan data dari seluruh transaksi penjualan, pembelian dan gadai yang tercatat pada sistem pada tanggal ${tanggalString}. Berikut selengkapnya:`,
         style: 'paragrafNormal'
       },
       {
@@ -312,7 +312,7 @@ export default class BabTransaksi {
         style: 'subBab'
       },
       {
-        text: `Pada subbab ini, akan dilampirkan daftar seluruh penjualan yang tercatat pada sistem pada tanggal ${tanggalString}. Kolom nama barang akan dilengkapi dengan informasi kadar dan bentuk perhiasan, serta penanda warna sesuai dengan warna nota yang diatur pada sistem. Berikut selengkapnya:`,
+        text: `Pada subbab ini, dilampirkan daftar seluruh penjualan yang tercatat pada sistem pada tanggal ${tanggalString}. Kolom nama barang dilengkapi dengan informasi kadar dan bentuk perhiasan, serta penanda warna sesuai dengan warna nota yang diatur pada sistem. Berikut selengkapnya:`,
         style: 'paragrafNormal'
       },
       {
@@ -441,7 +441,7 @@ export default class BabTransaksi {
         style: 'subBab'
       },
       {
-        text: `Pada subbab ini, akan dilampirkan daftar seluruh penjualan yang tercatat pada sistem pada tanggal ${tanggalString}. Kolom nama barang akan dilengkapi dengan informasi kadar dan bentuk perhiasan, serta penanda warna sesuai dengan warna nota yang diatur pada sistem. Berikut selengkapnya:`,
+        text: `Pada subbab ini, dilampirkan daftar seluruh penjualan yang tercatat pada sistem pada tanggal ${tanggalString}. Kolom nama barang dilengkapi dengan informasi kadar dan bentuk perhiasan, serta penanda warna sesuai dengan warna nota yang diatur pada sistem. Berikut selengkapnya:`,
         style: 'paragrafNormal'
       },
       {
@@ -554,7 +554,7 @@ export default class BabTransaksi {
   //       text: 'Daftar Transaksi Gadai Berjalan & Terlambat',
   //       style: 'subBab'
   //     },
-  //     `Pada subbab ini, akan dilampirkan daftar seluruh gadai dengan status "berjalan" dan "terlambat" yang tercatat pada sistem pada tanggal ${tanggalString}. Kolom nama barang akan dilengkapi dengan informasi kadar dan bentuk perhiasan, serta penanda warna sesuai dengan warna nota yang diatur pada sistem. Berikut selengkapnya:`,
+  //     `Pada subbab ini, dilampirkan daftar seluruh gadai dengan status "berjalan" dan "terlambat" yang tercatat pada sistem pada tanggal ${tanggalString}. Kolom nama barang dilengkapi dengan informasi kadar dan bentuk perhiasan, serta penanda warna sesuai dengan warna nota yang diatur pada sistem. Berikut selengkapnya:`,
   //     {
   //       table: {
   //         widths: [85, '*', 200, '*'],

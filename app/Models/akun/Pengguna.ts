@@ -26,6 +26,7 @@ import Model from 'App/Models/barang/Model'
 import KoreksiStok from 'App/Models/barang/KoreksiStok'
 import PembayaranGadai from '../transaksi/PembayaranGadai'
 import RekapHarian from '../kas/RekapHarian'
+import PenyesuaianStok from '../barang/PenyesuaianStok'
 
 type PenggunaQuery = ModelQueryBuilderContract<typeof Pengguna>
 
@@ -144,6 +145,9 @@ export default class Pengguna extends BaseModel {
 
   @hasMany(() => KoreksiStok)
   public koreksiStoks: HasMany<typeof KoreksiStok>
+
+  @hasMany(() => PenyesuaianStok)
+  public penyesuaianStoks: HasMany<typeof PenyesuaianStok>
 
   @hasMany(() => Gadai)
   public gadais: HasMany<typeof Gadai>

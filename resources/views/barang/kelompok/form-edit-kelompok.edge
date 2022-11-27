@@ -150,6 +150,11 @@
 
           <div class="form-control max-w-xs">
             <label class="label cursor-pointer justify-start space-x-4">
+              <input type="checkbox" name="monitorStok" {{ (kelompok.apakahDimonitor)? 'checked': '' }} class="checkbox">
+              <span class="">Monitor stok kelompok</span>
+            </label>
+
+            <label class="label cursor-pointer justify-start space-x-4">
               <input type="checkbox" name="ingatkanStokMenipis" {{ (kelompok.ingatkanStokMenipis)? 'checked': '' }} class="checkbox">
               <span class="">Kirimkan notifikasi saat stok mencapai batas minimum</span>
             </label>

@@ -61,6 +61,7 @@
               <th>Total {{ (tambahan.filter)? 'Pengeluaran' : 'Pembelian' }}</th>
               <th>Selisih Saldo</th>
               <th>Saldo Akhir Toko</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -87,21 +88,20 @@
               <td>
                 <div class="text-error">
                   @if(rekap.apakahSudahBandingSaldo)
-                    {{ fungsi.rupiahParser(rekap.saldoTokoTerakhir - rekap.saldoTokoReal) }}
+                    {{ fungsi.rupiahParser(rekap.saldoTokoReal - rekap.saldoTokoTerakhir) }}
                   @else
                     belum banding!
                   @endif
                 </div>
               </td>
               <td>
-                @if(rekap.apakahSudahBandingSaldo)
-                <div class="tooltip text-accent-focus tooltip-left" data-tip="Sudah banding saldo">
-                  {{ fungsi.rupiahParser(rekap.saldoTokoTerakhir) }}
-                </div>
-                @else
-                <div class="tooltip text-warning tooltip-left" data-tip="Belum banding saldo toko">
-                  {{ fungsi.rupiahParser(rekap.saldoTokoTerakhir) }}
-                </div>
+                {{ fungsi.rupiahParser(rekap.saldoTokoTerakhir) }}
+              </td>
+              <td>
+                @if(!rekap.apakahSudahBandingSaldo || rekap.jumlahMasalah > 0 || rekap.jumlahCekUlang >0)
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
                 @endif
               </td>
             </tr>

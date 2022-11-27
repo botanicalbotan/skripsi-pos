@@ -169,6 +169,16 @@
         "http://localhost:8080/assets/all-penambahan.js"
       ]
     },
+    "form-penyesuaian": {
+      "js": [
+        "http://localhost:8080/assets/form-penyesuaian.js"
+      ]
+    },
+    "all-penyesuaian": {
+      "js": [
+        "http://localhost:8080/assets/all-penyesuaian.js"
+      ]
+    },
     "all-pegawai": {
       "js": [
         "http://localhost:8080/assets/all-pegawai.js"

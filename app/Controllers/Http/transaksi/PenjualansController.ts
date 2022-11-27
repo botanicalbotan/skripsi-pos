@@ -10,6 +10,7 @@ import Terbilang from 'App/CustomClasses/Terbilang'
 import Model from 'App/Models/barang/Model'
 import Pengaturan from 'App/Models/sistem/Pengaturan'
 import { prepareRekap } from 'App/CustomClasses/CustomRekapHarian'
+import { butuhUpdate } from 'App/CustomClasses/CustomPenyesuaian'
 import User from 'App/Models/User'
 var isBase64 = require('is-base64')
 var QRCode = require('qrcode')
@@ -287,10 +288,12 @@ export default class PenjualansController {
           pjBaru.namaBarang = namaBarangBaru
           await pjBaru.save()
         }
-
       
       pengaturan.saldoToko += hargaJual
       await pengaturan.save()
+
+      // perbarui penyesuaian stok
+      await butuhUpdate(kelompok.id)
 
       return response.redirect().withQs({ tid: pjBaru.id }).toPath('/app/transaksi/penjualan/pasca')
       // udah kelar, tinggal redirect ke page finish

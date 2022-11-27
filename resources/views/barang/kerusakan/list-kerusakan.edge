@@ -11,11 +11,11 @@
 <div class="w-full p-8 base-page" data-pagename="list" id="base-page">
   @include('partials/wadah-bread')
   
-  <h2 class="text-4xl font-semibold">Daftar Kerusakan</h2>
+  <h2 class="text-4xl font-semibold">Daftar Kerusakan Perhiasan</h2>
   <h4 class="text-lg text-secondary opacity-60">Kumpulan data seluruh kerusakan perhiasan yang tercatat pada sistem.</h4>
 
   {{--  Card Utama  --}}
-  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 mb-20 shadow min:h-96">
+  <div class=" bg-white mt-8 p-4 lg:p-8 lg:pb-12 shadow min:h-96">
     @include('partials/wadah-alert')
 
     <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
@@ -170,6 +170,31 @@
 
     @endif
 
+  </div>
+
+  <div class="mt-8 mb-20 w-full">
+    <ul class="w-full menu p-3 border bg-primary bg-opacity-10 menu-vertical lg:menu-horizontal rounded-box">
+      <li class=" menu-title">
+        <span>
+          Menu Bawah
+        </span>
+      </li>
+      <li>
+        <a href="/app/barang/kodepro">
+          Kode Produksi
+        </a>
+      </li>
+      <li>
+        <a href="/app/barang/model">
+          Model Perhiasan
+        </a>
+      </li>
+      <li>
+        <a class="active true-text-white" href="/app/barang/kerusakan">
+          Kerusakan Perhiasan
+        </a>
+      </li>
+    </ul>
   </div>
 </div>
 @endsection

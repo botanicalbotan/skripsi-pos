@@ -31,11 +31,25 @@ export default class RekapHariansController {
         'saldo_toko_terakhir as saldoTokoTerakhir',
         'saldo_toko_real as saldoTokoReal'
       )
+      // .select(
+      //   Database.from('koreksi_stoks')
+      //     .count('koreksi_stoks.id')
+      //     .whereRaw('DATE(koreksi_stoks.created_at) = DATE(rekap_harians.tanggal_rekap)')
+      //     .as('jumlahKoreksiStok')
+      // )
       .select(
-        Database.from('koreksi_stoks')
-          .count('koreksi_stoks.id')
-          .whereRaw('DATE(koreksi_stoks.created_at) = DATE(rekap_harians.tanggal_rekap)')
-          .as('jumlahKoreksiStok')
+        Database.from('penyesuaian_stoks')
+          .count('penyesuaian_stoks.id')
+          .where('penyesuaian_stoks.butuh_cek_ulang', true)
+          .whereRaw('DATE(penyesuaian_stoks.created_at) = DATE(rekap_harians.tanggal_rekap)')
+          .as('jumlahCekUlang')
+      )
+      .select(
+        Database.from('penyesuaian_stoks')
+          .count('penyesuaian_stoks.id')
+          .whereNotColumn('penyesuaian_stoks.stok_tercatat', 'penyesuaian_stoks.stok_sebenarnya')
+          .whereRaw('DATE(penyesuaian_stoks.created_at) = DATE(rekap_harians.tanggal_rekap)')
+          .as('jumlahMasalah')
       )
       .if(
         sanitizedFilterShow == 1,
@@ -137,15 +151,15 @@ export default class RekapHariansController {
         alamat: '/app/kas',
       },
       {
-        laman: 'Rekap Harian'
-      }
+        laman: 'Rekap Harian',
+      },
     ]
 
     return await view.render('kas/rekap-harian/list-rekap-harian', {
       rekaps,
       tambahan,
       fungsi,
-      roti
+      roti,
     })
   }
 
@@ -155,7 +169,6 @@ export default class RekapHariansController {
       if (!tanggal.isValid) throw 'tanggal ngga valid'
 
       const rekap = await RekapHarian.findByOrFail('tanggal_rekap', params.tanggal)
-      await rekap.load('kas')
       await rekap.load('pencatatBanding', (query) => {
         query.preload('jabatan')
       })
@@ -208,6 +221,92 @@ export default class RekapHariansController {
         createdAt: rekap.tanggalRekap,
       }
 
+      const penambahan = await Database.from('kelompok_penambahans')
+        .count('id', 'totalKel')
+        .sum('perubahan_stok', 'totalStok')
+        .whereRaw('DATE(created_at) = DATE(?)', [rekap.tanggalRekap.toSQLDate()])
+        .first()
+
+      //----------------- ngeliat jumlah kelompok diabaikan ----------------------
+      const kelompokMonitor = await Database.from('kelompoks')
+        .count('id', 'jumlah')
+        .where('apakah_dimonitor', '=', 1)
+        .andWhereNull('deleted_at')
+        .andWhereRaw('DATE(created_at) <= DATE(?)', [rekap.tanggalRekap.toSQLDate()]) // WAJIB
+        .first()
+
+      //---------------- sudah, belum, bermasalah -------------------------------
+      const belumCek = await Database.from('kelompoks')
+        .leftJoin('penyesuaian_stoks', (query) => {
+          query.on('penyesuaian_stoks.kelompok_id', 'kelompoks.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('penyesuaian_stoks as sub')
+              .whereRaw('penyesuaian_stoks.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [rekap.tanggalRekap.toSQLDate()])
+          })
+        })
+        .count('kelompoks.id', 'jumlah')
+        .where('apakah_dimonitor', '=', 1)
+        .andWhereRaw('DATE(kelompoks.created_at) <= DATE(?)', [rekap.tanggalRekap.toSQLDate()]) // WAJIB
+        .andWhereNull('penyesuaian_stoks.id')
+        .andWhereNull('kelompoks.deleted_at')
+        .first()
+
+      const sesuai = await Database.from('kelompoks')
+        .leftJoin('penyesuaian_stoks', (query) => {
+          query.on('penyesuaian_stoks.kelompok_id', 'kelompoks.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('penyesuaian_stoks as sub')
+              .whereRaw('penyesuaian_stoks.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [rekap.tanggalRekap.toSQLDate()])
+          })
+        })
+        .count('kelompoks.id', 'jumlah')
+        .where('apakah_dimonitor', '=', 1)
+        .andWhere('butuh_cek_ulang', false)
+        .andWhereNull('kelompoks.deleted_at')
+        .andWhereRaw('DATE(kelompoks.created_at) <= DATE(?)', [rekap.tanggalRekap.toSQLDate()]) // WAJIB
+        .andWhereNotNull('penyesuaian_stoks.stok_tercatat')
+        .andWhereColumn('penyesuaian_stoks.stok_tercatat', 'penyesuaian_stoks.stok_sebenarnya')
+        .first()
+
+      const bermasalah = await Database.from('kelompoks')
+        .leftJoin('penyesuaian_stoks', (query) => {
+          query.on('penyesuaian_stoks.kelompok_id', 'kelompoks.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('penyesuaian_stoks as sub')
+              .whereRaw('penyesuaian_stoks.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [rekap.tanggalRekap.toSQLDate()])
+          })
+        })
+        .count('kelompoks.id', 'jumlah')
+        .where('apakah_dimonitor', '=', 1)
+        .andWhere('butuh_cek_ulang', false)
+        .andWhereNull('kelompoks.deleted_at')
+        .andWhereRaw('DATE(kelompoks.created_at) <= DATE(?)', [rekap.tanggalRekap.toSQLDate()]) // WAJIB
+        .andWhereNotNull('penyesuaian_stoks.id')
+        .andWhereNotColumn('penyesuaian_stoks.stok_tercatat', 'penyesuaian_stoks.stok_sebenarnya')
+        .first()
+
+      const cekUlang = await Database.from('kelompoks')
+        .leftJoin('penyesuaian_stoks', (query) => {
+          query.on('penyesuaian_stoks.kelompok_id', 'kelompoks.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('penyesuaian_stoks as sub')
+              .whereRaw('penyesuaian_stoks.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [DateTime.now().toSQLDate()])
+          })
+        })
+        .count('kelompoks.id', 'jumlah')
+        .where('apakah_dimonitor', '=', 1)
+        .andWhere('butuh_cek_ulang', true)
+        .andWhereNull('kelompoks.deleted_at')
+        .first()
+
       const fungsi = {
         rupiahParser: rupiahParser,
         kapitalHurufPertama: kapitalHurufPertama,
@@ -219,7 +318,7 @@ export default class RekapHariansController {
         hitungKasMasuk: totalKasMasuk[0].count + 1,
         hitungKasKeluar: totalKasKeluar[0].count + 1,
         anomaliStok: anomaliStok.jumlah | 0,
-        tanggalKemarin: kemarin
+        tanggalKemarin: kemarin,
       }
 
       let roti = [
@@ -229,11 +328,11 @@ export default class RekapHariansController {
         },
         {
           laman: 'Rekap Harian',
-          alamat: '/app/kas/rekap-harian'
+          alamat: '/app/kas/rekap-harian',
         },
         {
-          laman: rekap.tanggalRekap.toFormat('D')
-        }
+          laman: rekap.tanggalRekap.toFormat('D'),
+        },
       ]
 
       return await view.render('kas/rekap-harian/view-rekap-harian', {
@@ -243,7 +342,15 @@ export default class RekapHariansController {
         rekapPembelian,
         fungsi,
         tambahan,
-        roti
+        roti,
+        penambahan,
+        penyesuaian: {
+          kelompokMonitor: kelompokMonitor.jumlah,
+          sesuai: sesuai.jumlah,
+          bermasalah: bermasalah.jumlah,
+          belumCek: belumCek.jumlah,
+          cekUlang: cekUlang.jumlah
+        },
       })
     } catch (error) {
       console.error(error)

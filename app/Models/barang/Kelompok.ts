@@ -19,6 +19,7 @@ import Penjualan from 'App/Models/transaksi/Penjualan'
 import PenambahanStok from 'App/Models/barang/PenambahanStok'
 import Pengguna from '../akun/Pengguna'
 import KoreksiStok from './KoreksiStok'
+import PenyesuaianStok from './PenyesuaianStok'
 
 type KelompokQuery = ModelQueryBuilderContract<typeof Kelompok>
 
@@ -40,6 +41,9 @@ export default class Kelompok extends BaseModel {
 
   @column()
   public ingatkanStokMenipis: boolean
+
+  @column()
+  public apakahDimonitor: boolean
 
   @column()
   public stok: number
@@ -87,6 +91,9 @@ export default class Kelompok extends BaseModel {
 
   @hasMany(() => KoreksiStok)
   public koreksiStoks: HasMany<typeof KoreksiStok>
+
+  @hasMany(() => PenyesuaianStok)
+  public penyesuaianStoks: HasMany<typeof PenyesuaianStok>
 
   @beforeFetch()
   @beforeFind()

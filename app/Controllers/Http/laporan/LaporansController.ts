@@ -57,7 +57,7 @@ export default class LaporansController {
       daftarGadai: schema.string.optional(),
       semuaBarang: schema.string.optional(),
       daftarPenambahan: schema.string.optional(),
-      daftarKoreksi: schema.string.optional(),
+      daftarPenyesuaian: schema.string.optional(),
       daftarKelompokLaku: schema.string.optional(),
       daftarKodeproLaku: schema.string.optional(),
       daftarKelompokMenipis: schema.string.optional(),
@@ -86,7 +86,7 @@ export default class LaporansController {
         adaTransaksi = true
       }
 
-      if (validrequest.semuaBarang || validrequest.daftarPenambahan || validrequest.daftarKoreksi || validrequest.daftarKelompokLaku || validrequest.daftarKodeproLaku || validrequest.daftarKelompokMenipis || validrequest.daftarModelLaku) {
+      if (validrequest.semuaBarang || validrequest.daftarPenambahan || validrequest.daftarPenyesuaian || validrequest.daftarKelompokLaku || validrequest.daftarKodeproLaku || validrequest.daftarKelompokMenipis || validrequest.daftarModelLaku) {
         adaBarang = true
       }
 
@@ -113,7 +113,7 @@ export default class LaporansController {
       let checklistBarang = {
         semua: (validrequest.semuaBarang) ? true : false,
         daftarPenambahan: (validrequest.daftarPenambahan) ? true : false,
-        daftarKoreksi: (validrequest.daftarKoreksi) ? true : false,
+        daftarPenyesuaian: (validrequest.daftarPenyesuaian) ? true : false,
         daftarKelompokLaku: (validrequest.daftarKelompokLaku) ? true : false,
         daftarKodeproLaku: (validrequest.daftarKodeproLaku) ? true : false,
         daftarKelompokMenipis: (validrequest.daftarKelompokMenipis) ? true : false,

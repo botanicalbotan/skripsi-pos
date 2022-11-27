@@ -96,6 +96,8 @@ Encore.addEntry('all-model', './resources/js/kelola-barang/model/all-model.js')
 Encore.addEntry('all-kerusakan', './resources/js/kelola-barang/kerusakan/all-kerusakan.js')
 Encore.addEntry('form-penambahan', './resources/js/kelola-barang/penambahan-stok/form-penambahan.js')
 Encore.addEntry('all-penambahan', './resources/js/kelola-barang/penambahan-stok/all-penambahan.js')
+Encore.addEntry('form-penyesuaian', './resources/js/kelola-barang/penyesuaian-stok/form-penyesuaian.js')
+Encore.addEntry('all-penyesuaian', './resources/js/kelola-barang/penyesuaian-stok/all-penyesuaian.js')
 
 // Pegawai & Penggajian ===================================
 Encore.addEntry('all-pegawai', './resources/js/pegawai/all-pegawai.js')

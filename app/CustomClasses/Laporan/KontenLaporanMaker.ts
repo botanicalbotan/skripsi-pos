@@ -272,7 +272,7 @@ export default class KontenLaporanMaker {
     checklistBarang: {
       semua: boolean
       daftarPenambahan: boolean
-      daftarKoreksi: boolean
+      daftarPenyesuaian: boolean
       daftarKelompokLaku: boolean
       daftarKodeproLaku: boolean
       daftarKelompokMenipis: boolean
@@ -314,7 +314,7 @@ export default class KontenLaporanMaker {
         await babBarang.generateSubDaftarPenambahan(tanggalLaporan, tanggalMulai, tanggalAkhir)
       )
       subbab.push(
-        await babBarang.generateSubDaftarKoreksi(tanggalLaporan, tanggalMulai, tanggalAkhir)
+        await babBarang.generateSubDaftarPenyesuaian(tanggalLaporan, tanggalMulai, tanggalAkhir)
       )
       subbab.push(
         await babBarang.generateSubDaftarKelompokLaku(tanggalLaporan, tanggalMulai, tanggalAkhir)
@@ -333,9 +333,9 @@ export default class KontenLaporanMaker {
         )
       }
 
-      if (checklistBarang.daftarKoreksi) {
+      if (checklistBarang.daftarPenyesuaian) {
         subbab.push(
-          await babBarang.generateSubDaftarKoreksi(tanggalLaporan, tanggalMulai, tanggalAkhir)
+          await babBarang.generateSubDaftarPenyesuaian(tanggalLaporan, tanggalMulai, tanggalAkhir)
         )
       }
 

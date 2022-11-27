@@ -20,7 +20,7 @@
       </div>
       <div class="flex-none">
 
-        @if(session.get('isKepala'))
+        @if(session.get('isPemilik'))
         <div class="dropdown dropdown-end">
           <div tabindex="0" class="btn btn-primary text-white">
             <span class="hidden sm:inline">Tindakan</span>
@@ -31,11 +31,11 @@
             </svg>
           </div>
           <ul tabindex="0" class="p-2 shadow-lg border menu dropdown-content bg-base-100 rounded-box w-60">
-            <li>
+            {{--  <li>
               <a href="#" id="btGantiStok">Ubah stok kelompok</a>
-            </li>
+            </li>  --}}
 
-            @if(session.get('isPemilik'))
+            {{--  @if(session.get('isPemilik'))  --}}
             <li>
               <a href="/app/barang/kelompok/{{ kelompok.id }}/edit">Ubah data kelompok</a>
             </li>
@@ -46,7 +46,7 @@
                   {{ csrfField() }}
                 </form>
             </li>
-            @endif
+            {{--  @endif  --}}
             
           </ul>
         </div>
@@ -216,7 +216,6 @@
           </div>
         </div>
 
-
         {{--  statistik kelompok perhiasan  --}}
         <div>
           <div class="flex px-2">
@@ -254,6 +253,66 @@
           </div>
         </div>
 
+        <div>
+          <div class="flex px-2">
+            <div class="flex-1">
+              <h4 class="text-xl mb-2 flex items-center font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+               Penambahan Stok</h4>
+            </div>
+            <div class="flex-none flex align-bottom mb-2 items-end">
+              {{--  <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada
+                {{ rekap.updatedAt.setLocale('id-ID').toLocaleString() }}</p>  --}}
+            </div>
+          </div>
+          <div class="border-t border-b border-secondary">
+            <ul>
+              
+              @if(tambahTerakhir && tambahTerakhir.createdAt && tambahTerakhir.namaPencatat && tambahTerakhir.stokAkhir)
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kali Terakhir Stok Ditambah</h3>
+                  <span class="flex-1">{{ new Date(tambahTerakhir.createdAt).toLocaleString('id-ID', { dateStyle:'long', timeStyle:'long' })}}</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Banyak Stok</h3>
+                  <span class="flex-1">+{{ tambahTerakhir.perubahanStok }} buah</span>
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Dicatat dan Diperiksa Oleh</h3>
+                  <a href="/app/pegawai/{{ tambahTerakhir.idPencatat }}" class="link flex-1">{{ tambahTerakhir.namaPencatat }}</a>
+                </div>
+              </li>
+              @else
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kali Terakhir Stok Ditambah</h3>
+                  <span class="flex-1">belum pernah</span>
+                </div>
+              </li>
+
+              @endif
+
+            </ul>
+          </div>
+
+          <div class="space-y-4 mt-4">
+            <div>Untuk melihat seluruh catatan penambahan stok untuk kelompok ini, anda dapat mengakses submenu berikut.</div>
+            <div>
+              <a href="/app/barang/kelompok/{{ kelompok.id }}/penambahan" class="btn btn-sm btn-outline">Daftar Penambahan Stok</a>
+            </div>
+          </div>
+        </div>
 
         <div>
           <div class="flex px-2">
@@ -262,27 +321,71 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Daftar Mutasi Stok</h4>
+               Penyesuaian Stok</h4>
             </div>
-            <div class="flex-none flex align-bottom mb-2 items-end"></div>
+            <div class="flex-none flex align-bottom mb-2 items-end">
+              {{--  <p class="opacity-50 italic text-left hidden sm:inline">Data terakhir diubah pada
+                {{ rekap.updatedAt.setLocale('id-ID').toLocaleString() }}</p>  --}}
+            </div>
           </div>
-          <div class="space-y-6 border-secondary">
-            <div class="space-y-4">
-              <div>Anda dapat melihat catatan mutasi stok kelompok perhiasan dari penambahan perhiasan hasil garapan atau kulakan pada submenu berikut.</div>
-              <div>
-                <a href="/app/barang/kelompok/{{ kelompok.id }}/mutasi-penambahan" class="btn btn-sm btn-outline">Daftar Penambahan Stok</a>
-              </div>
-            </div>
+          <div class="border-t border-b border-secondary">
+            <ul>
+              
+              @if(sesuaiTerakhir && sesuaiTerakhir.createdAt && sesuaiTerakhir.namaPencatat && sesuaiTerakhir.stokSebenarnya)
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kali Terakhir Stok Disesuaikan</h3>
+                  <span class="flex-1">{{ new Date(sesuaiTerakhir.createdAt).toLocaleString('id-ID', { dateStyle:'long', timeStyle:'long' })}}</span>
+                </div>
+              </li>
 
-            <div class="space-y-4">
-              <div>Anda dapat melihat catatan mutasi stok kelompok perhiasan dikarenakan koreksi anomali stok kelompok dengan alasan tertentu pada submenu berikut.</div>
-              <div>
-                <a href="/app/barang/kelompok/{{ kelompok.id }}/mutasi-koreksi" class="btn btn-sm btn-outline">Daftar Koreksi Stok</a>
-              </div>
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Selisih Stok</h3>
+                  <span class="flex-1">{{ sesuaiTerakhir.stokSebenarnya - sesuaiTerakhir.stokTercatat }} buah</span>
+                </div>
+              </li>
+
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Status Penyesuaian</h3>
+                  @if(sesuaiTerakhir.butuhCekUlang)
+                    <span class="flex-1 text-error">Perlu Cek Ulang</span>
+                  @elseif(sesuaiTerakhir.stokSebenarnya != sesuaiTerakhir.stokTercatat)
+                    <span class="flex-1 text-error">Bermasalah</span>
+                  @else
+                    <span class="flex-1 text-accent-focus">Sesuai</span>
+                  @endif
+                </div>
+              </li>
+
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Dicatat dan Diperiksa Oleh</h3>
+                  <a href="/app/pegawai/{{ sesuaiTerakhir.idPencatat }}" class="link flex-1">{{ sesuaiTerakhir.namaPencatat }}</a>
+                </div>
+              </li>
+              @else
+              <li class="border-b last:border-b-0">
+                <div class="flex py-3 px-2 md:space-x-4 group hover:bg-base-300 flex-col sm:flex-row">
+                  <h3 class="flex-none w-full sm:w-1/3 opacity-75">Kali Terakhir Stok Ditambah</h3>
+                  <span class="flex-1">belum pernah</span>
+                </div>
+              </li>
+
+              @endif
+
+            </ul>
+          </div>
+
+          <div class="space-y-4 mt-4">
+            <div>Untuk melihat seluruh catatan penyesuaian stok untuk kelompok ini, anda dapat mengakses submenu berikut.</div>
+            <div>
+              <a href="/app/barang/kelompok/{{ kelompok.id }}/penyesuaian" class="btn btn-sm btn-outline">Daftar Penyesuaian Stok</a>
             </div>
-            
           </div>
         </div>
 

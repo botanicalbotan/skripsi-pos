@@ -80,11 +80,7 @@ export default class ModelsController {
 
     let roti = [
       {
-        laman: 'Kelola Barang',
-        alamat: '/app/barang',
-      },
-      {
-        laman: 'Model',
+        laman: 'Model Perhiasan',
       },
     ]
 
@@ -94,11 +90,7 @@ export default class ModelsController {
   public async create({ view }: HttpContextContract) {
     let roti = [
       {
-        laman: 'Kelola Barang',
-        alamat: '/app/barang',
-      },
-      {
-        laman: 'Model',
+        laman: 'Model Perhiasan',
         alamat: '/app/barang/model',
       },
       {
@@ -168,11 +160,7 @@ export default class ModelsController {
 
       let roti = [
         {
-          laman: 'Kelola Barang',
-          alamat: '/app/barang',
-        },
-        {
-          laman: 'Model',
+          laman: 'Model Perhiasan',
           alamat: '/app/barang/model',
         },
         {
@@ -196,11 +184,7 @@ export default class ModelsController {
 
       let roti = [
         {
-          laman: 'Kelola Barang',
-          alamat: '/app/barang',
-        },
-        {
-          laman: 'Model',
+          laman: 'Model Perhiasan',
           alamat: '/app/barang/model',
         },
         {

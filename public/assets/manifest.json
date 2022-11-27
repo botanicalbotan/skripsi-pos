@@ -34,6 +34,8 @@
   "assets/all-kerusakan.js": "http://localhost:8080/assets/all-kerusakan.js",
   "assets/form-penambahan.js": "http://localhost:8080/assets/form-penambahan.js",
   "assets/all-penambahan.js": "http://localhost:8080/assets/all-penambahan.js",
+  "assets/form-penyesuaian.js": "http://localhost:8080/assets/form-penyesuaian.js",
+  "assets/all-penyesuaian.js": "http://localhost:8080/assets/all-penyesuaian.js",
   "assets/all-pegawai.js": "http://localhost:8080/assets/all-pegawai.js",
   "assets/form-pegawai.js": "http://localhost:8080/assets/form-pegawai.js",
   "assets/edit-pegawai.js": "http://localhost:8080/assets/edit-pegawai.js",

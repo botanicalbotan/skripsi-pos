@@ -13,6 +13,7 @@ export default class Kelompoks extends BaseSchema {
       table.integer('bentuk_id').unsigned().references('bentuks.id').notNullable()
       table.integer('stok_minimal').notNullable().unsigned().defaultTo(0)
       table.boolean('ingatkan_stok_menipis').notNullable().defaultTo(true)
+      table.boolean('apakah_dimonitor').notNullable().defaultTo(true)
       table.integer('stok').notNullable().unsigned().defaultTo(0)
       table.dateTime('deleted_at').nullable()
 

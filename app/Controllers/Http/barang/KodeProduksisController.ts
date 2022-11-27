@@ -89,10 +89,6 @@ export default class KodeProduksisController {
 
     let roti = [
       {
-        laman: 'Kelola Barang',
-        alamat: '/app/barang',
-      },
-      {
         laman: 'Kode Produksi',
       },
     ]
@@ -114,10 +110,6 @@ export default class KodeProduksisController {
     let pengaturan = await Pengaturan.findOrFail(1)
 
     let roti = [
-      {
-        laman: 'Kelola Barang',
-        alamat: '/app/barang',
-      },
       {
         laman: 'Kode Produksi',
         alamat: '/app/barang/kodepro',
@@ -261,10 +253,6 @@ export default class KodeProduksisController {
 
       let roti = [
         {
-          laman: 'Kelola Barang',
-          alamat: '/app/barang',
-        },
-        {
           laman: 'Kode Produksi',
           alamat: '/app/barang/kodepro',
         },
@@ -300,10 +288,6 @@ export default class KodeProduksisController {
       let pengaturan = await Pengaturan.findOrFail(1)
 
       let roti = [
-        {
-          laman: 'Kelola Barang',
-          alamat: '/app/barang',
-        },
         {
           laman: 'Kode Produksi',
           alamat: '/app/barang/kodepro',

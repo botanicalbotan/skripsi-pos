@@ -5,15 +5,14 @@
 @endsection
 
 {{-- buat ngeset judul --}}
-@set('judul', 'Daftar Penambahan Stok Kelompok '+ kelompok.nama +' | Postoma')
+@set('judul', 'Daftar Penyesuaian Stok Kelompok '+ kelompok.nama +' | Postoma')
 
 @section('content')
 <div class="w-full p-8 base-page" data-pagename="list" id="base-page">
   @include('partials/wadah-bread')
   
-  <h2 class="text-4xl font-semibold">Daftar Penambahan Stok</h2>
-  <h4 class="text-lg text-secondary opacity-60">Daftar perekapan seluruh penambahan stok suatu kelompok perhiasan dari
-    garapan atau kulakan.</h4>
+  <h2 class="text-4xl font-semibold">Daftar Penyesuaian Stok</h2>
+  <h4 class="text-lg text-secondary opacity-60">Daftar perekapan seluruh penyesuaian stok suatu kelompok perhiasan.</h4>
 
 
   {{--  Card Utama  --}}
@@ -31,14 +30,14 @@
 
     {{--  tabel  --}}
     <div class="my-8 min-h-60 rounded">
-      @if(tambahs.total > 0)
+      @if(sesuais.total > 0)
       <h5 class=" text-secondary mb-4">Menampilkan data ke {{ tambahan.firstDataInPage }}-{{ tambahan.lastDataInPage }}
-        ({{ tambahs.total }} data) untuk
-        <span class="text-neutral font-semibold">"Daftar Penambahan Stok"</span>
+        ({{ sesuais.total }} data) untuk
+        <span class="text-neutral font-semibold">"Daftar Penyesuaian Stok"</span>
       </h5>
       @else
       <h5 class=" text-secondary mb-4">Menampilkan 0 data untuk
-        <span class="text-neutral font-semibold">"Daftar Penambahan Stok"</span>
+        <span class="text-neutral font-semibold">"Daftar Penyesuaian Stok"</span>
       </h5>
       @endif
 
@@ -47,42 +46,51 @@
           <thead>
             <tr>
               <th>Tanggal & Waktu</th>
-              <th>Asal Stok</th>
-              <th class="w-2/5">Catatan</th>
-              <th>Stok Awal</th>
-              <th>Stok Akhir</th>
+              <th>Status</th>
+              <th>Stok Tercatat</th>
+              <th>Stok Sebenarnya</th>
+              <th>Selisih</th>
+              <th>Pencatat</th>
             </tr>
           </thead>
           <tbody>
 
-            @each(tambah in tambahs)
+            @each(ses in sesuais)
             <tr class="hover">
               <td>
-                <a href="/app/barang/penambahan/{{ tambah.idPenambahan }}">
-                  <div class="font-semibold">
-                    {{ new Date(tambah.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month:'long', year:'numeric' }) }}
-                  </div>
-                  <div class="text-sm">
-                    {{ new Date(tambah.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }}
-                  </div>
+                <a href="/app/barang/penyesuaian/{{ fungsi.formatDate(new Date(ses.createdAt).toISOString()) }}/{{ ses.idCek }}">
+                    <div class="font-semibold">
+                        {{ new Date(ses.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month:'long', year:'numeric' }) }}
+                    </div>
+                    <div class="text-sm">
+                        {{ new Date(ses.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }}
+                    </div>
                 </a>
               </td>
+              @if(ses.butuhCekUlang)
+                <td class="text-error">
+                    <a href="/app/barang/penyesuaian/{{ fungsi.formatDate(new Date(ses.createdAt).toISOString()) }}/{{ ses.idCek }}">Perlu Cek Ulang</a>
+                </td>
+              @elseif(ses.stokTercatat != ses.stokSebenarnya)
+                <td class="text-error">
+                    <a href="/app/barang/penyesuaian/{{ fungsi.formatDate(new Date(ses.createdAt).toISOString()) }}/{{ ses.idCek }}">Bermasalah</a>
+                </td>
+              @else
+                <td class="text-accent-focus">
+                    <a href="/app/barang/penyesuaian/{{ fungsi.formatDate(new Date(ses.createdAt).toISOString()) }}/{{ ses.idCek }}">Sesuai</a>
+                </td>
+              @endif
               <td>
-                <a href="/app/barang/penambahan/{{ tambah.idPenambahan }}">
-                  {{ tambah.asalStok }}
-                </a>
-
-              </td>
-              <td class="whitespace-normal">
-                <a href="/app/barang/penambahan/{{ tambah.idPenambahan }}">
-                  {{ tambah.catatan }}</a>
-
+                <a href="/app/barang/penyesuaian/{{ fungsi.formatDate(new Date(ses.createdAt).toISOString()) }}/{{ ses.idCek }}">{{ ses.stokTercatat }}</a>
               </td>
               <td>
-                {{ tambah.stokAkhir - tambah.perubahanStok }}
+                <a href="/app/barang/penyesuaian/{{ fungsi.formatDate(new Date(ses.createdAt).toISOString()) }}/{{ ses.idCek }}">{{ ses.stokSebenarnya }}</a>
+              </td>
+              <td class="text-error">
+                {{  ses.stokSebenarnya - ses.stokTercatat }}
               </td>
               <td>
-                {{ tambah.stokAkhir }} <span class="text-accent-focus">&#40;+{{ tambah.perubahanStok }}&#41;</span>
+                <a href="/app/pegawai/{{ ses.idPencatat }}" class="link link-hover">{{ ses.namaPencatat }}</a>
               </td>
             </tr>
             @endeach
@@ -95,11 +103,11 @@
     </div>
 
     {{--  pagination bawah tabel  --}}
-    @if(tambahs.hasPages)
+    @if(sesuais.hasPages)
 
     <div class="flex justify-center">
       <div class="btn-group">
-        <a class="btn btn-sm btn-link" href="{{ tambahs.getUrl(tambahs.firstPage) }}">
+        <a class="btn btn-sm btn-link" href="{{ sesuais.getUrl(sesuais.firstPage) }}">
           <span class="md:hidden">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
@@ -110,7 +118,7 @@
           <span class="hidden md:inline">Pertama</span>
         </a>
 
-        @each(anchor in tambahs.getUrlsForRange(tambahan.firstPage, tambahan.lastPage))
+        @each(anchor in sesuais.getUrlsForRange(tambahan.firstPage, tambahan.lastPage))
 
         @if(anchor.isActive)
         <a href="{{ anchor.url }}" class="btn btn-active true-text-white btn-sm">
@@ -124,7 +132,7 @@
 
         @endeach
 
-        <a class="btn btn-sm btn-link" href="{{ tambahs.getUrl(tambahs.lastPage) }}">
+        <a class="btn btn-sm btn-link" href="{{ sesuais.getUrl(sesuais.lastPage) }}">
           <span class="md:hidden">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"

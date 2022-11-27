@@ -94,7 +94,7 @@ semuaTransaksi.addEventListener('change', () => {
 
 const semuaBarang = document.getElementById('semuaBarang')
 const penambahanStok = document.getElementById('daftarPenambahan')
-const koreksiStok = document.getElementById('daftarKoreksi')
+const penyesuaianStok = document.getElementById('daftarPenyesuaian')
 const daftarKelompokLaku = document.getElementById('daftarKelompokLaku')
 const daftarKodeproLaku = document.getElementById('daftarKodeproLaku')
 const daftarKelompokMenipis = document.getElementById('daftarKelompokMenipis')
@@ -103,28 +103,28 @@ const daftarModelLaku = document.getElementById('daftarModelLaku')
 semuaBarang.addEventListener('change', () => {
   if (semuaBarang.checked) {
     penambahanStok.checked = true
-    koreksiStok.checked = true
+    penyesuaianStok.checked = true
     daftarKelompokLaku.checked = true
     daftarKodeproLaku.checked = true
     daftarKelompokMenipis.checked = true
     daftarModelLaku.checked = true
 
     penambahanStok.disabled = true
-    koreksiStok.disabled = true
+    penyesuaianStok.disabled = true
     daftarKelompokLaku.disabled = true
     daftarKodeproLaku.disabled = true
     daftarKelompokMenipis.disabled = true
     daftarModelLaku.disabled = true
   } else {
     penambahanStok.checked = false
-    koreksiStok.checked = false
+    penyesuaianStok.checked = false
     daftarKelompokLaku.checked = false
     daftarKodeproLaku.checked = false
     daftarKelompokMenipis.checked = false
     daftarModelLaku.checked = false
 
     penambahanStok.disabled = false
-    koreksiStok.disabled = false
+    penyesuaianStok.disabled = false
     daftarKelompokLaku.disabled = false
     daftarKodeproLaku.disabled = false
     daftarKelompokMenipis.disabled = false
