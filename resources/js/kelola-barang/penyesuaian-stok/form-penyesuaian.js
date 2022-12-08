@@ -339,7 +339,11 @@ $(function () {
     const btLihatInis = document.querySelectorAll('button.btLihatIni')
 
     let tanggal = new Date()
-    let formatTanggal = `${tanggal.getFullYear()}-${tanggal.getMonth()+1}-${tanggal.getDate()}`
+    let datex = tanggal.getDate()
+    let datey = (datex < 10)? `0${datex}` :  datex
+    let monthx = tanggal.getMonth() + 1
+    let monthy = (monthx < 10)? `0${monthx}` :  monthx
+    let formatTanggal = `${tanggal.getFullYear()}-${monthy}-${datey}`
 
     btLihatInis.forEach(tombol => {
         tombol.addEventListener('click', (e) => {

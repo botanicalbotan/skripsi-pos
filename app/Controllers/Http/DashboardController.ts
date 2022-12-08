@@ -3,6 +3,7 @@ import Database from '@ioc:Adonis/Lucid/Database'
 import { DateTime } from 'luxon'
 
 import { apakahHariIniPasaran, hariKePasaranSelanjutnya } from 'App/CustomClasses/CPasaran'
+import RekapHarian from 'App/Models/kas/RekapHarian'
 
 export default class DashboardController {
   public async index({ view }: HttpContextContract) {
@@ -57,6 +58,61 @@ export default class DashboardController {
     // --------------- Next pasaran ------------------
     const next = await hariKePasaranSelanjutnya()
 
+    // --------------- Pengecekan Harian -------------
+    const rekap = await RekapHarian.findByOrFail('tanggal_rekap', now.toISODate())
+
+    const belumCek = await Database.from('kelompoks')
+        .leftJoin('penyesuaian_stoks', (query) => {
+          query.on('penyesuaian_stoks.kelompok_id', 'kelompoks.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('penyesuaian_stoks as sub')
+              .whereRaw('penyesuaian_stoks.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [rekap.tanggalRekap.toSQLDate()])
+          })
+        })
+        .count('kelompoks.id', 'jumlah')
+        .where('apakah_dimonitor', '=', 1)
+        .andWhereRaw('DATE(kelompoks.created_at) <= DATE(?)', [rekap.tanggalRekap.toSQLDate()]) // WAJIB
+        .andWhereNull('penyesuaian_stoks.id')
+        .andWhereNull('kelompoks.deleted_at')
+        .first()
+
+    const bermasalah = await Database.from('kelompoks')
+      .leftJoin('penyesuaian_stoks', (query) => {
+        query.on('penyesuaian_stoks.kelompok_id', 'kelompoks.id').onExists((subQuery) => {
+          subQuery
+            .select('*')
+            .from('penyesuaian_stoks as sub')
+            .whereRaw('penyesuaian_stoks.id = sub.id')
+            .whereRaw('DATE(sub.created_at) = DATE(?)', [rekap.tanggalRekap.toSQLDate()])
+        })
+      })
+      .count('kelompoks.id', 'jumlah')
+      .where('apakah_dimonitor', '=', 1)
+      .andWhere('butuh_cek_ulang', false)
+      .andWhereNull('kelompoks.deleted_at')
+      .andWhereRaw('DATE(kelompoks.created_at) <= DATE(?)', [rekap.tanggalRekap.toSQLDate()]) // WAJIB
+      .andWhereNotNull('penyesuaian_stoks.id')
+      .andWhereNotColumn('penyesuaian_stoks.stok_tercatat', 'penyesuaian_stoks.stok_sebenarnya')
+      .first()
+
+    const cekUlang = await Database.from('kelompoks')
+      .leftJoin('penyesuaian_stoks', (query) => {
+        query.on('penyesuaian_stoks.kelompok_id', 'kelompoks.id').onExists((subQuery) => {
+          subQuery
+            .select('*')
+            .from('penyesuaian_stoks as sub')
+            .whereRaw('penyesuaian_stoks.id = sub.id')
+            .whereRaw('DATE(sub.created_at) = DATE(?)', [rekap.tanggalRekap.toSQLDate()])
+        })
+      })
+      .count('kelompoks.id', 'jumlah')
+      .where('apakah_dimonitor', '=', 1)
+      .andWhere('butuh_cek_ulang', true)
+      .andWhereNull('kelompoks.deleted_at')
+      .first()
+
     // ----------------- Response --------------------
     const data = {
       pjSekarang: pjSekarang.jumlah | 0,
@@ -73,6 +129,13 @@ export default class DashboardController {
         tanggal: DateTime.now().startOf('day').plus({ day: next.selisihHari }).toFormat('D'),
         pasaran: next.pasaran,
       },
+      cekHarian: {
+        bandingSaldo: (rekap.apakahSudahBandingSaldo && rekap.dibandingAt && rekap.pencatatBandingId),
+        belumCek: belumCek.jumlah === 0,
+        bermasalah: bermasalah.jumlah === 0,
+        cekUlang: cekUlang.jumlah === 0
+      },
+      tanggalRekap: rekap.tanggalRekap.toISODate()
     }
 
     const fungsi = {
@@ -163,7 +226,7 @@ export default class DashboardController {
     })
 
     return {
-      adaData: (data.length > 0),
+      adaData: data.length > 0,
       dariToko,
       dariLuar,
       tanpaSurat,
@@ -287,16 +350,244 @@ export default class DashboardController {
     return { kelompok: kelompokLaku, model: modelLaku, kodepro: kodeproLaku, mode: sanitizedMode }
   }
 
+  public async getRekapBalen({}: HttpContextContract) {
+    const now = DateTime.now().startOf('day')
+
+    // const mdUripan = await Database
+    //   .from('pembelians')
+    //   .join('models', 'models.id', 'pembelians.model_id')
+    //   .join('bentuks', 'bentuks.id', 'models.bentuk_id')
+    //   .join('kode_produksis', 'kode_produksis.id', 'pembelians.kode_produksi_id')
+    //   .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+    //   .whereNull('pembelians.deleted_at')
+    //   .andWhereRaw('DATE(pembelians.created_at) = DATE(?)', [ now.toSQL() ])
+    //   .andWhere('kadars.nama', 'Muda') // penentu kadar
+    //   .andWhere('pembelians.kondisi_fisik', 'uripan') // penentu kondisi
+    //   .groupBy('bentuks.bentuk')
+    //   .select('bentuks.bentuk')
+    //   .count('pembelians.id as jumlah')
+    //   .sum('pembelians.berat_barang as totalBerat')
+
+    // --------------------------- TANGGUNG ------------------------------
+
+    const tggUripan = await Database.from('bentuks')
+      .join('models', 'bentuks.id', 'models.bentuk_id')
+      .leftJoin('pembelians', (query) => {
+        query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+          subQuery
+            .select('*')
+            .from('pembelians as sub')
+            .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+            .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+            .whereRaw('pembelians.id = sub.id')
+            .whereRaw('DATE(sub.created_at) = DATE(?)', [now.toSQLDate()])
+            .whereNull('pembelians.deleted_at')
+            .andWhere('kadars.nama', 'Tanggung') // penentu kadar
+            .andWhere('pembelians.kondisi_fisik', 'uripan') // penentu kondisi
+        })
+      })
+      .select('bentuks.bentuk')
+      .count('pembelians.id as jumlah')
+      .sum('pembelians.berat_barang as berat')
+      .groupBy('bentuks.id')
+
+    const tggRusak = await Database.from('bentuks')
+      .join('models', 'bentuks.id', 'models.bentuk_id')
+      .leftJoin('pembelians', (query) => {
+        query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+          subQuery
+            .select('*')
+            .from('pembelians as sub')
+            .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+            .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+            .whereRaw('pembelians.id = sub.id')
+            .whereRaw('DATE(sub.created_at) = DATE(?)', [now.toSQLDate()])
+            .whereNull('pembelians.deleted_at')
+            .andWhere('kadars.nama', 'Tanggung') // penentu kadar
+            .andWhere('pembelians.kondisi_fisik', 'rusak') // penentu kondisi
+        })
+      })
+      .select('bentuks.bentuk')
+      .count('pembelians.id as jumlah')
+      .sum('pembelians.berat_barang as berat')
+      .groupBy('bentuks.id')
+
+    const tggRosok = await Database.from('bentuks')
+      .join('models', 'bentuks.id', 'models.bentuk_id')
+      .leftJoin('pembelians', (query) => {
+        query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+          subQuery
+            .select('*')
+            .from('pembelians as sub')
+            .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+            .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+            .whereRaw('pembelians.id = sub.id')
+            .whereRaw('DATE(sub.created_at) = DATE(?)', [now.toSQLDate()])
+            .whereNull('pembelians.deleted_at')
+            .andWhere('kadars.nama', 'Tanggung') // penentu kadar
+            .andWhere('pembelians.kondisi_fisik', 'rosok') // penentu kondisi
+        })
+      })
+      .select('bentuks.bentuk')
+      .count('pembelians.id as jumlah')
+      .sum('pembelians.berat_barang as berat')
+      .groupBy('bentuks.id')
+
+    // --------------------------- MUDA ------------------------------
+
+    const mdUripan = await Database.from('bentuks')
+      .join('models', 'bentuks.id', 'models.bentuk_id')
+      .leftJoin('pembelians', (query) => {
+        query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+          subQuery
+            .select('*')
+            .from('pembelians as sub')
+            .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+            .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+            .whereRaw('pembelians.id = sub.id')
+            .whereRaw('DATE(sub.created_at) = DATE(?)', [now.toSQLDate()])
+            .whereNull('pembelians.deleted_at')
+            .andWhere('kadars.nama', 'Muda') // penentu kadar
+            .andWhere('pembelians.kondisi_fisik', 'uripan') // penentu kondisi
+        })
+      })
+      .select('bentuks.bentuk')
+      .count('pembelians.id as jumlah')
+      .sum('pembelians.berat_barang as berat')
+      .groupBy('bentuks.id')
+
+    const mdRusak = await Database.from('bentuks')
+      .join('models', 'bentuks.id', 'models.bentuk_id')
+      .leftJoin('pembelians', (query) => {
+        query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+          subQuery
+            .select('*')
+            .from('pembelians as sub')
+            .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+            .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+            .whereRaw('pembelians.id = sub.id')
+            .whereRaw('DATE(sub.created_at) = DATE(?)', [now.toSQLDate()])
+            .whereNull('pembelians.deleted_at')
+            .andWhere('kadars.nama', 'Muda') // penentu kadar
+            .andWhere('pembelians.kondisi_fisik', 'rusak') // penentu kondisi
+        })
+      })
+      .select('bentuks.bentuk')
+      .count('pembelians.id as jumlah')
+      .sum('pembelians.berat_barang as berat')
+      .groupBy('bentuks.id')
+
+    const mdRosok = await Database.from('bentuks')
+      .join('models', 'bentuks.id', 'models.bentuk_id')
+      .leftJoin('pembelians', (query) => {
+        query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+          subQuery
+            .select('*')
+            .from('pembelians as sub')
+            .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+            .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+            .whereRaw('pembelians.id = sub.id')
+            .whereRaw('DATE(sub.created_at) = DATE(?)', [now.toSQLDate()])
+            .whereNull('pembelians.deleted_at')
+            .andWhere('kadars.nama', 'Muda') // penentu kadar
+            .andWhere('pembelians.kondisi_fisik', 'rosok') // penentu kondisi
+        })
+      })
+      .select('bentuks.bentuk')
+      .count('pembelians.id as jumlah')
+      .sum('pembelians.berat_barang as berat')
+      .groupBy('bentuks.id')
+
+    // --------------------------- TUA ------------------------------
+
+    const tuUripan = await Database.from('bentuks')
+      .join('models', 'bentuks.id', 'models.bentuk_id')
+      .leftJoin('pembelians', (query) => {
+        query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+          subQuery
+            .select('*')
+            .from('pembelians as sub')
+            .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+            .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+            .whereRaw('pembelians.id = sub.id')
+            .whereRaw('DATE(sub.created_at) = DATE(?)', [now.toSQLDate()])
+            .whereNull('pembelians.deleted_at')
+            .andWhere('kadars.nama', 'Tua') // penentu kadar
+            .andWhere('pembelians.kondisi_fisik', 'uripan') // penentu kondisi
+        })
+      })
+      .select('bentuks.bentuk')
+      .count('pembelians.id as jumlah')
+      .sum('pembelians.berat_barang as berat')
+      .groupBy('bentuks.id')
+
+    const tuRusak = await Database.from('bentuks')
+      .join('models', 'bentuks.id', 'models.bentuk_id')
+      .leftJoin('pembelians', (query) => {
+        query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+          subQuery
+            .select('*')
+            .from('pembelians as sub')
+            .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+            .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+            .whereRaw('pembelians.id = sub.id')
+            .whereRaw('DATE(sub.created_at) = DATE(?)', [now.toSQLDate()])
+            .whereNull('pembelians.deleted_at')
+            .andWhere('kadars.nama', 'Tua') // penentu kadar
+            .andWhere('pembelians.kondisi_fisik', 'rusak') // penentu kondisi
+        })
+      })
+      .select('bentuks.bentuk')
+      .count('pembelians.id as jumlah')
+      .sum('pembelians.berat_barang as berat')
+      .groupBy('bentuks.id')
+
+    const tuRosok = await Database.from('bentuks')
+      .join('models', 'bentuks.id', 'models.bentuk_id')
+      .leftJoin('pembelians', (query) => {
+        query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+          subQuery
+            .select('*')
+            .from('pembelians as sub')
+            .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+            .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+            .whereRaw('pembelians.id = sub.id')
+            .whereRaw('DATE(sub.created_at) = DATE(?)', [now.toSQLDate()])
+            .whereNull('pembelians.deleted_at')
+            .andWhere('kadars.nama', 'Tua') // penentu kadar
+            .andWhere('pembelians.kondisi_fisik', 'rosok') // penentu kondisi
+        })
+      })
+      .select('bentuks.bentuk')
+      .count('pembelians.id as jumlah')
+      .sum('pembelians.berat_barang as berat')
+      .groupBy('bentuks.id')
+
+    return {
+      tgg: {
+        uripan: tggUripan,
+        rusak: tggRusak,
+        rosok: tggRosok,
+      },
+      md: {
+        uripan: mdUripan,
+        rusak: mdRusak,
+        rosok: mdRosok,
+      },
+      tu: {
+        uripan: tuUripan,
+        rusak: tuRusak,
+        rosok: tuRosok,
+      },
+    }
+  }
+
   public async getDataPencatatTerbanyak({}: HttpContextContract) {
     const now = DateTime.now().startOf('day')
 
     const pegawaiJual = await Database.from('penggunas')
       .join('jabatans', 'jabatans.id', 'penggunas.jabatan_id')
-      .select(
-        'penggunas.id as id',
-        'penggunas.nama as nama',
-        'jabatans.nama as jabatan'
-      )
+      .select('penggunas.id as id', 'penggunas.nama as nama', 'jabatans.nama as jabatan')
       .select(
         Database.from('penjualans')
           .count('penjualans.id')
@@ -311,11 +602,7 @@ export default class DashboardController {
 
     const pegawaiBeli = await Database.from('penggunas')
       .join('jabatans', 'jabatans.id', 'penggunas.jabatan_id')
-      .select(
-        'penggunas.id as id',
-        'penggunas.nama as nama',
-        'jabatans.nama as jabatan'
-      )
+      .select('penggunas.id as id', 'penggunas.nama as nama', 'jabatans.nama as jabatan')
       .select(
         Database.from('pembelians')
           .count('pembelians.id')
@@ -330,7 +617,7 @@ export default class DashboardController {
 
     return {
       pegawaiJual,
-      pegawaiBeli
+      pegawaiBeli,
     }
   }
 }

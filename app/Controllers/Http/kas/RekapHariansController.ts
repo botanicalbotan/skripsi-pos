@@ -298,7 +298,7 @@ export default class RekapHariansController {
               .select('*')
               .from('penyesuaian_stoks as sub')
               .whereRaw('penyesuaian_stoks.id = sub.id')
-              .whereRaw('DATE(sub.created_at) = DATE(?)', [DateTime.now().toSQLDate()])
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [rekap.tanggalRekap.toSQLDate()])
           })
         })
         .count('kelompoks.id', 'jumlah')
@@ -349,13 +349,236 @@ export default class RekapHariansController {
           sesuai: sesuai.jumlah,
           bermasalah: bermasalah.jumlah,
           belumCek: belumCek.jumlah,
-          cekUlang: cekUlang.jumlah
+          cekUlang: cekUlang.jumlah,
         },
       })
     } catch (error) {
       console.error(error)
       session.flash('alertError', 'Rekap harian yang anda pilih tidak valid!')
       return response.redirect('/app/kas/rekap-harian')
+    }
+  }
+
+  public async getRekapBalenByTanggal({ request, response }: HttpContextContract) {
+    try {
+      let ambilTanggal = request.input('tanggal')
+      let tanggal = DateTime.fromISO(ambilTanggal).startOf('day')
+      console.log(tanggal.toISODate())
+      if (!tanggal.isValid) throw 'tanggal ngga valid'
+
+      // --------------------------- TANGGUNG ------------------------------
+      const tggUripan = await Database.from('bentuks')
+        .join('models', 'bentuks.id', 'models.bentuk_id')
+        .leftJoin('pembelians', (query) => {
+          query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('pembelians as sub')
+              .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+              .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+              .whereRaw('pembelians.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [tanggal.toSQLDate()])
+              .whereNull('pembelians.deleted_at')
+              .andWhere('kadars.nama', 'Tanggung') // penentu kadar
+              .andWhere('pembelians.kondisi_fisik', 'uripan') // penentu kondisi
+          })
+        })
+        .select('bentuks.bentuk')
+        .count('pembelians.id as jumlah')
+        .sum('pembelians.berat_barang as berat')
+        .groupBy('bentuks.id')
+
+      const tggRusak = await Database.from('bentuks')
+        .join('models', 'bentuks.id', 'models.bentuk_id')
+        .leftJoin('pembelians', (query) => {
+          query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('pembelians as sub')
+              .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+              .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+              .whereRaw('pembelians.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [tanggal.toSQLDate()])
+              .whereNull('pembelians.deleted_at')
+              .andWhere('kadars.nama', 'Tanggung') // penentu kadar
+              .andWhere('pembelians.kondisi_fisik', 'rusak') // penentu kondisi
+          })
+        })
+        .select('bentuks.bentuk')
+        .count('pembelians.id as jumlah')
+        .sum('pembelians.berat_barang as berat')
+        .groupBy('bentuks.id')
+
+      const tggRosok = await Database.from('bentuks')
+        .join('models', 'bentuks.id', 'models.bentuk_id')
+        .leftJoin('pembelians', (query) => {
+          query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('pembelians as sub')
+              .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+              .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+              .whereRaw('pembelians.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [tanggal.toSQLDate()])
+              .whereNull('pembelians.deleted_at')
+              .andWhere('kadars.nama', 'Tanggung') // penentu kadar
+              .andWhere('pembelians.kondisi_fisik', 'rosok') // penentu kondisi
+          })
+        })
+        .select('bentuks.bentuk')
+        .count('pembelians.id as jumlah')
+        .sum('pembelians.berat_barang as berat')
+        .groupBy('bentuks.id')
+
+      // --------------------------- MUDA ------------------------------
+
+      const mdUripan = await Database.from('bentuks')
+        .join('models', 'bentuks.id', 'models.bentuk_id')
+        .leftJoin('pembelians', (query) => {
+          query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('pembelians as sub')
+              .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+              .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+              .whereRaw('pembelians.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [tanggal.toSQLDate()])
+              .whereNull('pembelians.deleted_at')
+              .andWhere('kadars.nama', 'Muda') // penentu kadar
+              .andWhere('pembelians.kondisi_fisik', 'uripan') // penentu kondisi
+          })
+        })
+        .select('bentuks.bentuk')
+        .count('pembelians.id as jumlah')
+        .sum('pembelians.berat_barang as berat')
+        .groupBy('bentuks.id')
+
+      const mdRusak = await Database.from('bentuks')
+        .join('models', 'bentuks.id', 'models.bentuk_id')
+        .leftJoin('pembelians', (query) => {
+          query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('pembelians as sub')
+              .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+              .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+              .whereRaw('pembelians.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [tanggal.toSQLDate()])
+              .whereNull('pembelians.deleted_at')
+              .andWhere('kadars.nama', 'Muda') // penentu kadar
+              .andWhere('pembelians.kondisi_fisik', 'rusak') // penentu kondisi
+          })
+        })
+        .select('bentuks.bentuk')
+        .count('pembelians.id as jumlah')
+        .sum('pembelians.berat_barang as berat')
+        .groupBy('bentuks.id')
+
+      const mdRosok = await Database.from('bentuks')
+        .join('models', 'bentuks.id', 'models.bentuk_id')
+        .leftJoin('pembelians', (query) => {
+          query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('pembelians as sub')
+              .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+              .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+              .whereRaw('pembelians.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [tanggal.toSQLDate()])
+              .whereNull('pembelians.deleted_at')
+              .andWhere('kadars.nama', 'Muda') // penentu kadar
+              .andWhere('pembelians.kondisi_fisik', 'rosok') // penentu kondisi
+          })
+        })
+        .select('bentuks.bentuk')
+        .count('pembelians.id as jumlah')
+        .sum('pembelians.berat_barang as berat')
+        .groupBy('bentuks.id')
+
+      // --------------------------- TUA ------------------------------
+
+      const tuUripan = await Database.from('bentuks')
+        .join('models', 'bentuks.id', 'models.bentuk_id')
+        .leftJoin('pembelians', (query) => {
+          query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('pembelians as sub')
+              .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+              .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+              .whereRaw('pembelians.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [tanggal.toSQLDate()])
+              .whereNull('pembelians.deleted_at')
+              .andWhere('kadars.nama', 'Tua') // penentu kadar
+              .andWhere('pembelians.kondisi_fisik', 'uripan') // penentu kondisi
+          })
+        })
+        .select('bentuks.bentuk')
+        .count('pembelians.id as jumlah')
+        .sum('pembelians.berat_barang as berat')
+        .groupBy('bentuks.id')
+
+      const tuRusak = await Database.from('bentuks')
+        .join('models', 'bentuks.id', 'models.bentuk_id')
+        .leftJoin('pembelians', (query) => {
+          query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('pembelians as sub')
+              .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+              .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+              .whereRaw('pembelians.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [tanggal.toSQLDate()])
+              .whereNull('pembelians.deleted_at')
+              .andWhere('kadars.nama', 'Tua') // penentu kadar
+              .andWhere('pembelians.kondisi_fisik', 'rusak') // penentu kondisi
+          })
+        })
+        .select('bentuks.bentuk')
+        .count('pembelians.id as jumlah')
+        .sum('pembelians.berat_barang as berat')
+        .groupBy('bentuks.id')
+
+      const tuRosok = await Database.from('bentuks')
+        .join('models', 'bentuks.id', 'models.bentuk_id')
+        .leftJoin('pembelians', (query) => {
+          query.on('pembelians.model_id', 'models.id').onExists((subQuery) => {
+            subQuery
+              .select('*')
+              .from('pembelians as sub')
+              .join('kode_produksis', 'kode_produksis.id', 'sub.kode_produksi_id')
+              .join('kadars', 'kadars.id', 'kode_produksis.kadar_id')
+              .whereRaw('pembelians.id = sub.id')
+              .whereRaw('DATE(sub.created_at) = DATE(?)', [tanggal.toSQLDate()])
+              .whereNull('pembelians.deleted_at')
+              .andWhere('kadars.nama', 'Tua') // penentu kadar
+              .andWhere('pembelians.kondisi_fisik', 'rosok') // penentu kondisi
+          })
+        })
+        .select('bentuks.bentuk')
+        .count('pembelians.id as jumlah')
+        .sum('pembelians.berat_barang as berat')
+        .groupBy('bentuks.id')
+
+      return {
+        tgg: {
+          uripan: tggUripan,
+          rusak: tggRusak,
+          rosok: tggRosok,
+        },
+        md: {
+          uripan: mdUripan,
+          rusak: mdRusak,
+          rosok: mdRosok,
+        },
+        tu: {
+          uripan: tuUripan,
+          rusak: tuRusak,
+          rosok: tuRosok,
+        },
+      }
+    } catch (error) {
+      return response.badRequest('Tanggal tidak valid')
     }
   }
 }

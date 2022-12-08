@@ -1,3 +1,6 @@
+// import Swal from "sweetalert2"
+import Swal from "sweetalert2/dist/sweetalert2"
+
 const basePage = document.getElementById('base-page').dataset.pagename
 
 $(function () {
@@ -147,14 +150,12 @@ $(function () {
         // -------------------------- btLihatIni ---------------------------------
         const btLihatInis = document.querySelectorAll('button.btLihatIni')
 
-        let tanggal = new Date(document.getElementById('base-page').dataset.tanggaliso)
-        let formatTanggal = `${tanggal.getFullYear()}-${tanggal.getMonth() + 1}-${tanggal.getDate()}`
+        let tanggal = document.getElementById('base-page').dataset.tanggaliso
 
-        console.log(formatTanggal)
         btLihatInis.forEach(tombol => {
             tombol.addEventListener('click', (e) => {
                 if (e.target.closest('button').value) {
-                    window.open(`/app/barang/penyesuaian/${formatTanggal}/${e.target.closest('button').value}`, '_blank')
+                    window.open(`/app/barang/penyesuaian/${tanggal}/${e.target.closest('button').value}`, '_blank')
                 }
             })
         });

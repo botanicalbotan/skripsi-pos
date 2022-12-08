@@ -230,6 +230,10 @@ Route.group(() => {
     Route.get('/kelmodkod-laku', 'DashboardController.getDataKelompokModelKodeproLaku')
     Route.get('/pencatat-pjpb', 'DashboardController.getDataPencatatTerbanyak')
     Route.get('/sebaran-pb', 'DashboardController.getSebaranPb')
+    Route.get('/rekap-balen', 'DashboardController.getRekapBalen')
+
+    // rekap harian
+    Route.get('/rekap-balen-by-tanggal', 'kas/RekapHariansController.getRekapBalenByTanggal')
 
     // general
     Route.get('/my-profile', 'akun/PegawaisController.getMyProfile')

@@ -147,4 +147,222 @@ $(function () {
       return htmlAddStock
     }
   }
+
+  if (basePage == 'detail') {
+    // ==================================== REKAP BALEN ===================================
+    const loadingBalen = document.getElementById('loadingBalen')
+    const wadahBalen = document.getElementById('wadahBalen')
+    const errorBalen = document.getElementById('errorBalen')
+
+    // keknya beda lagi
+    const wadahTggUripan = document.getElementById('wadahTggUripan')
+    const wadahTggRusak = document.getElementById('wadahTggRusak')
+    const wadahTggRosok = document.getElementById('wadahTggRosok')
+    const wadahMdUripan = document.getElementById('wadahMdUripan')
+    const wadahMdRusak = document.getElementById('wadahMdRusak')
+    const wadahMdRosok = document.getElementById('wadahMdRosok')
+    const wadahTuUripan = document.getElementById('wadahTuUripan')
+    const wadahTuRusak = document.getElementById('wadahTuRusak')
+    const wadahTuRosok = document.getElementById('wadahTuRosok')
+
+
+    let DATA
+    function tataTempat() {
+      // clear
+      wadahTggUripan.textContent = ''
+      wadahTggRusak.textContent = ''
+      wadahTggRosok.textContent = ''
+      wadahMdUripan.textContent = ''
+      wadahMdRusak.textContent = ''
+      wadahMdRosok.textContent = ''
+      wadahTuUripan.textContent = ''
+      wadahTuRusak.textContent = ''
+      wadahTuRosok.textContent = ''
+
+      // ------------ Tanggung --------------
+      if (DATA.tgg) {
+        if (DATA.tgg.uripan) {
+          let total = 0, totalBerat = 0
+          for (let i = 0; i < DATA.tgg.uripan.length; i++) {
+            total += DATA.tgg.uripan[i].jumlah
+            totalBerat += DATA.tgg.uripan[i].berat
+            wadahTggUripan.append(generateListBalen(DATA.tgg.uripan[i].bentuk, DATA.tgg.uripan[i].jumlah, DATA.tgg.uripan[i].berat))
+          }
+
+          wadahTggUripan.append(generateTotalBalen('Total', total, totalBerat))
+        }
+
+        if (DATA.tgg.rusak) {
+          let total = 0, totalBerat = 0
+          for (let i = 0; i < DATA.tgg.rusak.length; i++) {
+            total += DATA.tgg.rusak[i].jumlah
+            totalBerat += DATA.tgg.rusak[i].berat
+            wadahTggRusak.append(generateListBalen(DATA.tgg.rusak[i].bentuk, DATA.tgg.rusak[i].jumlah, DATA.tgg.rusak[i].berat))
+          }
+
+          wadahTggRusak.append(generateTotalBalen('Total', total, totalBerat))
+        }
+
+        if (DATA.tgg.rosok) {
+          let total = 0, totalBerat = 0
+          for (let i = 0; i < DATA.tgg.rosok.length; i++) {
+            total += DATA.tgg.rosok[i].jumlah
+            totalBerat += DATA.tgg.rosok[i].berat
+            wadahTggRosok.append(generateListBalen(DATA.tgg.rosok[i].bentuk, DATA.tgg.rosok[i].jumlah, DATA.tgg.rosok[i].berat))
+          }
+
+          wadahTggRosok.append(generateTotalBalen('Total', total, totalBerat))
+        }
+      }
+
+      // ----------------- Muda -----------------
+      if (DATA.md) {
+        if (DATA.md.uripan) {
+          let total = 0, totalBerat = 0
+          for (let i = 0; i < DATA.md.uripan.length; i++) {
+            total += DATA.md.uripan[i].jumlah
+            totalBerat += DATA.md.uripan[i].berat
+            wadahMdUripan.append(generateListBalen(DATA.md.uripan[i].bentuk, DATA.md.uripan[i].jumlah, DATA.md.uripan[i].berat))
+          }
+
+          wadahMdUripan.append(generateTotalBalen('Total', total, totalBerat))
+        }
+
+        if (DATA.md.rusak) {
+          let total = 0, totalBerat = 0
+          for (let i = 0; i < DATA.md.rusak.length; i++) {
+            total += DATA.md.rusak[i].jumlah
+            totalBerat += DATA.md.rusak[i].berat
+            wadahMdRusak.append(generateListBalen(DATA.md.rusak[i].bentuk, DATA.md.rusak[i].jumlah, DATA.md.rusak[i].berat))
+          }
+
+          wadahMdRusak.append(generateTotalBalen('Total', total, totalBerat))
+        }
+
+        if (DATA.md.rosok) {
+          let total = 0, totalBerat = 0
+          for (let i = 0; i < DATA.md.rosok.length; i++) {
+            total += DATA.md.rosok[i].jumlah
+            totalBerat += DATA.md.rosok[i].berat
+            wadahMdRosok.append(generateListBalen(DATA.md.rosok[i].bentuk, DATA.md.rosok[i].jumlah, DATA.md.rosok[i].berat))
+          }
+
+          wadahMdRosok.append(generateTotalBalen('Total', total, totalBerat))
+        }
+      }
+
+      // -------------------- Tua ---------------
+
+      if (DATA.tu) {
+        if (DATA.tu.uripan) {
+          let total = 0, totalBerat = 0
+          for (let i = 0; i < DATA.tu.uripan.length; i++) {
+            total += DATA.tu.uripan[i].jumlah
+            totalBerat += DATA.tu.uripan[i].berat
+            wadahTuUripan.append(generateListBalen(DATA.tu.uripan[i].bentuk, DATA.tu.uripan[i].jumlah, DATA.tu.uripan[i].berat))
+          }
+
+          wadahTuUripan.append(generateTotalBalen('Total', total, totalBerat))
+        }
+
+        if (DATA.tu.rusak) {
+          let total = 0, totalBerat = 0
+          for (let i = 0; i < DATA.tu.rusak.length; i++) {
+            total += DATA.tu.rusak[i].jumlah
+            totalBerat += DATA.tu.rusak[i].berat
+            wadahTuRusak.append(generateListBalen(DATA.tu.rusak[i].bentuk, DATA.tu.rusak[i].jumlah, DATA.tu.rusak[i].berat))
+          }
+
+          wadahTuRusak.append(generateTotalBalen('Total', total, totalBerat))
+        }
+
+        if (DATA.tu.rosok) {
+          let total = 0, totalBerat = 0
+          for (let i = 0; i < DATA.tu.rosok.length; i++) {
+            total += DATA.tu.rosok[i].jumlah
+            totalBerat += DATA.tu.rosok[i].berat
+            wadahTuRosok.append(generateListBalen(DATA.tu.rosok[i].bentuk, DATA.tu.rosok[i].jumlah, DATA.tu.rosok[i].berat))
+          }
+
+          wadahTuRosok.append(generateTotalBalen('Total', total, totalBerat))
+        }
+      }
+
+      loadingBalen.classList.add('hidden')
+      wadahBalen.classList.remove('hidden')
+    }
+
+
+    // nyari tanggal iso, penting
+    let tanggal = document.getElementById('base-page').dataset.tanggaliso
+
+    $.get("/app/cuma-data/rekap-balen-by-tanggal", { tanggal: tanggal },
+      function (data, textStatus, jqXHR) {
+        if (data.tgg && data.md && data.tu) {
+          DATA = data
+          console.log(data)
+          tataTempat()
+        } else {
+          wadahBalen.classList.add('hidden')
+          errorBalen.classList.remove('hidden')
+        }
+      },
+      "json"
+    ).fail(()=>{
+      wadahBalen.classList.add('hidden')
+      errorBalen.classList.remove('hidden')
+    })
+    .always(()=>{
+      loadingBalen.classList.add('hidden')
+    })
+
+
+    function generateListBalen(nama, jumlah, berat) {
+      const div = document.createElement('div')
+      div.classList.add('flex')
+
+      const span1 = document.createElement('span')
+      span1.classList.add('flex-1')
+      span1.textContent = nama
+
+      const span2 = document.createElement('span')
+      span2.classList.add('flex-1', 'flex')
+
+      const sub1 = document.createElement('span')
+      sub1.classList.add('flex-1')
+      sub1.textContent = jumlah
+
+      const sub2 = document.createElement('span')
+      sub2.textContent = `${((berat) ? berat : 0)} gr`
+
+      span2.append(sub1, sub2)
+
+      div.append(span1, span2)
+      return div
+    }
+
+    function generateTotalBalen(nama, jumlah, berat) {
+      const div = document.createElement('div')
+      div.classList.add('flex', 'border-t', 'mt-1', 'border-neutral', 'font-semibold')
+
+      const span1 = document.createElement('span')
+      span1.classList.add('flex-1')
+      span1.textContent = nama
+
+      const span2 = document.createElement('span')
+      span2.classList.add('flex-1', 'flex')
+
+      const sub1 = document.createElement('span')
+      sub1.classList.add('flex-1')
+      sub1.textContent = jumlah
+
+      const sub2 = document.createElement('span')
+      sub2.textContent = `${((berat) ? berat : 0)} gr`
+
+      span2.append(sub1, sub2)
+
+      div.append(span1, span2)
+      return div
+    }
+  }
 })

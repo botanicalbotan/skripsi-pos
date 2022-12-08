@@ -107,22 +107,102 @@
       </div>
 
       <div class="card shadow bg-white flex-1">
-        <div class="card-body space-y-4">
-          <h2 class="card-title">Sebaran Data Pembelian</h2>
+        <div class="card-body">
+          <h2 class="card-title">Pengecekan Harian</h2>
 
-          <div class="h-60">
-            <canvas id="chartSebarPb" class="w-full h-full" role="img">
-              <p>Browser anda tidak mendukung fitur ini.</p>
-            </canvas>
+          <div class="space-y-1">
+            @if(data.cekHarian.bandingSaldo)
+            <a href="#banding" class="link link-hover flex text-accent-focus items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                class="w-5 h-5 mr-2 flex-none">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Sudah banding saldo</span>
+            </a>
+            @else
+            <a href="#banding" class="link link-hover flex text-error items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                class="w-5 h-5 mr-2 flex-none">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Belum banding saldo</span>
+            </a>
+            @endif
 
-            <div id="errorSebar" class="hidden h-full justify-center items-center opacity-50">
-              <div class="flex flex-col items-center space-y-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                <div>Belum ada transaksi.</div>
-              </div>
-            </div>
+            @if(data.cekHarian.bermasalah)
+            <a href="#sesuai" class="link link-hover flex text-accent-focus items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                class="w-5 h-5 mr-2 flex-none">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Tidak ada stok kelompok bermasalah</span>
+            </a>
+            @else
+            <a href="#sesuai"  class="link link-hover flex text-error items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                class="w-5 h-5 mr-2 flex-none">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Ada stok kelompok bermasalah</span>
+            </a>
+            @endif
+
+            @if(data.cekHarian.cekUlang)
+            <a href="#sesuai" class="link link-hover flex text-accent-focus items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                class="w-5 h-5 mr-2 flex-none">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Tidak ada stok kelompok yang perlu dicek ulang</span>
+            </a>
+            @else
+            <a href="#sesuai" class="link link-hover flex text-error items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                class="w-5 h-5 mr-2 flex-none">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Ada stok kelompok yang perlu dicek ulang</span>
+            </a>
+            @endif
+
+            @if(data.cekHarian.belumCek)
+            <a href="#sesuai" class="link link-hover flex text-accent-focus items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                class="w-5 h-5 mr-2 flex-none">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Tidak ada stok kelompok yang belum dicek</span>
+            </a>
+            @else
+            <a href="#sesuai" class="link link-hover flex text-error items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                class="w-5 h-5 mr-2 flex-none">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Ada stok kelompok yang belum dicek</span>
+            </a>
+            @endif
+
+          </div>
+
+          <div class=" card-actions">
+            <a href="/app/kas/rekap-harian/{{ data.tanggalRekap }}" class=" btn btn-sm btn-block btn-outline">Lihat Rekap Hari Ini</a>
           </div>
         </div>
       </div>
@@ -133,7 +213,7 @@
   </div>
 
   <div class="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6">
-    <div class="card shadow bg-white flex-1 min-h-96">
+    <div class="card shadow bg-white flex-1 min-h-80">
       <div class="card-body">
         <h2 class="card-title flex flex-col sm:flex-row sm:items-center">
           <span class="flex-1">Daftar Paling Laku Terjual</span>
@@ -184,7 +264,28 @@
       </div>
     </div>
 
-    <div class="card shadow bg-white flex-1 min-h-96">
+    {{--  <div class="card shadow bg-white flex-1">
+      <div class="card-body space-y-4">
+        <h2 class="card-title">Sebaran Data Pembelian</h2>
+
+        <div class="h-60">
+          <canvas id="chartSebarPb" class="w-full h-full" role="img">
+            <p>Browser anda tidak mendukung fitur ini.</p>
+          </canvas>
+
+          <div id="errorSebar" class="hidden h-full justify-center items-center opacity-50">
+            <div class="flex flex-col items-center space-y-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <div>Belum ada transaksi.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>  --}}
+
+    {{--  <div class="card shadow bg-white flex-1 min-h-96">
       <div class="card-body">
         <h2 class="card-title">Daftar Pencatat Transaksi Terbanyak</h2>
 
@@ -218,6 +319,142 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
             <div>Belum ada transaksi.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>  --}}
+
+    <div class="card shadow bg-white flex-1 min-h-80">
+      <div class="card-body">
+        <h2 class="card-title flex flex-col sm:flex-row sm:items-center">
+          <span class="flex-1">Rekap Balen Pembelian</span>
+          <select class="select select-bordered select-xs" id="tipeBalen">
+            <option value="0" selected>Jumlah</option>
+            <option value="1">Gram</option>
+          </select>
+        </h2>
+
+        <div id="loadingBalen" class="flex flex-1 w-full items-center justify-center animate-pulse bg-base-200">
+          <div class="flex flex-col items-center space-y-4">
+            <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 w-16 h-16"></div>
+            <div class=" text-xl">Loading...</div>
+          </div>
+        </div>
+
+        <div id="wadahBalen" x-data="{ pilih: 0 }" class="space-y-2 hidden">
+          <div class="tabs tabs-boxed true-rounded-none bg-transparent items-center justify-center">
+            <a class="tab" :class="(pilih == 0)? 'tab-active true-rounded-none true-text-white' : ''" @click="pilih = 0">Tanggung</a> 
+            <a class="tab" :class="(pilih == 1)? 'tab-active true-rounded-none true-text-white' : ''" @click="pilih = 1">Muda</a>
+            <a class="tab" :class="(pilih == 2)? 'tab-active true-rounded-none true-text-white' : ''" @click="pilih = 2">Tua</a>
+          </div>
+
+          <div>
+
+            {{--  Tanggung  --}}
+            <div class="flex flex-row space-x-4" x-cloak x-show="pilih == 0" id="wadahBalenTgg">
+              <div class="flex-1">
+                <div class="font-semibold mb-2 text-center">Uripan</div>
+                <div id="wadahTggUripan" class="text-sm">
+
+                </div>
+              </div>
+
+              <div class="flex-1">
+                <div class="font-semibold mb-2 text-center">Rusak</div>
+                <div id="wadahTggRusak" class="text-sm">
+
+                </div>
+              </div>
+
+              <div class="flex-1">
+                <div class="font-semibold mb-2 text-center">Rosok</div>
+                <div id="wadahTggRosok" class="text-sm">
+   
+                </div>
+              </div>
+            </div>
+  
+            {{--  Muda  --}}
+            <div class="flex flex-row space-x-4" x-cloak x-show="pilih == 1" id="wadahBalenMd">
+              <div class="flex-1">
+                <div class="font-semibold mb-2 text-center">Uripan</div>
+                <div id="wadahMdUripan" class="text-sm">
+                  <div class="flex">
+                    <span class="flex-1">wadah</span>
+                    <span>200gr</span>
+                  </div>
+
+                  <div class="flex border-t mt-1 border-neutral font-semibold">
+                    <span class="flex-1">Total</span>
+                    <span class="">200gr</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex-1">
+                <div class="font-semibold mb-2 text-center">Rusak</div>
+                <div id="wadahMdRusak" class="text-sm">
+                  <div class="flex">
+                    <span class="flex-1">wadah</span>
+                    <span>200gr</span>
+                  </div>
+
+                  <div class="flex border-t mt-1 border-neutral font-semibold">
+                    <span class="flex-1">Total</span>
+                    <span class="">200gr</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex-1">
+                <div class="font-semibold mb-2 text-center">Rosok</div>
+                <div id="wadahMdRosok" class="text-sm">
+                  <div class="flex">
+                    <span class="flex-1">wadah</span>
+                    <span>200gr</span>
+                  </div>
+
+                  <div class="flex border-t mt-1 border-neutral font-semibold">
+                    <span class="flex-1">Total</span>
+                    <span class="">200gr</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {{--  Tua  --}}
+            <div class="flex flex-row space-x-4" x-cloak x-show="pilih == 2" id="wadahBalenTu">
+              <div class="flex-1">
+                <div class="font-semibold mb-2 text-center">Uripan</div>
+                <div id="wadahTuUripan" class="text-sm">
+
+                </div>
+              </div>
+
+              <div class="flex-1">
+                <div class="font-semibold mb-2 text-center">Rusak</div>
+                <div id="wadahTuRusak" class="text-sm">
+
+                </div>
+              </div>
+
+              <div class="flex-1">
+                <div class="font-semibold mb-2 text-center">Rosok</div>
+                <div id="wadahTuRosok" class="text-sm">
+
+                </div>
+              </div>
+            </div>
+          </div> 
+        </div>  
+
+        <div id="errorBalen" class="hidden flex-1 justify-center items-center opacity-50">
+          <div class="flex flex-col items-center space-y-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <div>Terjadi error.</div>
           </div>
         </div>
 
