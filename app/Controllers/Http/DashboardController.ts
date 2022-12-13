@@ -3,7 +3,7 @@ import Database from '@ioc:Adonis/Lucid/Database'
 import { DateTime } from 'luxon'
 
 import { apakahHariIniPasaran, hariKePasaranSelanjutnya } from 'App/CustomClasses/CPasaran'
-import RekapHarian from 'App/Models/kas/RekapHarian'
+import { prepareRekap } from 'App/CustomClasses/CustomRekapHarian'
 
 export default class DashboardController {
   public async index({ view }: HttpContextContract) {
@@ -59,7 +59,8 @@ export default class DashboardController {
     const next = await hariKePasaranSelanjutnya()
 
     // --------------- Pengecekan Harian -------------
-    const rekap = await RekapHarian.findByOrFail('tanggal_rekap', now.toISODate())
+    // buat ngecek rekap harian udah gw taro di custom class ini
+    let rekap = await prepareRekap()
 
     const belumCek = await Database.from('kelompoks')
         .leftJoin('penyesuaian_stoks', (query) => {

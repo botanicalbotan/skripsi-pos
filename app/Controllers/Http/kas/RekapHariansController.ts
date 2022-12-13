@@ -146,10 +146,10 @@ export default class RekapHariansController {
     }
 
     let roti = [
-      {
-        laman: 'Pembukuan Kas',
-        alamat: '/app/kas',
-      },
+      // {
+      //   laman: 'Pembukuan Kas',
+      //   alamat: '/app/kas',
+      // },
       {
         laman: 'Rekap Harian',
       },
@@ -322,10 +322,10 @@ export default class RekapHariansController {
       }
 
       let roti = [
-        {
-          laman: 'Pembukuan Kas',
-          alamat: '/app/kas',
-        },
+        // {
+        //   laman: 'Pembukuan Kas',
+        //   alamat: '/app/kas',
+        // },
         {
           laman: 'Rekap Harian',
           alamat: '/app/kas/rekap-harian',
@@ -359,6 +359,7 @@ export default class RekapHariansController {
     }
   }
 
+  // ini ajax
   public async getRekapBalenByTanggal({ request, response }: HttpContextContract) {
     try {
       let ambilTanggal = request.input('tanggal')

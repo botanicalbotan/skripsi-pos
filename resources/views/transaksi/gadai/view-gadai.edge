@@ -46,17 +46,25 @@
             </svg>
           </div>
           <ul tabindex="0" class="p-2 shadow-lg menu border dropdown-content bg-base-100 rounded-box w-60">
+            @if(gadai.statusGadai.status === 'berjalan' || gadai.statusGadai.status=== 'terlambat')
+            <li>
+              <a href="/app/transaksi/gadai/{{ gadai.id }}/pembayaran/create">Bayar gadai</a>
+            </li>
+            @endif
+            
             <li>
               <a href="/app/transaksi/gadai/{{ gadai.id }}/edit">Ubah data</a>
             </li>
 
-            @if(session.get('isPemilik'))
-            <li>
-              <a id="btBatalGadai" class="true-text-error">Batalkan gadai</a>
-              <form id="formBatalGadai" action="/app/transaksi/gadai/{{ gadai.id }}/" method="POST">
-                {{ csrfField() }}
-              </form>
-            </li>
+            @if(gadai.statusGadai.status === 'berjalan' || gadai.statusGadai.status=== 'terlambat')
+              @if(session.get('isPemilik'))
+              <li>
+                <a id="btBatalGadai" class="true-text-error">Batalkan gadai</a>
+                <form id="formBatalGadai" action="/app/transaksi/gadai/{{ gadai.id }}/" method="POST">
+                  {{ csrfField() }}
+                </form>
+              </li>
+              @endif
             @endif
 
 

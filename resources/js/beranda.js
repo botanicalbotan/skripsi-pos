@@ -430,7 +430,13 @@ function generateTotalBalen(nama, value, apakahGram){
   span1.textContent = nama
 
   const span2 = document.createElement('span')
-  span2.textContent = ((value)? value:0) + ((apakahGram)? 'gr':'')
+  let angka = ((value)? value:0)
+  if(apakahGram){
+    span2.textContent = angka.toFixed(2) + 'gr'
+  } else {
+    span2.textContent = angka
+  }
+  // span2.textContent = ((value)? value:0) + ((apakahGram)? 'gr':'')
 
   div.append(span1, span2)
   return div

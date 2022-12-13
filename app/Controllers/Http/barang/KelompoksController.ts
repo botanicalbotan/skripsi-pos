@@ -166,7 +166,7 @@ export default class KelompoksController {
       kelompoks,
       tambahan,
       statistik,
-      roti
+      roti,
     })
   }
 
@@ -187,15 +187,15 @@ export default class KelompoksController {
         alamat: '/app/barang',
       },
       {
-        laman: 'Baru'
-      }
+        laman: 'Baru',
+      },
     ]
 
     return await view.render('barang/kelompok/form-kelompok', {
       defaultPengaturan,
       kadars,
       bentuks,
-      roti
+      roti,
     })
   }
 
@@ -232,7 +232,7 @@ export default class KelompoksController {
       stokMinimal: schema.number(),
       stok: schema.number(),
       ingatkanStokMenipis: schema.string.optional(),
-      monitorStok: schema.string.optional()
+      monitorStok: schema.string.optional(),
     })
 
     const validrequest = await request.validate({
@@ -257,8 +257,8 @@ export default class KelompoksController {
         beratKelompok: validrequest.beratKelompok,
         stok: validrequest.stok,
         stokMinimal: validrequest.stokMinimal,
-        ingatkanStokMenipis: (validrequest.ingatkanStokMenipis)?true:false,
-        apakahDimonitor: (validrequest.monitorStok)?true:false,
+        ingatkanStokMenipis: validrequest.ingatkanStokMenipis ? true : false,
+        apakahDimonitor: validrequest.monitorStok ? true : false,
         penggunaId: userPengakses.pengguna.id,
       })
 
@@ -286,6 +286,25 @@ export default class KelompoksController {
         query.preload('jabatan')
       })
 
+      const jualTerakhir = await Database.from('kelompoks')
+        .join('penjualans', 'kelompoks.id', 'penjualans.kelompok_id')
+        .join('penggunas', 'penggunas.id', 'penjualans.pengguna_id')
+        .join('jabatans', 'jabatans.id', 'penggunas.jabatan_id')
+        .where('kelompoks.id', kelompok.id)
+        .whereNull('penjualans.deleted_at')
+        .select(
+          'penggunas.nama as namaPencatat',
+          'penggunas.id as idPencatat',
+          'jabatans.nama as jabatanPencatat',
+          'penjualans.created_at as createdAt',
+          'penjualans.nama_barang as namaBarang',
+          'penjualans.harga_jual_akhir as hargaJual',
+          'penjualans.potongan as potongan',
+          'penjualans.apakah_potongan_persen as apakahPotonganPersen'
+        )
+        .orderBy('penjualans.created_at', 'desc')
+        .first()
+
       const tambahTerakhir = await Database.from('kelompok_penambahans')
         .join('penambahan_stoks', 'penambahan_stoks.id', 'kelompok_penambahans.penambahan_stok_id')
         .join('penggunas', 'penggunas.id', 'penambahan_stoks.pengguna_id')
@@ -303,20 +322,20 @@ export default class KelompoksController {
         .first()
 
       const sesuaiTerakhir = await Database.from('penyesuaian_stoks')
-          .join('kelompoks', 'kelompoks.id', 'penyesuaian_stoks.kelompok_id')
-          .join('penggunas', 'penggunas.id', 'penyesuaian_stoks.pengguna_id')
-          .where('penyesuaian_stoks.kelompok_id', kelompok.id)
-          .select(
-            'penggunas.nama as namaPencatat',
-            'penggunas.id as idPencatat',
-            'penyesuaian_stoks.created_at as createdAt',
-            'penyesuaian_stoks.butuh_cek_ulang as butuhCekUlang',
-            'penyesuaian_stoks.stok_tercatat as stokTercatat',
-            'penyesuaian_stoks.stok_sebenarnya as stokSebenarnya'
-          )
-          .orderBy('penyesuaian_stoks.created_at', 'desc')
-          .first()
-      
+        .join('kelompoks', 'kelompoks.id', 'penyesuaian_stoks.kelompok_id')
+        .join('penggunas', 'penggunas.id', 'penyesuaian_stoks.pengguna_id')
+        .where('penyesuaian_stoks.kelompok_id', kelompok.id)
+        .select(
+          'penggunas.nama as namaPencatat',
+          'penggunas.id as idPencatat',
+          'penyesuaian_stoks.created_at as createdAt',
+          'penyesuaian_stoks.butuh_cek_ulang as butuhCekUlang',
+          'penyesuaian_stoks.stok_tercatat as stokTercatat',
+          'penyesuaian_stoks.stok_sebenarnya as stokSebenarnya'
+        )
+        .orderBy('penyesuaian_stoks.created_at', 'desc')
+        .first()
+
       const fungsi = {
         rupiahParser: rupiahParser,
       }
@@ -331,8 +350,8 @@ export default class KelompoksController {
           alamat: '/app/barang',
         },
         {
-          laman: kelompok.nama
-        }
+          laman: kelompok.nama,
+        },
       ]
 
       return await view.render('barang/kelompok/view-kelompok', {
@@ -341,7 +360,8 @@ export default class KelompoksController {
         tambahan,
         roti,
         tambahTerakhir,
-        sesuaiTerakhir
+        sesuaiTerakhir,
+        jualTerakhir,
       })
     } catch (error) {
       session.flash('alertError', 'Kelompok yang anda akses tidak valid atau terhapus.')
@@ -372,7 +392,7 @@ export default class KelompoksController {
         .orderBy('createdAt', 'desc')
         .paginate(page, limit)
 
-      tambahs.baseUrl(`app/barang/kelompok/${params.id}/mutasi-koreksi`)
+      tambahs.baseUrl(`app/barang/kelompok/${params.id}/penambahan`)
 
       let firstPage =
         tambahs.currentPage - 2 > 0
@@ -413,18 +433,18 @@ export default class KelompoksController {
         },
         {
           laman: kelompok.nama,
-          alamat: '/app/barang/kelompok/' + kelompok.id
+          alamat: '/app/barang/kelompok/' + kelompok.id,
         },
         {
-          laman: 'Penambahan'
-        }
+          laman: 'Penambahan Stok',
+        },
       ]
 
       return await view.render('barang/kelompok/mutasi-penambahan-kelompok', {
         tambahs,
         tambahan,
         kelompok,
-        roti
+        roti,
       })
     } catch (error) {
       session.flash('alertError', 'Kelompok yang anda akses tidak valid atau terhapus.')
@@ -432,14 +452,7 @@ export default class KelompoksController {
     }
   }
 
-  // legacy, taro sini buat referensi doang
-  public async showMutasiKoreksi({
-    view,
-    request,
-    params,
-    response,
-    session,
-  }: HttpContextContract) {
+  public async showPenjualan({ view, request, params, response, session }: HttpContextContract) {
     const page = request.input('page', 1)
     const limit = 10
 
@@ -447,52 +460,51 @@ export default class KelompoksController {
       const kelompok = await Kelompok.findOrFail(params.id)
       await kelompok.load('bentuk')
 
-      const koreksis = await Database.from('koreksi_stoks')
-        .join('penggunas', 'penggunas.id', 'koreksi_stoks.pengguna_id')
+      const juals = await Database.from('penjualans')
         .select(
-          'koreksi_stoks.created_at as createdAt',
-          'koreksi_stoks.alasan as alasan',
-          'koreksi_stoks.perubahan_stok as perubahanStok',
-          'koreksi_stoks.stok_akhir as stokAkhir',
-          'penggunas.nama as namaPencatat',
-          'penggunas.id as idPencatat'
+          'id as idJual',
+          'created_at as createdAt',
+          'nama_barang as namaBarang',
+          'harga_jual_akhir as hargaJual',
+          'berat_barang as beratBarang',
         )
-        .where('koreksi_stoks.kelompok_id', params.id)
+        .where('kelompok_id', params.id)
+        .andWhereNull('deleted_at')
         .orderBy('createdAt', 'desc')
         .paginate(page, limit)
 
-      koreksis.baseUrl(`app/barang/kelompok/${params.id}/mutasi-koreksi`)
+      juals.baseUrl(`app/barang/kelompok/${params.id}/penjualan`)
 
       let firstPage =
-        koreksis.currentPage - 2 > 0
-          ? koreksis.currentPage - 2
-          : koreksis.currentPage - 1 > 0
-          ? koreksis.currentPage - 1
-          : koreksis.currentPage
+        juals.currentPage - 2 > 0
+          ? juals.currentPage - 2
+          : juals.currentPage - 1 > 0
+          ? juals.currentPage - 1
+          : juals.currentPage
       let lastPage =
-        koreksis.currentPage + 2 <= koreksis.lastPage
-          ? koreksis.currentPage + 2
-          : koreksis.currentPage + 1 <= koreksis.lastPage
-          ? koreksis.currentPage + 1
-          : koreksis.currentPage
+        juals.currentPage + 2 <= juals.lastPage
+          ? juals.currentPage + 2
+          : juals.currentPage + 1 <= juals.lastPage
+          ? juals.currentPage + 1
+          : juals.currentPage
 
-      if (lastPage - firstPage < 4 && koreksis.lastPage > 4) {
-        if (koreksis.currentPage < koreksis.firstPage + 2) {
+      if (lastPage - firstPage < 4 && juals.lastPage > 4) {
+        if (juals.currentPage < juals.firstPage + 2) {
           lastPage += 4 - (lastPage - firstPage)
         }
 
-        if (lastPage == koreksis.lastPage) {
+        if (lastPage == juals.lastPage) {
           firstPage -= 4 - (lastPage - firstPage)
         }
       }
       // sampe sini
-      const tempLastData = 10 + (koreksis.currentPage - 1) * limit
+      const tempLastData = 10 + (juals.currentPage - 1) * limit
 
       const tambahan = {
         firstPage: firstPage,
         lastPage: lastPage,
-        firstDataInPage: 1 + (koreksis.currentPage - 1) * limit,
-        lastDataInPage: tempLastData >= koreksis.total ? koreksis.total : tempLastData,
+        firstDataInPage: 1 + (juals.currentPage - 1) * limit,
+        lastDataInPage: tempLastData >= juals.total ? juals.total : tempLastData,
       }
 
       let roti = [
@@ -502,24 +514,118 @@ export default class KelompoksController {
         },
         {
           laman: kelompok.nama,
-          alamat: '/app/barang/kelompok/' + kelompok.id
+          alamat: '/app/barang/kelompok/' + kelompok.id,
         },
         {
-          laman: 'Koreksi'
-        }
+          laman: 'Daftar Penjualan',
+        },
       ]
 
-      return await view.render('barang/kelompok/mutasi-koreksi-kelompok', {
-        koreksis,
+      const fungsi = {
+        rupiahParser
+      }
+
+      return await view.render('barang/kelompok/penjualan-kelompok', {
+        juals,
         tambahan,
         kelompok,
-        roti
+        roti,
+        fungsi
       })
     } catch (error) {
       session.flash('alertError', 'Kelompok yang anda akses tidak valid atau terhapus.')
       return response.redirect().toPath('/app/barang/')
     }
   }
+
+  // legacy, taro sini buat referensi doang
+  // public async showMutasiKoreksi({
+  //   view,
+  //   request,
+  //   params,
+  //   response,
+  //   session,
+  // }: HttpContextContract) {
+  //   const page = request.input('page', 1)
+  //   const limit = 10
+
+  //   try {
+  //     const kelompok = await Kelompok.findOrFail(params.id)
+  //     await kelompok.load('bentuk')
+
+  //     const koreksis = await Database.from('koreksi_stoks')
+  //       .join('penggunas', 'penggunas.id', 'koreksi_stoks.pengguna_id')
+  //       .select(
+  //         'koreksi_stoks.created_at as createdAt',
+  //         'koreksi_stoks.alasan as alasan',
+  //         'koreksi_stoks.perubahan_stok as perubahanStok',
+  //         'koreksi_stoks.stok_akhir as stokAkhir',
+  //         'penggunas.nama as namaPencatat',
+  //         'penggunas.id as idPencatat'
+  //       )
+  //       .where('koreksi_stoks.kelompok_id', params.id)
+  //       .orderBy('createdAt', 'desc')
+  //       .paginate(page, limit)
+
+  //     koreksis.baseUrl(`app/barang/kelompok/${params.id}/mutasi-koreksi`)
+
+  //     let firstPage =
+  //       koreksis.currentPage - 2 > 0
+  //         ? koreksis.currentPage - 2
+  //         : koreksis.currentPage - 1 > 0
+  //         ? koreksis.currentPage - 1
+  //         : koreksis.currentPage
+  //     let lastPage =
+  //       koreksis.currentPage + 2 <= koreksis.lastPage
+  //         ? koreksis.currentPage + 2
+  //         : koreksis.currentPage + 1 <= koreksis.lastPage
+  //         ? koreksis.currentPage + 1
+  //         : koreksis.currentPage
+
+  //     if (lastPage - firstPage < 4 && koreksis.lastPage > 4) {
+  //       if (koreksis.currentPage < koreksis.firstPage + 2) {
+  //         lastPage += 4 - (lastPage - firstPage)
+  //       }
+
+  //       if (lastPage == koreksis.lastPage) {
+  //         firstPage -= 4 - (lastPage - firstPage)
+  //       }
+  //     }
+  //     // sampe sini
+  //     const tempLastData = 10 + (koreksis.currentPage - 1) * limit
+
+  //     const tambahan = {
+  //       firstPage: firstPage,
+  //       lastPage: lastPage,
+  //       firstDataInPage: 1 + (koreksis.currentPage - 1) * limit,
+  //       lastDataInPage: tempLastData >= koreksis.total ? koreksis.total : tempLastData,
+  //     }
+
+  //     let roti = [
+  //       {
+  //         laman: 'Kelompok Perhiasan',
+  //         alamat: '/app/barang',
+  //       },
+  //       {
+  //         laman: kelompok.nama,
+  //         alamat: '/app/barang/kelompok/' + kelompok.id
+  //       },
+  //       {
+  //         laman: 'Koreksi'
+  //       }
+  //     ]
+
+  //     return await view.render('barang/kelompok/mutasi-koreksi-kelompok', {
+  //       koreksis,
+  //       tambahan,
+  //       kelompok,
+  //       roti
+  //     })
+  //   } catch (error) {
+  //     session.flash('alertError', 'Kelompok yang anda akses tidak valid atau terhapus.')
+  //     return response.redirect().toPath('/app/barang/')
+  //   }
+  // }
 
   public async showMutasiPenyesuaian({
     view,
@@ -551,16 +657,16 @@ export default class KelompoksController {
         .orderBy('createdAt', 'desc')
         .paginate(page, limit)
 
-      sesuais.baseUrl(`app/barang/kelompok/${params.id}/mutasi-koreksi`)
+      sesuais.baseUrl(`app/barang/kelompok/${params.id}/penyesuaian`)
 
       let firstPage =
-      sesuais.currentPage - 2 > 0
+        sesuais.currentPage - 2 > 0
           ? sesuais.currentPage - 2
           : sesuais.currentPage - 1 > 0
           ? sesuais.currentPage - 1
           : sesuais.currentPage
       let lastPage =
-      sesuais.currentPage + 2 <= sesuais.lastPage
+        sesuais.currentPage + 2 <= sesuais.lastPage
           ? sesuais.currentPage + 2
           : sesuais.currentPage + 1 <= sesuais.lastPage
           ? sesuais.currentPage + 1
@@ -592,15 +698,15 @@ export default class KelompoksController {
         },
         {
           laman: kelompok.nama,
-          alamat: '/app/barang/kelompok/' + kelompok.id
+          alamat: '/app/barang/kelompok/' + kelompok.id,
         },
         {
-          laman: 'Koreksi'
-        }
+          laman: 'Penyesuaian Stok',
+        },
       ]
 
       let fungsi = {
-        formatDate
+        formatDate,
       }
 
       return await view.render('barang/kelompok/mutasi-penyesuaian', {
@@ -608,7 +714,7 @@ export default class KelompoksController {
         tambahan,
         kelompok,
         roti,
-        fungsi
+        fungsi,
       })
     } catch (error) {
       session.flash('alertError', 'Kelompok yang anda akses tidak valid atau terhapus.')
@@ -631,18 +737,18 @@ export default class KelompoksController {
         },
         {
           laman: kelompok.nama,
-          alamat: '/app/barang/kelompok/' + kelompok.id
+          alamat: '/app/barang/kelompok/' + kelompok.id,
         },
         {
-          laman: 'Ubah Data'
-        }
+          laman: 'Ubah Data',
+        },
       ]
 
       return await view.render('barang/kelompok/form-edit-kelompok', {
         kelompok,
         kadars,
         bentuks,
-        roti
+        roti,
       })
     } catch (error) {
       session.flash('alertError', 'Kelompok yang anda cari tidak valid!')
@@ -686,7 +792,7 @@ export default class KelompoksController {
       stokMinimal: schema.number(),
       // stok: schema.number(),
       ingatkanStokMenipis: schema.string.optional(),
-      monitorStok: schema.string.optional()
+      monitorStok: schema.string.optional(),
     })
 
     const validrequest = await request.validate({

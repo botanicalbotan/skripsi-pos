@@ -357,7 +357,9 @@ $(function () {
       sub1.textContent = jumlah
 
       const sub2 = document.createElement('span')
-      sub2.textContent = `${((berat) ? berat : 0)} gr`
+      let angka = ((berat)? berat:0)
+      sub2.textContent = `${angka.toFixed(2)} gr`
+      
 
       span2.append(sub1, sub2)
 

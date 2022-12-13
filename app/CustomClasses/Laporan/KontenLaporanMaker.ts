@@ -59,8 +59,21 @@ export default class KontenLaporanMaker {
         fontSize: 11,
         margin: [0, 10, 0, 15],
       },
+      olWadahKosong: {
+        fontSize: 11,
+        margin: [0, 10, 0, 15],
+        alignment: 'center'
+      },
       olTabel: {
         margin: [0, 0, 0, 15],
+      },
+      kadarBalen:{
+        bold: true,
+        margin: [0, 10, 0, 0]
+      },
+      footerBalen: {
+        bold: true,
+        margin: [0, 5, 0, 0]
       },
     }
   }
@@ -90,7 +103,7 @@ export default class KontenLaporanMaker {
     let alamat = kapitalKalimat(pengaturan.alamatTokoLengkap)
     let pencetak =
       kapitalKalimat(userPengkases.pengguna.nama) + ` <${userPengkases.pengguna.jabatan.nama}>`
-    let tanggalCetak = DateTime.now().toFormat('fff')
+    let tanggalCetak = DateTime.now().toFormat('ff')
 
     let tanggalString = ''
 
@@ -162,6 +175,7 @@ export default class KontenLaporanMaker {
       rekap: boolean
       daftarJual: boolean
       daftarBeli: boolean
+      rekapBalen: boolean
       daftarGadai: boolean
     },
     tanggalLaporan: string,
@@ -181,7 +195,7 @@ export default class KontenLaporanMaker {
     let alamat = kapitalKalimat(pengaturan.alamatTokoLengkap)
     let pencetak =
       kapitalKalimat(userPengkases.pengguna.nama) + ` <${userPengkases.pengguna.jabatan.nama}>`
-    let tanggalCetak = DateTime.now().toFormat('fff')
+    let tanggalCetak = DateTime.now().toFormat('ff')
 
     let tanggalString = ''
 
@@ -205,7 +219,12 @@ export default class KontenLaporanMaker {
       subbab.push(
         await babTransaksi.generateSubDaftarPembelian(tanggalLaporan, tanggalMulai, tanggalAkhir)
       )
-      // subbab.push(await babTransaksi.generateSubDaftarGadai(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      subbab.push(
+        await babTransaksi.generateSubRekapBalen(tanggalLaporan, tanggalMulai, tanggalAkhir)
+      )
+      subbab.push(
+        await babTransaksi.generateSubDaftarGadai(tanggalLaporan, tanggalMulai, tanggalAkhir)
+      )
     } else {
       if (checklistTransaksi.rekap) {
         subbab.push(
@@ -225,9 +244,15 @@ export default class KontenLaporanMaker {
         )
       }
 
-      // if (checklistTransaksi.daftarGadai) {
-      //   subbab.push(await babTransaksi.generateSubDaftarGadai(tanggalLaporan, tanggalMulai, tanggalAkhir))
-      // }
+      if(checklistTransaksi.rekapBalen){
+        subbab.push(
+          await babTransaksi.generateSubRekapBalen(tanggalLaporan, tanggalMulai, tanggalAkhir)
+        )
+      }
+
+      if (checklistTransaksi.daftarGadai) {
+        subbab.push(await babTransaksi.generateSubDaftarGadai(tanggalLaporan, tanggalMulai, tanggalAkhir))
+      }
     }
 
     // ini terakhir buat ngasi pagebreak
@@ -295,7 +320,7 @@ export default class KontenLaporanMaker {
     let alamat = kapitalKalimat(pengaturan.alamatTokoLengkap)
     let pencetak =
       kapitalKalimat(userPengkases.pengguna.nama) + ` (${userPengkases.pengguna.jabatan.nama})`
-    let tanggalCetak = DateTime.now().toFormat('fff')
+    let tanggalCetak = DateTime.now().toFormat('ff')
 
     let tanggalString = ''
 

@@ -102,12 +102,13 @@ if (basePage == "list") {
     }
   }
 
-  let indikatorGP = document.getElementById('indikatorGP')
+  // let indikatorGP = document.getElementById('indikatorGP')
+  // let belumDigaji = document.getElementById('konten').dataset.belumgaji
 
-  if (global.indikatorGaji > 0) {
-    indikatorGP.textContent = global.indikatorGaji
-    indikatorGP.classList.remove('hidden')
-  }
+  // if (belumDigaji && (belumDigaji === '99+' || !isNaN(belumDigaji))) {
+  //   indikatorGP.textContent = belumDigaji
+  //   indikatorGP.classList.remove('hidden')
+  // }
 
 
   let printAturTabelHTML = function () {

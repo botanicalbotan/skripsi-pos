@@ -65,7 +65,8 @@ const semuaTransaksi = document.getElementById('semuaTransaksi')
 const rekapTransaksi = document.getElementById('rekapTransaksi')
 const daftarPenjualan = document.getElementById('daftarPenjualan')
 const daftarPembelian = document.getElementById('daftarPembelian')
-// const daftarGadai = document.getElementById('daftarGadai')
+const rekapBalen = document.getElementById('rekapBalen')
+const daftarGadai = document.getElementById('daftarGadai')
 
 
 semuaTransaksi.addEventListener('change', () => {
@@ -73,22 +74,26 @@ semuaTransaksi.addEventListener('change', () => {
     rekapTransaksi.checked = true
     daftarPenjualan.checked = true
     daftarPembelian.checked = true
-    // daftarGadai.checked = true
+    rekapBalen.checked = true
+    daftarGadai.checked = true
 
     rekapTransaksi.disabled = true
     daftarPenjualan.disabled = true
     daftarPembelian.disabled = true
-    // daftarGadai.disabled = true
+    rekapBalen.disabled = true
+    daftarGadai.disabled = true
   } else {
     rekapTransaksi.checked = false
     daftarPenjualan.checked = false
     daftarPembelian.checked = false
-    // daftarGadai.checked = false
+    rekapBalen.checked = false
+    daftarGadai.checked = false
 
     rekapTransaksi.disabled = false
     daftarPenjualan.disabled = false
     daftarPembelian.disabled = false
-    // daftarGadai.disabled = false
+    rekapBalen.disabled = false
+    daftarGadai.disabled = false
   }
 })
 

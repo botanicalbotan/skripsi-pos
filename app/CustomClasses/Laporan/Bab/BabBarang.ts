@@ -171,6 +171,19 @@ export default class BabBarang {
       }
     }
 
+    let wadah: any
+    if(listPenambahan.length > 0){
+      wadah = {
+        ol: olDalem,
+        style: 'olWadah'
+      }
+    } else {
+      wadah = {
+        text: 'Tidak ada penambahan stok',
+        style: 'olWadahKosong'
+      }
+    }
+
     return [{
         text: 'Daftar Penambahan Stok (Restok) Kelompok',
         style: 'subBab'
@@ -179,10 +192,7 @@ export default class BabBarang {
         text: `Pada subbab ini, dilampirkan daftar seluruh penambahan stok yang tercatat pada sistem pada tanggal ${tanggalString}. Kolom nama barang dilengkapi dengan informasi kadar dan bentuk perhiasan, serta penanda warna sesuai dengan warna nota yang diatur pada sistem. Penambahan dicetak per kelompok berdasarkan waktu dan kelompok pencatatannya. Berikut selengkapnya:`,
         lineHeight: 1.5
       },
-      {
-        ol: olDalem,
-        style: 'olWadah'
-      }
+      wadah
     ]
   }
 
@@ -396,7 +406,7 @@ export default class BabBarang {
 
     if (!listPenyesuaian || listPenyesuaian.length == 0) {
       isiTabel.push([{
-        text: 'Tidak ada data!',
+        text: 'Tidak ada penyesuaian stok',
         colSpan: 4,
         alignment: 'center'
       }])

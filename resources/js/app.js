@@ -104,21 +104,26 @@ global.settingInputNumber = function (e) {
   }
 }
 
-// ini gatau diapain, bisa taro di session ngga dah?
+// ini gatau diapain
 let indikator = document.getElementById('indikatorGajiPegawai')
-global.indikatorGaji = 0
+
+// ini buat laman list pegawai
+let indikatorGP = document.getElementById('indikatorGP')
 
 if(indikator){
   $.get("/app/cuma-data/jumlah-belum-digaji", {},
   function (data, textStatus, jqXHR) {
     if (data.jumlah && data.jumlah > 0) {
-      
-      indikatorGaji = data.jumlah
+      let temp = data.jumlah
 
-      if (data.jumlah > 99) indikatorGaji = '99+'
-      indikator.textContent = indikatorGaji
-
+      if (data.jumlah > 99) temp = '99+'
+      indikator.textContent = temp
       indikator.classList.remove('hidden')
+
+      if(indikatorGP){
+        indikatorGP.textContent = temp
+        indikatorGP.classList.remove('hidden')
+      }
     }
   },
   "json"

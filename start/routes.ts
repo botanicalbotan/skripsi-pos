@@ -56,7 +56,7 @@ Route.group(() => {
       ) // buat list penyesuaian
       Route.get('/rekap-harian', 'kas/RekapHariansController.index')
 
-      Route.get('/testing/bikin-banyak', 'kas/KasController.buatBanyak') // WARNING: INI BUAT TEST DOANG, NTAR DIHAPUSSS
+      // Route.get('/testing/bikin-banyak', 'kas/KasController.buatBanyak') // WARNING: INI BUAT TEST DOANG, NTAR DIHAPUSSS
     }).prefix('/kas')
 
     Route.resource('/kas', 'kas/KasController')
@@ -68,14 +68,10 @@ Route.group(() => {
     Route.get('/', 'barang/KelompoksController.index')
     Route.get('/kelompok', 'barang/KelompoksController.index')
 
+    Route.get('/kelompok/:id/penjualan','barang/KelompoksController.showPenjualan')
     Route.get('/kelompok/:id/penambahan', 'barang/KelompoksController.showMutasiTambah')
-    Route.get('/kelompok/:id/koreksi', 'barang/KelompoksController.showMutasiKoreksi')
-
-    // ini ntar disesuaiin
-    Route.get(
-      '/kelompok/:id/penyesuaian',
-      'barang/KelompoksController.showMutasiPenyesuaian'
-    )
+    // Route.get('/kelompok/:id/koreksi', 'barang/KelompoksController.showMutasiKoreksi')
+    Route.get('/kelompok/:id/penyesuaian','barang/KelompoksController.showMutasiPenyesuaian')
 
     Route.put('/kelompok/:id/ubah-stok', 'barang/KelompoksController.ubahStok').middleware([
       'isKepalaWeb',

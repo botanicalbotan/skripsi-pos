@@ -54,6 +54,7 @@ export default class LaporansController {
       rekapTransaksi: schema.string.optional(),
       daftarPenjualan: schema.string.optional(),
       daftarPembelian: schema.string.optional(),
+      rekapBalen: schema.string.optional(),
       daftarGadai: schema.string.optional(),
       semuaBarang: schema.string.optional(),
       daftarPenambahan: schema.string.optional(),
@@ -82,7 +83,7 @@ export default class LaporansController {
         adaKas = true
       }
 
-      if (validrequest.semuaTransaksi || validrequest.rekapTransaksi || validrequest.daftarPenjualan || validrequest.daftarPembelian || validrequest.daftarGadai) {
+      if (validrequest.semuaTransaksi || validrequest.rekapTransaksi || validrequest.daftarPenjualan || validrequest.daftarPembelian || validrequest.rekapBalen || validrequest.daftarGadai) {
         adaTransaksi = true
       }
 
@@ -106,6 +107,7 @@ export default class LaporansController {
         rekap: (validrequest.rekapTransaksi) ? true : false,
         daftarJual: (validrequest.daftarPenjualan) ? true : false,
         daftarBeli: (validrequest.daftarPembelian) ? true : false,
+        rekapBalen: (validrequest.rekapBalen) ? true:false,
         daftarGadai: (validrequest.daftarGadai) ? true : false
       }
 

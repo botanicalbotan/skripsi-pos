@@ -224,10 +224,10 @@ export default class PenambahanStoksController {
     }
 
     let roti = [
-      {
-        laman: 'Pembukuan Kas',
-        alamat: '/app/kas',
-      },
+      // {
+      //   laman: 'Pembukuan Kas',
+      //   alamat: '/app/kas',
+      // },
       {
         laman: 'Rekap Harian',
         alamat: '/app/kas/rekap-harian',

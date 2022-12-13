@@ -307,10 +307,10 @@ export default class KasController {
     }
 
     let roti = [
-      {
-        laman: 'Pembukuan Kas',
-        alamat: '/app/kas',
-      },
+      // {
+      //   laman: 'Pembukuan Kas',
+      //   alamat: '/app/kas',
+      // },
       {
         laman: 'Rekap Harian',
         alamat: '/app/kas/rekap-harian'
@@ -434,14 +434,14 @@ export default class KasController {
       }
 
       let roti: Array<{laman:string, alamat:string | undefined}> = [
-        {
-          laman: 'Pembukuan Kas',
-          alamat: '/app/kas',
-        },
+        
       ]
 
       if(kas.createdAt.startOf('day').toMillis() === DateTime.now().startOf('day').toMillis()){
         roti.push({
+          laman: 'Pembukuan Kas',
+          alamat: '/app/kas',
+        },{
           laman: 'Hari Ini',
           alamat: '/app/kas'
         })
